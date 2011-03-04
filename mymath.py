@@ -121,6 +121,9 @@ class Box(object):
         z_intersect = (self.loc.z > b.z2()) and (self.z2() > b.loc.z)
         return x_intersect and y_intersect and z_intersect
 
+def area(loc1, loc2):
+	return abs((loc1.x-loc2.x)*(loc1.z-loc2.z))
+
 def iterate_plane(loc1, loc2):
     for x in xrange(min(loc1.x,loc2.x),max(loc1.x,loc2.x)+1):
       for y in xrange(min(loc1.y,loc2.y),max(loc1.y,loc2.y)+1):

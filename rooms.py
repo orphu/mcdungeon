@@ -12,20 +12,20 @@ class Blank(object):
 				self.pos.y * self.parent.room_height, \
 				self.pos.z * self.parent.room_size)
 		self.halls = [None, None, None, None]
-		self.setHallData()
+		self.setData()
 		self.numfeat = self._numfeat
-		features = []
+		self.features = []
+		self.floors = []
 		for x in xrange(4):
 			if self.hallLength[x] == 0:
 				self.halls[x] = halls.new('Blank', self, x, 0)
 	def featuresRemaining(self):
 		return self.numfeat
-	def canvas(self):
-		return (Vec(0,0,0), Vec(0,0,0))
-	def setHallData(self):
+	def setData(self):
 		# North, East, South, West
 		self.hallLength = [0,0,0,0]
 		self.hallSize = [[1,15], [1,15], [1,15], [1,15]]
+		self.canvas = (Vec(0,0,0), Vec(0,0,0))
 	def render (self):
 		pass
 	def testHall (self, side, size, a1, b1):
@@ -62,16 +62,18 @@ class Blank(object):
 		for x in xrange(0,4):
 			if (self.halls[x]):
 				self.halls[x].render()
+	def renderFloors (self):
+		for floor in self.floors:
+			floor.render()
 		
 class Basic(Blank):
 	_name = 'Basic'
 	_numfeat = 2
-	def canvas(self):
-		return (Vec(4,0,4), Vec(self.parent.room_size-4,0,self.parent.room_size-4))
-	def setHallData(self):
+	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
 		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+		self.canvas = (Vec(4,self.parent.room_height-2,4), Vec(self.parent.room_size-4,self.parent.room_height-2,self.parent.room_size-4))
 	def render (self):
 		c1 = self.loc + Vec(2,self.parent.room_height-1,2)
 		c2 = c1 + Vec(self.parent.room_size-5,0,0)
@@ -90,16 +92,16 @@ class Basic(Blank):
 		for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
 			self.parent.setblock(x, materials._ceiling)
 		self.renderHalls()
+		self.renderFloors()
 
 class Circular(Blank):
         _name = 'Circular'
 	_numfeat = 2
-	def canvas(self):
-		return (Vec(3,0,3), Vec(self.parent.room_size-3,0,self.parent.room_size-3))
-        def setHallData(self):
+        def setData(self):
                 # North, East, South, West
                 self.hallLength = [1,1,1,1]
                 self.hallSize = [[5,self.parent.room_size-5], [5,self.parent.room_size-5], [5,self.parent.room_size-5], [5,self.parent.room_size-5]]
+		self.canvas = (Vec(3,self.parent.room_height-2,3), Vec(self.parent.room_size-3,self.parent.room_height-2,self.parent.room_size-3))
         def render (self):
                 c1 = self.loc + Vec(0,self.parent.room_height-1,0)
                 # Solid (walls)
@@ -168,16 +170,17 @@ class Circular(Blank):
                         self.parent.setblock(x, materials._floor)
                 for x in iterate_cube(c1.trans(2,clevel,11),c1.trans(13,clevel-1,12)):
                         self.parent.setblock(x, materials._floor)
-
                 self.renderHalls()
+		self.renderFloors()
 
 class Corridor(Blank):
 	_name = 'Corridor'
 	_numfeat = 0
-	def setHallData(self):
+	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
 		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+		self.canvas = (Vec(0,0,0), Vec(0,0,0))
 	def render (self):
 		# default to a teeny tiny room
 		x1 = 1000
@@ -245,8 +248,9 @@ class Corridor(Blank):
                 # Ceiling
                 for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
                         self.parent.setblock(x, materials._ceiling)
-		# draw hallways
+		# draw hallways and floors
 		self.renderHalls()
+		self.renderFloors()
 
 
 def new (name, parent, pos):

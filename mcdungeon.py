@@ -9,6 +9,7 @@ from copy import *
 import materials
 import rooms
 import halls
+import floors
 import features
 from mymath import * 
 from pymclevel import mclevel
@@ -25,34 +26,19 @@ parser.add_argument('--html', dest='html', metavar='Y', help='Print an html vers
 parser.add_argument('--world', dest='world', metavar='SAVEDIR', help='Target world (path to save directory)', required=True)
 args = parser.parse_args()
 
-# Gather a list of hall names
-#master_halls = [];
-#for cname,val in halls.__dict__.items():
-#	if inspect.isclass(val):
-#		if issubclass(val, halls.Blank):
-#			master_halls.append(cname)
-# Remove halls we don't care about
-#master_halls.remove('Blank')
-#master_halls = ['Blank', 'Single', 'Single', 'Single', 'Double', 'Double', 'Double', 'Triple', 'Triple', 'Triple', 'Ten']
 master_halls = (('Single', 35), 
 		('Double', 50), 
 		('Triple', 10), 
 		('Ten',    5),
 		('Blank',  0)) 
 
-# Gather a list of room names
-#master_rooms = [];
-#for cname,val in rooms.__dict__.items():
-#	if inspect.isclass(val):
-#		if issubclass(val, rooms.Blank):
-#			master_rooms.append(cname)
-# Remove rooms we don't care about
-#master_rooms.remove('Blank')
-#master_rooms = ['Basic', 'Basic', 'Basic','Basic','Basic','Circular','Corridor', 'Corridor','Corridor']
 master_rooms = (('Basic',    60),
 		('Corridor', 35),
 		('Circular', 5),
 		('Blank',    0))
+
+master_floors = (('Cobble', 50),
+		('Blank', 50))
 
 class Block(object):
     def __init__(self, loc):
@@ -143,6 +129,16 @@ class Dungeon (object):
 									nextpos = pos+pos.d(d)
 									nextd = (d+2)%4
 									self.rooms[nextpos].halls[nextd] = halls.new('Blank', self.rooms[nextpos], nextd, 0)
+
+	def genfloors(self):
+		for y in xrange(self.levels):
+			for x in xrange(self.xsize):
+				for z in xrange(self.zsize):
+					pos = Vec(x,y,z)
+					if (pos in self.rooms):
+						floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
+						self.rooms[pos].floors.append(floor)
+
 	def placetorches(self, perc):
 		'''Place a proportion of the torches where possible'''
 		count = 0
@@ -292,6 +288,9 @@ dungeon.genrooms()
 
 print "Generating halls..."
 dungeon.genhalls()
+
+print "Generating floors..."
+dungeon.genfloors()
 
 print "Rendering..."
 dungeon.renderrooms()

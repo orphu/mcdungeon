@@ -15,14 +15,9 @@ class Stairwell(Blank):
 		for x in iterate_cube(start, start.trans(6,-6,6)):
 			self.parent.setblock(x, materials.Air)
 
-class Rug(Blank):
-	name = 'Rug'
-	def render (self):
-		pass
-
-def new (name, parent, pos):
+def new (name, parent):
         if (name == 'Stairwell'):
-                return Rug(parent, pos)
+                return Rug(parent)
         if (name == 'Rug'):
-                return Rug(parent, pos)
-        return Blank(parent, pos)
+                return Rug(parent)
+        return Blank(parent)
