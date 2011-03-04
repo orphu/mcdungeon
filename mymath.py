@@ -180,6 +180,9 @@ def iterate_points_inside_flat_poly(*poly_points):
           if point_inside(p):
               yield p
 
+def sum_points_inside_flat_poly(*poly_points):
+	return sum(1 for p in iterate_points_inside_flat_poly(*poly_points))-1
+
 def iterate_points_surrounding_box(box):
     near = box.loc.trans(-1,-1,-1)
     far = box.loc.trans(box.w+1,box.h+1,box.d+1)

@@ -25,7 +25,7 @@ class Blank(object):
 		# North, East, South, West
 		self.hallLength = [0,0,0,0]
 		self.hallSize = [[1,15], [1,15], [1,15], [1,15]]
-		self.canvas = (Vec(0,0,0), Vec(0,0,0))
+		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
 	def render (self):
 		pass
 	def testHall (self, side, size, a1, b1):
@@ -73,7 +73,10 @@ class Basic(Blank):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
 		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
-		self.canvas = (Vec(4,self.parent.room_height-2,4), Vec(self.parent.room_size-4,self.parent.room_height-2,self.parent.room_size-4))
+		self.canvas = (Vec(4,self.parent.room_height-2,4), 
+				Vec(self.parent.room_size-5,self.parent.room_height-2,4),
+				Vec(self.parent.room_size-5,self.parent.room_height-2,self.parent.room_size-5),
+				Vec(4,self.parent.room_height-2,self.parent.room_size-5))
 	def render (self):
 		c1 = self.loc + Vec(2,self.parent.room_height-1,2)
 		c2 = c1 + Vec(self.parent.room_size-5,0,0)
@@ -180,7 +183,7 @@ class Corridor(Blank):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
 		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
-		self.canvas = (Vec(0,0,0), Vec(0,0,0))
+		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
 	def render (self):
 		# default to a teeny tiny room
 		x1 = 1000
