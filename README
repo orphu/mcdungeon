@@ -2,7 +2,8 @@ mcdungeon
 
 Mcdungeon will create a procedurally generated world in a prexisting
 minecraft map. It is not yet feature complete, but can generate basic
-floor layouts. It is written in Python.
+floor layouts. It is written in Python and makes heavy use of code from
+Paul Hodge's minetown project and David Rio Vierra's pymclevel.
 
 CURRENT FEATURES:
 
