@@ -1,3 +1,66 @@
 mcdungeon
 
-Nothing here yet
+Mcdungeon will create a procedurally generated world in a prexisting
+minecraft map. It is not yet feature complete, but can generate basic
+floor layouts. It is written in Python.
+
+CURRENT FEATURES:
+
+   * Generates room layouts based on a random weighted selection
+   of rooms. (not yet configurable)
+
+   * Connects rooms with hallways. Hall types are also chosen
+   from a random weighted list. (not yet configurable)
+
+   * Places doors, portcullises, and torches in the dungeon.
+
+   * Saves changes (with lighting!) to a Minecraft map via
+   pymclevel.
+
+   * Cobblestone has random patches of moss growing on it.
+
+   * Output floors to ANSI terminal.
+
+   * Output floors to an HTML table.
+
+TODO:
+
+   * Floor types
+   * Room features
+   * Place stairwells between floors
+   * Place a dungeon entrance leading to the surface
+   * Place monster spawners
+   * Place chests with treasure
+   * Automatically select a suiable location within a map
+   * Expose tweaks to the algorithm via config files
+
+OPTIONS:
+
+$ ./mcdungeon.py --help
+usage: mcdungeon.py [-h] [--write] [--skip-relight] [--term Y] [--html Y]
+                    --world SAVEDIR
+                    z x levels
+
+Generate some DungeonQuest-like dungeons in a Minecraft map.
+
+positional arguments:
+  z                Number of rooms East-West
+  x                Number of rooms North-South
+  levels           Number of levels
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --write          Write the dungeon to disk
+  --skip-relight   Skip relighting the level
+  --term Y         Print an text version of slice Y to the terminal
+  --html Y         Print an html version of slice Y to the terminal
+  --world SAVEDIR  Target world (path to save directory)
+
+EXAMPLES:
+
+This will generate a 4x4x1 dungeon layout and display the results
+in a terminal window. (ANSI control codes probably mean *nix sysems
+only. Sorry) The base world will not be modified, but a world is 
+required to pull in material info, etc. 
+
+./mcdungeon.py --world <path to world> 4 4 1 --term 0
