@@ -155,6 +155,7 @@ def iterate_points_inside_flat_poly(*poly_points):
     max_x = ceil(max([p.x for p in poly_points]))
     min_z = floor(min([p.z for p in poly_points]))
     max_z = ceil(max([p.z for p in poly_points]))
+    min_y = floor(min([p.y for p in poly_points]))
 
     num_points = len(poly_points)
     def point_inside(p):
@@ -176,7 +177,7 @@ def iterate_points_inside_flat_poly(*poly_points):
 
     for x in xrange(min_x,max_x+1):
       for z in xrange(min_z,max_z+1):
-          p = Vec(x,0,z)
+          p = Vec(x,min_y,z)
           if point_inside(p):
               yield p
 
