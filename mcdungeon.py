@@ -225,9 +225,7 @@ class Dungeon (object):
 							mat = materials.MossStone
 						else:
 							mat = materials.Cobblestone
-					sys.stdout.write('<td><img src=d/')
-                                        sys.stdout.write(str(mat.val))
-					sys.stdout.write('.png>')
+                                        sys.stdout.write('<td><img src=d/%d-%d.png>' % (mat.val,self.blocks[Vec(x,y,z)].data))
                                 else:
                                         sys.stdout.write('<td><img src=d/0.png>')
 		sys.stdout.write('</table>')
