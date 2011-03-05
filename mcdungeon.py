@@ -37,8 +37,10 @@ master_rooms = (('Basic',    60),
 		('Circular', 5),
 		('Blank',    0))
 
-master_floors = (('Cobble', 50),
-		('Blank', 50))
+master_floors = (('Cobble', 1),
+		('WoodTile', 1),
+		('DoubleSlab', 1),
+		('Blank', 1))
 
 class Block(object):
     def __init__(self, loc):
@@ -296,7 +298,7 @@ print "Rendering..."
 dungeon.renderrooms()
 
 print "Placing doors..."
-dungeon.placedoors(100)
+dungeon.placedoors(50)
 
 print "Placing portcullises..."
 dungeon.placeportcullises(50)
