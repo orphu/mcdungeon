@@ -58,13 +58,6 @@ class Blank(object):
 		if (side == 3 and self.pos.x == 0):
 			return True
 		return False
-	def renderHalls (self):
-		for x in xrange(0,4):
-			if (self.halls[x]):
-				self.halls[x].render()
-	def renderFloors (self):
-		for floor in self.floors:
-			floor.render()
 		
 class Basic(Blank):
 	_name = 'Basic'
@@ -94,8 +87,6 @@ class Basic(Blank):
 		# Ceiling
 		for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
 			self.parent.setblock(x, materials._ceiling)
-		self.renderHalls()
-		self.renderFloors()
 
 class Circular(Blank):
         _name = 'Circular'
@@ -181,8 +172,6 @@ class Circular(Blank):
                         self.parent.setblock(x, materials._floor)
                 for x in iterate_cube(c1.trans(2,clevel,11),c1.trans(13,clevel-1,12)):
                         self.parent.setblock(x, materials._floor)
-                self.renderHalls()
-		self.renderFloors()
 
 class Corridor(Blank):
 	_name = 'Corridor'
@@ -259,9 +248,6 @@ class Corridor(Blank):
                 # Ceiling
                 for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
                         self.parent.setblock(x, materials._ceiling)
-		# draw hallways and floors
-		self.renderHalls()
-		self.renderFloors()
 
 
 def new (name, parent, pos):

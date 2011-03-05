@@ -37,6 +37,9 @@ master_rooms = (('Basic',    60),
 		('Circular', 5),
 		('Blank',    0))
 
+master_features = (('Stairwell', 1),
+		('Blank',    1))
+
 master_floors = (('Cobble', 1),
 		('WoodTile', 1),
 		('DoubleSlab', 1),
@@ -133,13 +136,14 @@ class Dungeon (object):
 									self.rooms[nextpos].halls[nextd] = halls.new('Blank', self.rooms[nextpos], nextd, 0)
 
 	def genfloors(self):
-		for y in xrange(self.levels):
-			for x in xrange(self.xsize):
-				for z in xrange(self.zsize):
-					pos = Vec(x,y,z)
-					if (pos in self.rooms):
-						floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
-						self.rooms[pos].floors.append(floor)
+		for pos in self.rooms:
+			floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
+			self.rooms[pos].floors.append(floor)
+
+	def genfeatures(self):
+		for pos in self.rooms:
+			feature = features.new(weighted_choice(master_features), self.rooms[pos])
+			self.rooms[pos].features.append(feature)
 
 	def placetorches(self, perc):
 		'''Place a proportion of the torches where possible'''
@@ -184,8 +188,28 @@ class Dungeon (object):
 
 	def renderrooms(self):
 		'''Call render() on all rooms to populate the block buffer'''
-		for pos, val in self.rooms.items():
+		for pos in self.rooms:
+			sys.stdout.write(".")
+			sys.stdout.flush()
 			self.rooms[pos].render()
+
+	def renderhalls(self):
+		''' Call render() on all halls'''
+		for pos in self.rooms:
+			for x in xrange(0,4):
+				if (self.rooms[pos].halls[x]):
+					self.rooms[pos].halls[x].render()
+	def renderfloors(self):
+		''' Call render() on all floors'''
+		for pos in self.rooms:
+			for x in self.rooms[pos].floors:
+				x.render()
+
+	def renderfeatures(self):
+		''' Call render() on all features'''
+		for pos in self.rooms:
+			for x in self.rooms[pos].features:
+				x.render()
 
 	def outputterminal(self, layer):
 		'''Print a slice (or layer) of the dungeon block buffer to the termial.
@@ -194,8 +218,8 @@ class Dungeon (object):
 			for z in xrange(self.zsize*self.room_size):
 				y = int(layer)
 				if Vec(x,y,z) in self.blocks:
-					while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
-						y += 1
+					#while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
+					#	y += 1
 					mat = self.blocks[Vec(x,y,z)].material
 					# 3D perlin moss!
                                         if (mat.name == 'Cobblestone'):
@@ -292,8 +316,20 @@ dungeon.genhalls()
 print "Generating floors..."
 dungeon.genfloors()
 
-print "Rendering..."
+print "Generating features..."
+dungeon.genfeatures()
+
+print "Rendering rooms..."
 dungeon.renderrooms()
+
+print "Rendering halls..."
+dungeon.renderhalls()
+
+print "Rendering floors..."
+dungeon.renderfloors()
+
+print "Rendering features..."
+dungeon.renderfeatures()
 
 print "Placing doors..."
 dungeon.placedoors(50)
