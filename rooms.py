@@ -104,7 +104,15 @@ class Circular(Blank):
                 # North, East, South, West
                 self.hallLength = [1,1,1,1]
                 self.hallSize = [[5,self.parent.room_size-5], [5,self.parent.room_size-5], [5,self.parent.room_size-5], [5,self.parent.room_size-5]]
-		self.canvas = (Vec(3,self.parent.room_height-2,3), Vec(self.parent.room_size-3,self.parent.room_height-2,self.parent.room_size-3))
+		self.canvas = (Vec(5,self.parent.room_height-2,2), 
+				Vec(self.parent.room_size-6,self.parent.room_height-2,2),
+				Vec(self.parent.room_size-3,self.parent.room_height-2,5),
+				Vec(self.parent.room_size-3,self.parent.room_height-2,self.parent.room_size-6),
+				Vec(self.parent.room_size-6,self.parent.room_height-2,self.parent.room_size-3),
+				Vec(5,self.parent.room_height-2,self.parent.room_size-3),
+				Vec(2,self.parent.room_height-2,self.parent.room_size-6),
+				Vec(2,self.parent.room_height-2,5)
+				)
         def render (self):
                 c1 = self.loc + Vec(0,self.parent.room_height-1,0)
                 # Solid (walls)
