@@ -10,6 +10,8 @@ CURRENT FEATURES:
    * Generates room layouts based on a random weighted selection
    of rooms. (not yet configurable)
 
+   * Places stairwells between levels
+
    * Connects rooms with hallways. Hall types are also chosen
    from a random weighted list. (not yet configurable)
 
@@ -26,9 +28,9 @@ CURRENT FEATURES:
 
 TODO:
 
-   * Floor types
-   * Room features
-   * Place stairwells between floors
+   * More floor types
+   * More room features
+   * More room types
    * Place a dungeon entrance leading to the surface
    * Place monster spawners
    * Place chests with treasure

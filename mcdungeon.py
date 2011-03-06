@@ -37,7 +37,7 @@ master_rooms = (('Basic',    60),
 		('Circular', 5),
 		('Blank',    0))
 
-master_features = (('Stairwell', 1),
+master_features = (('Blank', 1),
 		('Blank',    1))
 
 master_floors = (('Cobble', 1),
@@ -72,7 +72,41 @@ class Dungeon (object):
 	def setroom(self, coord, room):
 		if coord not in self.rooms:
 			self.rooms[coord] = room
+			#print "New room: ",coord
 	def genrooms(self):
+		# Place stairwells
+		x = -1
+		z = -1
+		x1 = -1
+		z1 = -1
+		room = None
+		roomup = None
+		# TODO: Start this at 1 once we have an entrance
+		for y in xrange(0, self.levels):
+			while (x == x1):
+				x = randint(0, self.xsize-1)
+			while (z == z1):
+				z = randint(0, self.zsize-1)
+			x1 = x
+			z1 = z
+			pos = Vec(x,y,z)
+			posup = pos.up(1)
+			if (pos.y < self.levels):
+				while (room == None or sum_points_inside_flat_poly(*room.canvas) < 24):
+					room = rooms.new(weighted_choice(master_rooms), self, pos)
+				feature = features.new('Stairwell', room)
+				room.features.append(feature)
+				self.setroom(pos, room)
+				room = None
+			if (posup.y >= 0):
+				while (roomup == None or sum_points_inside_flat_poly(*roomup.canvas) < 24):
+					roomup = rooms.new(weighted_choice(master_rooms), self, posup)
+				featureup = features.new('Blank', roomup)
+				roomup.features.append(featureup)
+				self.setroom(posup, roomup)
+				roomup = None
+				
+		# Generate the rest of the map
 		for y in xrange(self.levels):
 			for x in xrange(self.xsize):
 				for z in xrange(self.zsize):
@@ -144,6 +178,7 @@ class Dungeon (object):
 		for pos in self.rooms:
 			feature = features.new(weighted_choice(master_features), self.rooms[pos])
 			self.rooms[pos].features.append(feature)
+			feature.placed()
 
 	def placetorches(self, perc):
 		'''Place a proportion of the torches where possible'''
@@ -218,8 +253,8 @@ class Dungeon (object):
 			for z in xrange(self.zsize*self.room_size):
 				y = int(layer)
 				if Vec(x,y,z) in self.blocks:
-					#while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
-					#	y += 1
+					while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
+						y += 1
 					mat = self.blocks[Vec(x,y,z)].material
 					# 3D perlin moss!
                                         if (mat.name == 'Cobblestone'):
@@ -310,14 +345,14 @@ dungeon = Dungeon(args.x,args.z,args.levels)
 print "Generating rooms..."
 dungeon.genrooms()
 
-print "Generating halls..."
-dungeon.genhalls()
-
 print "Generating floors..."
 dungeon.genfloors()
 
 print "Generating features..."
 dungeon.genfeatures()
+
+print "Generating halls..."
+dungeon.genhalls()
 
 print "Rendering rooms..."
 dungeon.renderrooms()

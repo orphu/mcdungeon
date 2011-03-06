@@ -2,28 +2,28 @@ import materials
 from mymath import * 
 
 class Blank(object):
-	name = 'Blank'
+	_name = 'Blank'
 	def __init__ (self, parent):
 		self.parent = parent
 	def render (self):
 		pass
 		
 class Cobble(Blank):
-	name = 'Cobble'
+	_name = 'Cobble'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 				self.parent.parent.setblock(x+self.parent.loc, materials.Cobblestone)
 
 class DoubleSlab(Blank):
-	name = 'DoubleSlab'
+	_name = 'DoubleSlab'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 				self.parent.parent.setblock(x+self.parent.loc, materials.DoubleSlab)
 
 class WoodTile(Blank):
-	name = 'WoodTile'
+	_name = 'WoodTile'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
