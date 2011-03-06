@@ -189,6 +189,24 @@ def iterate_points_surrounding_box(box):
     far = box.loc.trans(box.w+1,box.h+1,box.d+1)
     return iterate_hollow_cube(near, far)
 
+def iterate_spiral(p1, p2, height):
+	p = p1
+	box = Box(p1.trans(0,-height,0), p2.x-p1.x, height, p2.z-p1.z)
+	step = Vec(1,-1,0)
+	for y in xrange(height):
+		yield p
+		if (box.containsPoint(p+step) is False):
+			if (step == Vec(1,-1,0)):
+				step = Vec(0,-1,1)
+			elif (step == Vec(0,-1,1)):
+				step = Vec(-1,-1,0)
+			elif (step == Vec(-1,-1,0)):
+				step = Vec(0,-1,-1)
+			else:
+				step = Vec(1,-1,0)
+		p += step
+		
+
 def weighted_choice(items):
     """items is a list of tuples in the form (item, weight)"""
     weight_total = sum((item[1] for item in items))
