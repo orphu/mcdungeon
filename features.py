@@ -13,10 +13,6 @@ class Blank(object):
 		
 class Stairwell(Blank):
 	_name = 'Stairwell'
-	def placed(self):
-		above = self.parent.pos.trans(0,-1,0)
-		if above in self.parent.parent.rooms:
-			self.parent.parent.rooms[above] = rooms.new('Basic', self.parent.parent, above)
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			start = self.parent.loc.trans(5,self.parent.parent.room_height-3,5)
