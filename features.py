@@ -34,19 +34,19 @@ class Entrance(Blank):
 			self.parent.parent.setblock(p, materials._wall)
 		# Lower level openings
 		# N side
-		for p in iterate_cube(wstart.trans(1,0,0), wstart.trans(4,-2,0)):
+		for p in iterate_cube(wstart.trans(1,0,0), wstart.trans(4,-3,0)):
 			self.parent.parent.setblock(p, materials.Air)
 			self.parent.parent.setblock(p.trans(0,-self.height,0), materials.Air)
 		# S side
-		for p in iterate_cube(wstart.trans(1,0,5), wstart.trans(4,-2,5)):
+		for p in iterate_cube(wstart.trans(1,0,5), wstart.trans(4,-3,5)):
 			self.parent.parent.setblock(p, materials.Air)
 			self.parent.parent.setblock(p.trans(0,-self.height,0), materials.Air)
 		# W side
-		for p in iterate_cube(wstart.trans(0,0,1), wstart.trans(0,-2,4)):
+		for p in iterate_cube(wstart.trans(0,0,1), wstart.trans(0,-3,4)):
 			self.parent.parent.setblock(p, materials.Air)
 			self.parent.parent.setblock(p.trans(0,-self.height,0), materials.Air)
 		# E side
-		for p in iterate_cube(wstart.trans(5,0,1), wstart.trans(5,-2,4)):
+		for p in iterate_cube(wstart.trans(5,0,1), wstart.trans(5,-3,4)):
 			self.parent.parent.setblock(p, materials.Air)
 			self.parent.parent.setblock(p.trans(0,-self.height,0), materials.Air)
 		# Draw the staircase
