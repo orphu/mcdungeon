@@ -42,6 +42,7 @@ master_features = (('Blank', 1),
 
 master_floors = (('Cobble', 1),
 		('WoodTile', 1),
+		('CheckerRug', 1),
 		('DoubleSlab', 1),
 		('Blank', 1))
 

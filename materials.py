@@ -53,6 +53,7 @@ Fence = Material('Fence', 'o',RED)
 StoneSlab = Material('Stone Slab', 'd',WHITE)
 DoubleSlab = Material('Double Stone Slab', 'D',WHITE)
 StoneStairs = Material('Stone Stairs', 'L',DGREY)
+Wool = Material('Wool', 'W',GREY)
 
 _wall = copy(Cobblestone)
 _ceiling = copy(Glass)
