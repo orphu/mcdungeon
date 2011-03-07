@@ -24,6 +24,20 @@ class Blank(object):
 		self.hallLength = [0,0,0,0]
 		self.hallSize = [[1,15], [1,15], [1,15], [1,15]]
 		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+	def canvasWidth(self):
+		x1 = min([p.x for p in self.canvas])
+		x2 = max([p.x for p in self.canvas])
+		return x2 - x1
+	def canvasLength(self):
+		z1 = min([p.z for p in self.canvas])
+		z2 = max([p.z for p in self.canvas])
+		return z2 - z1
+	def canvasHeight(self):
+		return min([p.y for p in self.canvas])
+	def canvasCenter(self):
+		cx = self.canvasWidth()/2.0+min([p.x for p in self.canvas])
+		cz = self.canvasLength()/2.0+min([p.z for p in self.canvas])
+		return Vec2f(cx,cz)
 	def render (self):
 		pass
 	def testHall (self, side, size, a1, b1):
