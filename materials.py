@@ -50,6 +50,7 @@ Cobblestone = Material('Cobblestone', '%',DGREY)
 MossStone = Material('Moss Stone', '%',GREEN)
 Spawner = Material('Monster Spawner', 'S',DGREY)
 Fence = Material('Fence', 'o',RED)
+StoneSlab = Material('Stone Slab', 'd',WHITE)
 DoubleSlab = Material('Double Stone Slab', 'D',WHITE)
 StoneStairs = Material('Stone Stairs', 'L',DGREY)
 

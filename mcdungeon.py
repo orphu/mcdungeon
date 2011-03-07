@@ -33,8 +33,8 @@ master_halls = (('Single', 35),
 		('Blank',  0)) 
 
 master_rooms = (('Basic',    60),
-		('Corridor', 35),
-		('Circular', 5),
+		('Corridor', 30),
+		('Circular', 10),
 		('Blank',    0))
 
 master_features = (('Blank', 1),
@@ -94,7 +94,10 @@ class Dungeon (object):
 			if (pos.y < self.levels):
 				while (room == None or sum_points_inside_flat_poly(*room.canvas) < 24):
 					room = rooms.new(weighted_choice(master_rooms), self, pos)
-				feature = features.new('Stairwell', room)
+				if (pos.y == 0):
+					feature = features.new('Entrance', room)
+				else:
+					feature = features.new('Stairwell', room)
 				room.features.append(feature)
 				self.setroom(pos, room)
 				room = None
@@ -224,8 +227,8 @@ class Dungeon (object):
 	def renderrooms(self):
 		'''Call render() on all rooms to populate the block buffer'''
 		for pos in self.rooms:
-			sys.stdout.write(".")
-			sys.stdout.flush()
+			#sys.stdout.write(".")
+			#sys.stdout.flush()
 			self.rooms[pos].render()
 
 	def renderhalls(self):
