@@ -4,7 +4,6 @@ from mymath import *
 
 class Blank(object):
 	_name = 'Blank'
-	_numfeat = 0
 	def __init__ (self, parent, pos):
 		self.parent = parent
 		self.pos = pos
@@ -13,7 +12,6 @@ class Blank(object):
 				self.pos.z * self.parent.room_size)
 		self.halls = [None, None, None, None]
 		self.setData()
-		self.numfeat = self._numfeat
 		self.features = []
 		self.floors = []
 		for x in xrange(4):
@@ -61,7 +59,6 @@ class Blank(object):
 		
 class Basic(Blank):
 	_name = 'Basic'
-	_numfeat = 2
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
@@ -90,7 +87,6 @@ class Basic(Blank):
 
 class Circular(Blank):
         _name = 'Circular'
-	_numfeat = 2
         def setData(self):
                 # North, East, South, West
                 self.hallLength = [1,1,1,1]
@@ -175,7 +171,6 @@ class Circular(Blank):
 
 class Corridor(Blank):
 	_name = 'Corridor'
-	_numfeat = 0
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
