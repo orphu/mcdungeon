@@ -82,6 +82,8 @@ class Vec2f(object):
 
     def det(self, b):
         return self.x*b.z - self.z*b.x
+    def mag(self):
+	return math.sqrt(self.x*self.x + self.z*self.z)
     def unit(self):
         mag = math.sqrt(self.x*self.x + self.z*self.z)
         return Vec2f(self.x/mag,self.z/mag)
