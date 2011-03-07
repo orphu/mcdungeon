@@ -40,11 +40,12 @@ master_rooms = (('Basic',    60),
 master_features = (('Blank', 1),
 		('Blank',    1))
 
-master_floors = (('Cobble', 1),
-		('WoodTile', 1),
-		('CheckerRug', 1),
+master_floors = (('Cobble', 2),
+		('WoodTile', 2),
+		('CheckerRug', 2),
+		('BrokenDoubleSlab', 2),
 		('DoubleSlab', 1),
-		('Blank', 1))
+		('Blank', 2))
 
 class Block(object):
     def __init__(self, loc):

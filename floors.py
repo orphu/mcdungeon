@@ -1,5 +1,6 @@
 import materials
 import random
+from noise import * 
 from mymath import * 
 
 class Blank(object):
@@ -57,6 +58,23 @@ class CheckerRug(Blank):
 					self.parent.parent.blocks[x+self.parent.loc].data = color[0]
 				else:
 					self.parent.parent.blocks[x+self.parent.loc].data = color[1]
+class BrokenDoubleSlab(Blank):
+	_name = 'BrokenDoubleSlab'
+	def render (self):
+		if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+			return
+		c = self.parent.canvasCenter()
+		y = self.parent.canvasHeight()
+		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
+		if (maxd < 1):
+			maxd = 1
+		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+			p = x+self.parent.loc
+			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+			n = (pnoise3(p.x / 3.0, y / 3.0, p.z / 3.0, 1) + 1.0) / 2.0
+			if (n > d):
+				self.parent.parent.setblock(p, materials.DoubleSlab)
+			
 
 def new (name, parent):
         if (name == 'Cobble'):
@@ -67,4 +85,6 @@ def new (name, parent):
                 return WoodTile(parent)
         if (name == 'CheckerRug'):
                 return CheckerRug(parent)
+        if (name == 'BrokenDoubleSlab'):
+                return BrokenDoubleSlab(parent)
         return Blank(parent)
