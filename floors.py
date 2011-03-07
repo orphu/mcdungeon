@@ -65,13 +65,14 @@ class BrokenDoubleSlab(Blank):
 			return
 		c = self.parent.canvasCenter()
 		y = self.parent.canvasHeight()
+		r = random.randint(1,1000)
 		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
 		if (maxd < 1):
 			maxd = 1
 		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-			n = (pnoise3(p.x / 3.0, y / 3.0, p.z / 3.0, 1) + 1.0) / 2.0
+			n = (pnoise3((p.x+r) / 3.0, y / 3.0, p.z / 3.0, 1) + 1.0) / 2.0
 			if (n > d):
 				self.parent.parent.setblock(p, materials.DoubleSlab)
 			
