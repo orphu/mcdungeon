@@ -25,8 +25,12 @@ parser.add_argument('--write', action='store_true', dest='write' , help='Write t
 parser.add_argument('--skip-relight', action='store_true', dest='skiprelight', help='Skip relighting the level')
 parser.add_argument('--term', dest='term', metavar='Y', help='Print an text version of slice Y to the terminal')
 parser.add_argument('--html', dest='html', metavar='Y', help='Print an html version of slice Y to the terminal')
+parser.add_argument('--seed', dest='seed', metavar='SEED', help='Provide a seed for this dungeon. This can be anything.')
 parser.add_argument('--world', dest='world', metavar='SAVEDIR', help='Target world (path to save directory)', required=True)
 args = parser.parse_args()
+
+if (args.seed is not None):
+	seed(args.seed)
 
 config = ConfigParser.SafeConfigParser()
 try: 
