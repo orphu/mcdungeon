@@ -43,11 +43,10 @@ class CheckerRug(Blank):
 		(11,9),  # dark blue / cyan
 		(1,14),  # red / orange
 		(7,15),  # dark grey / black
-		(3,4),   # light blue  / yellow
+		#(3,4),   # light blue  / yellow
 		(11,10), # dark blue  / purple
 		(12,13), # brown  / dark green
 		(15,13), # black  / dark green
-		(1,14)   # red / orange
 		)
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
