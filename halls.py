@@ -133,23 +133,23 @@ def drawHall (hall):
 				hall.parent.parent.portcullises[port].portcullises[pen] = True
 
 def new (name, parent, direction, offset):
-        if (name == 'Single'):
+        if (name == 'single'):
                 return Single(parent, direction, offset)
-        if (name == 'Double'):
+        if (name == 'double'):
                 return Double(parent, direction, offset)
-        if (name == 'Triple'):
+        if (name == 'triple'):
                 return Triple(parent, direction, offset)
-        if (name == 'Ten'):
+        if (name == 'ten'):
                 return Ten(parent, direction, offset)
         return Blank(parent, direction, offset)	
 
 def sizeByName (name):
-        if (name == 'Single'):
+        if (name == 'single'):
                 return Single.size
-        if (name == 'Double'):
+        if (name == 'double'):
                 return Double.size
-        if (name == 'Triple'):
+        if (name == 'triple'):
                 return Triple.size
-        if (name == 'Ten'):
+        if (name == 'ten'):
                 return Ten.size
         return Blank.size	

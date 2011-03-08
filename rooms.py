@@ -3,7 +3,7 @@ import halls
 from mymath import * 
 
 class Blank(object):
-	_name = 'Blank'
+	_name = 'blank'
 	def __init__ (self, parent, pos):
 		self.parent = parent
 		self.pos = pos
@@ -72,7 +72,7 @@ class Blank(object):
 		return False
 		
 class Basic(Blank):
-	_name = 'Basic'
+	_name = 'basic'
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
@@ -100,7 +100,7 @@ class Basic(Blank):
 			self.parent.setblock(x, materials._ceiling)
 
 class Circular(Blank):
-        _name = 'Circular'
+        _name = 'circular'
         def setData(self):
                 # North, East, South, West
                 self.hallLength = [1,1,1,1]
@@ -184,7 +184,7 @@ class Circular(Blank):
                         self.parent.setblock(x, materials._floor)
 
 class Corridor(Blank):
-	_name = 'Corridor'
+	_name = 'corridor'
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
@@ -260,10 +260,10 @@ class Corridor(Blank):
 
 
 def new (name, parent, pos):
-        if (name == 'Basic'):
+        if (name == 'basic'):
                 return Basic(parent, pos)
-        if (name == 'Corridor'):
+        if (name == 'corridor'):
                 return Corridor(parent, pos)
-        if (name == 'Circular'):
+        if (name == 'circular'):
                 return Circular(parent, pos)
         return Blank(parent, pos)

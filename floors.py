@@ -4,28 +4,28 @@ from noise import *
 from mymath import * 
 
 class Blank(object):
-	_name = 'Blank'
+	_name = 'blank'
 	def __init__ (self, parent):
 		self.parent = parent
 	def render (self):
 		pass
 		
 class Cobble(Blank):
-	_name = 'Cobble'
+	_name = 'cobble'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 				self.parent.parent.setblock(x+self.parent.loc, materials.Cobblestone)
 
 class DoubleSlab(Blank):
-	_name = 'DoubleSlab'
+	_name = 'doubleSlab'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 				self.parent.parent.setblock(x+self.parent.loc, materials.DoubleSlab)
 
 class WoodTile(Blank):
-	_name = 'WoodTile'
+	_name = 'woodtile'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
@@ -35,7 +35,7 @@ class WoodTile(Blank):
 					self.parent.parent.setblock(x+self.parent.loc, materials.WoodPlanks)
 					
 class CheckerRug(Blank):
-	_name = 'CheckerRug'
+	_name = 'checkerrug'
 	colors = (
 		(7,8),   # dark grey / light grey
 		(9,3),   # cyan / light blue
@@ -58,7 +58,7 @@ class CheckerRug(Blank):
 				else:
 					self.parent.parent.blocks[x+self.parent.loc].data = color[1]
 class BrokenDoubleSlab(Blank):
-	_name = 'BrokenDoubleSlab'
+	_name = 'brokendoubleslab'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
 			return
@@ -77,14 +77,14 @@ class BrokenDoubleSlab(Blank):
 			
 
 def new (name, parent):
-        if (name == 'Cobble'):
+        if (name == 'cobble'):
                 return Cobble(parent)
-        if (name == 'DoubleSlab'):
+        if (name == 'doubleslab'):
                 return DoubleSlab(parent)
-        if (name == 'WoodTile'):
+        if (name == 'woodtile'):
                 return WoodTile(parent)
-        if (name == 'CheckerRug'):
+        if (name == 'checkerrug'):
                 return CheckerRug(parent)
-        if (name == 'BrokenDoubleSlab'):
+        if (name == 'brokendoubleslab'):
                 return BrokenDoubleSlab(parent)
         return Blank(parent)

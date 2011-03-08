@@ -1,6 +1,6 @@
 mcdungeon
 
-Mcdungeon will create a procedurally generated world in a prexisting
+Mcdungeon will create a procedurally generated dungeon in a prexisting
 minecraft map. It is not yet feature complete, but can generate basic
 floor layouts. It is written in Python and makes heavy use of code from
 Paul Hodge's minetown project and David Rio Vierra's pymclevel.
@@ -8,14 +8,25 @@ Paul Hodge's minetown project and David Rio Vierra's pymclevel.
 CURRENT FEATURES:
 
    * Generates room layouts based on a random weighted selection
-   of rooms. (not yet configurable)
+   of rooms. 
 
-   * Places stairwells between levels
+   * Places stairwells between levels, and a tower entrance with a
+   sprialing staircase.
 
    * Connects rooms with hallways. Hall types are also chosen
-   from a random weighted list. (not yet configurable)
+   from a random weighted list. 
+
+   * Places random floor decorations form a weighted list.
+
+   * Places room features in rooms. (currently only stairwells and
+   the tower entrance exist)
 
    * Places doors, portcullises, and torches in the dungeon.
+
+   * Room, hall, floor, and feature lists are configurable via an
+   external .cfg file. 
+
+   * Frequency of doors, portcullises, and torches are set via .cfg file. 
 
    * Saves changes (with lighting!) to a Minecraft map via
    pymclevel.
@@ -31,39 +42,41 @@ TODO:
    * More floor types
    * More room features
    * More room types
-   * Place a dungeon entrance leading to the surface
+   * More hall types
+   * Place a dungeon entrance leading to the surface (partially complete)
    * Place monster spawners
    * Place chests with treasure
    * Automatically select a suiable location within a map
-   * Expose tweaks to the algorithm via config files
 
 OPTIONS:
 
 $ ./mcdungeon.py --help
-usage: mcdungeon.py [-h] [--write] [--skip-relight] [--term Y] [--html Y]
-                    --world SAVEDIR
+usage: mcdungeon.py [-h] [--config CFGFILE] [--write] [--skip-relight]
+                    [--term Y] [--html Y] --world SAVEDIR
                     z x levels
 
 Generate some DungeonQuest-like dungeons in a Minecraft map.
 
 positional arguments:
-  z                Number of rooms East-West
-  x                Number of rooms North-South
-  levels           Number of levels
+  z                 Number of rooms West -> East
+  x                 Number of rooms North -> South
+  levels            Number of levels
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --write          Write the dungeon to disk
-  --skip-relight   Skip relighting the level
-  --term Y         Print an text version of slice Y to the terminal
-  --html Y         Print an html version of slice Y to the terminal
-  --world SAVEDIR  Target world (path to save directory)
+  -h, --help        show this help message and exit
+  --config CFGFILE  Alternate config file. Default: mcdungeon.cfg
+  --write           Write the dungeon to disk
+  --skip-relight    Skip relighting the level
+  --term Y          Print an text version of slice Y to the terminal
+  --html Y          Print an html version of slice Y to the terminal
+  --world SAVEDIR   Target world (path to save directory)
 
 EXAMPLES:
 
-This will generate a 4x4x1 dungeon layout and display the results
-in a terminal window. (ANSI control codes probably mean *nix sysems
-only. Sorry) The base world will not be modified, but a world is 
-required to pull in material info, etc. 
+Load a world named 'Dungeon' in the current directory, generate a
+5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
+and display the results in a terminal window. (ANSI control codes
+probably mean *nix sysems only. Sorry) The base world will not be
+modified, but a world is required to pull in material info, etc.
 
-./mcdungeon.py --world <path to world> 4 4 1 --term 0
+./mcdungeon.py --world Dungeon 5 4 3 --term 0

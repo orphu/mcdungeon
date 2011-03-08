@@ -2,6 +2,7 @@
 
 import sys
 import argparse
+import ConfigParser
 import inspect
 from random import *
 from copy import * 
@@ -16,9 +17,10 @@ from pymclevel import mclevel
 from noise import pnoise3
 
 parser = argparse.ArgumentParser(description='Generate some DungeonQuest-like dungeons in a Minecraft map.')
-parser.add_argument('z', type=int, help='Number of rooms East-West')
-parser.add_argument('x', type=int, help='Number of rooms North-South')
+parser.add_argument('z', type=int, help='Number of rooms West -> East')
+parser.add_argument('x', type=int, help='Number of rooms North -> South')
 parser.add_argument('levels', type=int, help='Number of levels')
+parser.add_argument('--config', dest='config', metavar='CFGFILE', default='mcdungeon.cfg', help='Alternate config file. Default: mcdungeon.cfg')
 parser.add_argument('--write', action='store_true', dest='write' , help='Write the dungeon to disk')
 parser.add_argument('--skip-relight', action='store_true', dest='skiprelight', help='Skip relighting the level')
 parser.add_argument('--term', dest='term', metavar='Y', help='Print an text version of slice Y to the terminal')
@@ -26,26 +28,21 @@ parser.add_argument('--html', dest='html', metavar='Y', help='Print an html vers
 parser.add_argument('--world', dest='world', metavar='SAVEDIR', help='Target world (path to save directory)', required=True)
 args = parser.parse_args()
 
-master_halls = (('Single', 35), 
-		('Double', 50), 
-		('Triple', 10), 
-		('Ten',    5),
-		('Blank',  0)) 
+config = ConfigParser.SafeConfigParser()
+try: 
+	config.readfp(open(args.config))
+except:
+	print "Failed to read config file:", args.config
+	sys.exit(1)
 
-master_rooms = (('Basic',    60),
-		('Corridor', 30),
-		('Circular', 10),
-		('Blank',    0))
-
-master_features = (('Blank', 1),
-		('Blank',    1))
-
-master_floors = (('Cobble', 2),
-		('WoodTile', 2),
-		('CheckerRug', 2),
-		('BrokenDoubleSlab', 2),
-		('DoubleSlab', 1),
-		('Blank', 2))
+master_halls = config.items('halls')
+master_rooms = config.items('rooms')
+master_features = config.items('features')
+master_floors = config.items('floors')
+cfg_offset = str2Vec(config.get('dungeon', 'offset'))
+cfg_doors = config.getint('dungeon','doors')
+cfg_portcullises = config.getint('dungeon', 'portcullises')
+cfg_torches = config.getint('dungeon', 'torches')
 
 class Block(object):
     def __init__(self, loc):
@@ -54,7 +51,7 @@ class Block(object):
         self.data = 0
 
 class Dungeon (object):
-	def __init__(self, xsize, zsize, levels):
+	def __init__(self, pos, xsize, zsize, levels):
 		self.rooms = {}
 		self.blocks = {}
 		self.torches = {}
@@ -65,7 +62,7 @@ class Dungeon (object):
 		self.levels = levels
 		self.room_size = 16
 		self.room_height = 6
-		self.position = Vec(-150,65,145)
+		self.position = pos
 	def setblock(self, loc, material):
 		if loc not in self.blocks:
 			self.blocks[loc] = Block(loc)
@@ -83,7 +80,6 @@ class Dungeon (object):
 		z1 = -1
 		room = None
 		roomup = None
-		# TODO: Start this at 1 once we have an entrance
 		for y in xrange(0, self.levels):
 			while (x == x1):
 				x = randint(0, self.xsize-1)
@@ -96,17 +92,20 @@ class Dungeon (object):
 			if (pos.y < self.levels):
 				while (room == None or sum_points_inside_flat_poly(*room.canvas) < 24):
 					room = rooms.new(weighted_choice(master_rooms), self, pos)
+				# Place an entrance at level zero
 				if (pos.y == 0):
-					feature = features.new('Entrance', room)
+					feature = features.new('entrance', room)
+				# All other levels are stairwells
 				else:
-					feature = features.new('Stairwell', room)
+					feature = features.new('stairwell', room)
 				room.features.append(feature)
 				self.setroom(pos, room)
 				room = None
+			# If there is a level above, make room for the stairwell
 			if (posup.y >= 0):
 				while (roomup == None or sum_points_inside_flat_poly(*roomup.canvas) < 24):
 					roomup = rooms.new(weighted_choice(master_rooms), self, posup)
-				featureup = features.new('Blank', roomup)
+				featureup = features.new('blank', roomup)
 				roomup.features.append(featureup)
 				self.setroom(posup, roomup)
 				roomup = None
@@ -168,11 +167,11 @@ class Dungeon (object):
 						# Close off any routes that didn't generate a hall
 						for d in xrange(4):
 							if (self.rooms[pos].halls[d] == None):
-								self.rooms[pos].halls[d] = halls.new('Blank', self.rooms[pos], d, 0)
+								self.rooms[pos].halls[d] = halls.new('blank', self.rooms[pos], d, 0)
 								if (self.rooms[pos].isOnEdge(d) is False):
 									nextpos = pos+pos.d(d)
 									nextd = (d+2)%4
-									self.rooms[nextpos].halls[nextd] = halls.new('Blank', self.rooms[nextpos], nextd, 0)
+									self.rooms[nextpos].halls[nextd] = halls.new('blank', self.rooms[nextpos], nextd, 0)
 
 	def genfloors(self):
 		for pos in self.rooms:
@@ -345,7 +344,7 @@ for name,val in materials.__dict__.items():
 print "Startup compete. "
 
 # Define our dungeon
-dungeon = Dungeon(args.x,args.z,args.levels)
+dungeon = Dungeon(cfg_offset, args.x, args.z, args.levels)
 
 print "Generating rooms..."
 dungeon.genrooms()
@@ -372,13 +371,13 @@ print "Rendering features..."
 dungeon.renderfeatures()
 
 print "Placing doors..."
-dungeon.placedoors(50)
+dungeon.placedoors(cfg_doors)
 
 print "Placing portcullises..."
-dungeon.placeportcullises(50)
+dungeon.placeportcullises(cfg_portcullises)
 
 print "Placing torches..."
-dungeon.placetorches(100)
+dungeon.placetorches(cfg_torches)
 
 # Output a slice of the dungoen to the terminal if requested
 if (args.term is not None):

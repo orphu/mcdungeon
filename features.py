@@ -3,7 +3,7 @@ import rooms
 from mymath import * 
 
 class Blank(object):
-	_name = 'Blank'
+	_name = 'blank'
 	def __init__ (self, parent):
 		self.parent = parent
 	def placed (self):
@@ -12,7 +12,7 @@ class Blank(object):
 		pass
 		
 class Entrance(Blank):
-	_name = 'Entrance'
+	_name = 'entrance'
 	def __init__ (self, parent):
                 self.parent = parent
                 self.height = parent.parent.room_height
@@ -61,7 +61,7 @@ class Entrance(Blank):
 
 
 class Stairwell(Blank):
-	_name = 'Stairwell'
+	_name = 'stairwell'
 	def render (self):
 		if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
 			start = self.parent.loc.trans(5,self.parent.parent.room_height-3,5)
@@ -75,8 +75,8 @@ class Stairwell(Blank):
 					self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
 
 def new (name, parent):
-        if (name == 'Entrance'):
+        if (name == 'entrance'):
                 return Entrance(parent)
-        if (name == 'Stairwell'):
+        if (name == 'stairwell'):
                 return Stairwell(parent)
         return Blank(parent)

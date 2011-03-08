@@ -1,6 +1,6 @@
-
 import random
 import math
+import re
 from copy import *
 
 def floor(n):
@@ -24,7 +24,7 @@ class Vec(object):
     def __mul__(self, b):
         return Vec(self.x*b, self.y*b, self.z*b)
     def __str__(self):
-        return "%d,%d,%d" % (self.x,self.y,self.z)
+        return "(%d,%d,%d)" % (self.x,self.y,self.z)
     def __eq__(self, b):
         if type(b) != Vec: return False
         return self.x==b.x and self.y==b.y and self.z==b.z
@@ -211,12 +211,12 @@ def iterate_spiral(p1, p2, height):
 
 def weighted_choice(items):
     """items is a list of tuples in the form (item, weight)"""
-    weight_total = sum((item[1] for item in items))
+    weight_total = sum((int(item[1]) for item in items))
     n = random.uniform(0, weight_total)
     for item, weight in items:
-        if n < weight:
-            return item
-        n = n - weight
+        if n < int(weight):
+            break
+        n = n - int(weight)
     return item
 
 def weighted_shuffle(master_list):
@@ -229,8 +229,8 @@ def weighted_shuffle(master_list):
 	items = []
 	# remove any prob 0 items... we don't want to get stuck
 	for item, weight in master_list:
-		if weight >= 1:
-			items.append([item, weight])
+		if int(weight) >= 1:
+			items.append([item, int(weight)])
 	# Return the items in a weighted random order
 	while (len(items) > 0):
 		item = weighted_choice(items)
@@ -243,3 +243,7 @@ def weighted_shuffle(master_list):
 		results.insert(0, item)
 		items.remove([item, weight])
 	return results
+
+def str2Vec(string):
+	m = re.search('(-{0,1}\d+)[\s,]*(-{0,1}\d+)[\s,]*(-{0,1}\d+)', string)	
+	return Vec(m.group(1), m.group(2), m.group(3))
