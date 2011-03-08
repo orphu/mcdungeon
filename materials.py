@@ -56,6 +56,6 @@ StoneStairs = Material('Stone Stairs', 'L',DGREY)
 Wool = Material('Wool', 'W',GREY)
 
 _wall = copy(Cobblestone)
-_ceiling = copy(Glass)
+_ceiling = copy(Cobblestone)
 _floor = copy(Stone)
 
