@@ -5,5 +5,4 @@ class Door(object):
         self.loc = Vec(0,0,0)
         self.material = None
 	self.direction = 0
-        self.doors = {}
-
+        self.doors = []

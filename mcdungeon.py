@@ -204,7 +204,7 @@ class Dungeon (object):
 		for pos, door in self.doors.items():
 			if (count < maxcount):
 				x = 0		
-				for dpos, val in door.doors.items():
+				for dpos in door.doors:
 					if(dpos in self.blocks and  self.blocks[dpos].material == materials.Air):
 						self.blocks[dpos].material = materials._ceiling
 						self.blocks[dpos.down(1)].material = door.material

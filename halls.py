@@ -107,7 +107,7 @@ def drawHall (hall):
 			# place the actual door positions
 			for x in xrange(hall.size-2):
 				pen += stepw
-				hall.parent.parent.doors[door].doors[pen] = True
+				hall.parent.parent.doors[door].doors.append(pen)
 	# Possible portcullises
 	if (4 <= hall.size <= 12): 
 		# find a starting position at the end of the hall
