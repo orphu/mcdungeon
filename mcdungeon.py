@@ -43,6 +43,9 @@ cfg_offset = str2Vec(config.get('dungeon', 'offset'))
 cfg_doors = config.getint('dungeon','doors')
 cfg_portcullises = config.getint('dungeon', 'portcullises')
 cfg_torches = config.getint('dungeon', 'torches')
+cfg_wall = config.get('dungeon', 'wall')
+cfg_ceiling = config.get('dungeon', 'ceiling')
+cfg_floor = config.get('dungeon', 'floor')
 
 class Block(object):
     def __init__(self, loc):
@@ -340,6 +343,12 @@ except:
 for name,val in materials.__dict__.items():
     if type(val) == materials.Material:
         val.updateMaterialValue(world)
+	if (val.name == cfg_wall):
+		materials._wall = copy(val)
+	if (val.name == cfg_ceiling):
+		materials._ceiling = copy(val)
+	if (val.name == cfg_floor):
+		materials._floor = copy(val)
 
 print "Startup compete. "
 
