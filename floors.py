@@ -71,11 +71,52 @@ class BrokenDoubleSlab(Blank):
 		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-			n = (pnoise3((p.x+r) / 3.0, y / 3.0, p.z / 3.0, 1) + 1.0) / 2.0
-			if (n > d):
+			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+			if (n >= d):
 				self.parent.parent.setblock(p, materials.DoubleSlab)
-			
 
+class Mud(Blank):
+	_name = 'mud'
+	def render (self):
+		if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+			return
+		c = self.parent.canvasCenter()
+		y = self.parent.canvasHeight()
+		r = random.randint(1,1000)
+		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
+		if (maxd < 1):
+			maxd = 1
+		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+			p = x+self.parent.loc
+			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+			if (n >= d+.20):
+				self.parent.parent.setblock(p, materials.SoulSand)
+			elif (n >= d):
+				self.parent.parent.setblock(p, materials.Dirt)
+
+class Sand(Blank):
+	_name = 'sand'
+	def render (self):
+		if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+			return
+		c = self.parent.canvasCenter()
+		y = self.parent.canvasHeight()
+		r = random.randint(1,1000)
+		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
+		if (maxd < 1):
+			maxd = 1
+		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+			p = x+self.parent.loc
+			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+			if (n >= d+.20):
+				self.parent.parent.setblock(p, materials.Sandstone)
+			elif (n >= d+.10):
+				self.parent.parent.setblock(p, materials.Sand)
+			elif (n >= d):
+				self.parent.parent.setblock(p, materials.Gravel)
+	
 def new (name, parent):
         if (name == 'cobble'):
                 return Cobble(parent)
@@ -87,4 +128,8 @@ def new (name, parent):
                 return CheckerRug(parent)
         if (name == 'brokendoubleslab'):
                 return BrokenDoubleSlab(parent)
+        if (name == 'mud'):
+                return Mud(parent)
+        if (name == 'sand'):
+                return Sand(parent)
         return Blank(parent)
