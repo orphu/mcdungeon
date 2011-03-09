@@ -29,8 +29,13 @@ parser.add_argument('--seed', dest='seed', metavar='SEED', help='Provide a seed 
 parser.add_argument('--world', dest='world', metavar='SAVEDIR', help='Target world (path to save directory)', required=True)
 args = parser.parse_args()
 
-if (args.seed is not None):
-	seed(args.seed)
+# Do some initial error checking
+if (args.z < 2):
+	sys.exit('Too few rooms in Z direction. Try >= 2.')
+if (args.x < 2):
+	sys.exit('Too few rooms in X direction. Try >= 2.')
+if (args.levels < 1 or args.levels > 18):
+	sys.exit('Invalid number of levels.')
 
 config = ConfigParser.SafeConfigParser()
 try: 
@@ -50,6 +55,9 @@ cfg_torches = config.getint('dungeon', 'torches')
 cfg_wall = config.get('dungeon', 'wall')
 cfg_ceiling = config.get('dungeon', 'ceiling')
 cfg_floor = config.get('dungeon', 'floor')
+
+if (args.seed is not None):
+	seed(args.seed)
 
 class Block(object):
     def __init__(self, loc):
