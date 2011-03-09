@@ -64,6 +64,7 @@ class Dungeon (object):
 		self.torches = {}
 		self.doors = {}
 		self.portcullises = {}
+		self.entrance = None
 		self.xsize = xsize
 		self.zsize = zsize
 		self.levels = levels
@@ -102,6 +103,7 @@ class Dungeon (object):
 				# Place an entrance at level zero
 				if (pos.y == 0):
 					feature = features.new('entrance', room)
+					self.entrance = feature
 				# All other levels are stairwells
 				else:
 					feature = features.new('stairwell', room)
@@ -299,6 +301,40 @@ class Dungeon (object):
                                 else:
                                         sys.stdout.write('<td><img src=d/0.png>')
 		sys.stdout.write('</table>')
+	def setentrance(self, world):
+		wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
+			self.position.y - self.entrance.parent.loc.y,
+			self.position.z - self.entrance.parent.loc.z)
+		print "   World coord:",wcoord
+		baseheight = wcoord.y + 2 # plenum + floor
+		newheight = baseheight
+		print "   Base height:",baseheight 
+		inwater = False
+		# List of blocks to ignore
+		# leaves, trees, flowers, etc.
+		ignore = (0,6,17,18,37,38,39,40,44,50,51,55,59,63,64,65,66,68,70,71,72,75,76,77,81,83,85,86,90,91,92,93,94)
+		for x in xrange(wcoord.x+4, wcoord.x+12):
+			for z in xrange(wcoord.z-11, wcoord.z-3):
+				chunk_z = z>>4
+				chunk_x = x>>4
+				xInChunk = x & 0xf;
+				zInChunk = z & 0xf;
+				chunk = world.getChunk(chunk_x, chunk_z)
+				# Heightmap is a good starting place, but I need to look down through
+				# foliage. 
+				y = chunk.HeightMap[zInChunk, xInChunk]-1
+				while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):
+					y -= 1
+				if (chunk.Blocks[xInChunk, zInChunk, y] == 9):
+					inwater = True
+				#chunk.Blocks[xInChunk, zInChunk, y] = 1
+				newheight = max(y, newheight)
+				# Check for water here?
+		print "   New height:",newheight
+		if (inwater == True):
+			print "   Entrance is in water."
+		if (newheight - baseheight > 0):
+			self.entrance.height += newheight - baseheight
 	def applychanges(self, world):
 		'''Write the block buffer to the specified world'''
 		changed_chunks = set()
@@ -370,6 +406,9 @@ dungeon.genfeatures()
 
 print "Generating halls..."
 dungeon.genhalls()
+
+print "Extending the entrance to the surface..."
+dungeon.setentrance(world)
 
 print "Rendering rooms..."
 dungeon.renderrooms()
