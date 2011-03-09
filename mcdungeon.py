@@ -49,12 +49,16 @@ master_rooms = config.items('rooms')
 master_features = config.items('features')
 master_floors = config.items('floors')
 cfg_offset = str2Vec(config.get('dungeon', 'offset'))
+cfg_tower = config.getfloat('dungeon','tower')
 cfg_doors = config.getint('dungeon','doors')
 cfg_portcullises = config.getint('dungeon', 'portcullises')
 cfg_torches = config.getint('dungeon', 'torches')
 cfg_wall = config.get('dungeon', 'wall')
 cfg_ceiling = config.get('dungeon', 'ceiling')
 cfg_floor = config.get('dungeon', 'floor')
+
+if (cfg_tower < 1.0):
+	sys.exit('The tower height parameter is too small. This should be >= 1.0. Check the cfg file.')
 
 if (args.seed is not None):
 	seed(args.seed)
@@ -317,7 +321,6 @@ class Dungeon (object):
 		baseheight = wcoord.y + 2 # plenum + floor
 		newheight = baseheight
 		print "   Base height:",baseheight 
-		inwater = False
 		# List of blocks to ignore
 		# leaves, trees, flowers, etc.
 		ignore = (0,6,17,18,37,38,39,40,44,50,51,55,59,63,64,65,66,68,70,71,72,75,76,77,81,83,85,86,90,91,92,93,94)
@@ -334,15 +337,16 @@ class Dungeon (object):
 				while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):
 					y -= 1
 				if (chunk.Blocks[xInChunk, zInChunk, y] == 9):
-					inwater = True
+					self.entrance.inwater = True
 				#chunk.Blocks[xInChunk, zInChunk, y] = 1
 				newheight = max(y, newheight)
 				# Check for water here?
 		print "   New height:",newheight
-		if (inwater == True):
+		if (self.entrance.inwater == True):
 			print "   Entrance is in water."
 		if (newheight - baseheight > 0):
 			self.entrance.height += newheight - baseheight
+		self.entrance.u = int(cfg_tower*self.entrance.u)
 	def applychanges(self, world):
 		'''Write the block buffer to the specified world'''
 		changed_chunks = set()
