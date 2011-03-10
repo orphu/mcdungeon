@@ -57,6 +57,8 @@ SoulSand = Material('Soul Sand', 'S',PURPLE)
 Sand = Material('Sand','"',BYELLOW)
 Sandstone = Material('Sandstone', '~',BYELLOW)
 Gravel = Material('Gravel', '~',BYELLOW)
+Obsidian = Material('Obsidian', "@", DGREY)
+Glowstone = Material('Glowstone', "%", YELLOW)
 
 _wall = copy(Cobblestone)
 _ceiling = copy(Cobblestone)

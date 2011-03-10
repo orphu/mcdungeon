@@ -201,9 +201,10 @@ class Dungeon (object):
 
 	def genfeatures(self):
 		for pos in self.rooms:
-			feature = features.new(weighted_choice(master_features), self.rooms[pos])
-			self.rooms[pos].features.append(feature)
-			feature.placed()
+			if (len(self.rooms[pos].features) == 0):
+				feature = features.new(weighted_choice(master_features), self.rooms[pos])
+				self.rooms[pos].features.append(feature)
+				feature.placed()
 
 	def placetorches(self, perc):
 		'''Place a proportion of the torches where possible'''

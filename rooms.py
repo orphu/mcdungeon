@@ -76,7 +76,7 @@ class Basic(Blank):
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
-		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+		self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
 		self.canvas = (Vec(4,self.parent.room_height-2,4), 
 				Vec(self.parent.room_size-5,self.parent.room_height-2,4),
 				Vec(self.parent.room_size-5,self.parent.room_height-2,self.parent.room_size-5),
@@ -240,6 +240,13 @@ class Corridor(Blank):
 		self.hallLength[2] = self.parent.room_size - z2
 		self.hallLength[3] = x1+1
 
+		# Canvas
+		self.canvas = (
+			Vec(x1,self.parent.room_height-1,z1),
+			Vec(x2,self.parent.room_height-1,z1),
+			Vec(x2,self.parent.room_height-1,z2),
+			Vec(x1,self.parent.room_height-1,z2)
+				)
 		# Figure out our corners
 		c1 = self.loc+Vec(x1,self.parent.room_height-1,z1)
 		c2 = self.loc+Vec(x2,self.parent.room_height-1,z1)

@@ -91,10 +91,47 @@ class Stairwell(Blank):
 				for p in iterate_cube(start.trans(x,-x,1),start.trans(x,-x,4)):
 					self.parent.parent.setblock(p, materials.StoneStairs)
 					self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+class Columns(Blank):
+        _name = 'columns'
+	mats = (
+		(materials.Stone,0),  # Stone
+		(materials.Cobblestone,0),  # Cobblestone
+		(materials.Wood,0), # Wood
+		(materials.Wood,1), # Redwood
+		(materials.Bedrock,0), # Bedrock
+		(materials.Sandstone,0), # Sandstone
+		(materials.DoubleSlab,0), # DoubleSlab
+		(materials.Obsidian,0), # Obsidian
+		(materials.Glowstone,0) # Glowstone
+	)
+        def render (self):
+		if (self.parent.canvasWidth() < 6 or self.parent.canvasLength() < 6):
+			return
+		c = self.parent.canvasCenter()
+		y = self.parent.canvasHeight()
+		start = random.randint(0,int(self.parent.canvasWidth()/2))
+		stop = int(self.parent.canvasWidth()/2)+1
+		step = random.randint(2,4)
+		mat = random.choice(self.mats)
+		for x in xrange(start, stop, step):
+			for p in iterate_cube(Vec(c.x-x, 1, c.z-x), Vec(c.x-x, 4, c.z-x)):
+				self.parent.parent.setblock(self.parent.loc+p, mat[0])
+				self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+			for p in iterate_cube(Vec(c.x+x+1, 1, c.z-x), Vec(c.x+x+1, 4, c.z-x)):
+				self.parent.parent.setblock(self.parent.loc+p, mat[0])
+				self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+			for p in iterate_cube(Vec(c.x-x, 1, c.z+x+1), Vec(c.x-x, 4, c.z+x+1)):
+				self.parent.parent.setblock(self.parent.loc+p, mat[0])
+				self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+			for p in iterate_cube(Vec(c.x+x+1, 1, c.z+x+1), Vec(c.x+x+1, 4, c.z+x+1)):
+				self.parent.parent.setblock(self.parent.loc+p, mat[0])
+				self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
 
 def new (name, parent):
         if (name == 'entrance'):
                 return Entrance(parent)
         if (name == 'stairwell'):
                 return Stairwell(parent)
+        if (name == 'columns'):
+                return Columns(parent)
         return Blank(parent)
