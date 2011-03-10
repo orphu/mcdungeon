@@ -101,7 +101,9 @@ class Mud(Blank):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
 			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
-			if (n >= d+.30):
+			if (n >= d+.50):
+				self.parent.parent.setblock(p, materials.Water)
+			elif (n >= d+.30):
 				self.parent.parent.setblock(p, materials.SoulSand)
 			elif (n >= d+.15):
 				self.parent.parent.setblock(p, materials.Farmland)
