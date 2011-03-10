@@ -91,6 +91,7 @@ class Dungeon (object):
 	def setroom(self, coord, room):
 		if coord not in self.rooms:
 			self.rooms[coord] = room
+			room.placed()
 			#print "New room: ",coord
 	def genrooms(self):
 		# Place stairwells

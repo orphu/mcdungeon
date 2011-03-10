@@ -60,6 +60,7 @@ Gravel = Material('Gravel', '~',GREY)
 Obsidian = Material('Obsidian', "@", DGREY)
 Glowstone = Material('Glowstone', "%", YELLOW)
 Farmland = Material('Farmland', "=", YELLOW)
+Cactus = Material('Cactus', "*", BGREEN)
 
 _wall = copy(Cobblestone)
 _ceiling = copy(Cobblestone)

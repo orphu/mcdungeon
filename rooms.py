@@ -1,6 +1,7 @@
 import materials
 import halls
 from mymath import * 
+import random
 
 class Blank(object):
 	_name = 'blank'
@@ -17,8 +18,8 @@ class Blank(object):
 		for x in xrange(4):
 			if self.hallLength[x] == 0:
 				self.halls[x] = halls.new('Blank', self, x, 0)
-	def featuresRemaining(self):
-		return self.numfeat
+	def placed(self):
+		pass
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [0,0,0,0]
@@ -98,6 +99,113 @@ class Basic(Blank):
 		# Ceiling
 		for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
 			self.parent.setblock(x, materials._ceiling)
+
+class Pit(Blank):
+        _name = 'pit'
+        def setData(self):
+                # North, East, South, West
+                self.hallLength = [3,3,3,3]
+                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
+		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.lava = False
+	def placed(self):
+		thisfloor = self.pos.y+1
+		depth = random.randint(1, self.parent.levels-thisfloor+1)
+		#print 'Pit top placed:', self.pos, 'Depth:', depth
+		# If this is the only level, make it a lava pit
+		if (depth == 1):
+			self.lava = True
+			return
+		# Place	middle rooms
+		for r in xrange(1,depth-1):
+			pos = self.pos.down(r)
+			room = new('pitmid', self.parent, pos)
+			self.parent.setroom(pos, room)
+			#print 'Pit middle placed:', pos
+		# Place the bottom room
+		pos = self.pos.down(depth - 1)
+		room = new('pitbottom', self.parent, pos)
+		self.parent.setroom(pos, room)
+		#print 'Pit bottom placed:', pos
+        def render (self):
+                c1 = self.loc + Vec(2,self.parent.room_height-1,2)
+                c2 = c1 + Vec(self.parent.room_size-5,0,0)
+                c3 = c1 + Vec(self.parent.room_size-5,0,self.parent.room_size-5)
+                c4 = c1 + Vec(0,0,self.parent.room_size-5)
+                # Air space
+                for x in iterate_cube(c1,c3.up(4)):
+                        self.parent.setblock(x, materials.Air)
+                # Walls
+                for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+                        self.parent.setblock(x, materials._wall)
+		# Lava
+		if (self.lava is True):
+			for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,0,-1)):
+				self.parent.setblock(x, materials.Lava)
+                # Ceiling
+                for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
+                        self.parent.setblock(x, materials._ceiling)
+
+class PitMid(Blank):
+        _name = 'pitmid'
+        def setData(self):
+                # North, East, South, West
+                self.hallLength = [3,3,3,3]
+                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
+                self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+        def render (self):
+                c1 = self.loc + Vec(2,self.parent.room_height-1,2)
+                c2 = c1 + Vec(self.parent.room_size-5,0,0)
+                c3 = c1 + Vec(self.parent.room_size-5,0,self.parent.room_size-5)
+                c4 = c1 + Vec(0,0,self.parent.room_size-5)
+                # Air space
+                for x in iterate_cube(c1,c3.up(5)):
+                        self.parent.setblock(x, materials.Air)
+                # Walls
+                for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+                        self.parent.setblock(x, materials._wall)
+class PitBottom(Blank):
+        _name = 'pitbottom'
+        def setData(self):
+                # North, East, South, West
+                self.hallLength = [3,3,3,3]
+                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
+                self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+                self.floor = 'floor'
+	def placed(self):
+		self.floor = random.choice(('floor','lava','cactus'))
+		if (self.floor == 'floor'):
+			self.canvas = (Vec(4,self.parent.room_height-2,4), 
+				Vec(self.parent.room_size-5,self.parent.room_height-2,4),
+				Vec(self.parent.room_size-5,self.parent.room_height-2,self.parent.room_size-5),
+				Vec(4,self.parent.room_height-2,self.parent.room_size-5))
+        def render (self):
+                c1 = self.loc + Vec(2,self.parent.room_height-1,2)
+                c2 = c1 + Vec(self.parent.room_size-5,0,0)
+                c3 = c1 + Vec(self.parent.room_size-5,0,self.parent.room_size-5)
+                c4 = c1 + Vec(0,0,self.parent.room_size-5)
+                # Air space
+                for x in iterate_cube(c1,c3.up(5)):
+                        self.parent.setblock(x, materials.Air)
+                # Walls
+                for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+                        self.parent.setblock(x, materials._wall)
+                # Lava
+                if (self.floor == 'lava'):
+                        for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,0,-1)):
+                                self.parent.setblock(x, materials.Lava)
+                # Cactus (spike trap)
+                elif (self.floor == 'cactus'):
+                        for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,0,-1)):
+                                self.parent.setblock(x, materials.Sand)
+                        for x in iterate_cube(c1.trans(2,-1,2),c3.trans(-2,-1,-2)):
+				if ((x.x+x.z)%2 == 0):
+					for p in iterate_cube(x, x.up(random.randint(0,2))):
+						self.parent.setblock(p, materials.Cactus)
+		# Floor
+		else:
+			for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):
+				self.parent.setblock(x, materials._floor)
 
 class Circular(Blank):
         _name = 'circular'
@@ -273,4 +381,10 @@ def new (name, parent, pos):
                 return Corridor(parent, pos)
         if (name == 'circular'):
                 return Circular(parent, pos)
+        if (name == 'pit'):
+                return Pit(parent, pos)
+        if (name == 'pitmid'):
+                return PitMid(parent, pos)
+        if (name == 'pitbottom'):
+                return PitBottom(parent, pos)
         return Blank(parent, pos)
