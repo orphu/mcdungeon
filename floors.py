@@ -57,6 +57,21 @@ class CheckerRug(Blank):
 					self.parent.parent.blocks[x+self.parent.loc].data = color[0]
 				else:
 					self.parent.parent.blocks[x+self.parent.loc].data = color[1]
+			if (random.randint(1, 100) < 50):
+				return
+			# Random chance to break it up
+			c = self.parent.canvasCenter()
+			y = self.parent.canvasHeight()
+			r = random.randint(1,1000)
+			maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+			for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+				p = x+self.parent.loc
+				d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+				n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+				if (n < d):
+					self.parent.parent.setblock(p, materials._floor)
+					self.parent.parent.blocks[p].data = 0
+
 class BrokenDoubleSlab(Blank):
 	_name = 'brokendoubleslab'
 	def render (self):
@@ -65,9 +80,7 @@ class BrokenDoubleSlab(Blank):
 		c = self.parent.canvasCenter()
 		y = self.parent.canvasHeight()
 		r = random.randint(1,1000)
-		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
-		if (maxd < 1):
-			maxd = 1
+		maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
 		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
@@ -83,15 +96,16 @@ class Mud(Blank):
 		c = self.parent.canvasCenter()
 		y = self.parent.canvasHeight()
 		r = random.randint(1,1000)
-		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
-		if (maxd < 1):
-			maxd = 1
+		maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
 		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
 			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
-			if (n >= d+.20):
+			if (n >= d+.30):
 				self.parent.parent.setblock(p, materials.SoulSand)
+			elif (n >= d+.15):
+				self.parent.parent.setblock(p, materials.Farmland)
+				self.parent.parent.blocks[p].data = random.randint(0,1)
 			elif (n >= d):
 				self.parent.parent.setblock(p, materials.Dirt)
 
@@ -103,17 +117,15 @@ class Sand(Blank):
 		c = self.parent.canvasCenter()
 		y = self.parent.canvasHeight()
 		r = random.randint(1,1000)
-		maxd = max(self.parent.canvasWidth(), self.parent.canvasLength())
-		if (maxd < 1):
-			maxd = 1
+		maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
 		for x in iterate_points_inside_flat_poly(*self.parent.canvas):
 			p = x+self.parent.loc
 			d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
 			n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
 			if (n >= d+.20):
-				self.parent.parent.setblock(p, materials.Sandstone)
-			elif (n >= d+.10):
 				self.parent.parent.setblock(p, materials.Sand)
+			elif (n >= d+.10):
+				self.parent.parent.setblock(p, materials.Sandstone)
 			elif (n >= d):
 				self.parent.parent.setblock(p, materials.Gravel)
 	
