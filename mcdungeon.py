@@ -23,8 +23,8 @@ parser.add_argument('levels', type=int, help='Number of levels')
 parser.add_argument('--config', dest='config', metavar='CFGFILE', default='mcdungeon.cfg', help='Alternate config file. Default: mcdungeon.cfg')
 parser.add_argument('--write', action='store_true', dest='write' , help='Write the dungeon to disk')
 parser.add_argument('--skip-relight', action='store_true', dest='skiprelight', help='Skip relighting the level')
-parser.add_argument('--term', dest='term', metavar='Y', help='Print an text version of slice Y to the terminal')
-parser.add_argument('--html', dest='html', metavar='Y', help='Print an html version of slice Y to the terminal')
+parser.add_argument('--term', type=int,dest='term', metavar='FLOOR', help='Print a text version of a given floor to the terminal')
+parser.add_argument('--html', type=int,dest='html', metavar='FLOOR', help='Print an html version of a given floor to the terminal')
 parser.add_argument('--seed', dest='seed', metavar='SEED', help='Provide a seed for this dungeon. This can be anything.')
 parser.add_argument('--world', dest='world', metavar='SAVEDIR', help='Target world (path to save directory)', required=True)
 args = parser.parse_args()
@@ -272,37 +272,45 @@ class Dungeon (object):
 			for x in self.rooms[pos].features:
 				x.render()
 
-	def outputterminal(self, layer):
+	def outputterminal(self, floor):
 		'''Print a slice (or layer) of the dungeon block buffer to the termial.
 		We "look-through" any air blocks to blocks underneath'''
+		layer = (floor-1)*self.room_height
 		for x in xrange(self.xsize*self.room_size):
 			for z in xrange(self.zsize*self.room_size):
-				y = int(layer)
+				y = layer
+				while (y < layer + self.room_height - 1 and 
+						(Vec(x,y,z) not in self.blocks 
+						or self.blocks[Vec(x,y,z)].material == materials.Air 
+						or self.blocks[Vec(x,y,z)].material == materials._ceiling)):
+					y += 1
 				if Vec(x,y,z) in self.blocks:
-					while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
-						y += 1
 					mat = self.blocks[Vec(x,y,z)].material
 					# 3D perlin moss!
-                                        if (mat.name == 'Cobblestone'):
-                                                if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
-                                                        mat = materials.MossStone
-                                                else:
-                                                        mat = materials.Cobblestone
+					if (mat.name == 'Cobblestone'):
+						if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
+							mat = materials.MossStone
+						else:
+							mat = materials.Cobblestone
 					sys.stdout.write(mat.c)
 				else:
 					sys.stdout.write('%s`%s' % (materials.DGREY, materials.ENDC))
 			print
-        def outputhtml(self, layer):
+        def outputhtml(self, floor):
                 '''Print a slice (or layer) of the dungeon block buffer to an html table.
                 We "look-through" any air blocks to blocks underneath'''
+		layer = (floor-1)*self.room_height
 		sys.stdout.write('<table border=0 cellpadding=0 cellspacing=0>')
 		for x in xrange(self.xsize*self.room_size):
 			sys.stdout.write('<tr>')
 			for z in xrange(self.zsize*self.room_size):
-                                y = int(layer)
+                                y = layer
+				while (y < layer + self.room_height - 1 and 
+						(Vec(x,y,z) not in self.blocks 
+						or self.blocks[Vec(x,y,z)].material == materials.Air 
+						or self.blocks[Vec(x,y,z)].material == materials._ceiling)):
+					y += 1
                                 if Vec(x,y,z) in self.blocks:
-					while (self.blocks[Vec(x,y,z)].material == materials.Air or self.blocks[Vec(x,y,z)].material == materials._ceiling):
-                                                y += 1
 					mat = self.blocks[Vec(x,y,z)].material
 					# 3D perlin moss!
                                         if (mat.name == 'Cobblestone'):
