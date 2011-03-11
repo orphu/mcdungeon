@@ -148,12 +148,19 @@ class Bridges(Blank):
         # Find all the valid halls. These are halls with a size > 0.
         # We'll store a random position within the range of the hall.
         halls = [0,0,0,0]
+        hallcount = 0
         for h in xrange(4):
-            if (self.parent.halls[h].size > 0):
+            # If a hall is available, use it 75% of the time.
+            if (self.parent.halls[h].size > 0 and
+               random.uniform(0.0,1.0) <= 0.75):
                 halls[h] = \
                     self.parent.halls[h].offset + 1 + \
                     random.randint(0, self.parent.halls[h].size - 3)
-        midpoint = self.parent.parent.room_size / 2 - 2
+                hallcount += 1
+        # We won't draw just half a bridge. (yet)
+        if (hallcount < 2):
+            return
+        midpoint = self.parent.parent.room_size / 2
         y = self.parent.canvasHeight()
         offset = self.parent.loc
         # Look for the X bounds between halls.
@@ -206,19 +213,19 @@ class Bridges(Blank):
         # h1 -> c2
         # h2 -> c3
         # h3 -> c4
-        if (self.parent.halls[0].size > 0):
+        if (halls[0] !=  0):
             for p in iterate_cube(offset+h0,offset+c1):
                 self.parent.parent.setblock(p, materials.StoneSlab)
                 self.parent.parent.blocks[p].data = 2
-        if (self.parent.halls[1].size > 0):
+        if (halls[1] != 0):
             for p in iterate_cube(offset+h1,offset+c2):
                 self.parent.parent.setblock(p, materials.StoneSlab)
                 self.parent.parent.blocks[p].data = 2
-        if (self.parent.halls[2].size > 0):
+        if (halls[2] != 0):
             for p in iterate_cube(offset+h2,offset+c3):
                 self.parent.parent.setblock(p, materials.StoneSlab)
                 self.parent.parent.blocks[p].data = 2
-        if (self.parent.halls[3].size > 0):
+        if (halls[3] != 0):
             for p in iterate_cube(offset+h3,offset+c4):
                 self.parent.parent.setblock(p, materials.StoneSlab)
                 self.parent.parent.blocks[p].data = 2
