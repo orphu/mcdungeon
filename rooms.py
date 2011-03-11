@@ -143,23 +143,31 @@ class Pit(Blank):
         self.lava = False
 
     def placed(self):
-        thisfloor = self.pos.y+1
-        depth = random.randint(1, self.parent.levels-thisfloor+1)
-        # This room needs bridges
+        # This room needs bridges.
         self.floors.append(floors.new('bridges', self))
-        # If this is the only level, make it a lava pit
-        if (depth == 1):
-            self.lava = True
-            return
-        # Place    middle rooms
-        for r in xrange(1,depth-1):
-            pos = self.pos.down(r)
+        # Extend downward. First, figure out where we are and how far down
+        # we would like to go. 
+        thisfloor = self.pos.y+1
+        targetdepth = random.randint(1, self.parent.levels-thisfloor+1)
+        depth = 1
+        # Place lower rooms.
+        pos = self.pos
+        while (depth < targetdepth):
+            pos = pos.down(1)
+            if (pos in self.parent.rooms):
+                break
+            if (pos.down(1) in self.parent.rooms or
+               depth+1 == targetdepth):
+                room = new('pitbottom', self.parent, pos)
+                self.parent.setroom(pos, room)
+                depth += 1
+                break
             room = new('pitmid', self.parent, pos)
             self.parent.setroom(pos, room)
-        # Place the bottom room
-        pos = self.pos.down(depth - 1)
-        room = new('pitbottom', self.parent, pos)
-        self.parent.setroom(pos, room)
+            depth += 1
+        # If this is the only level, make it a lava pit.
+        if (depth == 1):
+            self.lava = True
 
     def render (self):
         c1 = self.loc + Vec(2,self.parent.room_height-1,2)
