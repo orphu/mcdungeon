@@ -347,32 +347,32 @@ class Dungeon (object):
                 else:
                     sys.stdout.write('%s`%s' % (materials.DGREY, materials.ENDC))
             print
-        def outputhtml(self, floor):
-            '''Print a slice (or layer) of the dungeon block buffer to an html table.
-            We "look-through" any air blocks to blocks underneath'''
-            layer = (floor-1)*self.room_height
-            sys.stdout.write('<table border=0 cellpadding=0 cellspacing=0>')
-            for x in xrange(self.xsize*self.room_size):
-                sys.stdout.write('<tr>')
-                for z in xrange(self.zsize*self.room_size):
-                    y = layer
-                    while (y < layer + self.room_height - 1 and
-                           (Vec(x,y,z) not in self.blocks or
-                            self.blocks[Vec(x,y,z)].material == materials.Air or
-                            self.blocks[Vec(x,y,z)].material == materials._ceiling)):
-                        y += 1
-                    if Vec(x,y,z) in self.blocks:
-                        mat = self.blocks[Vec(x,y,z)].material
-                        # 3D perlin moss!
-                        if (mat.name == 'Cobblestone'):
-                            if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
-                                mat = materials.MossStone
-                            else:
-                                mat = materials.Cobblestone
-                        sys.stdout.write('<td><img src=d/%d-%d.png>' % (mat.val,self.blocks[Vec(x,y,z)].data))
-                    else:
-                        sys.stdout.write('<td><img src=d/0.png>')
-            sys.stdout.write('</table>')
+    def outputhtml(self, floor):
+        '''Print a slice (or layer) of the dungeon block buffer to an html table.
+        We "look-through" any air blocks to blocks underneath'''
+        layer = (floor-1)*self.room_height
+        sys.stdout.write('<table border=0 cellpadding=0 cellspacing=0>')
+        for x in xrange(self.xsize*self.room_size):
+            sys.stdout.write('<tr>')
+            for z in xrange(self.zsize*self.room_size):
+                y = layer
+                while (y < layer + self.room_height - 1 and
+                       (Vec(x,y,z) not in self.blocks or
+                        self.blocks[Vec(x,y,z)].material == materials.Air or
+                        self.blocks[Vec(x,y,z)].material == materials._ceiling)):
+                    y += 1
+                if Vec(x,y,z) in self.blocks:
+                    mat = self.blocks[Vec(x,y,z)].material
+                    # 3D perlin moss!
+                    if (mat.name == 'Cobblestone'):
+                        if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
+                            mat = materials.MossStone
+                        else:
+                            mat = materials.Cobblestone
+                    sys.stdout.write('<td><img src=d/%d-%d.png>' % (mat.val,self.blocks[Vec(x,y,z)].data))
+                else:
+                    sys.stdout.write('<td><img src=d/0.png>')
+        sys.stdout.write('</table>')
 
     def setentrance(self, world):
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,

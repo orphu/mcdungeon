@@ -165,9 +165,11 @@ class Pit(Blank):
             room = new('pitmid', self.parent, pos)
             self.parent.setroom(pos, room)
             depth += 1
+        print "Pit, depth",depth
         # If this is the only level, make it a lava pit.
         if (depth == 1):
             self.lava = True
+            print "Lava!"
 
     def render (self):
         c1 = self.loc + Vec(2,self.parent.room_height-1,2)
@@ -251,6 +253,10 @@ class PitBottom(Blank):
         if (self.floor is not 'cactus'):
             # This room needs bridges
             self.floors.append(floors.new('bridges', self))
+        if (self.floor is 'cactus'):
+            print 'Cactus!'
+        if (self.floor is 'lava'):
+            print 'Lava!'
     def render (self):
         c1 = self.loc + Vec(2,self.parent.room_height-1,2)
         c2 = c1 + Vec(self.parent.room_size-5,0,0)
