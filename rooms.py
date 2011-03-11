@@ -1,5 +1,6 @@
 import materials
 import halls
+import floors
 from mymath import * 
 import random
 
@@ -24,7 +25,7 @@ class Blank(object):
 		# North, East, South, West
 		self.hallLength = [0,0,0,0]
 		self.hallSize = [[1,15], [1,15], [1,15], [1,15]]
-		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.canvas = (Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0))
 	def canvasWidth(self):
 		x1 = min([p.x for p in self.canvas])
 		x2 = max([p.x for p in self.canvas])
@@ -77,7 +78,7 @@ class Basic(Blank):
 	def setData(self):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
-		self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
+		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
 		self.canvas = (Vec(4,self.parent.room_height-2,4), 
 				Vec(self.parent.room_size-5,self.parent.room_height-2,4),
 				Vec(self.parent.room_size-5,self.parent.room_height-2,self.parent.room_size-5),
@@ -105,13 +106,15 @@ class Pit(Blank):
         def setData(self):
                 # North, East, South, West
                 self.hallLength = [3,3,3,3]
-                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
-		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+		self.canvas = (Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0))
 		self.lava = False
 	def placed(self):
 		thisfloor = self.pos.y+1
 		depth = random.randint(1, self.parent.levels-thisfloor+1)
 		#print 'Pit top placed:', self.pos, 'Depth:', depth
+		# This room needs bridges
+		self.floors.append(floors.new('bridges', self))
 		# If this is the only level, make it a lava pit
 		if (depth == 1):
 			self.lava = True
@@ -140,6 +143,7 @@ class Pit(Blank):
                         self.parent.setblock(x, materials._wall)
 		# Lava
 		if (self.lava is True):
+			#print c1, 'Top Lava!'
 			for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,0,-1)):
 				self.parent.setblock(x, materials.Lava)
                 # Ceiling
@@ -151,8 +155,11 @@ class PitMid(Blank):
         def setData(self):
                 # North, East, South, West
                 self.hallLength = [3,3,3,3]
-                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
-                self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+                self.canvas = (Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0))
+	def placed(self):
+		# This room needs bridges
+		self.floors.append(floors.new('bridges', self))
         def render (self):
                 c1 = self.loc + Vec(2,self.parent.room_height-1,2)
                 c2 = c1 + Vec(self.parent.room_size-5,0,0)
@@ -169,8 +176,8 @@ class PitBottom(Blank):
         def setData(self):
                 # North, East, South, West
                 self.hallLength = [3,3,3,3]
-                self.hallSize = [[3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3], [3,self.parent.room_size-3]]
-                self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
+                self.canvas = (Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0))
                 self.floor = 'floor'
 	def placed(self):
 		self.floor = random.choice(('floor','lava','cactus'))
@@ -179,6 +186,9 @@ class PitBottom(Blank):
 				Vec(self.parent.room_size-5,self.parent.room_height-2,4),
 				Vec(self.parent.room_size-5,self.parent.room_height-2,self.parent.room_size-5),
 				Vec(4,self.parent.room_height-2,self.parent.room_size-5))
+		if (self.floor is not 'cactus'):
+			# This room needs bridges
+			self.floors.append(floors.new('bridges', self))
         def render (self):
                 c1 = self.loc + Vec(2,self.parent.room_height-1,2)
                 c2 = c1 + Vec(self.parent.room_size-5,0,0)
@@ -297,7 +307,7 @@ class Corridor(Blank):
 		# North, East, South, West
 		self.hallLength = [3,3,3,3]
 		self.hallSize = [[2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2], [2,self.parent.room_size-2]]
-		self.canvas = (Vec(0,0,0), Vec(0,0,0), Vec(0,0,0))
+		self.canvas = (Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0), Vec(0,self.parent.room_height-2,0))
 	def render (self):
 		# default to a teeny tiny room
 		x1 = 1000
@@ -333,6 +343,7 @@ class Corridor(Blank):
 			z2 = max(z2, self.halls[3].offset+self.halls[3].size-1)
 		if (z2 is -1):
 			z2 = self.parent.room_size/2+2
+		# Orient the sides
 		if (x1 > x2):
 			t = x1
 			x1= x2
@@ -350,10 +361,10 @@ class Corridor(Blank):
 
 		# Canvas
 		self.canvas = (
-			Vec(x1,self.parent.room_height-1,z1),
-			Vec(x2,self.parent.room_height-1,z1),
-			Vec(x2,self.parent.room_height-1,z2),
-			Vec(x1,self.parent.room_height-1,z2)
+			Vec(x1,self.parent.room_height-2,z1),
+			Vec(x2,self.parent.room_height-2,z1),
+			Vec(x2,self.parent.room_height-2,z2),
+			Vec(x1,self.parent.room_height-2,z2)
 				)
 		# Figure out our corners
 		c1 = self.loc+Vec(x1,self.parent.room_height-1,z1)

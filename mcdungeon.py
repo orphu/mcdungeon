@@ -197,8 +197,9 @@ class Dungeon (object):
 
 	def genfloors(self):
 		for pos in self.rooms:
-			floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
-			self.rooms[pos].floors.append(floor)
+			if (len(self.rooms[pos].floors) == 0):
+				floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
+				self.rooms[pos].floors.append(floor)
 
 	def genfeatures(self):
 		for pos in self.rooms:

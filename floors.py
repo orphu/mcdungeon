@@ -130,6 +130,81 @@ class Sand(Blank):
 				self.parent.parent.setblock(p, materials.Sandstone)
 			elif (n >= d):
 				self.parent.parent.setblock(p, materials.Gravel)
+
+class Bridges(Blank):
+	_name = 'bridges'
+	def render(self):
+		halls = [0,0,0,0]	
+		for h in xrange(4):
+			#print 'Bridge hall:',h,self.parent.halls[h].offset,self.parent.halls[h].size
+			if (self.parent.halls[h].size > 0):
+				halls[h]=self.parent.halls[h].offset+1+random.randint(0,self.parent.halls[h].size-3)
+		midpoint = self.parent.parent.room_size/2-2
+		y = self.parent.canvasHeight()
+		offset = self.parent.loc
+		#print 'Bridge halls[]:',halls
+		# X bounds
+		if (halls[0] != 0 and halls[2] !=0):
+			x1 = halls[0]
+			x2 = halls[2]
+		elif (halls[0] != 0):
+			x1 = halls[0]
+			x2 = x1
+		elif (halls[2] != 0):
+			x2 = halls[2]
+			x1 = x2
+		else:
+			x1 = midpoint
+			x2 = midpoint
+		# Z bounds
+		if (halls[1] != 0 and halls[3] !=0):
+			z1 = halls[1]
+			z2 = halls[3]
+		elif (halls[1] != 0):
+			z1 = halls[1]
+			z2 = z1
+		elif (halls[3] != 0):
+			z2 = halls[3]
+			z1 = z2
+		else:
+			z1 = midpoint
+			z2 = midpoint
+		c1 = Vec(x1,y,z1)
+		c2 = Vec(x2,y,z1)
+		c3 = Vec(x2,y,z2)
+		c4 = Vec(x1,y,z2)
+		h0 = Vec(x1,y,self.parent.hallLength[0])
+		h1 = Vec(self.parent.parent.room_size-self.parent.hallLength[1]-1,y,z1)
+		h2 = Vec(x2,y,self.parent.parent.room_size-self.parent.hallLength[2]-1)
+		h3 = Vec(self.parent.hallLength[3],y,z2)
+		#print 'Bridge c:',c1,c2,c3,c4
+		#print 'Bridge h:',h0,h1,h2,h3
+		# Draw the bridges
+		if (self.parent.halls[0].size > 0):
+			for p in iterate_cube(offset+h0,offset+c1):
+				self.parent.parent.setblock(p, materials.StoneSlab)
+				self.parent.parent.blocks[p].data = 2
+		if (self.parent.halls[1].size > 0):
+			for p in iterate_cube(offset+h1,offset+c2):
+				self.parent.parent.setblock(p, materials.StoneSlab)
+				self.parent.parent.blocks[p].data = 2
+		if (self.parent.halls[2].size > 0):
+			for p in iterate_cube(offset+h2,offset+c3):
+				self.parent.parent.setblock(p, materials.StoneSlab)
+				self.parent.parent.blocks[p].data = 2
+		if (self.parent.halls[3].size > 0):
+			for p in iterate_cube(offset+h3,offset+c4):
+				self.parent.parent.setblock(p, materials.StoneSlab)
+				self.parent.parent.blocks[p].data = 2
+		for p in iterate_cube(offset+c1,offset+c2):
+			self.parent.parent.setblock(p, materials.StoneSlab)
+			self.parent.parent.blocks[p].data = 2
+		for p in iterate_cube(offset+c2,offset+c3):
+			self.parent.parent.setblock(p, materials.StoneSlab)
+			self.parent.parent.blocks[p].data = 2
+		for p in iterate_cube(offset+c3,offset+c4):
+			self.parent.parent.setblock(p, materials.StoneSlab)
+			self.parent.parent.blocks[p].data = 2
 	
 def new (name, parent):
         if (name == 'cobble'):
@@ -146,4 +221,6 @@ def new (name, parent):
                 return Mud(parent)
         if (name == 'sand'):
                 return Sand(parent)
+        if (name == 'bridges'):
+                return Bridges(parent)
         return Blank(parent)
