@@ -91,6 +91,38 @@ class Stairwell(Blank):
 				for p in iterate_cube(start.trans(x,-x,1),start.trans(x,-x,4)):
 					self.parent.parent.setblock(p, materials.StoneStairs)
 					self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+class Chasm(Blank):
+	_name = 'chasm'
+	def render (self):
+		if (self.parent.canvasWidth() < 4 or self.parent.canvasLength() < 4):
+			return
+		# We'll render across the while block, since that will look cool
+		y = self.parent.canvasHeight()
+		flip = random.randint(0,1)
+		for x in xrange(2, self.parent.parent.room_size-2):
+			if (flip == 1):
+				for p in iterate_cube(self.parent.loc+Vec(self.parent.parent.room_size-x-1, y, x+random.randint(-1,0)), self.parent.loc+Vec(self.parent.parent.room_size-x-1, y+2, x+random.randint(1,2))):
+					self.parent.parent.setblock(p, materials.Air)	
+			else:
+				for p in iterate_cube(self.parent.loc+Vec(x, y, x+random.randint(-1,0)), self.parent.loc+Vec(x, y+2, x+random.randint(1,2))):
+					self.parent.parent.setblock(p, materials.Air)	
+
+class LavaChasm(Blank):
+        _name = 'lavachasm'
+        def render (self):
+                if (self.parent.canvasWidth() < 4 or self.parent.canvasLength() < 4):
+                        return
+                # We'll render across the while block, since that will look cool
+                y = self.parent.canvasHeight()
+                flip = random.randint(0,1)
+                for x in xrange(2, self.parent.parent.room_size-2):
+                        if (flip == 1):
+                                for p in iterate_cube(self.parent.loc+Vec(self.parent.parent.room_size-x-1, y, x+random.randint(-1,0)), self.parent.loc+Vec(self.parent.parent.room_size-x-1, y, x+random.randint(1,2))):
+                                        self.parent.parent.setblock(p, materials.Lava)
+                        else:
+                                for p in iterate_cube(self.parent.loc+Vec(x, y, x+random.randint(-1,0)), self.parent.loc+Vec(x, y, x+random.randint(1,2))):
+                                        self.parent.parent.setblock(p, materials.Lava)
+
 class Columns(Blank):
         _name = 'columns'
 	mats = (
@@ -134,4 +166,8 @@ def new (name, parent):
                 return Stairwell(parent)
         if (name == 'columns'):
                 return Columns(parent)
+        if (name == 'chasm'):
+                return Chasm(parent)
+        if (name == 'lavachasm'):
+                return LavaChasm(parent)
         return Blank(parent)
