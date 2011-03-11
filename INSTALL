@@ -1,6 +1,6 @@
-
 Requirements:
 
 * Python 2.6. 2.7 might work. 
 * argparse 
 * noise (http://pypi.python.org/pypi/noise/)
+* numpy (for pymclevel)
