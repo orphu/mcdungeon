@@ -54,7 +54,7 @@ class Entrance(Blank):
                                     wstart.trans(5,0,0),
                                     wstart.trans(5,0,5),
                                     wstart.trans(0,0,5),
-                                    self.u*2+self.height):
+                                    self.u*2+self.height-1):
             self.parent.parent.setblock(p, materials._wall)
         # Lower level openings
         # N side
@@ -90,7 +90,7 @@ class Entrance(Blank):
         # Draw the staircase
         for p in iterate_spiral(Vec(0,0,0),
                                 Vec(4,0,4),
-                                (self.u*2+self.height)*2+1):
+                                (self.u*2+self.height)*2):
             mat = materials.StoneSlab
             dat = 0
             if ((p.y%2) == 1):
