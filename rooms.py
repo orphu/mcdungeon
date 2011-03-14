@@ -250,13 +250,9 @@ class PitBottom(Blank):
                     self.parent.room_height-2,
                     self.parent.room_size-5),
                 Vec(4,self.parent.room_height-2,self.parent.room_size-5))
-        if (self.floor is not 'cactus'):
+        if (self.floor is 'lava'):
             # This room needs bridges
             self.floors.append(floors.new('bridges', self))
-        if (self.floor is 'cactus'):
-            print 'Cactus!'
-        if (self.floor is 'lava'):
-            print 'Lava!'
     def render (self):
         c1 = self.loc + Vec(2,self.parent.room_height-1,2)
         c2 = c1 + Vec(self.parent.room_size-5,0,0)
