@@ -29,8 +29,8 @@ class ItemInfoAll (object):
 
                 value, names = line.split('=',1);
                 for name in names.split(','):
-                    self.iteminfo[name.strip()] = ItemInfo(name.strip(), value)
-                    self.iteminfo[value] = ItemInfo(name.strip(), value)
+                    self.iteminfo[name.strip().lower()] = ItemInfo(name.strip(), value)
+                    self.iteminfo[value] = ItemInfo(name.strip().lower(), value)
 
             except Exception, e:
                 print "Error reading line:", e
