@@ -168,6 +168,8 @@ class MultiVersePortal(Blank):
 
 class Chasm(Blank):
     _name = 'chasm'
+    material = materials.Air
+    depth = 2
 
     def render (self):
         if (self.parent.canvasWidth() < 4 or
@@ -184,10 +186,10 @@ class Chasm(Blank):
                                           x+random.randint(-1,0)),
                                       self.parent.loc +
                                       Vec(self.parent.parent.room_size-x-1,
-                                          y + 2,
+                                          y + self.depth,
                                           x+random.randint(1,2))
                                      ):
-                    self.parent.parent.setblock(p, materials.Air)
+                    self.parent.parent.setblock(p, self.material)
             else:
                 for p in iterate_cube(self.parent.loc +
                                       Vec(x,
@@ -195,46 +197,23 @@ class Chasm(Blank):
                                           x+random.randint(-1,0)),
                                       self.parent.loc +
                                       Vec(x,
-                                          y+2,
+                                          y + self.depth,
                                           x+random.randint(1,2))
                                      ):
-                    self.parent.parent.setblock(p, materials.Air)
+                    self.parent.parent.setblock(p, self.material)
 
 
-class LavaChasm(Blank):
+class LavaChasm(Chasm):
     _name = 'lavachasm'
+    material = materials.Lava
+    depth = 0
 
-    def render (self):
-        if (self.parent.canvasWidth() < 4 or
-            self.parent.canvasLength() < 4):
-            return
-        # We'll render across the while block, since that
-        # will look cool
-        y = self.parent.canvasHeight()
-        flip = random.randint(0,1)
-        for x in xrange(2, self.parent.parent.room_size-2):
-            if (flip == 1):
-                for p in iterate_cube(self.parent.loc +
-                                      Vec(self.parent.parent.room_size-x-1,
-                                          y,
-                                          x+random.randint(-1,0)),
-                                      self.parent.loc +
-                                      Vec(self.parent.parent.room_size-x-1,
-                                          y,
-                                          x+random.randint(1,2))
-                                     ):
-                    self.parent.parent.setblock(p, materials.Lava)
-            else:
-                for p in iterate_cube(self.parent.loc +
-                                      Vec(x,
-                                          y,
-                                          x+random.randint(-1,0)),
-                                      self.parent.loc +
-                                      Vec(x,
-                                          y,
-                                          x+random.randint(1,2))
-                                     ):
-                    self.parent.parent.setblock(p, materials.Lava)
+
+class River(Chasm):
+    _name = 'river'
+    material = materials.Water
+    depth = 0
+
 
 class Columns(Blank):
     _name = 'columns'
@@ -290,6 +269,8 @@ def new (name, parent):
         return Chasm(parent)
     if (name == 'lavachasm'):
         return LavaChasm(parent)
+    if (name == 'river'):
+        return River(parent)
     if (name == 'multiverseportal'):
         return MultiVersePortal(parent)
     return Blank(parent)
