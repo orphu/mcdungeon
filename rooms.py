@@ -169,7 +169,6 @@ class Pit(Blank):
         # If this is the only level, make it a lava pit.
         if (depth == 1):
             self.lava = True
-            print "Lava!"
 
     def render (self):
         c1 = self.loc + Vec(2,self.parent.room_height-1,2)
