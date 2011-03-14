@@ -103,6 +103,10 @@ class Entrance(Blank):
             self.parent.parent.blocks[start.trans(p.x,
                                                   floor(float(p.y)/2.0),
                                                   p.z)].data = dat
+        # Tier 0 chest
+        pos = wstart.trans(0, -self.height-(self.u*2), 0)
+        self.parent.parent.setblock(pos, materials.Chest)
+        self.parent.parent.addchest(pos)
 
 
 class Stairwell(Blank):
@@ -134,7 +138,6 @@ class MultiVersePortal(Blank):
                                            self.parent.parent.room_size/2)
             centerf = Vec2f(float(self.parent.loc.x) + self.parent.canvasCenter().x,
                             float(self.parent.loc.z) + self.parent.canvasCenter().z)
-            print center, centerf
             # Fix the floor. Clear an area for the portal.
             for p in iterate_disc(centerf, 4.5, 3.5):
                 self.parent.parent.setblock(Vec(int(p.x+.5),center.y,int(p.z+.5)),

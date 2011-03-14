@@ -12,6 +12,7 @@ import rooms
 import halls
 import floors
 import features
+from items import *
 from utils import *
 from pymclevel import mclevel, nbt
 from noise import pnoise3
@@ -135,6 +136,9 @@ class Dungeon (object):
         root_tag['Text3'] = nbt.TAG_String(text3)
         root_tag['Text4'] = nbt.TAG_String(text4)
         self.tile_ents[loc] = root_tag
+    def addchest(self, loc):
+        tier = max(0, loc.y/self.room_height+1)
+        print 'Added chest: tier',tier
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
