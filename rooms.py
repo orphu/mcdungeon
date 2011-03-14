@@ -49,8 +49,8 @@ class Blank(object):
         return min([p.y for p in self.canvas])
 
     def canvasCenter(self):
-        cx = self.canvasWidth()/2.0+min([p.x for p in self.canvas])
-        cz = self.canvasLength()/2.0+min([p.z for p in self.canvas])
+        cx = self.canvasWidth()/2.0+min([p.x for p in self.canvas])-1
+        cz = self.canvasLength()/2.0+min([p.z for p in self.canvas])-1
         return Vec2f(cx,cz)
 
     def render (self):
