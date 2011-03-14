@@ -196,7 +196,6 @@ class Dungeon (object):
                    room.canvasWidth() < 8 or
                    room.canvasLength() < 8):
                 room = rooms.new(weighted_choice(master_rooms), self, pos)
-                print room._name, room.canvasWidth(), room.canvasLength()
             feature = features.new('multiverseportal', room)
             feature.target = cfg_mvportal
             room.features.append(feature)
