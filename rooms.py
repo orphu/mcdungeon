@@ -1,7 +1,7 @@
 import materials
 import halls
 import floors
-from mymath import * 
+from utils import * 
 import random
 
 

@@ -1,4 +1,4 @@
-from mymath import *
+from utils import *
 
 class Door(object):
     def __init__(self):

@@ -1,7 +1,7 @@
 import materials
 import doors
 import portcullises
-from mymath import *
+from utils import *
 from random import *
 
 class Blank(object):

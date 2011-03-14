@@ -1,6 +1,6 @@
 import materials
 import rooms
-from mymath import *
+from utils import *
 
 
 class Blank(object):
@@ -147,10 +147,18 @@ class MultiVersePortal(Blank):
             # Portal stuff
             for p in iterate_cube(center.trans(-1,0,0), center.trans(0,-2,0)):
                 self.parent.parent.setblock(p, materials.NetherPortal)
+            # Signs
             self.parent.parent.setblock(center.trans(1,-1,-1), materials.WallSign)
             self.parent.parent.blocks[center.trans(1,-1,-1)].data = 3
+            self.parent.parent.setblock(center.trans(-2,-1,1), materials.WallSign)
+            self.parent.parent.blocks[center.trans(-2,-1,1)].data = 2
             # Create the tile entity
             self.parent.parent.addsign(center.trans(1,-1,-1),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       self.target,
+                                       '<== Exit')
+            self.parent.parent.addsign(center.trans(-2,-1,1),
                                        '<== Exit',
                                        '[MultiVerse]',
                                        self.target,

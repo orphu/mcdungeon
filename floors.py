@@ -1,7 +1,7 @@
 import materials
 import random
 from noise import *
-from mymath import *
+from utils import *
 
 class Blank(object):
     _name = 'blank'

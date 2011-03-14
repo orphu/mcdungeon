@@ -12,7 +12,7 @@ import rooms
 import halls
 import floors
 import features
-from mymath import *
+from utils import *
 from pymclevel import mclevel, nbt
 from noise import pnoise3
 
