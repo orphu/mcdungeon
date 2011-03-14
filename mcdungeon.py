@@ -12,6 +12,7 @@ import rooms
 import halls
 import floors
 import features
+from loottable import *
 from items import *
 from utils import *
 from pymclevel import mclevel, nbt
@@ -72,16 +73,20 @@ if (args.levels < 1 or args.levels > 18):
     sys.exit('Invalid number of levels.')
 
 config = ConfigParser.SafeConfigParser()
+print 'Reading config...'
 try:
     config.readfp(open(args.config))
 except:
     print "Failed to read config file:", args.config
     sys.exit(1)
 
+# Load master tables from .cfg.
 master_halls = config.items('halls')
 master_rooms = config.items('rooms')
 master_features = config.items('features')
 master_floors = config.items('floors')
+
+# Load other config options
 cfg_offset = str2Vec(config.get('dungeon', 'offset'))
 cfg_tower = config.getfloat('dungeon','tower')
 cfg_doors = config.getint('dungeon','doors')
@@ -526,14 +531,14 @@ dungeon = Dungeon(cfg_offset, args.x, args.z, args.levels)
 print "Generating rooms..."
 dungeon.genrooms()
 
+print "Generating halls..."
+dungeon.genhalls()
+
 print "Generating floors..."
 dungeon.genfloors()
 
 print "Generating features..."
 dungeon.genfeatures()
-
-print "Generating halls..."
-dungeon.genhalls()
 
 print "Extending the entrance to the surface..."
 dungeon.setentrance(world)
