@@ -122,6 +122,41 @@ class Stairwell(Blank):
                                                 materials.StoneStairs)
                     self.parent.parent.setblock(p.trans(0,1,0),
                                                 materials.Cobblestone)
+
+class MultiVersePortal(Blank):
+    _name = 'multiverseportal'
+    target = 'World1'
+
+    def render (self):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 24):
+            start = self.parent.loc.trans(3, self.parent.parent.room_height-2, 3)
+            end = self.parent.loc.trans(self.parent.parent.room_size-4,
+                                        self.parent.parent.room_height-2,
+                                        self.parent.parent.room_size-4)
+            center = self.parent.loc.trans(self.parent.parent.room_size/2,
+                                           self.parent.parent.room_height-2,
+                                           self.parent.parent.room_size/2)
+            # Fix the floor
+            for p in iterate_cube(start, end):
+                self.parent.parent.setblock(p, materials.StoneSlab)
+            for p in iterate_cube(start.trans(1,0,1), end.trans(-1,0,-1)):
+                self.parent.parent.setblock(p, materials.Air)
+            # Obsidian
+            for p in iterate_cube(center.trans(-2,1,0), center.trans(1,-3,0)):
+                self.parent.parent.setblock(p, materials.Obsidian)
+            # Portal stuff
+            for p in iterate_cube(center.trans(-1,0,0), center.trans(0,-2,0)):
+                self.parent.parent.setblock(p, materials.NetherPortal)
+            self.parent.parent.setblock(center.trans(1,-1,-1), materials.WallSign)
+            self.parent.parent.blocks[center.trans(1,-1,-1)].data = 3
+            # Create the tile entity
+            self.parent.parent.addsign(center.trans(1,-1,-1),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       self.target,
+                                       '<== Exit')
+
+
 class Chasm(Blank):
     _name = 'chasm'
 
@@ -246,4 +281,6 @@ def new (name, parent):
         return Chasm(parent)
     if (name == 'lavachasm'):
         return LavaChasm(parent)
+    if (name == 'multiverseportal'):
+        return MultiVersePortal(parent)
     return Blank(parent)

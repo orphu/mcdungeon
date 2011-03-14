@@ -13,7 +13,7 @@ import halls
 import floors
 import features
 from mymath import *
-from pymclevel import mclevel
+from pymclevel import mclevel, nbt
 from noise import pnoise3
 
 parser = argparse.ArgumentParser(
@@ -89,6 +89,7 @@ cfg_torches = config.getint('dungeon', 'torches')
 cfg_wall = config.get('dungeon', 'wall')
 cfg_ceiling = config.get('dungeon', 'ceiling')
 cfg_floor = config.get('dungeon', 'floor')
+cfg_mvportal = config.get('dungeon', 'mvportal')
 
 if (cfg_tower < 1.0):
     sys.exit('The tower height parameter is too small. This should be \
@@ -107,6 +108,7 @@ class Dungeon (object):
     def __init__(self, pos, xsize, zsize, levels):
         self.rooms = {}
         self.blocks = {}
+        self.tile_ents = {}
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
@@ -122,6 +124,17 @@ class Dungeon (object):
             self.blocks[loc] = Block(loc)
         self.blocks[loc].material = material
         self.blocks[loc].data = 0
+    def addsign(self, loc, text1, text2, text3, text4):
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('Sign')
+        root_tag['x'] = nbt.TAG_Int(loc.x)
+        root_tag['y'] = nbt.TAG_Int(loc.y)
+        root_tag['z'] = nbt.TAG_Int(loc.z)
+        root_tag['Text1'] = nbt.TAG_String(text1)
+        root_tag['Text2'] = nbt.TAG_String(text2)
+        root_tag['Text3'] = nbt.TAG_String(text3)
+        root_tag['Text4'] = nbt.TAG_String(text4)
+        self.tile_ents[loc] = root_tag
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
@@ -169,7 +182,26 @@ class Dungeon (object):
                 roomup.features.append(featureup)
                 self.setroom(posup, roomup)
                 roomup = None
-
+        # Place the portal
+        if (cfg_mvportal is not ''):
+            while (x == x1):
+                x = randint(0, self.xsize-1)
+            while (z == z1):
+                z = randint(0, self.zsize-1)
+            x1 = x
+            z1 = z
+            room = None
+            pos = Vec(x,self.levels-1,z)
+            while (room == None or
+                   room.canvasWidth() < 8 or
+                   room.canvasLength() < 8):
+                room = rooms.new(weighted_choice(master_rooms), self, pos)
+                print room._name, room.canvasWidth(), room.canvasLength()
+            feature = features.new('multiverseportal', room)
+            feature.target = cfg_mvportal
+            room.features.append(feature)
+            feature.placed()
+            self.setroom(pos, room)
         # Generate the rest of the map
         for y in xrange(self.levels):
             for x in xrange(self.xsize):
@@ -209,8 +241,8 @@ class Dungeon (object):
                         d = randint(0,3)
                         count = 4
                         while (hallsremain and count > 0):
-                            # This is our list to try. We should (hopefully) 
-                            # never get to Blank as long as the rooms are 
+                            # This is our list to try. We should (hopefully)
+                            # never get to Blank as long as the rooms are
                             # structured well. (And nobody disables size
                             # 3 halls)
                             hall_list = weighted_shuffle(master_halls)
@@ -223,7 +255,7 @@ class Dungeon (object):
                                         newsize = halls.sizeByName(newhall)
                                         nextpos = pos+pos.d(d)
                                         nextd = (d+2)%4
-                                        # Get valid offsets for this room 
+                                        # Get valid offsets for this room
                                         # and the ajoining room.
                                         # First test the current room.
                                         if (self.rooms[pos].isOnEdge(d) is False):
@@ -441,6 +473,25 @@ class Dungeon (object):
             chunk.Blocks[xInChunk, zInChunk, y] = mat.val
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
+            changed_chunks.add(chunk)
+        # Copy over tile entities
+        for ent in self.tile_ents.values():
+            # Calculate world coords.
+            x = ent['x'].value + self.position.x
+            y = self.position.y - ent['y'].value
+            z = self.position.z - ent['z'].value
+            # Move this tile ent to the world coords.
+            ent['x'].value = x
+            ent['y'].value = y
+            ent['z'].value = z
+            # Load the chunk.
+            chunk_z = z>>4
+            chunk_x = x>>4
+            xInChunk = x & 0xf;
+            zInChunk = z & 0xf;
+            chunk = world.getChunk(chunk_x, chunk_z)
+            # copy rhe ent to the chunk
+            chunk.TileEntities.append(ent)
             changed_chunks.add(chunk)
         # Mark changed chunkes so pymclevel knows to recompress/relight them.
         for chunk in changed_chunks:

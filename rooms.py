@@ -38,12 +38,12 @@ class Blank(object):
     def canvasWidth(self):
         x1 = min([p.x for p in self.canvas])
         x2 = max([p.x for p in self.canvas])
-        return x2 - x1
+        return x2 - x1 + 1
 
     def canvasLength(self):
         z1 = min([p.z for p in self.canvas])
         z2 = max([p.z for p in self.canvas])
-        return z2 - z1
+        return z2 - z1 + 1
 
     def canvasHeight(self):
         return min([p.y for p in self.canvas])
