@@ -1,5 +1,6 @@
 import materials
 import rooms
+import loottable
 from utils import *
 
 
@@ -136,14 +137,18 @@ class MultiVersePortal(Blank):
             center = self.parent.loc.trans(self.parent.parent.room_size/2,
                                            self.parent.parent.room_height-2,
                                            self.parent.parent.room_size/2)
-            centerf = Vec2f(float(self.parent.loc.x) + self.parent.canvasCenter().x,
-                            float(self.parent.loc.z) + self.parent.canvasCenter().z)
+            centerf = Vec2f(float(self.parent.loc.x) +
+                            self.parent.canvasCenter().x,
+                            float(self.parent.loc.z) +
+                            self.parent.canvasCenter().z)
             # Fix the floor. Clear an area for the portal.
             for p in iterate_disc(centerf, 4.5, 3.5):
-                self.parent.parent.setblock(Vec(int(p.x+.5),center.y,int(p.z+.5)),
+                self.parent.parent.setblock(Vec(int(p.x+.5),
+                                                center.y,int(p.z+.5)),
                                             materials.StoneSlab)
             for p in iterate_disc(centerf, 3.5, 2.5):
-                self.parent.parent.setblock(Vec(int(p.x+.5),center.y,int(p.z+.5)),
+                self.parent.parent.setblock(Vec(int(p.x+.5),
+                                                center.y,int(p.z+.5)),
                                             materials.Air)
             # Obsidian portal frame.
             for p in iterate_cube(center.trans(-2,1,0), center.trans(1,-3,0)):
@@ -152,9 +157,11 @@ class MultiVersePortal(Blank):
             for p in iterate_cube(center.trans(-1,0,0), center.trans(0,-2,0)):
                 self.parent.parent.setblock(p, materials.NetherPortal)
             # Signs.
-            self.parent.parent.setblock(center.trans(1,-1,-1), materials.WallSign)
+            self.parent.parent.setblock(center.trans(1,-1,-1),
+                                        materials.WallSign)
             self.parent.parent.blocks[center.trans(1,-1,-1)].data = 3
-            self.parent.parent.setblock(center.trans(-2,-1,1), materials.WallSign)
+            self.parent.parent.setblock(center.trans(-2,-1,1),
+                                        materials.WallSign)
             self.parent.parent.blocks[center.trans(-2,-1,1)].data = 2
             # Create the tile entities for the signs. 
             self.parent.parent.addsign(center.trans(1,-1,-1),
@@ -167,6 +174,11 @@ class MultiVersePortal(Blank):
                                        '[MultiVerse]',
                                        self.target,
                                        '<== Exit')
+            # Treasure!
+            self.parent.parent.setblock(center.trans(-3,0,0),
+                                        materials.Chest)
+            self.parent.parent.addchest(center.trans(-3,0,0), 
+                                        loottable._maxtier)
 
 
 class Chasm(Blank):
