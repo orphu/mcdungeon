@@ -35,6 +35,7 @@ def LoadItems(filename = 'items.db'):
                 continue; 
 
             value, name, data, maxstack = line.split(',')
+            name = name.lower()
             _items[name] = ItemInfo(name, value, data, maxstack)
             _by_id[int(value)] = ItemInfo(name, value, data, maxstack)
             items += 1
@@ -58,3 +59,5 @@ def byID (id):
         except:
             print 'Unknown item ID:', id
             sys.exit(1)
+
+LoadItems()
