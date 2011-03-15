@@ -135,7 +135,7 @@
 279,Diamond Axe,0,1
 280,Stick,0,64
 281,Bowl,0,64
-282,Mushroom Soup,0,1
+282,Mushroom Stew,0,1
 283,Gold Sword,0,1
 284,Gold Shovel,0,1
 285,Gold Pickaxe,0,1
