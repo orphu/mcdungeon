@@ -29,7 +29,7 @@ level = mclevel.fromFile("server_level.dat");
 blocks = level.Blocks
 
 # Sand to glass.
-blocks[blocks == level.materials.materialNamed("Sand")] = level.materials.materialNamed("Glass")
+blocks[blocks == level.materials.Sand.ID] = level.materials.Glass.ID
 
 # Save the file with another name.  This only works for non-Alpha levels.
 level.saveToFile("server_level_glassy.dat");
@@ -462,65 +462,14 @@ class MCLevel(object):
         Blocks, Data, Light, SkyLight, HeightMap attributes if present """
         pass
         
-    def compressedSize(self):
-        "return the size of the compressed data for this level, in bytes."
-        self.compress();
-        if self.compressedTag is None: return 0
-        return len(self.compressedTag)
-    
     def close(self):
         pass
-        
-    def compress(self):
-        #if self.root_tag is not None, then our compressed data must be stale and we need to recompress.
-        
-        if self.root_tag is None:
-            return;
-        else:
-            self.packChunkData();
-            
-            buf = StringIO.StringIO()
-            with closing(gzip.GzipFile(fileobj=buf, mode='wb', compresslevel=2)) as gzipper:
-                self.root_tag.save(buf=gzipper)
-            
-            self.compressedTag = buf.getvalue()
-            
-        self.root_tag = None
-        
-    def decompress(self):
-        """called when accessing attributes decorated with @decompress_first"""
-        if self.root_tag != None: return
-        if self.compressedTag is None: 
-            if self.root_tag is None:
-                self.load();
-            else:
-                return;
-        
-        with closing(gzip.GzipFile(fileobj=StringIO.StringIO(self.compressedTag))) as gzipper:
-            try:
-                data = gzipper.read();
-                if data == None: return;
-            except Exception, e:
-                #error( u"Error reading compressed data, assuming uncompressed: {0}".format(e) )
-                data = self.compressedTag
-            
-
-        try:       
-            self.root_tag = nbt.load(buf=fromstring(data, dtype='uint8'));
-        except Exception, e:
-            error( u"Malformed NBT data in file: {0} ({1})".format(self.filename, e) )
-            if self.world: self.world.malformedChunk(*self.chunkPosition);
-            raise ChunkMalformed, self.filename
-            
-        try:
-            self.shapeChunkData()
-        except KeyError, e:
-            error( u"Incorrect chunk format in file: {0} ({1})".format(self.filename, e) )
-            if self.world: self.world.malformedChunk(*self.chunkPosition);
-            raise ChunkMalformed, self.filename
-        
-        self.dataIsPacked = True; 
     
+    def compress(self):
+        pass
+    def decompress(self):
+        pass
+        
     
     def compressChunk(self, x, z): pass
     def entitiesAt(self, x, y, z):
@@ -641,7 +590,8 @@ class MCLevel(object):
                                 (slice(localMinX,localMaxX),slice(localMinZ,localMaxZ),slice(box.miny,box.maxy)),  
                                 (newMinX, 0, newMinZ))
                 
-
+                ch.compress()
+                
                 
     def containsPoint(self, x, y, z):
         return (x >=0 and x < self.Width and
@@ -711,27 +661,45 @@ class MCLevel(object):
 #        end = tuple([o+s for o,s in zip(origin,size)])
         return self.Blocks[x:x+w,z:z+l,y:y+h]
     
-    def fillBlocks(self, box, blockType, blockData = 0, blocksToReplace = None):
+    def blockReplaceTable(self, blocksToReplace):
+        blocktable = zeros( (256, 16), dtype='bool')
+        for b in blocksToReplace:
+            if b.hasAlternate:
+                blocktable[b.ID,b.blockData] = True
+            else:
+                blocktable[b.ID] = True
+                
+        return blocktable
+        
+    def fillBlocks(self, box, blockInfo, blocksToReplace = []):
+        
         if box is None: 
             box = self.bounds
         else:
             box = box.intersect(self.bounds)
         
-        info( u"Filling blocks in {0} with {1}, data={2} replacing{3}".format(box, blockType, blockData, blocksToReplace) )
+        info( u"Filling blocks in {0} with {1}, replacing{2}".format(box, blockInfo, blocksToReplace) )
         
         slices = map(slice, box.origin, box.maximum)
         
         blocks = self.Blocks[slices[0],slices[2],slices[1]]
-        if blocksToReplace != None:
-            mask = functools.reduce(operator.or_, (blocks==x for x in blocksToReplace))
-                
-            blocks[mask] = blockType;
+        if len(blocksToReplace):
+            blocktable = self.blockReplaceTable(blocksToReplace)
+            
             if hasattr(self, "Data"):
-                self.Data[slices[0],slices[2],slices[1]][mask] = blockData;
+                data = self.Data[slices[0],slices[2],slices[1]]
+                mask = blocktable[blocks,data]
+            
+                data[mask] = blockInfo.blockData;
+            else:
+                mask = blocktable[blocks,0]
+            
+            blocks[mask] = blockInfo.ID;
+            
         else:
-            blocks[:] = blockType;
+            blocks[:] = blockInfo.ID;
             if hasattr(self, "Data"):
-                self.Data[slices[0],slices[2],slices[1]] = blockData;
+                self.Data[slices[0],slices[2],slices[1]] = blockInfo.blockData;
                
         #self.saveInPlace();
     classicWoolMask = zeros((256,), dtype='bool')
@@ -1151,35 +1119,11 @@ class MCLevel(object):
                 except ChunkNotPresent:
                     pass
             info( u"Copied {0} entities, {1} tile entities".format(entsCopied, tileEntsCopied) )
-            
-            """'''
-            copyOffset = map(lambda x,y:x-y, destinationPoint, sourcePoint0)
-            if sourceLevel.hasEntities:
-                for sx in range(sourcePoint0[0], sourcePoint1[0]):
-                    for sy in range(sourcePoint0[1], sourcePoint1[1]):
-                        for sz in range(sourcePoint0[2], sourcePoint1[2]):
-                            destX, destZ, destY = copyOffset[0]+sx, copyOffset[2]+sz, copyOffset[1]+sy
-                            entities = sourceLevel.entitiesAt(sx,sy,sz);
-                            tileentities = sourceLevel.tileEntitiesAt(sx,sy,sz);
-                            if entities:
-                                for eTag in entities:
-                                    eTag = deepcopy(eTag)
-                                    #adjust the entity tag's position, making sure to keep its position within the block
-                                    eFloatOffsets = map(lambda pos:pos.value-int(pos.value), eTag[Pos])
-                                    eTag[Pos] = nbt.TAG_List(map(lambda dest, off: nbt.TAG_Double(dest+off), (destX, destY, destZ), eFloatOffsets))
-                                    self.addEntity(eTag);
-            
-                            if tileentities:
-                                for eTag in tileentities:
-                                    eTag = deepcopy(eTag)
-                                    vals = map(lambda dest: nbt.TAG_Int(dest), (destX, destY, destZ))
-                                    for i,v in zip('xyz',vals): eTag[i]=v;
-                                    self.addTileEntity(eTag);'''"""
-                
+
         
     def removeEntitiesInBox(self, box):
         
-        if not hasattr(self, "Entities"): return;
+        if not self.hasEntities: return 0;
         newEnts = [];
         for ent in self.Entities:
             if map(lambda x:x.value, ent["Pos"]) in box: 
@@ -1353,7 +1297,59 @@ class MCSchematic (MCLevel):
     
     def __str__(self):
         return u"MCSchematic(shape={0}, filename=\"{1}\")".format( self.size, self.filename or u"")
+    
+    def compress(self):
+        #if self.root_tag is not None, then our compressed data must be stale and we need to recompress.
         
+        if self.root_tag is None:
+            return;
+        else:
+            self.packChunkData();
+            
+            buf = StringIO.StringIO()
+            with closing(gzip.GzipFile(fileobj=buf, mode='wb', compresslevel=2)) as gzipper:
+                self.root_tag.save(buf=gzipper)
+            
+            self.compressedTag = buf.getvalue()
+            
+        self.root_tag = None
+        
+    def decompress(self):
+        """called when accessing attributes decorated with @decompress_first"""
+        if self.root_tag != None: return
+        if self.compressedTag is None: 
+            if self.root_tag is None:
+                self.load();
+            else:
+                return;
+        
+        with closing(gzip.GzipFile(fileobj=StringIO.StringIO(self.compressedTag))) as gzipper:
+            try:
+                data = gzipper.read();
+                if data == None: return;
+            except Exception, e:
+                #error( u"Error reading compressed data, assuming uncompressed: {0}".format(e) )
+                data = self.compressedTag
+            
+
+        try:       
+            self.root_tag = nbt.load(buf=fromstring(data, dtype='uint8'));
+        except Exception, e:
+            error( u"Malformed NBT data in file: {0} ({1})".format(self.filename, e) )
+            if self.world: self.world.malformedChunk(*self.chunkPosition);
+            raise ChunkMalformed, self.filename
+            
+        try:
+            self.shapeChunkData()
+        except KeyError, e:
+            error( u"Incorrect chunk format in file: {0} ({1})".format(self.filename, e) )
+            if self.world: self.world.malformedChunk(*self.chunkPosition);
+            raise ChunkMalformed, self.filename
+        pass
+         
+        self.dataIsPacked = True; 
+    
+     
     #these refer to the blocks array instead of the file's height because rotation swaps the axes
     # this will have an impact later on when editing schematics instead of just importing/exporting
     @property
@@ -1411,6 +1407,8 @@ class MCSchematic (MCLevel):
     @Materials.setter
     @decompress_first     
     def Materials(self, val):
+        if not Materials in self.root_tag:
+            self.root_tag[Materials] = TAG_String()
         self.root_tag[Materials].value = val
     
     @classmethod
@@ -1559,7 +1557,6 @@ class MCSchematic (MCLevel):
         self.Data = self.Data[:,:,::-1]; 
         
     def flipNorthSouth(self):
-        " xxx flip entities "
         blockrotation.FlipNorthSouth(self.Blocks, self.Data);
         self.Blocks = self.Blocks[::-1,:,:]; #x=-x
         self.Data = self.Data[::-1,:,:]; 
@@ -1636,12 +1633,12 @@ class MCSchematic (MCLevel):
     def setBlockDataAt(self, x,y,z, newdata):
         if x<0 or y<0 or z<0: return 0
         if x>=self.Width or y>=self.Height or z>=self.Length: return 0;
-        self.Data[x,z,y] |= (newdata & 0xf) << 4;        
+        self.Data[x,z,y] = (newdata & 0xf);        
 
     def blockDataAt(self, x, y, z):
         if x<0 or y<0 or z<0: return 0
         if x>=self.Width or y>=self.Height or z>=self.Length: return 0;
-        return (self.Data[x,z,y] & 0xf0) >> 4;
+        return self.Data[x,z,y];
 
     def entitiesAt(self, x, y, z):
         entities = [];
@@ -1692,7 +1689,7 @@ class INVEditChest(MCSchematic):
     Width = 1
     Height = 1
     Length = 1
-    Blocks = array([[[materials.materialNamed("Chest")]]], 'uint8');
+    Blocks = array([[[materials.Chest.ID]]], 'uint8');
     Data = array([[[0]]], 'uint8');
     Entities = TAG_List();
     
@@ -1764,19 +1761,22 @@ class InfdevChunk(MCLevel):
     arrays are automatically unpacked from nibble arrays into byte arrays 
     for better handling.
     """
+    hasEntities = True
     
     @property
     def filename(self):
-        cx,cz = self.chunkPosition
-        rx,rz = cx>>5,cz>>5
-        rf = self.world.regionFiles[rx,rz]
-        offset = rf.getOffset(cx&0x1f,cz&0x1f)
-        return u"{region} index {index} offset {offset} sector {sector}".format(
-            region=os.path.basename(self.world.regionFilename(rx,rz)), 
-            sector=offset>>8, 
-            index=4*((cx&0x1f)+((cz&0x1f)*32)), 
-            offset=offset)
-        
+        if self.world.version:
+            cx,cz = self.chunkPosition
+            rx,rz = cx>>5,cz>>5
+            rf = self.world.regionFiles[rx,rz]
+            offset = rf.getOffset(cx&0x1f,cz&0x1f)
+            return u"{region} index {index} offset {offset} sector {sector}".format(
+                region=os.path.basename(self.world.regionFilename(rx,rz)), 
+                sector=offset>>8, 
+                index=4*((cx&0x1f)+((cz&0x1f)*32)), 
+                offset=offset)
+        else:
+            return self.chunkFilename
     def __init__(self, world, chunkPosition, create = False):
         self.world = world;
         self.chunkPosition = chunkPosition;
@@ -1793,13 +1793,20 @@ class InfdevChunk(MCLevel):
         else:
             if not world.containsChunk(*chunkPosition):
                 raise ChunkNotPresent("Chunk {0} not found", self.chunkPosition)
-
+    
+    def compressedSize(self):
+        "return the size of the compressed data for this level, in bytes."
+        self.compress();
+        if self.compressedTag is None: return 0
+        return len(self.compressedTag)
+    
+    
     def compress(self):
         
         
         if not self.dirty: 
-            #if we are not dirty and we have compressed data, just throw the 
-            #uncompressed tag structure away
+            #if we are not dirty, just throw the 
+            #uncompressed tag structure away. rely on the OS disk cache.
             self.root_tag = None
         else:
             self.packChunkData()
@@ -1896,20 +1903,19 @@ class InfdevChunk(MCLevel):
         
         if self.dirty:
             debug( u"Saving chunk: {0}".format(self) )
-            self.world._saveChunk(self, self.compressedTag)
+            self.world._saveChunk(self)
                 
             debug( u"Saved chunk {0}".format( self ) )
             
             self.dirty = False;
             
     def load(self):
-        """ If the chunk is unloaded, reads the chunk from the region file, 
-        immediately decompressing it."""
+        """ If the chunk is unloaded, calls world._loadChunk to set root_tag and 
+        compressedTag, then unpacks the chunk fully"""
+        
         if self.root_tag is None and self.compressedTag is None:
             try:
-                data = self.world._loadChunk(self)
-                if data is None: raise ChunkNotPresent
-                self.root_tag = nbt.load(buf=data)
+                self.world._loadChunk(self)
                 self.dataIsPacked = True; 
                 self.shapeChunkData()
                 self.unpackChunkData()
@@ -1920,7 +1926,8 @@ class InfdevChunk(MCLevel):
                 raise ChunkMalformed, self.filename
             
             self.world.chunkDidLoad(self) 
-    
+            self.world.chunkDidDecompress(self);
+                
     def unload(self):
         """ Frees the chunk's memory. Will not save to disk. Unloads completely
         if the chunk does not need to be saved."""
@@ -1982,16 +1989,21 @@ class InfdevChunk(MCLevel):
         """ for internal use.  call getChunk and compressChunk to load, compress, and unpack chunks automatically """
         for key in (SkyLight, BlockLight, Data):
             dataArray = self.root_tag[Level][key].value
-            assert dataArray.shape[2] == self.world.ChunkHeight/2;
-            unpackedData = insert(dataArray[...,newaxis], 0, 0, 3)  
+            s = dataArray.shape
+            assert s[2] == self.world.ChunkHeight/2;
+            #unpackedData = insert(dataArray[...,newaxis], 0, 0, 3)  
             
-            #unpack data
-            unpackedData[...,0] = unpackedData[...,1]&0xf
-            unpackedData[...,1] >>=4  
-            #unpackedData[...,1] &= 0x0f   
+            unpackedData = zeros( (s[0], s[1], s[2]*2), dtype='uint8')
+            
+            unpackedData[:,:,::2] = dataArray
+            unpackedData[:,:,::2] &= 0xf
+            unpackedData[:,:,1::2] = dataArray
+            unpackedData[:,:,1::2] >>= 4
             
             
-            self.root_tag[Level][key].value=unpackedData.reshape(16,16,self.world.ChunkHeight)
+            
+            
+            self.root_tag[Level][key].value=unpackedData
             self.dataIsPacked = False;
             
     def packChunkData(self):
@@ -2147,8 +2159,9 @@ class MCRegionFile(object):
             self._file.close()
             self._file = None
             
-    def __init__(self, path):
+    def __init__(self, path, regionCoords):
         self.path = path
+        self.regionCoords = regionCoords
         self._file = None
         if not os.path.exists(path):
             file(path, "w").close()
@@ -2173,6 +2186,7 @@ class MCRegionFile(object):
             self.offsets = fromstring(offsetsData, dtype='>u4')
             self.modTimes = fromstring(modTimesData, dtype='>u4')
             
+        needsRepair = False
         
         for offset in self.offsets:
             sector = offset >> 8
@@ -2181,13 +2195,74 @@ class MCRegionFile(object):
             for i in xrange(sector, sector+count):
                 if i >= len(self.freeSectors): raise RegionMalformed, "Region file offset table points to sector {0} (past the end of the file)".format(i)
                 if self.freeSectors[i] is False:
-                    raise RegionMalformed, "Region file has overlapping chunks!".format(path)
+                    needsRepair = True
                 self.freeSectors[i] = False
+        
+        if needsRepair:
+            self.repair()
             
         info("Found region file {file} with {used}/{total} sectors used and {chunks} chunks present".format(
              file=os.path.basename(path), used=len(self.freeSectors)-sum(self.freeSectors), total=len(self.freeSectors), chunks=sum(self.offsets>0)))
-        
-    def readChunk(self, cx, cz):
+    
+    def repair(self):
+        lostAndFound = {}
+        _freeSectors = [True] * len(self.freeSectors)
+        _freeSectors[0] = _freeSectors[1] = False 
+        deleted = 0
+        recovered = 0
+        info("Beginning repairs on {file} ({chunks} chunks)".format(file=os.path.basename(self.path), chunks=sum(self.offsets>0)))
+        rx,rz = self.regionCoords
+        for index, offset in enumerate(self.offsets):
+            if offset:
+                cx = index & 0x1f
+                cz = index >> 5
+                cx += rx << 5
+                cz += rz << 5
+                sectorStart = offset >> 8
+                sectorCount = offset & 0xff
+                
+                try:
+                    compressedData = self._readChunk(cx,cz)
+                    if compressedData is None: 
+                        raise RegionMalformed, "Failed to read chunk data for {0}".format((cx,cz))
+                    
+                    chunkTag = nbt.load(buf=self.decompressSectors(compressedData))
+                    lev = chunkTag["Level"]
+                    xPos = lev["xPos"].value
+                    zPos = lev["zPos"].value
+                    overlaps = False
+                    
+                    for i in xrange(sectorStart, sectorStart+sectorCount):
+                        if _freeSectors[i] is False:
+                            overlaps = True
+                        _freeSectors[i] = False
+                        
+                        
+                    if xPos != cx or zPos != cz or overlaps:
+                        lostAndFound[xPos,zPos] = compressedData[5:] # chop off header
+                        
+                        if (xPos, zPos) != (cx,cz):
+                            raise RegionMalformed, "Chunk {found} was found in the slot reserved for {expected}".format(found=(xPos, zPos), expected=(cx,cz))
+                        else:
+                            raise RegionMalformed, "Chunk {found} (in slot {expected}) has overlapping sectors with another chunk!".format(found=(xPos, zPos), expected=(cx,cz))
+                        
+                    
+                         
+                except Exception, e:
+                    info("Unexpected chunk data at sector {sector} ({exc})".format(sector=sectorStart, exc=e))
+                    self.setOffset(cx, cz, 0)
+                    deleted += 1
+                    
+        for cPos, foundData in lostAndFound.iteritems():
+            cx,cz = cPos
+            if self.getOffset(cx,cz) == 0:
+                info("Found chunk {found} and its slot is empty, recovering it".format(found=cPos))
+                self._saveChunk(cx,cz, foundData)
+                recovered += 1
+                
+        info("Repair complete. Removed {0} chunks, recovered {1} chunks, net {2}".format(deleted, recovered, recovered-deleted))
+                        
+    def _readChunk(self, cx, cz):
         cx &= 0x1f
         cz &= 0x1f
         offset = self.getOffset(cx,cz)
@@ -2205,28 +2280,43 @@ class MCRegionFile(object):
             data = f.read(numSectors * self.SECTOR_BYTES)
         assert(len(data) > 0)
         #debug("REGION LOAD {0},{1} sector {2}".format(cx, cz, sectorStart))
-            
-        return self.decompressSectors(data)
+        return data
         
+    def loadChunk(self, chunk):
+        cx,cz = chunk.chunkPosition
+        
+        data = self._readChunk(cx,cz)
+        if data is None: raise ChunkNotPresent, (cx, cz, self)
+        chunk.compressedTag = data[5:]
+        
+        chunk.root_tag = nbt.load(buf=self.decompressSectors(data))
+    
     def decompressSectors(self, data):
         length = struct.unpack_from(">I", data)[0]
         format = struct.unpack_from("B", data, 4)[0]
         data = data[5:length+5]
         if format == self.VERSION_GZIP:
-            with gzip.GzipFile(fileobj=StringIO.StringIO(data)) as gz:
+            with closing(gzip.GzipFile(fileobj=StringIO.StringIO(data))) as gz:
                 return gz.read()
         if format == self.VERSION_DEFLATE:
             return inflate(data)
         
         raise IOError, "Unknown compress format: {0}".format(format)
 
-            
-    def writeChunk(self, cx, cz, data):
+        
+    def saveChunk(self, chunk):
+        cx,cz = chunk.chunkPosition
+        data = chunk.compressedTag
+        self._saveChunk(cx, cz, data)
+        
+    def _saveChunk(self, cx, cz, data):
         cx &= 0x1f
         cz &= 0x1f
         offset = self.getOffset(cx,cz)
         sectorNumber = offset >> 8
         sectorsAllocated = offset & 0xff
+        
+        
         sectorsNeeded = (len(data) + self.CHUNK_HEADER_SIZE) / self.SECTOR_BYTES + 1;
         if sectorsNeeded >= 256: return
         
@@ -2302,13 +2392,17 @@ class MCRegionFile(object):
     
              
     def getOffset(self, cx, cz):
+        cx&=0x1f;
+        cz&=0x1f
         return self.offsets[cx+cz*32]
     
     def setOffset(self, cx, cz, offset):
+        cx &= 0x1f;
+        cz &= 0x1f
         self.offsets[cx+cz*32] = offset
-        f = self.file
-        f.seek(0)
-        f.write(self.offsets.tostring())
+        with self.file as f:
+            f.seek(0)
+            f.write(self.offsets.tostring())
             
             
             
@@ -2339,6 +2433,14 @@ class MCInfdevOldLevel(MCLevel):
     ChunkHeight = 128
     
     compressMode = MCRegionFile.VERSION_DEFLATE
+    
+    @property
+    def compressMode(self):
+        if self.version:
+            return MCRegionFile.VERSION_DEFLATE
+        else:
+            return MCRegionFile.VERSION_GZIP
+            
     def compressTag(self, root_tag):
         if self.compressMode == MCRegionFile.VERSION_GZIP:
             buf = StringIO.StringIO()
@@ -2354,7 +2456,7 @@ class MCInfdevOldLevel(MCLevel):
     
     def decompressTag(self, data):
         if self.compressMode == MCRegionFile.VERSION_GZIP:
-            with gzip.GzipFile(fileobj=StringIO.StringIO(data)) as gz:
+            with closing(gzip.GzipFile(fileobj=StringIO.StringIO(data))) as gz:
                 return nbt.load(buf=gz.read())
         if self.compressMode == MCRegionFile.VERSION_DEFLATE:
             return nbt.load(buf=inflate(data))
@@ -2563,7 +2665,7 @@ class MCInfdevOldLevel(MCLevel):
          
         
         self.preloadDimensions();
-        self.preloadRegions();
+        #self.preloadChunkPositions();
        
     def loadLevelDat(self, create, random_seed, last_played):
         
@@ -2610,10 +2712,16 @@ class MCInfdevOldLevel(MCLevel):
         rz = cz >> 5
         rf = self.regionFiles.get( (rx,rz) )
         if rf: return rf
-        rf = MCRegionFile(self.regionFilename(rx, rz))
+        rf = MCRegionFile(self.regionFilename(rx, rz), (rx,rz))
         self.regionFiles[rx,rz] = rf;
         return rf
 
+    def preloadChunkPositions(self):
+        if self.version == 19132:
+            self.preloadRegions()
+        else:
+            self.preloadChunkPaths()
+        
     def preloadRegions(self):
         info( u"Scanning for regions..." )
         self._allChunks = set()
@@ -2626,58 +2734,67 @@ class MCInfdevOldLevel(MCLevel):
         for filename in regionFiles:
             bits = filename.split('.')
             if len(bits) < 4 or bits[0] != 'r' or bits[3] != "mcr": continue
+            
+            try:
+                rx, rz = map(int, bits[1:3])
+            except ValueError:
+                continue
+            
+            regionFile = MCRegionFile(os.path.join(regionDir, filename), (rx,rz))
+            
+            if regionFile.offsets.any():
+                self.regionFiles[rx,rz] = regionFile
                 
-            rx, rz = map(int, bits[1:3])
+                for index, offset in enumerate(regionFile.offsets):
+                    if offset:
+                        cx = index & 0x1f
+                        cz = index >> 5
+                        
+                        cx += rx << 5
+                        cz += rz << 5
+                        
+                        self._allChunks.add( (cx,cz) )
+            else:
+                info( u"Removing empty region file {0}".format(filename) )
+                regionFile.close()
+                os.unlink(regionFile.path)
             
-            regionFile = MCRegionFile(os.path.join(regionDir, filename))
             
-            self.regionFiles[rx,rz] = regionFile
             
-            for index, offset in enumerate(regionFile.offsets):
-                if offset:
-                    cx = index & 0x1f
-                    cz = index >> 5
-                    
-                    cx += rx << 5
-                    cz += rz << 5
-                    
-                    self._allChunks.add( (cx,cz) )
-                    
+    def preloadChunkPaths(self):
+        
+        
+        
+        info( u"Scanning for chunks..." )
+        worldDirs = os.listdir(self.worldDir);
+        self._allChunks = set()
             
-#    def preloadChunkPaths(self):
-#        
-#        
-#        
-#        info( u"Scanning for chunks..." )
-#        worldDirs = os.listdir(self.worldDir);
-#        self._allChunks = set()
-#            
-#        for dirname in worldDirs:
-#            if(dirname in self.dirhashes):
-#                subdirs = os.listdir(os.path.join(self.worldDir, dirname));
-#                for subdirname in subdirs:
-#                    if(subdirname in self.dirhashes):
-#                        filenames = os.listdir(os.path.join(self.worldDir, dirname, subdirname));
-#                        #def fullname(filename):
-#                            #return os.path.join(self.worldDir, dirname, subdirname, filename);
-#                        
-#                        #fullpaths = map(fullname, filenames);
-#                        bits = map(lambda x:x.split('.'), filenames);
-#
-#                        chunkfilenames = filter(lambda x:(len(x) == 4 and x[0].lower() == 'c' and x[3].lower() == 'dat'), bits)
-#                        
-#                        for c in chunkfilenames:
-#                            try:
-#                                cx, cz = (self.decbase36(c[1]), self.decbase36(c[2]))
-#                            except Exception, e:
-#                                info( u'Skipped file {0} ({1})'.format(u'.'.join(c), e) )
-#                                continue
-#                            
-#                            self._allChunks.add( (cx,cz) )
-#                            
-#                            #
-#                            
-#        info( u"Found {0} chunks.".format(len(self._allChunks)) )
+        for dirname in worldDirs:
+            if(dirname in self.dirhashes):
+                subdirs = os.listdir(os.path.join(self.worldDir, dirname));
+                for subdirname in subdirs:
+                    if(subdirname in self.dirhashes):
+                        filenames = os.listdir(os.path.join(self.worldDir, dirname, subdirname));
+                        #def fullname(filename):
+                            #return os.path.join(self.worldDir, dirname, subdirname, filename);
+                        
+                        #fullpaths = map(fullname, filenames);
+                        bits = map(lambda x:x.split('.'), filenames);
+
+                        chunkfilenames = filter(lambda x:(len(x) == 4 and x[0].lower() == 'c' and x[3].lower() == 'dat'), bits)
+                        
+                        for c in chunkfilenames:
+                            try:
+                                cx, cz = (self.decbase36(c[1]), self.decbase36(c[2]))
+                            except Exception, e:
+                                info( u'Skipped file {0} ({1})'.format(u'.'.join(c), e) )
+                                continue
+                            
+                            self._allChunks.add( (cx,cz) )
+                            
+                            #
+                            
+        info( u"Found {0} chunks.".format(len(self._allChunks)) )
 
     def compress(self):
         self.compressAllChunks();
@@ -2714,23 +2831,55 @@ class MCInfdevOldLevel(MCLevel):
                 oldestChunk = self.loadedChunkQueue[0];
                 oldestChunk.unload(); #calls chunkDidUnload
     
+    @property
+    @decompress_first
+    def version(self):
+        if 'version' in self.root_tag['Data']:
+            return self.root_tag['Data']['version'].value
+        else:
+            return None
+            
+    
     def _loadChunk(self, chunk):
-        # xxx changed to return the decompressed data
+        """ load the chunk data from disk, and set the chunk's compressedTag
+         and root_tag"""
+        
         cx,cz = chunk.chunkPosition
-        regionFile = self.getRegionForChunk(cx,cz)
         try:
-            data = regionFile.readChunk(cx,cz)
+            if self.version:
+                regionFile = self.getRegionForChunk(cx,cz)
+                regionFile.loadChunk(chunk)
+                
+            else:
+                with file(chunk.filename, 'rb') as f:
+                    cdata = f.read()
+                    chunk.compressedTag = cdata
+                    with closing(gzip.GzipFile(fileobj=StringIO.StringIO(cdata))) as gz:
+                        data = gz.read()
+                        chunk.root_tag = nbt.load(buf=data)
+                
         except Exception, e:
             raise ChunkMalformed, "Chunk {0} had an error: {1!r}".format(chunk.chunkPosition, e)
-        if data is None:
-            raise ChunkMalformed, "Chunk {0} not found".format(chunk.chunkPosition)
-        return data
         
     
-    def _saveChunk(self, chunk, data):
+    def _saveChunk(self, chunk):
         cx,cz = chunk.chunkPosition
-        regionFile = self.getRegionForChunk(cx,cz)
-        regionFile.writeChunk(cx,cz, data)
+        if self.version:
+            regionFile = self.getRegionForChunk(cx,cz)
+            
+            regionFile.saveChunk(chunk)
+        else:
+            dir1 = os.path.dirname(chunk.filename)
+            dir2 = os.path.dirname(dir1)
+            
+            if not os.path.exists(dir2):
+                os.mkdir(dir2)
+            if not os.path.exists(dir1):
+                os.mkdir(dir1)
+            
+            chunk.compress()
+            with file(chunk.filename, 'wb') as f:
+                f.write(chunk.compressedTag)
             
     def discardAllChunks(self):
         """ clear lots of memory, fast. """
@@ -2777,7 +2926,7 @@ class MCInfdevOldLevel(MCLevel):
     
     def regionFilename(self, rx, rz):
         s= os.path.join(self.regionDir,
-                                     "r.%s.%s.mcr" % (self.base36(rx), self.base36(rz)));
+                                     "r.%s.%s.mcr" % ((rx), (rz)));
         return s;
     
     def chunkFilename(self, x, z):
@@ -2785,10 +2934,6 @@ class MCInfdevOldLevel(MCLevel):
                                      "c.%s.%s.dat" % (self.base36(x), self.base36(z)));
         return s;
                  
-    def chunkFilepath(self, cx, cz):
-        return self.chunkFilename(cx,cz)
-        #return os.path.join( self.worldDir, self.chunkFilename(cx, cz) )
-
     def blockLightAt(self, x, y, z):
         if y < 0 or y >= self.Height: return 0
         zc=z >> 4
@@ -2919,7 +3064,7 @@ class MCInfdevOldLevel(MCLevel):
         """Returns the number of chunks in the level. May initiate a costly
         chunk scan."""
         if self._allChunks is None:
-            self.preloadRegions()
+            self.preloadChunkPositions()
         return len(self._allChunks)
            
     @property
@@ -2927,7 +3072,7 @@ class MCInfdevOldLevel(MCLevel):
         """Iterates over (xPos, zPos) tuples, one for each chunk in the level.
         May initiate a costly chunk scan."""
         if self._allChunks is None:
-            self.preloadRegions()
+            self.preloadChunkPositions()
         return self._allChunks.__iter__();
     
     
@@ -3360,23 +3505,32 @@ class MCInfdevOldLevel(MCLevel):
         info( "Removed {0} tile entities".format(count) )
         return count;
             
-    def fillBlocks(self, box, blockType, blockData = 0, blocksToReplace = None):
+    def fillBlocks(self, box, blockInfo, blocksToReplace = []):
         if box is None:
             chunkIterator = self.getAllChunkSlices() 
         else:
             chunkIterator = self.getChunkSlices(box)
-            
+        
+        #shouldRetainData = (not blockInfo.hasAlternate and not any([b.hasAlternate for b in blocksToReplace]))
+        #if shouldRetainData:
+        #    info( "Preserving data bytes" )
+        shouldRetainData = False #xxx old behavior overwrote blockdata with 0 when e.g. replacing water with lava
+        
+        info("Replacing {0} with {1}".format(blocksToReplace, blockInfo))
+        
         changesLighting = True
             
-        if blocksToReplace != None:
-            newAbsorption = self.materials.lightAbsorption[blockType]
-            oldAbsorptions = map(self.materials.lightAbsorption.__getitem__, blocksToReplace)
+        if len(blocksToReplace):
+            blocktable = self.blockReplaceTable(blocksToReplace)
+            
+            newAbsorption = self.materials.lightAbsorption[blockInfo.ID]
+            oldAbsorptions = [self.materials.lightAbsorption[b.ID] for b in blocksToReplace]
             changesLighting = False
             for a in oldAbsorptions:
                 if a != newAbsorption: changesLighting = True;
                 
-            newEmission = self.materials.lightEmission[blockType]
-            oldEmissions = map(self.materials.lightEmission.__getitem__, blocksToReplace)
+            newEmission = self.materials.lightEmission[blockInfo.ID]
+            oldEmissions = [self.materials.lightEmission[b.ID] for b in blocksToReplace]
             for a in oldEmissions:
                 if a != newEmission: changesLighting = True;
         
@@ -3391,32 +3545,35 @@ class MCInfdevOldLevel(MCLevel):
                 info( u"Chunk {0}...".format(i) )
                 
             blocks = chunk.Blocks[slices] 
-            mask = None
+            data = chunk.Data[slices]
+            mask = slice(None)
             
             needsLighting = changesLighting;
               
-            if blocksToReplace != None:
-                mask = functools.reduce(operator.or_, (blocks==x for x in blocksToReplace))
-                
+            if len(blocksToReplace):
+                mask = blocktable[blocks,data]
+            
                 blockCount = mask.sum()
                 replaced += blockCount;
                 
                 #don't waste time relighting and copying if the mask is empty
                 if blockCount:
-                    blocks[:][mask] = blockType
-                    chunk.Data[slices][mask] = blockData
+                    blocks[:][mask] = blockInfo.ID
+                    if not shouldRetainData:
+                        data[mask] = blockInfo.blockData
                 else:
                     skipped += 1;
                     needsLighting = False;
                 
             else:
-                blocks[:] = blockType
-                chunk.Data[slices] = blockData
+                blocks[:] = blockInfo.ID
+                if not shouldRetainData:
+                    data[:] = blockInfo.blockData
                 
             chunk.chunkChanged(needsLighting);
             chunk.compress();
         
-        if blocksToReplace != None:
+        if len(blocksToReplace):
             info( u"Replace: Skipped {0} chunks, replaced {1} blocks".format(skipped, replaced) )
             
     
@@ -3614,7 +3771,15 @@ class MCInfdevOldLevel(MCLevel):
     def containsChunk(self, cx, cz):
         if self._allChunks is not None: return (cx, cz) in self._allChunks;
         if (cx,cz) in self._loadedChunks: return True;
-        return os.path.exists(self.regionFilename(cx>>5, cz>>5))
+        if self.version:
+            r = (cx>>5, cz>>5)
+            if r in self.regionFiles:
+                if self.regionFiles[r].getOffset(cx,cz):
+                    return True
+                    
+            return False
+        else:
+            return os.path.exists(self.chunkFilename(cx, cz))
     
     def malformedChunk(self, cx, cz):
         debug( u"Forgetting malformed chunk {0} ({1})".format((cx,cz), self.chunkFilename(cx,cz)) )
@@ -3659,15 +3824,18 @@ class MCInfdevOldLevel(MCLevel):
         if (cx,cz) in self._loadedChunks: 
             del self._loadedChunks[(cx,cz)]
         
-        r = cx>>5,cz>>5
-        rf = self.regionFiles.get(r)
-        if rf:
-            rf.setOffset(cx&0x1f , cz&0x1f, 0)
-            if (rf.offsets == 0).all():
-                rf.close()
-                os.unlink(rf.path)
-                del self.regionFiles[r]
-                
+        if self.version:
+            r = cx>>5,cz>>5
+            rf = self.regionFiles.get(r)
+            if rf:
+                rf.setOffset(cx&0x1f , cz&0x1f, 0)
+                if (rf.offsets == 0).all():
+                    rf.close()
+                    os.unlink(rf.path)
+                    del self.regionFiles[r]
+        else:
+            os.unlink(self.chunkFilename(cx,cz))
+            
         self._bounds = None
         
     def deleteChunksInBox(self, box):
@@ -3789,7 +3957,7 @@ class MCAlphaDimension (MCInfdevOldLevel):
     dimensionNames = { -1: "Nether" };
     @property
     def displayName(self):
-        return "{0} ({1})".format(self.parentWorld.displayName, self.dimensionNames[self.dimNo])
+        return u"{0} ({1})".format(self.parentWorld.displayName, self.dimensionNames[self.dimNo])
     
     def saveInPlace(self, saveSelf = False):
         """saving the dimension will save the parent world, which will save any
@@ -3804,19 +3972,13 @@ class MCAlphaDimension (MCInfdevOldLevel):
 class ZipSchematic (MCInfdevOldLevel):
     def __init__(self, filename):
         tempdir = tempfile.mktemp("schematic")
-        self.filename = filename
-        self.worldDir = tempdir
-        
-        #used to limit memory usage
-        self.loadedChunkQueue = dequeset()
-        self.decompressedChunkQueue = dequeset()
-        
         zf = ZipFile(filename)
         self.zipfile = zf
-        self._loadedChunks = {};
-        self._allChunks = None
-        self.dimensions = {};
-        self.loadLevelDat(False, 0, 0)
+        zf.extract("level.dat", tempdir)
+        
+        MCInfdevOldLevel.__init__(self, tempdir)
+        
+        self.filename = filename
         
         try:
             schematicDat = os.path.join(tempdir, "schematic.dat")
@@ -3835,17 +3997,21 @@ class ZipSchematic (MCInfdevOldLevel):
             
     def __del__(self):
         self.zipfile.close()
-    
+        MCInfdevOldLevel.__del__(self)
+        
     @classmethod
     def _isLevel(cls, filename):
         return is_zipfile(filename)
     
     def _loadChunk(self, chunk):
-        data = self.zipfile.read(chunk.chunkFilename)
-        with closing(gzip.GzipFile(fileobj=StringIO.StringIO(data))) as gz:
-            return gz.read()
+        if self.version:
+            return MCInfdevOldLevel._loadChunk(self, chunk)
+        else:
+            cdata = self.zipfile.read(chunk.chunkFilename)
+            chunk.compressedTag = cdata
+            chunk.decompress()
         
-    def _saveChunk(self, chunk, data):
+    def _saveChunk(self, chunk):
         raise NotImplementedError, "Cannot save zipfiles yet!"
         
     def saveInPlace(self):
@@ -3853,8 +4019,14 @@ class ZipSchematic (MCInfdevOldLevel):
     
     def containsChunk(self, cx, cz):
         return (cx,cz) in self.allChunks
-        
+    
     def preloadRegions(self):
+        self.zipfile.extractall(self.worldDir)
+        self.regionFiles = {}
+        
+        MCInfdevOldLevel.preloadRegions(self)
+        
+    def preloadChunkPaths(self):
         info( u"Scanning for chunks..." )
         self._allChunks = set()
         
@@ -3896,7 +4068,8 @@ class MCIndevLevel(MCLevel):
     
     """ IMPORTANT: self.Blocks and self.Data are indexed with [x,z,y] via axis 
     swapping to be consistent with infinite levels."""
-
+    hasEntities = True
+        
     def setPlayerSpawnPosition(self, pos):
         assert len(pos) == 3
         self.Spawn = array(pos);
@@ -4030,7 +4203,7 @@ class MCIndevLevel(MCLevel):
                                
                                8, 9, 10, 11, 12, 13, 14, 15]);
                                
-        torchIndexes = (self.Blocks == self.materials.materialNamed("Torch"))
+        torchIndexes = (self.Blocks == self.materials.Torch.ID)
         info( u"Rotating torches: {0}".format( len(torchIndexes.nonzero()[0]) ) )
         self.Data[torchIndexes] = torchRotation[self.Data[torchIndexes]]
         
@@ -4191,7 +4364,9 @@ class MCJavaLevel(MCLevel):
         info( u"MCJavaLevel created for potential level of size " + str( (w,l,h) ) )
             
         blockCount = h*l*w
-        if blockCount > data.shape[0]: raise ValueError, "Level file does not contain enough blocks!"
+        if blockCount > data.shape[0]: 
+            raise ValueError,  "Level file does not contain enough blocks! Try putting the size into the filename, e.g. server_level_{w}_{l}_{h}.dat".format(w=w,l=l,h=h);
+        
         
         blockOffset = data.shape[0]-blockCount
         blocks = data[blockOffset:blockOffset+blockCount]
@@ -4214,23 +4389,13 @@ class MCJavaLevel(MCLevel):
 
             
     def saveInPlace(self):
-        #f = file(self.filename, 'rb')
-        #filedata = f.read()
-        #f.close();
-        
-##        
-##        blockstr = self.Blocks.tostring()
-##        firstdata = filedata[0:self.blockOffset]
-##        lastdata = filedata[self.blockOffset+len(blockstr):];
 
         s = StringIO.StringIO()
         if self.compressed:
             g = gzip.GzipFile(fileobj=s, mode='wb');
         else:
             g = s;
-##            g.write(firstdata);
-##            g.write(blockstr);
-##            g.write(lastdata);
+
         g.write(self.filedata.tostring());
         g.flush();
         g.close()
@@ -4273,7 +4438,7 @@ def testIndevLevels():
     indevlevel = MCLevel.fromFile("hueg.mclevel")
     indevlevel.copyBlocksFrom(srclevel, BoundingBox((0,0,0), (64,64,64,)), (0,0,0) ) 
     assert(all(indevlevel.Blocks[0:64,0:64,0:64] == srclevel.Blocks[0:64,0:64,0:64])) 
-    indevlevel.fillBlocks(BoundingBox((0,0,0), (64,64,64,)), 12, 0, [1,2])
+    indevlevel.fillBlocks(BoundingBox((0,0,0), (64,64,64,)), indevlevel.materials.Sand, [indevlevel.materials.Stone, indevlevel.materials.Dirt])
     indevlevel.saveInPlace()
     
 def testAlphaLevels():
@@ -4302,10 +4467,10 @@ def testAlphaLevels():
     except Exception, e:
         traceback.print_exc();
         print e;
-    level.fillBlocks( BoundingBox((-11, 0, -7), (38, 128, 25)) , 5);
+    level.fillBlocks( BoundingBox((-11, 0, -7), (38, 128, 25)) , indevlevel.materials.WoodPlanks);
     c = level.getChunk( 0, 0)
     assert all(c.Blocks == 5)
-    level.fillBlocks( BoundingBox((-11, 0, -7), (38, 128, 25)) , 5, 0, [2,3]);
+    level.fillBlocks( BoundingBox((-11, 0, -7), (38, 128, 25)) , indevlevel.materials.WoodPlanks, [indevlevel.materials.Dirt, indevlevel.materials.Grass]);
     #print b.shape
     #raise SystemExit
     cx, cz = -3,-1;

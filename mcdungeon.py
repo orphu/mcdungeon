@@ -396,7 +396,7 @@ class Dungeon (object):
                 if Vec(x,y,z) in self.blocks:
                     mat = self.blocks[Vec(x,y,z)].material
                     # 3D perlin moss!
-                    if (mat.name == 'Cobblestone'):
+                    if (mat.name == 'cobblestone'):
                         if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
                             mat = materials.MossStone
                         else:
@@ -422,7 +422,7 @@ class Dungeon (object):
                 if Vec(x,y,z) in self.blocks:
                     mat = self.blocks[Vec(x,y,z)].material
                     # 3D perlin moss!
-                    if (mat.name == 'Cobblestone'):
+                    if (mat.name == 'cobblestone'):
                         if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
                             mat = materials.MossStone
                         else:
@@ -452,8 +452,8 @@ class Dungeon (object):
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
                 chunk = world.getChunk(chunk_x, chunk_z)
-                # Heightmap is a good starting place, but I need to look down through
-                # foliage.
+                # Heightmap is a good starting place, but I need to look 
+                # down through foliage.
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
                 while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):
                     y -= 1
@@ -490,7 +490,7 @@ class Dungeon (object):
             # 3D perlin moss!
             mat = block.material
             dat = block.data
-            if (mat.name == 'Cobblestone'):
+            if (mat.name == 'cobblestone'):
                 if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
                     mat = materials.MossStone
                 else:
@@ -530,6 +530,7 @@ try:
 except:
     print "Failed to open world:",args.world
     sys.exit(1)
+print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
 print "Startup compete. "
 

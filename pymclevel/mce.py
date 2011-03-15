@@ -22,8 +22,6 @@ class PlayerNotFound(RuntimeError): pass
 
 class mce(object):
     """
-    Usage:
-    
     Block commands:
        {commandPrefix}clone <sourceBox> <destPoint> [noair] [nowater]
        {commandPrefix}fill <blockType> [ <box> ]
@@ -115,6 +113,7 @@ class mce(object):
         "load",
         "reload",
         "dimension",
+        "repair",
         
         "quit",
         "exit",
@@ -203,29 +202,23 @@ class mce(object):
         
         return (x,y,z)
     
-    def readBlockType(self, command):
+    def readBlockInfo(self, command):
         keyword = command.pop(0)
         
-        def blocksMatching(search):
-            if search in self.level.materials.names:
-                #exact match
-                return [search]
-            return filter(lambda x:search.lower() in x.lower(), self.level.materials.names)
-        
-        matches = blocksMatching(keyword)
-        blockType = None
+        matches = self.level.materials.blocksMatching(keyword)
+        blockInfo = None
         
         if len(matches):
             if len(matches) == 1:
-                blockType = self.level.materials.materialNamed(matches[0])
+                blockInfo = matches[0]
 
             #eat up more words that possibly specify a block.  stop eating when 0 matching blocks.
             while len(command):
-                newMatches = blocksMatching(keyword + " " + command[0]);
+                newMatches = self.level.materials.blocksMatching(keyword + " " + command[0]);
                 
                 
                 if len(newMatches) == 1:
-                    blockType = self.level.materials.materialNamed(newMatches[0])
+                    blockInfo = newMatches[0]
                 if len(newMatches) > 0:
                     matches = newMatches
                     keyword = keyword + " " + command.pop(0)
@@ -236,23 +229,28 @@ class mce(object):
             
         else:
             try:
-                blockType = int(keyword);
-                blockType = blockType & 0xff
+                data = 0
+                if ":" in keyword:
+                    blockID, data = map(int, keyword.split(":"))
+                else:
+                    blockID = int(keyword)
+                blockInfo = self.level.materials.blockWithID(blockID, data)
+                
             except ValueError:
-                blockType = None;
+                blockInfo = None;
         
-        if blockType is None:
+        if blockInfo is None:
                 print "Ambiguous block specifier: ", keyword 
                 if len(matches):
                     print "Matches: "
                     for m in matches:
-                        if m == "Future Block!": continue
-                        print "{0:3}: {1}".format(self.level.materials.materialNamed(m),m)
+                        if m == self.level.materials.defaultName: continue
+                        print "{0:3}:{1:<2} : {2}".format(m.ID, m.blockData, m.name)
                 else:
                     print "No blocks matched."
                 raise BlockMatchError
         
-        return blockType
+        return blockInfo
     
     def readBlocksToCopy(self, command):
         blocksToCopy = range(256);
@@ -359,17 +357,16 @@ class mce(object):
             self.printUsage("fill")
             return;
         
-        blockType = self.readBlockType(command)
-        assert blockType >=0 and blockType < 256
+        blockInfo = self.readBlockInfo(command)
         
         if len(command):
             box = self.readBox(command)
         else:
             box = None
                     
-        print "Filling with {0}".format(self.level.materials.names[blockType])
+        print "Filling with {0}".format(blockInfo.name)
         
-        self.level.fillBlocks(box, blockType)
+        self.level.fillBlocks(box, blockInfo)
         
         
         self.needsSave = True;
@@ -389,12 +386,11 @@ class mce(object):
             self.printUsage("replace")
             return;
         
-        blockType = self.readBlockType(command)
-        assert blockType >=0 and blockType < 256
+        blockInfo = self.readBlockInfo(command)
+        
         if command[0].lower() == "with": 
             command.pop(0)
-        newBlockType = self.readBlockType(command)
-        assert newBlockType >=0 and newBlockType < 256
+        newBlockInfo = self.readBlockInfo(command)
             
         if len(command):
             box = self.readBox(command)
@@ -402,10 +398,9 @@ class mce(object):
             box = None
 
     
-        print "Replacing {0} with {1}".format(self.level.materials.names[blockType],
-                                              self.level.materials.names[newBlockType])
+        print "Replacing {0} with {1}".format(blockInfo.name, newBlockInfo.name)
         
-        self.level.fillBlocks(box, newBlockType, blockData = 0, blocksToReplace = [blockType])
+        self.level.fillBlocks(box, newBlockInfo, blocksToReplace = [blockInfo])
         
         self.needsSave = True;
         print "Done."
@@ -435,24 +430,46 @@ class mce(object):
     Also updates the level's 'SizeOnDisk' field, correcting its size in the
     world select menu.  
     """
-        blockCounts = zeros( (256,), 'uint64')
+        blockCounts = zeros( (4096,), 'uint64')
         sizeOnDisk = 0;
         
         print "Analyzing {0} chunks...".format(self.level.chunkCount)
+        #for input to bincount, create an array of uint16s by 
+        #shifting the data left and adding the blocks
+        
         
         for i, cPos in enumerate(self.level.allChunks, 1):
+            print cPos
             ch = self.level.getChunk(*cPos);
-            counts = bincount(ch.Blocks.ravel())
+            btypes = numpy.array(ch.Data.ravel(), dtype='uint16')
+            btypes <<= 8
+            btypes += ch.Blocks.ravel()
+            counts = bincount(btypes)
+            
             blockCounts[:counts.shape[0]] += counts
             sizeOnDisk += ch.compressedSize();
             ch.unload();
             if i % 100 == 0:
-                print "Chunk {0}...".format( i )
+                logging.info( "Chunk {0}...".format( i ) )
             
-        for i in range(256):
-            if blockCounts[i]:
-                print "{0:30}: {1:10}".format(self.level.materials.names[i], blockCounts[i]);
-        
+        for blockID in range(256):
+            block = self.level.materials.blockWithID(blockID, 0)
+            if block.hasAlternate:
+                for data in range(16):
+                    i = (data << 8) + blockID
+                    if blockCounts[i]:
+                        idstring = "({id}:{data})".format(id=blockID, data=data)
+                        
+                        print "{idstring:9} {name:30}: {count:<10}".format(
+                            idstring=idstring, name=self.level.materials.blockWithID(blockID, data).name, count=blockCounts[i]);
+            
+            else:
+                count = int(sum( blockCounts[(d<<8)+blockID] for d in range(16) ))
+                if count:
+                    idstring = "({id})".format(id=blockID)
+                    print "{idstring:9} {name:30}: {count:<10}".format(
+                          idstring=idstring, name=self.level.materials.blockWithID(blockID, 0).name, count=count);
+            
         print "Size on disk: {0:.3}MB".format(sizeOnDisk / 1048576.0)
         self.level.SizeOnDisk = sizeOnDisk
         self.needsSave = True
@@ -607,7 +624,27 @@ class mce(object):
         print "Dumped {0} signs to {1}".format(signCount, filename);
         
         outFile.close();
+    
+    def _repair(self, command):
+        """
+    repair
+    
+    Attempt to repair inconsistent region files. 
+    MAKE A BACKUP. WILL DELETE YOUR DATA.
+    
+    Scans for and repairs errors in region files:
+        Deletes chunks whose sectors overlap with another chunk
+        Rearranges chunks that are in the wrong slot in the offset table
+        Deletes completely unreadable chunks
         
+    Only usable with region-format saves.
+    """
+        if self.level.version:
+            self.level.preloadRegions()
+            for rf in self.level.regionFiles.itervalues():
+                rf.repair()
+                
+            
     def _removeentities(self, command):
         """
     removeEntities [ [except] [ <EntityID> [ <EntityID> ... ] ] ]
@@ -809,12 +846,12 @@ class mce(object):
         print "Removing grief matter and surface lava above height {0}...".format(box.miny)
         
         self.level.fillBlocks(box,
-                              self.level.materials.materialNamed("Air"),
-                              blocksToReplace=[7,
-                                self.level.materials.materialNamed("Obsidian"),
-                                self.level.materials.materialNamed("Fire"),
-                                self.level.materials.materialNamed("Lava (active)"),
-                                self.level.materials.materialNamed("Lava (still)"),
+                              self.level.materials.Air,
+                              blocksToReplace=[self.level.materials.Bedrock,
+                                self.level.materials.Obsidian,
+                                self.level.materials.Fire,
+                                self.level.materials.LavaActive,
+                                self.level.materials.LavaStill,
                                 ]
                               )
         self.needsSave = True;
@@ -1079,10 +1116,10 @@ class mce(object):
                 return;
         
         if self.level.parentWorld:
-            print "Parent world: {0} ('dimension parent' to return)".format(self.level.parentWorld.displayName);
+            print u"Parent world: {0} ('dimension parent' to return)".format(self.level.parentWorld.displayName);
             
         if len(self.level.dimensions):
-            print "Dimensions in {0}:".format(self.level.displayName)
+            print u"Dimensions in {0}:".format(self.level.displayName)
             for k in self.level.dimensions:
                 print "{0}: {1}".format(k, mclevel.MCAlphaDimension.dimensionNames.get(k, "Unknown"));
         
@@ -1100,7 +1137,6 @@ class mce(object):
     With nothing, prints a list of all blocks.
     """
     
-        print "ID : Block name"
         searchName = None
         if len(command):
             searchName = " ".join(command)
@@ -1111,16 +1147,17 @@ class mce(object):
             else:
                 print "{0:3}: {1}".format(searchNumber, self.level.materials.names[searchNumber])
                 return
-                
-        for i in range(len(self.level.materials.names)):
-            name = self.level.materials.names[i];
-            if name == "Future Block!": return;
-            if searchName:
-                if not (searchName.lower() in name.lower()):
-                #don't print blocks that don't match the given name or number
-                    continue
-                    
-            print "{0:3}: {1}".format(i, name)
+        
+            matches = self.level.materials.blocksMatching(searchName)
+        else:
+            matches = self.level.materials.allBlocks
+        
+        print "{id:9} : {name} {aka}".format(id="(ID:data)", name="Block name", aka="[Other names]")
+        for b in sorted(matches):
+            idstring = "({ID}:{data})".format(ID=b.ID, data=b.blockData)
+            aka = b.aka and " [{aka}]".format(aka=b.aka) or ""
+            
+            print "{idstring:9} : {name} {aka}".format(idstring=idstring, name=b.name, aka=aka)
             
     def printUsage(self, command = ""):
         if command.lower() in self.commands:
@@ -1131,16 +1168,15 @@ class mce(object):
         
     def printUsageAndQuit(self):
         self.printUsage();
-        raise UsageError;
+        raise SystemExit;
     
     def loadWorld(self, world):
-        try:
-            worldNum = int(world)
-            if str(worldNum) == world:
-                self.level = mclevel.loadWorldNumber(worldNum)
-                
-        except ValueError:
-            self.level = mclevel.fromFile(world)
+
+        worldpath = os.path.expanduser(world)
+        if os.path.exists(worldpath):
+            self.level = mclevel.fromFile(worldpath)
+        else:
+            self.level = mclevel.loadWorld(world)
             
                    
                     
@@ -1159,6 +1195,10 @@ class mce(object):
         
         if len(sys.argv):
             world = sys.argv.pop(0)
+            
+            if world.lower() in ("-h", "--help"):
+                self.printUsageAndQuit()
+                
             if len(sys.argv) and sys.argv[0].lower() == "create":
                 #accept the syntax, "mce world3 create"
                 self._create([world]);
@@ -1170,9 +1210,10 @@ class mce(object):
         else:
             self.batchMode = True;
             self.printUsage();
+            
             while True:
                 try:
-                    world = raw_input("Please enter world number or path to world folder: ")
+                    world = raw_input("Please enter world name or path to world folder: ")
                     self.loadWorld(world)
                 except EOFError, e:
                     print "End of input."
@@ -1199,7 +1240,7 @@ class mce(object):
             self.batchMode = True;
             while True:
                 try:
-                    command = raw_input("{0}> ".format(self.level.displayName))
+                    command = raw_input(u"{0}> ".format(self.level.displayName))
                     print
                     self.processCommand(command)
                     
