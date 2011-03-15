@@ -63,7 +63,7 @@ WallSign = Material('Wall Sign','[',RED)
 Water = Material('Water','~',BBLUE)
 Wood = Material('Wood', 'W',RED)
 WoodPlanks = Material('Wooden Plank', '=',RED)
-WoodenDoor = Material('Wooden Door', 'D',RED)
+WoodenDoor = Material('Wooden Door Block', 'D',RED)
 Wool = Material('Wool', 'W',GREY)
 
 _wall = copy(Cobblestone)
