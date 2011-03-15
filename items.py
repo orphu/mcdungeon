@@ -1,55 +1,60 @@
 import sys
 
+_items = {}
+_by_id = {}
 
 class ItemInfo (object):
-    def __init__(self, name, id):
-        self.name = name
-        self.id = int(id)
+    def __init__(self, name, value, data=0, maxstack=64):
+        self.name = str(name)
+        self.value = int(value)
+        self.data = int(data)
+        self.maxstack = int(maxstack)
 
     def __str__ (self):
-        print 'Item: %s, ID: %d'.format(self.name, self.id)
+        return 'Item: %s, ID: %d, Data: %d, MaxStack: %d'%(
+            self.name,
+            self.value,
+            self.data,
+            self.maxstack)
 
 
-class ItemInfoAll (object):
-    iteminfo = {}
-
-    def __init__(self, filename = 'items.db'):
-        print 'Reading items database:',filename
+def LoadItems(filename = 'items.db'):
+    print 'Reading items database:', filename, '...'
+    items = 0
+    try:
+        with file(filename) as f:
+            items_txt = f.read()
+    except Exception, e:
+        print "Error reading items file: ", e;
+    for line in items_txt.split("\n"):
         try:
-            with file(filename) as f:
-                items_txt = f.read()
+            line = line.strip()
+            if len(line) == 0: 
+                continue
+            if line[0] == "#": 
+                continue; 
+
+            value, name, data, maxstack = line.split(',')
+            _items[name] = ItemInfo(name, value, data, maxstack)
+            _by_id[int(value)] = ItemInfo(name, value, data, maxstack)
+            items += 1
         except Exception, e:
-            print "Error reading items file: ", e;
-
-        for line in items_txt.split("\n"):
-            try:
-                line = line.strip()
-                if len(line) == 0: continue
-                if line[0] == "#": continue; # comment
-
-                value, names = line.split('=',1);
-                for name in names.split(','):
-                    self.iteminfo[name.strip().lower()] = ItemInfo(name.strip(), value)
-                    self.iteminfo[value] = ItemInfo(name.strip().lower(), value)
-
-            except Exception, e:
-                print "Error reading line:", e
-                print "Line: ", line
-                print
-
-    def id (self, name):
-            try:
-                return self.iteminfo[name].id
-            except:
-                print 'Unknown item:', name
-                sys.exit(1)
-
-    def name (self, id):
-            try:
-                return self.iteminfo[str(id)].name
-            except:
-                print 'Unknown item ID:', id
-                sys.exit(1)
+            print "Error reading line:", e
+            print "Line: ", line
+    print 'Loaded', items, 'items.'
 
 
-items = ItemInfoAll();
+def byName (name):
+        try:
+            return _items[name]
+        except:
+            print 'Unknown item:', name
+            sys.exit(1)
+
+
+def byID (id):
+        try:
+            return _by_id[id]
+        except:
+            print 'Unknown item ID:', id
+            sys.exit(1)
