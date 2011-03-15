@@ -457,10 +457,10 @@ class Corridor(Blank):
         self.hallLength[3] = x1+1
         # Canvas
         self.canvas = (
-            Vec(x1,self.parent.room_height-2,z1),
-            Vec(x2,self.parent.room_height-2,z1),
-            Vec(x2,self.parent.room_height-2,z2),
-            Vec(x1,self.parent.room_height-2,z2))
+            Vec(x1+1,self.parent.room_height-2,z1+1),
+            Vec(x2-1,self.parent.room_height-2,z1+1),
+            Vec(x2-1,self.parent.room_height-2,z2-1),
+            Vec(x1+1,self.parent.room_height-2,z2-1))
         # Figure out our corners
         c1 = self.loc+Vec(x1,self.parent.room_height-1,z1)
         c2 = self.loc+Vec(x2,self.parent.room_height-1,z1)
