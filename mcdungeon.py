@@ -6,18 +6,18 @@ import ConfigParser
 import inspect
 from random import *
 from copy import *
+from noise import pnoise3
 
 import cfg
+import items
+import loottable
 import materials
 import rooms
 import halls
 import floors
 import features
-import loottable
-import items
 from utils import *
 from pymclevel import mclevel, nbt
-from noise import pnoise3
 
 parser = argparse.ArgumentParser(
     description='Generate some DungeonQuest-like dungeons in a Minecraft map.')
@@ -75,6 +75,16 @@ if (args.levels < 1 or args.levels > 18):
 
 cfg.Load(args.config)
 loottable.Load()
+
+# Set the wall, ceiling, and flor materials
+for name, val in materials.__dict__.items():
+    if type(val) == materials.Material:
+        if (val.name == cfg.wall):
+            materials._wall = copy(val)
+        if (val.name == cfg.ceiling):
+            materials._ceiling = copy(val)
+        if (val.name == cfg.floor):
+            materials._floor = copy(val)
 
 if (args.seed is not None):
     seed(args.seed)
@@ -520,17 +530,6 @@ try:
 except:
     print "Failed to open world:",args.world
     sys.exit(1)
-
-# Gather the actual block IDs for all the materials.
-for name, val in materials.__dict__.items():
-    if type(val) == materials.Material:
-        val.updateMaterialValue(world)
-        if (val.name == cfg.wall):
-            materials._wall = copy(val)
-        if (val.name == cfg.ceiling):
-            materials._ceiling = copy(val)
-        if (val.name == cfg.floor):
-            materials._floor = copy(val)
 
 print "Startup compete. "
 

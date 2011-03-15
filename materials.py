@@ -1,5 +1,7 @@
 from copy import *
 
+import items
+
 BLACK  = '\033[0;30m'
 DGREY  = '\033[1;30m'
 RED    = '\033[0;31m'
@@ -19,16 +21,16 @@ WHITE  = '\033[1;37m'
 ENDC   = '\033[0m'
 
 class Material(object):
+    name = 'Air'
+    val = 0
+    data = 0
     def __init__(self, name, char, color):
-        self.name = name
-        self.val = 0
-	self.c = '%s%s%s' % (color,char,ENDC)
-    def updateMaterialValue(self, world):
-        try:
-            self.val = world.materials.materialNamed(self.name)
-        except:
-            raise Exception("couldn't find material: "+self.name)
-
+        self.name = name.lower()
+        self.updateData()
+        self.c = '%s%s%s' % (color,char,ENDC)
+    def updateData(self):
+        self.val = items.byName(self.name).value
+        self.data = items.byName(self.name).data
 
 Air = Material('Air', ' ','')
 Bedrock = Material('Bedrock', '#', DGREY)
@@ -36,17 +38,17 @@ Cactus = Material('Cactus', "*", BGREEN)
 Chest = Material('Chest', 'C',BPURPLE)
 Cobblestone = Material('Cobblestone', '%',DGREY)
 Dirt = Material('Dirt', '*',YELLOW)
-DoubleSlab = Material('Double Stone Slab', 'D',WHITE)
+DoubleSlab = Material('Stone Double Slab', 'D',WHITE)
 Farmland = Material('Farmland', "=", YELLOW)
 Fence = Material('Fence', 'o',RED)
 Fire = Material('Fire', '!',BRED)
 Glass = Material('Glass', 'o',WHITE)
-Glowstone = Material('Glowstone', "%", YELLOW)
+Glowstone = Material('Glowstone Block', "%", YELLOW)
 Grass = Material('Grass', '/',GREEN)
 Gravel = Material('Gravel', '~',GREY)
-Lava = Material('Lava (active)', 'L',BRED)
+Lava = Material('Lava', 'L',BRED)
 MossStone = Material('Moss Stone', '%',GREEN)
-NetherPortal = Material('Nether Portal', '@',BPURPLE)
+NetherPortal = Material('Portal', '@',BPURPLE)
 Obsidian = Material('Obsidian', "@", DGREY)
 Sand = Material('Sand','"',BYELLOW)
 Sandstone = Material('Sandstone', '~',BYELLOW)
@@ -54,13 +56,13 @@ SoulSand = Material('Soul Sand', 'S',PURPLE)
 Spawner = Material('Monster Spawner', 'S',DGREY)
 Stone = Material('Stone' ,'#',GREY)
 StoneSlab = Material('Stone Slab', 'd',WHITE)
-StoneStairs = Material('Stone Stairs', 'L',DGREY)
+StoneStairs = Material('Cobblestone Stairs', 'L',DGREY)
 Torch = Material('Torch', 'T',BYELLOW)
 TNT = Material('TNT', 'X',RED)
 WallSign = Material('Wall Sign','[',RED)
-Water = Material('Water (active)','~',BBLUE)
+Water = Material('Water','~',BBLUE)
 Wood = Material('Wood', 'W',RED)
-WoodPlanks = Material('Wood Planks', '=',RED)
+WoodPlanks = Material('Wooden Plank', '=',RED)
 WoodenDoor = Material('Wooden Door', 'D',RED)
 Wool = Material('Wool', 'W',GREY)
 
