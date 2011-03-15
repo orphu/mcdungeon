@@ -139,8 +139,9 @@ class Dungeon (object):
         root_tag['Text3'] = nbt.TAG_String(text3)
         root_tag['Text4'] = nbt.TAG_String(text4)
         self.tile_ents[loc] = root_tag
-    def addchest(self, loc):
-        tier = max(0, loc.y/self.room_height+1)
+    def addchest(self, loc, tier=-1):
+        if (tier < 0):
+            tier = max(0, loc.y/self.room_height+1)
         print 'Adding chest: tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
