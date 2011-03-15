@@ -7,13 +7,14 @@ import inspect
 from random import *
 from copy import *
 
+import cfg
 import materials
 import rooms
 import halls
 import floors
 import features
-from loottable import *
-from items import *
+import loottable
+import items
 from utils import *
 from pymclevel import mclevel, nbt
 from noise import pnoise3
@@ -72,37 +73,24 @@ if (args.x < 2):
 if (args.levels < 1 or args.levels > 18):
     sys.exit('Invalid number of levels.')
 
-config = ConfigParser.SafeConfigParser()
-print 'Reading config...'
-try:
-    config.readfp(open(args.config))
-except:
-    print "Failed to read config file:", args.config
-    sys.exit(1)
-
-# Load master tables from .cfg.
-master_halls = config.items('halls')
-master_rooms = config.items('rooms')
-master_features = config.items('features')
-master_floors = config.items('floors')
-
-# Load other config options
-cfg_offset = str2Vec(config.get('dungeon', 'offset'))
-cfg_tower = config.getfloat('dungeon','tower')
-cfg_doors = config.getint('dungeon','doors')
-cfg_portcullises = config.getint('dungeon', 'portcullises')
-cfg_torches = config.getint('dungeon', 'torches')
-cfg_wall = config.get('dungeon', 'wall')
-cfg_ceiling = config.get('dungeon', 'ceiling')
-cfg_floor = config.get('dungeon', 'floor')
-cfg_mvportal = config.get('dungeon', 'mvportal')
-
-if (cfg_tower < 1.0):
-    sys.exit('The tower height parameter is too small. This should be \
-             >= 1.0. Check the cfg file.')
+cfg.Load(args.config)
+loottable.Load()
 
 if (args.seed is not None):
     seed(args.seed)
+
+def dumpEnts(world):
+    for i, cPos in enumerate(world.allChunks):
+        try:
+            chunk = world.getChunk(*cPos);
+        except mclevel.ChunkMalformed:
+            continue
+        for tileEntity in chunk.TileEntities:
+            if (tileEntity["id"].value == "Chest"):
+                for name, tag in tileEntity.items():
+                    print name, tag.value
+        if i % 100 == 0:
+            print "Chunk {0}...".format(i)
 
 class Block(object):
     def __init__(self, loc):
@@ -143,7 +131,23 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
     def addchest(self, loc):
         tier = max(0, loc.y/self.room_height+1)
-        print 'Added chest: tier',tier
+        print 'Adding chest: tier',tier
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('Chest')
+        root_tag['x'] = nbt.TAG_Int(loc.x)
+        root_tag['y'] = nbt.TAG_Int(loc.y)
+        root_tag['z'] = nbt.TAG_Int(loc.z)
+        inv_tag = nbt.TAG_List()
+        root_tag['Items'] = inv_tag
+        for i in loottable.rollLoot(tier):
+            print i
+            item_tag = nbt.TAG_Compound()
+            item_tag['Slot'] = nbt.TAG_Byte(i.slot)
+            item_tag['Count'] = nbt.TAG_Byte(i.count)
+            item_tag['id'] = nbt.TAG_Short(i.id)
+            item_tag['Damage'] = nbt.TAG_Short(i.damage)
+            inv_tag.append(item_tag)
+        self.tile_ents[loc] = root_tag
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
@@ -168,7 +172,9 @@ class Dungeon (object):
             if (pos.y < self.levels):
                 while (room == None or
                        sum_points_inside_flat_poly(*room.canvas) < 24):
-                    room = rooms.new(weighted_choice(master_rooms), self, pos)
+                    room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
                 # Place an entrance at level zero
                 if (pos.y == 0):
                     feature = features.new('entrance', room)
@@ -184,7 +190,7 @@ class Dungeon (object):
             if (posup.y >= 0):
                 while (roomup == None or
                        sum_points_inside_flat_poly(*roomup.canvas) < 24):
-                    roomup = rooms.new(weighted_choice(master_rooms),
+                    roomup = rooms.new(weighted_choice(cfg.master_rooms),
                                        self,
                                        posup)
                 featureup = features.new('blank', roomup)
@@ -192,7 +198,7 @@ class Dungeon (object):
                 self.setroom(posup, roomup)
                 roomup = None
         # Place the portal
-        if (cfg_mvportal is not ''):
+        if (cfg.mvportal is not ''):
             while (x == x1):
                 x = randint(0, self.xsize-1)
             while (z == z1):
@@ -204,9 +210,9 @@ class Dungeon (object):
             while (room == None or
                    room.canvasWidth() < 8 or
                    room.canvasLength() < 8):
-                room = rooms.new(weighted_choice(master_rooms), self, pos)
+                room = rooms.new(weighted_choice(cfg.master_rooms), self, pos)
             feature = features.new('multiverseportal', room)
-            feature.target = cfg_mvportal
+            feature.target = cfg.mvportal
             room.features.append(feature)
             feature.placed()
             self.setroom(pos, room)
@@ -219,7 +225,7 @@ class Dungeon (object):
                               z*self.room_size)
                     pos = Vec(x,y,z)
                     self.setroom(pos,
-                                 rooms.new(weighted_choice(master_rooms),
+                                 rooms.new(weighted_choice(cfg.master_rooms),
                                            self,
                                            pos)
                                 )
@@ -253,7 +259,7 @@ class Dungeon (object):
                             # never get to Blank as long as the rooms are
                             # structured well. (And nobody disables size
                             # 3 halls)
-                            hall_list = weighted_shuffle(master_halls)
+                            hall_list = weighted_shuffle(cfg.master_halls)
                             hall_list.insert(0, 'Blank')
                             if (self.rooms[pos].hallLength[d] > 0 and
                                 self.rooms[pos].isOnEdge(d) is False):
@@ -289,13 +295,15 @@ class Dungeon (object):
     def genfloors(self):
         for pos in self.rooms:
             if (len(self.rooms[pos].floors) == 0):
-                floor = floors.new(weighted_choice(master_floors), self.rooms[pos])
+                floor = floors.new(weighted_choice(cfg.master_floors),
+                                   self.rooms[pos])
                 self.rooms[pos].floors.append(floor)
 
     def genfeatures(self):
         for pos in self.rooms:
             if (len(self.rooms[pos].features) == 0):
-                feature = features.new(weighted_choice(master_features), self.rooms[pos])
+                feature = features.new(weighted_choice(cfg.master_features),
+                                       self.rooms[pos])
                 self.rooms[pos].features.append(feature)
                 feature.placed()
 
@@ -431,8 +439,8 @@ class Dungeon (object):
             for z in xrange(wcoord.z-11, wcoord.z-3):
                 chunk_z = z>>4
                 chunk_x = x>>4
-                xInChunk = x & 0xf;
-                zInChunk = z & 0xf;
+                xInChunk = x & 0xf
+                zInChunk = z & 0xf
                 chunk = world.getChunk(chunk_x, chunk_z)
                 # Heightmap is a good starting place, but I need to look down through
                 # foliage.
@@ -449,7 +457,7 @@ class Dungeon (object):
             print "   Entrance is in water."
         if (newheight - baseheight > 0):
             self.entrance.height += newheight - baseheight
-        self.entrance.u = int(cfg_tower*self.entrance.u)
+        self.entrance.u = int(cfg.tower*self.entrance.u)
 
     def applychanges(self, world):
         '''Write the block buffer to the specified world'''
@@ -465,8 +473,8 @@ class Dungeon (object):
             # Figure out the chunk and chunk offset
             chunk_z = z>>4
             chunk_x = x>>4
-            xInChunk = x & 0xf;
-            zInChunk = z & 0xf;
+            xInChunk = x & 0xf
+            zInChunk = z & 0xf
             # get the chunk
             chunk = world.getChunk(chunk_x, chunk_z)
             # 3D perlin moss!
@@ -495,11 +503,12 @@ class Dungeon (object):
             # Load the chunk.
             chunk_z = z>>4
             chunk_x = x>>4
-            xInChunk = x & 0xf;
-            zInChunk = z & 0xf;
+            xInChunk = x & 0xf
+            zInChunk = z & 0xf
             chunk = world.getChunk(chunk_x, chunk_z)
             # copy rhe ent to the chunk
             chunk.TileEntities.append(ent)
+            print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
             changed_chunks.add(chunk)
         # Mark changed chunkes so pymclevel knows to recompress/relight them.
         for chunk in changed_chunks:
@@ -516,17 +525,17 @@ except:
 for name, val in materials.__dict__.items():
     if type(val) == materials.Material:
         val.updateMaterialValue(world)
-        if (val.name == cfg_wall):
+        if (val.name == cfg.wall):
             materials._wall = copy(val)
-        if (val.name == cfg_ceiling):
+        if (val.name == cfg.ceiling):
             materials._ceiling = copy(val)
-        if (val.name == cfg_floor):
+        if (val.name == cfg.floor):
             materials._floor = copy(val)
 
 print "Startup compete. "
 
 # Define our dungeon.
-dungeon = Dungeon(cfg_offset, args.x, args.z, args.levels)
+dungeon = Dungeon(cfg.offset, args.x, args.z, args.levels)
 
 print "Generating rooms..."
 dungeon.genrooms()
@@ -556,13 +565,13 @@ print "Rendering features..."
 dungeon.renderfeatures()
 
 print "Placing doors..."
-dungeon.placedoors(cfg_doors)
+dungeon.placedoors(cfg.doors)
 
 print "Placing portcullises..."
-dungeon.placeportcullises(cfg_portcullises)
+dungeon.placeportcullises(cfg.portcullises)
 
 print "Placing torches..."
-dungeon.placetorches(cfg_torches)
+dungeon.placetorches(cfg.torches)
 
 # Output a slice of the dungoen to the terminal if requested.
 if (args.term is not None):
