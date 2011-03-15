@@ -18,7 +18,7 @@ class ItemInfo (object):
             self.maxstack)
 
 
-def LoadItems(filename = 'items.db'):
+def LoadItems(filename = 'items.txt'):
     print 'Reading items database:', filename, '...'
     items = 0
     try:
@@ -29,10 +29,10 @@ def LoadItems(filename = 'items.db'):
     for line in items_txt.split("\n"):
         try:
             line = line.strip()
-            if len(line) == 0: 
+            if len(line) == 0:
                 continue
-            if line[0] == "#": 
-                continue; 
+            if line[0] == "#":
+                continue;
 
             value, name, data, maxstack = line.split(',')
             name = name.lower()
