@@ -2,43 +2,65 @@ import ConfigParser
 import sys
 import random
 
-from items import *
+import cfg
+import items
+
+_maxtier = -1
+_master_loot = {}
+
+class Loot (object):
+    def __init__ (self, slot, count, id, damage):
+        self.slot = slot
+        self.id = id
+        self.value = id
+        self.damage = damage
+        self.data = damage
+        self.count = count
+
+    def __str__ (self):
+        return 'Slot: %d, ID: %d, Damage: %d, Count: %d'%(self.slot,
+                                                          self.id,
+                                                          self.damage,
+                                                          self.count)
 
 
-class LootTable (object):
-    maxtier = -1
-    master_loot = {}
+def Load ():
+    print 'Reading loot tables...'
+    global _maxtier
 
-    def __init__ (self, filename = 'mcdungeon.cfg'):
-        config = ConfigParser.SafeConfigParser()
-        try:
-            config.readfp(open(filename))
-        except:
-            print "Failed to read loot tables from config file:",filename
-            sys.exit(1)
-        while (config.has_section('tier%d'%(self.maxtier+1))):
-            self.maxtier += 1
-            tiername = 'tier%d'%(self.maxtier)
-            print 'Reading loot table for:',tiername
-            loots = config.items(tiername)
-            self.master_loot[tiername] = {}
-            thistable =  self.master_loot[tiername]
-            for line in loots:
-                chance, minimum, maximum = line[1].split(',')
-                thistable[line[0]] = dict([
-                    ('name', line[0]),
-                    ('value', items.id(line[0])),
-                    ('chance', int(chance)),
-                    ('min', int(minimum)),
-                    ('max', int(maximum))
-                ])
+    while (cfg.parser.has_section('tier%d'%(_maxtier+1))):
+        _maxtier += 1
+        tiername = 'tier%d'%(_maxtier)
+        print 'Reading loot table for:',tiername
+        loots = cfg.parser.items(tiername)
+        _master_loot[tiername] = {}
+        thistable =  _master_loot[tiername]
+        for line in loots:
+            chance, minimum, maximum = line[1].split(',')
+            item = items.byName(line[0])
+            thistable[line[0]] = dict([
+                ('item', item),
+                ('chance', int(chance)),
+                ('min', int(minimum)),
+                ('max', int(maximum))
+            ])
 
-    def rollLoot (self, tier):
-        tiername = 'tier%s'%(tier)
-        for loot in self.master_loot[tiername].values():
-            if (loot['chance'] >= random.randint(1,100)):
-                amount = random.randint(loot['min'], loot['max'])
-                if (amount > 0):
-                    yield loot['value'], amount
 
-master_loot = LootTable()
+def rollLoot (tier):
+    tiername = 'tier%s'%(tier)
+    slot = 0
+    for loot in _master_loot[tiername].values():
+        if (loot['chance'] >= random.randint(1,100)):
+            amount = random.randint(loot['min'], loot['max'])
+            item = loot['item']
+            while (amount > 0):
+                if (amount > item.maxstack):
+                    thisamount = item.maxstack
+                    amount -= item.maxstack
+                else:
+                    thisamount = amount
+                    amount = 0
+                if (slot < 27):
+                    thisloot = Loot(slot, thisamount, item.value, item.data)
+                    yield thisloot
+                    slot += 1
