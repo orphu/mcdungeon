@@ -208,7 +208,7 @@ def iterate_points_inside_flat_poly(*poly_points):
 
 
 def sum_points_inside_flat_poly(*poly_points):
-    return sum(1 for p in iterate_points_inside_flat_poly(*poly_points))-1
+    return sum(1 for p in iterate_points_inside_flat_poly(*poly_points))
 
 
 def iterate_points_surrounding_box(box):
