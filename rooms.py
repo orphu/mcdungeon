@@ -165,7 +165,6 @@ class Pit(Blank):
             room = new('pitmid', self.parent, pos)
             self.parent.setroom(pos, room)
             depth += 1
-        print "Pit, depth",depth
         # If this is the only level, make it a lava pit.
         if (depth == 1):
             self.lava = True
