@@ -2,6 +2,7 @@ import random
 import math
 import re
 from copy import *
+from pymclevel import mclevel, nbt
 
 def floor(n):
     return int(n)
@@ -294,3 +295,18 @@ def drange(start, stop, step):
     while r < stop:
         yield r
         r += step
+
+
+def dumpEnts(world):
+    for i, cPos in enumerate(world.allChunks):
+        try:
+            chunk = world.getChunk(*cPos);
+        except mclevel.ChunkMalformed:
+            continue
+        for tileEntity in chunk.TileEntities:
+            if (tileEntity["id"].value == "Chest"):
+                for name, tag in tileEntity.items():
+                    print name, tag.value
+        if i % 100 == 0:
+            print "Chunk {0}...".format(i)
+

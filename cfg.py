@@ -1,4 +1,5 @@
 import sys
+import materials
 import ConfigParser
 
 from utils import *
@@ -57,3 +58,15 @@ def Load(filename = 'mcdungeon.cfg'):
 
     if (chests < 0.0 or chests > 10.0):
         sys.ext('Chests should be between 0 and 10. Check the cfg file.')
+
+    # Set the wall, ceiling, and floor materials
+    for name, val in materials.__dict__.items():
+        if type(val) == materials.Material:
+            if (val.name == wall):
+                materials._wall = copy(val)
+            if (val.name == ceiling):
+                materials._ceiling = copy(val)
+            if (val.name == floor):
+                materials._floor = copy(val)
+
+
