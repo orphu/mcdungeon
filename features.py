@@ -107,7 +107,7 @@ class Entrance(Blank):
         # Tier 0 chest
         pos = wstart.trans(0, -self.height-(self.u*2), 0)
         self.parent.parent.setblock(pos, materials.Chest)
-        self.parent.parent.addchest(pos)
+        self.parent.parent.addchest(pos, 0)
 
 
 class Stairwell(Blank):
