@@ -14,6 +14,7 @@ wall = 'Cobblestone'
 floor = 'Stone'
 ceiling = 'Cobblestone'
 mvportal = ''
+chests = 1
 
 master_halls = {}
 master_rooms = {}
@@ -23,7 +24,7 @@ master_floors = {}
 def Load(filename = 'mcdungeon.cfg'):
     global parser, offset, tower, doors, portcullises, torches, wall, floor, \
     ceiling, mvportal, master_halls, master_rooms, master_features, \
-    master_floors
+    master_floors, chests
 
     print 'Reading config from', filename, '...'
     try:
@@ -48,7 +49,11 @@ def Load(filename = 'mcdungeon.cfg'):
     ceiling = parser.get('dungeon', 'ceiling')
     floor = parser.get('dungeon', 'floor')
     mvportal = parser.get('dungeon', 'mvportal')
+    chests = parser.getfloat('dungeon', 'chests')
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be \
                  >= 1.0. Check the cfg file.')
+
+    if (chests < 0.0 or chests > 10.0):
+        sys.ext('Chests should be between 0 and 10. Check the cfg file.')

@@ -141,7 +141,12 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
     def addchest(self, loc, tier=-1):
         if (tier < 0):
-            tier = max(0, loc.y/self.room_height+1)
+            level = loc.y/self.room_height+1
+            tier = int(float(level) /
+                       float(self.levels) * 
+                       float(loottable._maxtier-1) +.5
+                      )
+            tier = max(1, tier)
         print 'Adding chest: tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
@@ -151,7 +156,6 @@ class Dungeon (object):
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         for i in loottable.rollLoot(tier):
-            print i
             item_tag = nbt.TAG_Compound()
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
             item_tag['Count'] = nbt.TAG_Byte(i.count)
@@ -346,6 +350,50 @@ class Dungeon (object):
                         self.blocks[dpos.down(2)].data = doordat[door.direction][x]
                     x += 1
                 count += 1
+
+    def placechests(self, level=0):
+        '''Place chests in the dungeon. This is called with no arguments,
+        and iterates over itself to fill each level'''
+        # First we build a weighted list of rooms. Rooms are more likely to
+        # contain a chest if they have fewer halls. 
+        candidates = []
+        chests = ceil(cfg.chests * float(self.xsize * self.zsize) / 10.0)
+        # Blocks we are not allowed to place a chest upon
+        ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
+                 44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
+                 66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
+                 86, 88, 90, 91, 92, 93, 94)
+        for room in self.rooms:
+            hcount = 1
+            for h in self.rooms[room].halls:
+                if (h.size == 0):
+                    hcount += 1
+            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 3):
+                hcount = 0
+            # Only consider rooms on this level
+            if (self.rooms[room].pos.y == level):
+                # The weight is exponential. Base 10 seems to work well. 
+                candidates.append((room, 10**hcount-1))
+        locations = weighted_shuffle(candidates)
+        while (len(locations) > 0 and chests > 0):
+            room = self.rooms[locations.pop()]
+            attempts = 0
+            while(attempts < 10):
+                point = random_point_inside_flat_poly(*room.canvas)
+                point = point+room.loc
+                if (self.blocks[point].material.val not in ignore and
+                    self.blocks[point.up(1)].material.val == 0 and
+                    self.blocks[point.up(2)].material.val == 0):
+                    self.setblock(point.up(1), materials.Chest)
+                    self.addchest(point.up(1))
+                    chests -= 1
+                    break
+                attempts += 1
+            if (attempts >= 10):
+                print 'Cannot place chest:', room.pos, point
+        if (level < self.levels-1):
+            self.placechests(level+1)
+
     def placeportcullises(self, perc):
         '''Place a proportion of the portcullises where possible'''
         count = 0
@@ -573,6 +621,9 @@ dungeon.placeportcullises(cfg.portcullises)
 
 print "Placing torches..."
 dungeon.placetorches(cfg.torches)
+
+print "Placing chests..."
+dungeon.placechests()
 
 # Output a slice of the dungoen to the terminal if requested.
 if (args.term is not None):
