@@ -143,4 +143,4 @@ if (args.write):
     print "Saving..."
     world.saveInPlace()
 
-print "Done!"
+print "Done!                   "

@@ -60,7 +60,7 @@ class Dungeon (object):
                        float(loottable._maxtier-1) +.5
                       )
             tier = max(1, tier)
-        print 'Adding chest: tier',tier
+        #print 'Adding chest: tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -277,18 +277,20 @@ class Dungeon (object):
                  66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
                  86, 88, 90, 91, 92, 93, 94)
         for room in self.rooms:
+            # Only consider rooms on this level
+            if (self.rooms[room].pos.y != level):
+                continue
             hcount = 1
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
             if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 3):
                 hcount = 0
-            # Only consider rooms on this level
-            if (self.rooms[room].pos.y == level):
-                # The weight is exponential. Base 10 seems to work well. 
-                candidates.append((room, 10**hcount-1))
+            # The weight is exponential. Base 10 seems to work well. 
+            candidates.append((room, 10**hcount-1))
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and chests > 0):
+            spin()
             room = self.rooms[locations.pop()]
             attempts = 0
             while(attempts < 10):
@@ -303,7 +305,7 @@ class Dungeon (object):
                     break
                 attempts += 1
             if (attempts >= 10):
-                print 'Cannot place chest:', room.pos, point
+                print 'Failed place chest:', room.pos, point
         if (level < self.levels-1):
             self.placechests(level+1)
 
@@ -321,27 +323,43 @@ class Dungeon (object):
 
     def renderrooms(self):
         '''Call render() on all rooms to populate the block buffer'''
+        count = len(self.rooms)
         for pos in self.rooms:
             self.rooms[pos].render()
+            count -= 1
+            if (count%10 == 0):
+                spin(count)
 
     def renderhalls(self):
         ''' Call render() on all halls'''
+        count = len(self.rooms)*4
         for pos in self.rooms:
             for x in xrange(0,4):
                 if (self.rooms[pos].halls[x]):
                     self.rooms[pos].halls[x].render()
+                count -= 1
+                if (count%10 == 0):
+                    spin(count)
 
     def renderfloors(self):
         ''' Call render() on all floors'''
+        count = len(self.rooms)
         for pos in self.rooms:
             for x in self.rooms[pos].floors:
                 x.render()
+                count -= 1
+                if (count%10 == 0):
+                    spin(count)
 
     def renderfeatures(self):
         ''' Call render() on all features'''
+        count = len(self.rooms)
         for pos in self.rooms:
             for x in self.rooms[pos].features:
                 x.render()
+                count -= 1
+                if (count%10 == 0):
+                    spin(count)
 
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
