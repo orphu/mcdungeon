@@ -210,6 +210,12 @@ def iterate_points_inside_flat_poly(*poly_points):
 def sum_points_inside_flat_poly(*poly_points):
     return sum(1 for p in iterate_points_inside_flat_poly(*poly_points))
 
+def random_point_inside_flat_poly(*poly_points):
+    points = {}
+    for p in iterate_points_inside_flat_poly(*poly_points):
+        points[p] = True
+    return random.choice(points.keys())
+
 
 def iterate_points_surrounding_box(box):
     near = box.loc.trans(-1,-1,-1)
