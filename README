@@ -8,28 +8,32 @@ Paul Hodge's minetown project and David Rio Vierra's pymclevel.
 CURRENT FEATURES:
 
    * Generates room layouts based on a random weighted selection
-   of rooms. 
+     of rooms. 
 
    * Places stairwells between levels, and a tower entrance with a
-   sprialing staircase.
+     sprialing staircase.
 
    * Connects rooms with hallways. Hall types are also chosen
-   from a random weighted list. 
+     from a random weighted list. 
 
    * Places random floor decorations form a weighted list.
 
    * Places room features in rooms. (currently only stairwells and
-   the tower entrance exist)
+     the tower entrance exist)
 
    * Places doors, portcullises, and torches in the dungeon.
 
+   * Places chests with loot around the dungeon in (probably) hard
+     to reach places. An arbitrary number of loot tables can be configured
+     to provide variety. 
+
    * Room, hall, floor, and feature lists are configurable via an
-   external .cfg file. 
+     external .cfg file. 
 
    * Frequency of doors, portcullises, and torches are set via .cfg file. 
 
    * Saves changes (with lighting!) to a Minecraft map via
-   pymclevel.
+     pymclevel.
 
    * Cobblestone has random patches of moss growing on it.
 
@@ -45,7 +49,6 @@ TODO:
    * More hall types
    * Place a dungeon entrance leading to the surface (partially complete)
    * Place monster spawners
-   * Place chests with treasure
    * Automatically select a suiable location within a map
 
 OPTIONS:
