@@ -1,6 +1,7 @@
 import random
 import math
 import re
+import sys
 from copy import *
 from pymclevel import mclevel, nbt
 
@@ -310,3 +311,9 @@ def dumpEnts(world):
         if i % 100 == 0:
             print "Chunk {0}...".format(i)
 
+def spin(c = ''):
+    spinner = ['|', '/', '-', '\\']
+    if (c == ''):
+        c = spinner[random.randint(0,len(spinner)-1)]
+    sys.stdout.write("\r"+str(c)+"   \r")
+    sys.stdout.flush()
