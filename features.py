@@ -250,9 +250,9 @@ class Columns(Blank):
             return
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
-        start = random.randint(0, int(self.parent.canvasWidth() / 2))
-        stop = int(self.parent.canvasWidth() / 2) + 1
-        step = random.randint(2, 4)
+        start = random.randint(0, int(self.parent.canvasWidth() / 2)-1)
+        stop = int(self.parent.canvasWidth() / 2)
+        step = random.randint(2, 3)
         mat = random.choice(self.mats)
         for x in xrange(start, stop, step):
             for p in iterate_cube(Vec(c.x-x, 1, c.z-x),
