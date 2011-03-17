@@ -16,24 +16,23 @@ CURRENT FEATURES:
    * Connects rooms with hallways. Hall types are also chosen
      from a random weighted list. 
 
-   * Places random floor decorations form a weighted list.
+   * Places random floor decorations from a weighted list.
 
-   * Places room features in rooms. (currently only stairwells and
-     the tower entrance exist)
+   * Places features in rooms.
 
-   * Places doors, portcullises, and torches in the dungeon.
+   * Places doors, portcullises, and torches in the dungeon. The amount of
+     each is a configurable option. 
 
    * Places chests with loot around the dungeon in (probably) hard
      to reach places. An arbitrary number of loot tables can be configured
-     to provide variety. 
+     to provide variety. The density of chests is configurable. 
 
    * Places mob spawners throughout the dungeon. These will likely be near
-     chests, but not always. Mob types are configurable. 
+     chests, but not always. Mob types are configurable. The density of
+     spawners is configurable.
 
    * Room, hall, floor, and feature lists are configurable via an
      external .cfg file. 
-
-   * Frequency of doors, portcullises, and torches are set via .cfg file. 
 
    * Saves changes (with lighting!) to a Minecraft map via
      pymclevel.
@@ -42,7 +41,7 @@ CURRENT FEATURES:
 
    * Output floors to ANSI terminal.
 
-   * Output floors to an HTML table.
+   * Output entire dungeon maps to HTML.
 
 TODO:
 
@@ -57,32 +56,38 @@ TODO:
 OPTIONS:
 
 $ ./mcdungeon.py --help
+Reading items database: items.txt ...
+Loaded 228 items.
 usage: mcdungeon.py [-h] [--config CFGFILE] [--write] [--skip-relight]
-                    [--term Y] [--html Y] --world SAVEDIR
+                    [--term FLOOR] [--html BASENAME] [--force] [--seed SEED]
+                    --world SAVEDIR
                     z x levels
 
 Generate some DungeonQuest-like dungeons in a Minecraft map.
 
 positional arguments:
-  z                 Number of rooms West -> East
-  x                 Number of rooms North -> South
+  z                 Number of rooms West -> East.
+  x                 Number of rooms North -> South.
   levels            Number of levels
 
 optional arguments:
   -h, --help        show this help message and exit
-  --config CFGFILE  Alternate config file. Default: mcdungeon.cfg
-  --write           Write the dungeon to disk
-  --skip-relight    Skip relighting the level
-  --term Y          Print an text version of slice Y to the terminal
-  --html Y          Print an html version of slice Y to the terminal
-  --world SAVEDIR   Target world (path to save directory)
+  --config CFGFILE  Alternate config file. Default: mcdungeon.cfg.
+  --write           Write the dungeon to disk.
+  --skip-relight    Skip relighting the level.
+  --term FLOOR      Print a text version of a given floor to the terminal.
+  --html BASENAME   Output html versions of the dungeon. This produces one
+                    file per level of the form BASENAME-(level number).html.
+  --force           Force overwriting of html output files.
+  --seed SEED       Provide a seed for this dungeon. This can be anything.
+  --world SAVEDIR   Target world (path to save directory).
 
 EXAMPLES:
 
 Load a world named 'Dungeon' in the current directory, generate a
 5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
 and display the results in a terminal window. (ANSI control codes
-probably mean *nix sysems only. Sorry) The base world will not be
-modified, but a world is required to pull in material info, etc.
+probably mean *nix sysems only. Sorry) The world files will not be
+modified, but are required. Basically a "dry run."
 
 ./mcdungeon.py --world Dungeon 5 4 3 --term 0
