@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import os
 from random import *
 from noise import pnoise3
 
@@ -56,7 +57,7 @@ class Dungeon (object):
         if (tier < 0):
             level = loc.y/self.room_height+1
             tier = int(float(level) /
-                       float(self.levels) * 
+                       float(self.levels) *
                        float(loottable._maxtier-1) +.5
                       )
             tier = max(1, tier)
@@ -268,7 +269,7 @@ class Dungeon (object):
         '''Place chests in the dungeon. This is called with no arguments,
         and iterates over itself to fill each level'''
         # First we build a weighted list of rooms. Rooms are more likely to
-        # contain a chest if they have fewer halls. 
+        # contain a chest if they have fewer halls.
         candidates = []
         chests = ceil(cfg.chests * float(self.xsize * self.zsize) / 10.0)
         # Blocks we are not allowed to place a chest upon
@@ -286,7 +287,7 @@ class Dungeon (object):
                     hcount += 1
             if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 3):
                 hcount = 0
-            # The weight is exponential. Base 10 seems to work well. 
+            # The weight is exponential. Base 10 seems to work well.
             candidates.append((room, 10**hcount-1))
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and chests > 0):
@@ -385,32 +386,88 @@ class Dungeon (object):
                 else:
                     sys.stdout.write('%s`%s' % (materials.DGREY, materials.ENDC))
             print
-    def outputhtml(self, floor):
-        '''Print a slice (or layer) of the dungeon block buffer to an html table.
+
+
+    def outputhtml(self, basename, force):
+        '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
-        layer = (floor-1)*self.room_height
-        sys.stdout.write('<table border=0 cellpadding=0 cellspacing=0>')
-        for x in xrange(self.xsize*self.room_size):
-            sys.stdout.write('<tr>')
-            for z in xrange(self.zsize*self.room_size):
-                y = layer
-                while (y < layer + self.room_height - 1 and
-                       (Vec(x,y,z) not in self.blocks or
-                        self.blocks[Vec(x,y,z)].material == materials.Air or
-                        self.blocks[Vec(x,y,z)].material == materials._ceiling)):
-                    y += 1
-                if Vec(x,y,z) in self.blocks:
-                    mat = self.blocks[Vec(x,y,z)].material
-                    # 3D perlin moss!
-                    if (mat.name == 'cobblestone'):
-                        if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
-                            mat = materials.MossStone
-                        else:
-                            mat = materials.Cobblestone
-                    sys.stdout.write('<td><img src=d/%d-%d.png>' % (mat.val,self.blocks[Vec(x,y,z)].data))
-                else:
-                    sys.stdout.write('<td><img src=d/0.png>')
-        sys.stdout.write('</table>')
+        # First search for existing files
+        if (force == False):
+            for floor in xrange(self.levels):
+                filename = basename+'-'+str(floor+1)+'.html'
+                if (os.path.isfile(filename)):
+                    sys.exit('File %s exists. Use --force to overwrite.' %
+                             (filename))
+        # Construct headers and footers
+        header = '''
+        <html><head>
+        <script language="javascript" type="text/javascript">
+        <!--
+            function menu_goto( menuform )
+            {
+                selecteditem = menuform.newurl.selectedIndex ;
+                newurl = menuform.newurl.options[ selecteditem ].value ;
+                if (newurl.length != 0) {
+                    location.href = newurl ;
+                }
+            }
+        //-->
+        </script></head><body>'''
+        footer = '''</body></html>'''
+        # Output each level file.
+        for floor in xrange(self.levels):
+            layer = floor*self.room_height
+            # Build the form.
+            form = '''
+            <form action="foo">
+            <select name="newurl" onchange="menu_goto(this.form)">
+            '''
+            for menufloor in xrange(self.levels):
+                path = basename+'-'+str(menufloor+1)+'.html'
+                (head, tail) = os.path.split(path)
+                selected = ''
+                if (floor == menufloor):
+                    selected = ' selected="selected"'
+                form += '<option value="%s"%s>Level %d</option>' % (
+                    tail, selected, menufloor+1)
+            form += '</select></form><br>'
+            # Write the floor file.
+            filename = basename+'-'+str(floor+1)+'.html'
+            print 'Writing:',filename
+            f = open(filename, 'w')
+            f.write(header+form)
+            f.write('<table border=0 cellpadding=0 cellspacing=0>')
+            for x in xrange(self.xsize*self.room_size):
+                f.write('<tr>')
+                for z in xrange(self.zsize*self.room_size):
+                    y = layer
+                    while (y < layer + self.room_height - 1 and
+                           (Vec(x,y,z) not in self.blocks or
+                            self.blocks[Vec(x,y,z)].material ==
+                            materials.Air or
+                            self.blocks[Vec(x,y,z)].material ==
+                            materials._ceiling)):
+                        y += 1
+                    if Vec(x,y,z) in self.blocks:
+                        mat = self.blocks[Vec(x,y,z)].material
+                        # 3D perlin moss!
+                        if (mat.name == 'cobblestone'):
+                            if ((pnoise3(x / 3.0,
+                                         y / 3.0,
+                                         z / 3.0,
+                                         1) + 1.0) / 2.0 < 0.5):
+                                mat = materials.MossStone
+                            else:
+                                mat = materials.Cobblestone
+                        f.write('<td><img src=d/%d-%d.png>' %
+                                (mat.val,
+                                 self.blocks[Vec(x,y,z)].data))
+                    else:
+                        f.write('<td><img src=d/0.png>')
+            f.write('</table>')
+            f.write(footer)
+            f.close()
+
 
     def setentrance(self, world):
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
@@ -432,7 +489,7 @@ class Dungeon (object):
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
                 chunk = world.getChunk(chunk_x, chunk_z)
-                # Heightmap is a good starting place, but I need to look 
+                # Heightmap is a good starting place, but I need to look
                 # down through foliage.
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
                 while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):

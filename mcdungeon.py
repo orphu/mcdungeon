@@ -13,10 +13,10 @@ parser = argparse.ArgumentParser(
     description='Generate some DungeonQuest-like dungeons in a Minecraft map.')
 parser.add_argument('z',
                     type=int,
-                    help='Number of rooms West -> East')
+                    help='Number of rooms West -> East.')
 parser.add_argument('x',
                     type=int,
-                    help='Number of rooms North -> South')
+                    help='Number of rooms North -> South.')
 parser.add_argument('levels',
                     type=int,
                     help='Number of levels')
@@ -24,25 +24,30 @@ parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
                     default='mcdungeon.cfg',
-                    help='Alternate config file. Default: mcdungeon.cfg')
+                    help='Alternate config file. Default: mcdungeon.cfg.')
 parser.add_argument('--write',
                     action='store_true',
                     dest='write' ,
-                    help='Write the dungeon to disk')
+                    help='Write the dungeon to disk.')
 parser.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
-                    help='Skip relighting the level')
+                    help='Skip relighting the level.')
 parser.add_argument('--term',
                     type=int,dest='term',
                     metavar='FLOOR',
                     help='Print a text version of a given floor to the \
-                    terminal')
+                    terminal.')
 parser.add_argument('--html',
-                    type=int,dest='html',
-                    metavar='FLOOR',
-                    help='Print an html version of a given floor to the \
-                    terminal')
+                    dest='html',
+                    metavar='BASENAME',
+                    help='Output html versions of the dungeon. This \
+                    produces one file per level of the form \
+                    BASENAME-(level number).html.')
+parser.add_argument('--force',
+                    action='store_true',
+                    dest='force',
+                    help='Force overwriting of html output files.')
 parser.add_argument('--seed',
                     dest='seed',
                     metavar='SEED',
@@ -52,7 +57,7 @@ parser.add_argument('--world',
                     dest='world',
                     metavar='SAVEDIR',
                     required=True,
-                    help='Target world (path to save directory)')
+                    help='Target world (path to save directory).')
 args = parser.parse_args()
 
 # Do some initial error checking
@@ -128,7 +133,7 @@ if (args.term is not None):
 
 # Output an html version.
 if (args.html is not None):
-    dungeon.outputhtml(args.html)
+    dungeon.outputhtml(args.html, args.force)
 
 # Write the changes to teh world.
 if (args.write):
