@@ -16,7 +16,7 @@ class Cobble(Blank):
     _name = 'cobble'
 
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 self.parent.parent.setblock(x+self.parent.loc,
                                             materials.Cobblestone)
@@ -25,7 +25,7 @@ class DoubleSlab(Blank):
     _name = 'doubleSlab'
 
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 self.parent.parent.setblock(x+self.parent.loc,
                                             materials.DoubleSlab)
@@ -34,7 +34,7 @@ class WoodTile(Blank):
     _name = 'woodtile'
 
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 if ((x.x+x.z)&1 == 1):
                     self.parent.parent.setblock(x+self.parent.loc,
@@ -59,7 +59,7 @@ class CheckerRug(Blank):
         )
 
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             color = random.choice(self.colors)
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 self.parent.parent.setblock(x+self.parent.loc,
@@ -86,7 +86,7 @@ class CheckerRug(Blank):
 class BrokenDoubleSlab(Blank):
     _name = 'brokendoubleslab'
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
@@ -102,7 +102,7 @@ class BrokenDoubleSlab(Blank):
 class Mud(Blank):
     _name = 'mud'
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
@@ -125,7 +125,7 @@ class Mud(Blank):
 class Sand(Blank):
     _name = 'sand'
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 0):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
