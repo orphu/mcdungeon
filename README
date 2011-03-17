@@ -27,6 +27,9 @@ CURRENT FEATURES:
      to reach places. An arbitrary number of loot tables can be configured
      to provide variety. 
 
+   * Places mob spawners throughout the dungeon. These will likely be near
+     chests, but not always. Mob types are configurable. 
+
    * Room, hall, floor, and feature lists are configurable via an
      external .cfg file. 
 
@@ -47,8 +50,8 @@ TODO:
    * More room features
    * More room types
    * More hall types
+   * Traps!
    * Place a dungeon entrance leading to the surface (partially complete)
-   * Place monster spawners
    * Automatically select a suiable location within a map
 
 OPTIONS:
