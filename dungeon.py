@@ -53,6 +53,16 @@ class Dungeon (object):
         root_tag['Text3'] = nbt.TAG_String(text3)
         root_tag['Text4'] = nbt.TAG_String(text4)
         self.tile_ents[loc] = root_tag
+    def addspawner(self, loc):
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('MobSpawner')
+        root_tag['x'] = nbt.TAG_Int(loc.x)
+        root_tag['y'] = nbt.TAG_Int(loc.y)
+        root_tag['z'] = nbt.TAG_Int(loc.z)
+        root_tag['EntityId'] = nbt.TAG_String(
+                weighted_choice(cfg.master_mobs))
+        root_tag['Delay'] = nbt.TAG_Short(0)
+        self.tile_ents[loc] = root_tag
     def addchest(self, loc, tier=-1):
         if (tier < 0):
             level = loc.y/self.room_height+1
@@ -285,7 +295,7 @@ class Dungeon (object):
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
-            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 3):
+            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 6):
                 hcount = 0
             # The weight is exponential. Base 10 seems to work well.
             candidates.append((room, 10**hcount-1))
@@ -309,6 +319,52 @@ class Dungeon (object):
                 print 'Failed place chest:', room.pos, point
         if (level < self.levels-1):
             self.placechests(level+1)
+
+
+    def placespawners(self, level=0):
+        '''Place spawners in the dungeon. This is called with no arguments,
+        and iterates over itself to fill each level'''
+        # First we build a weighted list of rooms. Rooms are more likely to
+        # contain a spawners if they have fewer halls.
+        candidates = []
+        spawners = ceil(cfg.spawners * float(self.xsize * self.zsize) / 10.0)
+        # Blocks we are not allowed to place a chest upon
+        ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
+                 44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
+                 66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
+                 86, 88, 90, 91, 92, 93, 94)
+        for room in self.rooms:
+            # Only consider rooms on this level
+            if (self.rooms[room].pos.y != level):
+                continue
+            hcount = 1
+            for h in self.rooms[room].halls:
+                if (h.size == 0):
+                    hcount += 1
+            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 6):
+                hcount = 0
+            # The weight is exponential. Base 10 seems to work well.
+            candidates.append((room, 10**hcount-1))
+        locations = weighted_shuffle(candidates)
+        while (len(locations) > 0 and spawners > 0):
+            spin()
+            room = self.rooms[locations.pop()]
+            attempts = 0
+            while(attempts < 10):
+                point = random_point_inside_flat_poly(*room.canvas)
+                point = point+room.loc
+                if (self.blocks[point].material.val not in ignore and
+                    self.blocks[point.up(1)].material.val == 0):
+                    self.setblock(point.up(1), materials.Spawner)
+                    self.addspawner(point.up(1))
+                    spawners -= 1
+                    break
+                attempts += 1
+            if (attempts >= 10):
+                print 'Failed place spawner:', room.pos, point
+        if (level < self.levels-1):
+            self.placespawners(level+1)
+
 
     def placeportcullises(self, perc):
         '''Place a proportion of the portcullises where possible'''
@@ -555,7 +611,7 @@ class Dungeon (object):
             chunk = world.getChunk(chunk_x, chunk_z)
             # copy rhe ent to the chunk
             chunk.TileEntities.append(ent)
-            print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
+            #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
             changed_chunks.add(chunk)
         # Mark changed chunkes so pymclevel knows to recompress/relight them.
         for chunk in changed_chunks:

@@ -83,6 +83,9 @@ except:
     sys.exit(1)
 print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
+#dumpEnts(world)
+#sys.exit()
+
 print "Startup compete. "
 
 # Define our dungeon.
@@ -126,6 +129,9 @@ dungeon.placetorches(cfg.torches)
 
 print "Placing chests..."
 dungeon.placechests()
+
+print "Placing spawners..."
+dungeon.placespawners()
 
 # Output a slice of the dungoen to the terminal if requested.
 if (args.term is not None):

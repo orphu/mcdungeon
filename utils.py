@@ -305,9 +305,10 @@ def dumpEnts(world):
         except mclevel.ChunkMalformed:
             continue
         for tileEntity in chunk.TileEntities:
-            if (tileEntity["id"].value == "Chest"):
+            print tileEntity["id"].value
+            if (tileEntity["id"].value == "MobSpawner"):
                 for name, tag in tileEntity.items():
-                    print name, tag.value
+                    print '   ',name, tag.value
         if i % 100 == 0:
             print "Chunk {0}...".format(i)
 
