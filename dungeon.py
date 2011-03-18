@@ -68,7 +68,7 @@ class Dungeon (object):
             level = loc.y/self.room_height+1
             tier = int(float(level) /
                        float(self.levels) *
-                       float(loottable._maxtier-1) +.5
+                       float(loottable._maxtier-1)
                       )
             tier = max(1, tier)
         #print 'Adding chest: tier',tier
