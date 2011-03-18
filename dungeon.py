@@ -65,13 +65,15 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
     def addchest(self, loc, tier=-1):
         if (tier < 0):
-            level = loc.y/self.room_height+1
-            tier = int(float(level) /
-                       float(self.levels) *
-                       float(loottable._maxtier-1)
-                      )
-            tier = max(1, tier)
-        #print 'Adding chest: tier',tier
+            level = loc.y/self.room_height
+            if (self.levels > 1):
+                tierf = (float(level) /
+                         float(self.levels-1) *
+                         float(loottable._maxtier-2))+1.5
+            else:
+                tierf = loottable._maxtier-1
+            tier = max(1, int(tierf))
+            #print 'Adding chest: level',level+1,'tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -248,9 +250,12 @@ class Dungeon (object):
 
     def placetorches(self, level=0):
         '''Place a proportion of the torches where possible'''
-        perc = int(float(level) / float(self.levels-1) *
-            (cfg.torches_bottom-cfg.torches_top) +
-            cfg.torches_top)
+        if (self.levels > 1):
+            perc = int(float(level) / float(self.levels-1) *
+                (cfg.torches_bottom-cfg.torches_top) +
+                cfg.torches_top)
+        else:
+            perc = cfg.torches_top
         count = 0
         maxcount = 0
         for pos, val in self.torches.items():
