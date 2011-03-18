@@ -246,14 +246,26 @@ class Dungeon (object):
                 self.rooms[pos].features.append(feature)
                 feature.placed()
 
-    def placetorches(self, perc):
+    def placetorches(self, level=0):
         '''Place a proportion of the torches where possible'''
+        perc = int(float(level) / float(self.levels-1) *
+            (cfg.torches_bottom-cfg.torches_top) +
+            cfg.torches_top)
         count = 0
-        maxcount = perc * len(self.torches) / 100
+        maxcount = 0
         for pos, val in self.torches.items():
-            if (count < maxcount and pos in self.blocks and self.blocks[pos].material == materials.Air):
+            if (pos.up(1).y/self.room_height == level):
+                maxcount += 1
+        maxcount = perc * maxcount / 100
+        for pos, val in self.torches.items():
+            if (count < maxcount and 
+               pos in self.blocks and 
+               self.blocks[pos].material == materials.Air and
+               pos.up(1).y/self.room_height == level):
                 self.blocks[pos].material = materials.Torch
                 count += 1
+        if (level < self.levels-1):
+            self.placetorches(level+1)
 
     def placedoors(self, perc):
         '''Place a proportion of the doors where possible'''

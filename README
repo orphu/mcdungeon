@@ -23,6 +23,8 @@ CURRENT FEATURES:
    * Places doors, portcullises, and torches in the dungeon. The amount of
      each is a configurable option. 
 
+   * Option to place fewer torches as levels go down. Less light == more danger!
+
    * Places chests with loot around the dungeon in (probably) hard
      to reach places. An arbitrary number of loot tables can be configured
      to provide variety. The density of chests is configurable. 

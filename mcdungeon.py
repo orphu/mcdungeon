@@ -125,7 +125,7 @@ print "Placing portcullises..."
 dungeon.placeportcullises(cfg.portcullises)
 
 print "Placing torches..."
-dungeon.placetorches(cfg.torches)
+dungeon.placetorches()
 
 print "Placing chests..."
 dungeon.placechests()

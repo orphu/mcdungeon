@@ -10,7 +10,8 @@ offset = Vec(0,0,0)
 tower = 1.0
 doors = 50
 portcullises = 50
-torches = 50
+torches_top = 50
+torches_bottom = 50
 wall = 'Cobblestone'
 floor = 'Stone'
 ceiling = 'Cobblestone'
@@ -25,9 +26,9 @@ master_floors = {}
 master_mobs = []
 
 def Load(filename = 'mcdungeon.cfg'):
-    global parser, offset, tower, doors, portcullises, torches, wall, floor, \
+    global parser, offset, tower, doors, portcullises, torches_top, wall, floor, \
     ceiling, mvportal, master_halls, master_rooms, master_features, \
-    master_floors, chests, spawners, master_mobs
+    master_floors, chests, spawners, master_mobs, torches_bottom
 
     print 'Reading config from', filename, '...'
     try:
@@ -55,7 +56,8 @@ def Load(filename = 'mcdungeon.cfg'):
     tower = parser.getfloat('dungeon','tower')
     doors = parser.getint('dungeon','doors')
     portcullises = parser.getint('dungeon', 'portcullises')
-    torches = parser.getint('dungeon', 'torches')
+    torches_top = parser.getint('dungeon', 'torches_top')
+    torches_bottom = parser.getint('dungeon', 'torches_bottom')
     wall = parser.get('dungeon', 'wall')
     ceiling = parser.get('dungeon', 'ceiling')
     floor = parser.get('dungeon', 'floor')
