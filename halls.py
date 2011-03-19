@@ -33,6 +33,12 @@ class Triple(Blank):
         drawHall(self)
 
 
+class Four(Blank):
+    size = 6
+    def render (self):
+        drawHall(self)
+
+
 class Ten(Blank):
     size = 12
     def render (self):
@@ -145,6 +151,8 @@ def new (name, parent, direction, offset):
             return Double(parent, direction, offset)
     if (name == 'triple'):
             return Triple(parent, direction, offset)
+    if (name == 'four'):
+            return Four(parent, direction, offset)
     if (name == 'ten'):
             return Ten(parent, direction, offset)
     return Blank(parent, direction, offset)
@@ -156,6 +164,8 @@ def sizeByName (name):
             return Double.size
     if (name == 'triple'):
             return Triple.size
+    if (name == 'four'):
+            return Four.size
     if (name == 'ten'):
             return Ten.size
     return Blank.size
