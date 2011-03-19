@@ -47,6 +47,8 @@ class Vec(object):
         return Vec(self.x,self.y,self.z-z)
     def south(self, z):
         return Vec(self.x,self.y,self.z+z)
+    def mag2d(self):
+        return math.sqrt(self.x*self.x + self.z*self.z)
     def d(self, d):
         if (d == 0):
             return Vec(0,0,-1)
@@ -134,14 +136,21 @@ class Box(object):
                 and (z >= 0) and (z < self.d))
 
     def intersects(self, b):
-        x_intersect = (self.loc.x > b.x2()) and (self.x2() > b.loc.x)
-        y_intersect = (self.loc.y > b.y2()) and (self.y2() > b.loc.y)
-        z_intersect = (self.loc.z > b.z2()) and (self.z2() > b.loc.z)
-        return x_intersect and y_intersect and z_intersect
+        if ((self.loc.x > b.x2()) or (self.x2() <= b.loc.x)):
+            return False
+        if ((self.loc.y > b.y2()) or (self.y2() <= b.loc.y)):
+            return False
+        if ((self.loc.z > b.z2()) or (self.z2() <= b.loc.z)):
+            return False
+        return True
 
+    def __str__(self):
+        return '(%d, %d, %d) w: %d, h: %d, d: %d' % (
+            self.loc.x, self.loc.y, self.loc.z,
+            self.w, self.h, self.d)
 
-def area(loc1, loc2):
-    return abs((loc1.x-loc2.x)*(loc1.z-loc2.z))
+    def area(loc1, loc2):
+        return abs((loc1.x-loc2.x)*(loc1.z-loc2.z))
 
 
 def iterate_plane(loc1, loc2):
