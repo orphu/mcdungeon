@@ -6,7 +6,9 @@ from utils import *
 
 parser = ConfigParser.SafeConfigParser()
 
-offset = Vec(0,0,0)
+offset = ''
+min_dist = 1
+max_dist = 16
 tower = 1.0
 doors = 50
 portcullises = 50
@@ -26,9 +28,10 @@ master_floors = {}
 master_mobs = []
 
 def Load(filename = 'mcdungeon.cfg'):
-    global parser, offset, tower, doors, portcullises, torches_top, wall, floor, \
-    ceiling, mvportal, master_halls, master_rooms, master_features, \
-    master_floors, chests, spawners, master_mobs, torches_bottom
+    global parser, offset, tower, doors, portcullises, torches_top, wall, \
+    floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
+    master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
+    max_dist
 
     print 'Reading config from', filename, '...'
     try:
@@ -52,7 +55,7 @@ def Load(filename = 'mcdungeon.cfg'):
         master_mobs.append((mob2, mob[1]))
 
     # Load other config options
-    offset = str2Vec(parser.get('dungeon', 'offset'))
+    offset = parser.get('dungeon', 'offset')
     tower = parser.getfloat('dungeon','tower')
     doors = parser.getint('dungeon','doors')
     portcullises = parser.getint('dungeon', 'portcullises')
@@ -64,6 +67,8 @@ def Load(filename = 'mcdungeon.cfg'):
     mvportal = parser.get('dungeon', 'mvportal')
     chests = parser.getfloat('dungeon', 'chests')
     spawners = parser.getfloat('dungeon', 'spawners')
+    min_dist = parser.getint('dungeon', 'min_dist')
+    max_dist = parser.getint('dungeon', 'max_dist')
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be \

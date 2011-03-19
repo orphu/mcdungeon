@@ -89,7 +89,14 @@ print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 print "Startup compete. "
 
 # Define our dungeon.
-dungeon = Dungeon(cfg.offset, args.x, args.z, args.levels)
+dungeon = Dungeon(args.x, args.z, args.levels)
+
+try:
+    dungeon.position = str2Vec(cfg.offset)
+    print "location set to",cfg.offset
+except:
+    print "Searching for a good location..."
+    dungeon.findlocation(world)
 
 print "Generating rooms..."
 dungeon.genrooms()

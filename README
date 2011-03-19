@@ -7,6 +7,9 @@ Paul Hodge's minetown project and David Rio Vierra's pymclevel.
 
 CURRENT FEATURES:
 
+   * Automatically finds a good location on a map based on range, size, and
+     depth parameters. 
+
    * Generates room layouts based on a random weighted selection
      of rooms. 
 
@@ -53,7 +56,6 @@ TODO:
    * More hall types
    * Traps!
    * Place a dungeon entrance leading to the surface (partially complete)
-   * Automatically select a suiable location within a map
 
 OPTIONS:
 

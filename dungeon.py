@@ -23,7 +23,7 @@ class Block(object):
         self.data = 0
 
 class Dungeon (object):
-    def __init__(self, pos, xsize, zsize, levels):
+    def __init__(self, xsize, zsize, levels):
         self.rooms = {}
         self.blocks = {}
         self.tile_ents = {}
@@ -36,12 +36,126 @@ class Dungeon (object):
         self.levels = levels
         self.room_size = 16
         self.room_height = 6
-        self.position = pos
+        self.position = Vec(0,0,0)
+
+
     def setblock(self, loc, material):
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
         self.blocks[loc].material = material
         self.blocks[loc].data = 0
+
+
+    def findlocation(self, world):
+        positions = {}
+        final_positions = {}
+        depths = {}
+        bounds = world.bounds
+        scx = world.playerSpawnPosition()[0]>>4
+        scz = world.playerSpawnPosition()[2]>>4
+        spawn_chunk = Vec(scx, 0, scz)
+        min_depth = (self.levels+1)*self.room_height
+        print 'World bounds:', bounds.getOrigin(), bounds.getSize()
+        print 'Spawn position:', world.playerSpawnPosition()
+        print 'Spawn chunk: (%d, %d)'%(scx, scz)
+        print 'Minimum depth:', min_depth
+        # List of blocks to ignore when checking depth
+        ignore = (0,6,8,9,10,11,17,18,37,38,39,40,44,50,51,55,
+                  59,63,64,65,66,68,70,71,72,75,76,
+                  77,81,83,85,86,90,91,92,93,94)
+        print 'Pass 1: Bounds check...'
+        for chunk in bounds.chunkPositions:
+            # First some basic distance from spawn checks...
+            spin()
+            chunk_box = Box(Vec(chunk[0], 0, chunk[1]),
+                            self.xsize,
+                            16,
+                            self.zsize)
+            dist_max = int(max(
+                (spawn_chunk-chunk_box.loc).mag2d(),
+                (spawn_chunk-(chunk_box.loc+Vec(self.xsize-1,0,0))).mag2d(),
+                ((chunk_box.loc+Vec(0,0,self.zsize-1))-spawn_chunk).mag2d(),
+                (spawn_chunk-(chunk_box.loc+
+                 Vec(self.xsize-1,0,self.zsize-1))).mag2d()
+            ))
+            dist_min = int(min(
+                (spawn_chunk-chunk_box.loc).mag2d(),
+                (spawn_chunk-(chunk_box.loc+Vec(self.xsize-1,0,0))).mag2d(),
+                ((chunk_box.loc+Vec(0,0,self.zsize-1))-spawn_chunk).mag2d(),
+                (spawn_chunk-(chunk_box.loc+
+                 Vec(self.xsize-1,0,self.zsize-1))).mag2d()
+            ))
+            # Don't overlap with spawn...
+            if (chunk_box.containsPoint(spawn_chunk) == True):
+                continue
+            # Not too far away...
+            if (dist_max > cfg.max_dist):
+                continue
+            # Not too close...
+            if (dist_min < cfg.min_dist):
+                continue
+            # Looks good so far, now record depth
+            positions[chunk_box.loc] = True
+        print 'Found',len(positions),'possible locations.'
+        # Now we have to weed out the areas that are not deep enough
+        print 'Pass 2: Depth and chunk check...'
+        for chunk in positions:
+            spin(chunk)
+            # Fill in any missing depth info for this area
+            depth = 128
+            for p in iterate_cube(chunk, chunk+Vec(self.xsize-1,
+                                                   0,
+                                                   1-self.zsize)):
+                try:
+                    this_chunk = world.getChunk(p.x, p.z)
+                except:
+                    depths[p] = 0
+                if (p in depths):
+                    depth = min(depth, depths[p])
+                    continue
+                depths[p] = 128
+                for x in xrange(16):
+                    for z in xrange(16):
+                        # Heightmap is a good starting place, but I need to
+                        # look down 
+                        y = this_chunk.HeightMap[z, x]-1
+                        while (this_chunk.Blocks[x, z, y] in ignore):
+                            y -= 1
+                        depths[p] = min(y, depths[p])
+                depth = min(depth, depths[p])
+            if (depth >= min_depth):
+                final_positions[Vec(chunk.x, 0, chunk.z)] = Vec(
+                    chunk.x*self.room_size,
+                    depth,
+                    chunk.z*self.room_size)
+        # The final list. Make a choice!
+        print 'Found',len(final_positions),'possible locations.'
+        try:
+            self.position = random.choice(final_positions.values())
+        except:
+            sys.exit('Could not find any suitable locations!\n\
+Try a smaller dungeon, or larger start area.')
+        print 'Final location:',self.position
+
+        spawnx = spawn_chunk.x
+        spawnz = spawn_chunk.z
+        for x in xrange(spawnx-cfg.max_dist, spawnx+cfg.max_dist):
+            for z in xrange(spawnz+cfg.max_dist, spawnz-cfg.max_dist-2, -1):
+                if (Vec(x,0,z) in final_positions):
+                    if (Vec(x,0,z) == Vec(
+                        self.position.x/self.room_size,
+                        0,
+                        self.position.z/self.room_size)):
+                        sys.stdout.write('*')
+                    else:
+                        sys.stdout.write('+')
+                else:
+                    if (Vec(x,0,z) == spawn_chunk):
+                        sys.stdout.write('S')
+                    else:
+                        sys.stdout.write('-')
+            print
+
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Sign')
@@ -53,6 +167,8 @@ class Dungeon (object):
         root_tag['Text3'] = nbt.TAG_String(text3)
         root_tag['Text4'] = nbt.TAG_String(text4)
         self.tile_ents[loc] = root_tag
+
+
     def addspawner(self, loc):
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('MobSpawner')
