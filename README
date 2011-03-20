@@ -36,6 +36,8 @@ CURRENT FEATURES:
      chests, but not always. Mob types are configurable. The density of
      spawners is configurable.
 
+   * Random placement of secret traps.
+
    * Room, hall, floor, and feature lists are configurable via an
      external .cfg file. 
 
@@ -54,7 +56,7 @@ TODO:
    * More room features
    * More room types
    * More hall types
-   * Traps!
+   * More traps!
    * Place a dungeon entrance leading to the surface (partially complete)
 
 OPTIONS:
