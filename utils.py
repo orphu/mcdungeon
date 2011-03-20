@@ -314,10 +314,20 @@ def dumpEnts(world):
         except mclevel.ChunkMalformed:
             continue
         for tileEntity in chunk.TileEntities:
-            print tileEntity["id"].value
-            if (tileEntity["id"].value == "MobSpawner"):
+            pos = Vec(0,0,0)
+            if (tileEntity["id"].value == "Trap"):
                 for name, tag in tileEntity.items():
                     print '   ',name, tag.value
+                    if (name == 'x'):
+                        pos.x = tag.value & 0xf
+                    if (name == 'y'):
+                        pos.y = tag.value
+                    if (name == 'z'):
+                        pos.z = tag.value & 0xf
+                print pos
+                print 'Block Value:',chunk.Blocks[pos.x, pos.z, pos.y]
+                print 'Data Value:',chunk.Data[pos.x, pos.z, pos.y]
+
         if i % 100 == 0:
             print "Chunk {0}...".format(i)
 
