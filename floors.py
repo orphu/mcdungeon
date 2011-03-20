@@ -5,34 +5,43 @@ from utils import *
 
 class Blank(object):
     _name = 'blank'
-
     def __init__ (self, parent):
         self.parent = parent
-
     def render (self):
         pass
 
 class Cobble(Blank):
     _name = 'cobble'
-
+    ruin = False
     def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
-            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
-                self.parent.parent.setblock(x+self.parent.loc,
+        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
+            return
+        for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+            self.parent.parent.setblock(x+self.parent.loc,
                                             materials.Cobblestone)
+        # Runined
+        if (self.ruin is False):
+            return
+        c = self.parent.canvasCenter()
+        y = self.parent.canvasHeight()
+        r = random.randint(1,1000)
+        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+        for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+            p = x+self.parent.loc
+            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+            n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+            if (n < d):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.blocks[p].data = 0
 
-class DoubleSlab(Blank):
-    _name = 'doubleSlab'
 
-    def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
-            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
-                self.parent.parent.setblock(x+self.parent.loc,
-                                            materials.DoubleSlab)
+class BrokenCobble(Cobble):
+    _name = 'brokencobble'
+    ruin = True
+
 
 class WoodTile(Blank):
     _name = 'woodtile'
-
     def render (self):
         if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
@@ -43,8 +52,10 @@ class WoodTile(Blank):
                     self.parent.parent.setblock(x+self.parent.loc,
                                                 materials.WoodPlanks)
 
+
 class CheckerRug(Blank):
     _name = 'checkerrug'
+    ruin = False
     colors = (
         (7,8),   # dark grey / light grey
         (9,3),   # cyan / light blue
@@ -57,36 +68,19 @@ class CheckerRug(Blank):
         (12,13), # brown  / dark green
         (15,13), # black  / dark green
         )
-
-    def render (self):
-        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
-            color = random.choice(self.colors)
-            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
-                self.parent.parent.setblock(x+self.parent.loc,
-                                            materials.Wool)
-                if ((x.x+x.z)&1 == 1):
-                    self.parent.parent.blocks[x+self.parent.loc].data = color[0]
-                else:
-                    self.parent.parent.blocks[x+self.parent.loc].data = color[1]
-            if (random.randint(1, 100) < 50):
-                return
-            # Random chance to break it up.
-            c = self.parent.canvasCenter()
-            y = self.parent.canvasHeight()
-            r = random.randint(1,1000)
-            maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
-            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
-                p = x+self.parent.loc
-                d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-                n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
-                if (n < d):
-                    self.parent.parent.setblock(p, materials._floor)
-                    self.parent.parent.blocks[p].data = 0
-
-class BrokenDoubleSlab(Blank):
-    _name = 'brokendoubleslab'
     def render (self):
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
+            return
+        color = random.choice(self.colors)
+        for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+            self.parent.parent.setblock(x+self.parent.loc,
+                                        materials.Wool)
+            if ((x.x+x.z)&1 == 1):
+                self.parent.parent.blocks[x+self.parent.loc].data = color[0]
+            else:
+                self.parent.parent.blocks[x+self.parent.loc].data = color[1]
+        # Runined
+        if (self.ruin is False):
             return
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
@@ -96,8 +90,45 @@ class BrokenDoubleSlab(Blank):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
             n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
-            if (n >= d):
-                self.parent.parent.setblock(p, materials.DoubleSlab)
+            if (n < d):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.blocks[p].data = 0
+
+
+class BrokenCheckerRug(CheckerRug):
+    _name = 'brokencheckerrug'
+    ruin = True
+
+
+class DoubleSlab(Blank):
+    _name = 'doubleslab'
+    ruin = False
+    def render (self):
+        if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
+            return
+        for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+            self.parent.parent.setblock(x+self.parent.loc,
+                                        materials.DoubleSlab)
+        # Runined
+        if (self.ruin is False):
+            return
+        c = self.parent.canvasCenter()
+        y = self.parent.canvasHeight()
+        r = random.randint(1,1000)
+        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+        for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+            p = x+self.parent.loc
+            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+            n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+            if (n < d):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.blocks[p].data = 0
+
+
+class BrokenDoubleSlab(DoubleSlab):
+    _name = 'brokendoubleslab'
+    ruin = True
+
 
 class Mud(Blank):
     _name = 'mud'
@@ -122,6 +153,7 @@ class Mud(Blank):
             elif (n >= d):
                 self.parent.parent.setblock(p, materials.Dirt)
 
+
 class Sand(Blank):
     _name = 'sand'
     def render (self):
@@ -141,6 +173,7 @@ class Sand(Blank):
                 self.parent.parent.setblock(p, materials.Sandstone)
             elif (n >= d):
                 self.parent.parent.setblock(p, materials.Gravel)
+
 
 class Bridges(Blank):
     _name = 'bridges'
@@ -246,14 +279,18 @@ class Bridges(Blank):
 def new (name, parent):
     if (name == 'cobble'):
             return Cobble(parent)
+    if (name == 'brokencobble'):
+            return BrokenCobble(parent)
     if (name == 'doubleslab'):
             return DoubleSlab(parent)
+    if (name == 'brokendoubleslab'):
+            return BrokenDoubleSlab(parent)
     if (name == 'woodtile'):
             return WoodTile(parent)
     if (name == 'checkerrug'):
             return CheckerRug(parent)
-    if (name == 'brokendoubleslab'):
-            return BrokenDoubleSlab(parent)
+    if (name == 'brokencheckerrug'):
+            return BrokenCheckerRug(parent)
     if (name == 'mud'):
             return Mud(parent)
     if (name == 'sand'):
