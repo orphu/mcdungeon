@@ -1,6 +1,7 @@
 import materials
 import doors
 import portcullises
+import cfg
 from utils import *
 from random import *
 
@@ -48,31 +49,63 @@ class Ten(Blank):
 def drawHall (hall):
     length = hall.parent.hallLength[hall.direction]
     start = hall.parent.loc
+    trap = 0
+    if (randint(1,100) <= cfg.arrow_traps):
+        trap = 1
     if (hall.direction == 0):
         start += Vec(0,0,0)
         start = start.east(hall.offset)
         stepw = Vec(1,0,0)
         stepl = Vec(0,0,1)
+        dd1 = 5
+        dd2 = 4
     elif(hall.direction == 1):
         start += Vec(hall.parent.parent.room_size-1,0,0)
         start = start.south(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(-1,0,0)
+        dd1 = 2
+        dd2 = 3
     elif(hall.direction == 2):
         start += Vec(0,0,hall.parent.parent.room_size-1)
         start = start.east(hall.offset)
         stepw = Vec(1,0,0)
         stepl = Vec(0,0,-1)
+        dd1 = 5
+        dd2 = 4
     else:
         start += Vec(0,0,0)
         start = start.south(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(1,0,0)
+        dd1 = 2
+        dd2 = 3
     for j in xrange(length):
         pen = start+stepl*j
         # First wall
         for k in xrange(hall.parent.parent.room_height):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
+        if (trap == 1 and (j%2) == 0 and j > 0 and j < length-1):
+            for k in iterate_cube(pen.down(1),
+                                  pen.down(hall.parent.parent.room_height-1)-
+                                  (stepw*2)):
+                hall.parent.parent.setblock(k, materials._wall)
+        elif (trap == 1 and (j%2) == 1 and j > 0 and j < length-1):
+            for k in iterate_cube(pen.down(1),
+                                  pen.down(hall.parent.parent.room_height-1)-
+                                  (stepw*2)):
+                hall.parent.parent.setblock(k, materials._wall)
+            tpen = pen.down(2)
+            hall.parent.parent.setblock(tpen, materials.Dispenser, dd1)
+            hall.parent.parent.addtrap(tpen)
+            hall.parent.parent.setblock(tpen-stepw,
+                                        materials.RedStoneTorchOff, 5)
+            tpen = tpen.down(2)
+            hall.parent.parent.setblock(tpen, materials.Air)
+            hall.parent.parent.setblock(tpen-stepw,
+                                        materials.RedStoneTorchOn, 5)
+            tpen = tpen.down(1)
+            hall.parent.parent.setblock(tpen, materials.RedStoneWire)
         # hallway (ceiling and floor)
         for x in xrange(hall.size-2):
             pen += stepw
@@ -82,13 +115,43 @@ def drawHall (hall):
             hall.parent.parent.setblock(
                 pen.down(hall.parent.parent.room_height-2),
                 materials._floor)
-            hall.parent.parent.setblock(
-                pen.down(hall.parent.parent.room_height-1),
-                materials._floor)
+            if (trap == 1 and j < length-1):
+                hall.parent.parent.setblock(
+                    pen.down(hall.parent.parent.room_height-1),
+                    materials.RedStoneWire)
+                if (randint(1,100) <= 33):
+                    hall.parent.parent.setblock(
+                        pen.down(hall.parent.parent.room_height-3),
+                        materials.StonePressurePlate)
+            else:
+                hall.parent.parent.setblock(
+                    pen.down(hall.parent.parent.room_height-1),
+                    materials._floor)
         # Second wall
         pen += stepw
         for k in xrange(hall.parent.parent.room_height):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
+        if (trap == 1 and (j%2) == 1 and j > 0 and j < length-1):
+            for k in iterate_cube(pen.down(1),
+                                  pen.down(hall.parent.parent.room_height-1)+
+                                  (stepw*2)):
+                hall.parent.parent.setblock(k, materials._wall)
+        elif (trap == 1 and (j%2) == 0 and j > 0 and j < length-1):
+            for k in iterate_cube(pen.down(1),
+                                  pen.down(hall.parent.parent.room_height-1)+
+                                  (stepw*2)):
+                hall.parent.parent.setblock(k, materials._wall)
+            tpen = pen.down(2)
+            hall.parent.parent.setblock(tpen, materials.Dispenser, dd2)
+            hall.parent.parent.addtrap(tpen)
+            hall.parent.parent.setblock(tpen+stepw,
+                                        materials.RedStoneTorchOff, 5)
+            tpen = tpen.down(2)
+            hall.parent.parent.setblock(tpen, materials.Air)
+            hall.parent.parent.setblock(tpen+stepw,
+                                        materials.RedStoneTorchOn, 5)
+            tpen = tpen.down(1)
+            hall.parent.parent.setblock(tpen, materials.RedStoneWire)
 
     # Possible torches.
     pen = start+stepl*length

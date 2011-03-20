@@ -39,11 +39,11 @@ class Dungeon (object):
         self.position = Vec(0,0,0)
 
 
-    def setblock(self, loc, material):
+    def setblock(self, loc, material, data=0):
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
         self.blocks[loc].material = material
-        self.blocks[loc].data = 0
+        self.blocks[loc].data = data
 
 
     def findlocation(self, world):
@@ -204,6 +204,21 @@ Try a smaller dungeon, or larger start area.')
             item_tag['id'] = nbt.TAG_Short(i.id)
             item_tag['Damage'] = nbt.TAG_Short(i.damage)
             inv_tag.append(item_tag)
+        self.tile_ents[loc] = root_tag
+    def addtrap(self, loc):
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('Trap')
+        root_tag['x'] = nbt.TAG_Int(loc.x)
+        root_tag['y'] = nbt.TAG_Int(loc.y)
+        root_tag['z'] = nbt.TAG_Int(loc.z)
+        inv_tag = nbt.TAG_List()
+        root_tag['Items'] = inv_tag
+        item_tag = nbt.TAG_Compound()
+        item_tag['Slot'] = nbt.TAG_Byte(0)
+        item_tag['Count'] = nbt.TAG_Byte(3)
+        item_tag['id'] = nbt.TAG_Short(262)
+        item_tag['Damage'] = nbt.TAG_Short(0)
+        inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
     def setroom(self, coord, room):
         if coord not in self.rooms:
@@ -559,8 +574,8 @@ Try a smaller dungeon, or larger start area.')
             for z in xrange(self.zsize*self.room_size):
                 y = layer
                 while (y < layer + self.room_height - 1 and
-                        (Vec(x,y,z) not in self.blocks or
-                         self.blocks[Vec(x,y,z)].material == materials.Air or
+                       Vec(x,y,z) in self.blocks and
+                         (self.blocks[Vec(x,y,z)].material == materials.Air or
                          self.blocks[Vec(x,y,z)].material == materials._ceiling)):
                     y += 1
                 if Vec(x,y,z) in self.blocks:
@@ -631,8 +646,8 @@ Try a smaller dungeon, or larger start area.')
                 for z in xrange(self.zsize*self.room_size):
                     y = layer
                     while (y < layer + self.room_height - 1 and
-                           (Vec(x,y,z) not in self.blocks or
-                            self.blocks[Vec(x,y,z)].material ==
+                           Vec(x,y,z) in self.blocks and
+                            (self.blocks[Vec(x,y,z)].material ==
                             materials.Air or
                             self.blocks[Vec(x,y,z)].material ==
                             materials._ceiling)):
