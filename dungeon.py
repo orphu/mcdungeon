@@ -67,7 +67,7 @@ class Dungeon (object):
         for chunk in bounds.chunkPositions:
             # First some basic distance from spawn checks...
             spin()
-            chunk_box = Box(Vec(chunk[0], 0, chunk[1]),
+            chunk_box = Box(Vec(chunk[0], 0, chunk[1]-self.zsize+1),
                             self.xsize,
                             16,
                             self.zsize)
@@ -94,8 +94,8 @@ class Dungeon (object):
             # Not too close...
             if (dist_min < cfg.min_dist):
                 continue
-            # Looks good so far, now record depth
-            positions[chunk_box.loc] = True
+            # Looks good so far
+            positions[Vec(chunk[0], 0, chunk[1])] = True
         print 'Found',len(positions),'possible locations.'
         # Now we have to weed out the areas that are not deep enough
         print 'Pass 2: Depth and chunk check...'
