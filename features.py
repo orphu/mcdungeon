@@ -312,7 +312,7 @@ class Pool(Blank):
     def render (self):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
-        y = self.parent.canvasHeight() - 1
+        y = self.parent.loc.y + self.parent.canvasHeight() - 1
         center = self.parent.canvasCenter()
         d = random.randint(5, 8)/2.0
         for p in iterate_disc(center, d, d):
