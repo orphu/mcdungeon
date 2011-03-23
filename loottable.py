@@ -31,7 +31,7 @@ def Load ():
     while (cfg.parser.has_section('tier%d'%(_maxtier+1))):
         _maxtier += 1
         tiername = 'tier%d'%(_maxtier)
-        print 'Reading loot table for:',tiername
+        #print 'Reading loot table for:',tiername
         loots = cfg.parser.items(tiername)
         _master_loot[tiername] = {}
         thistable =  _master_loot[tiername]
