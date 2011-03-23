@@ -306,6 +306,22 @@ class Columns(Blank):
                 self.parent.parent.setblock(self.parent.loc+p, mat[0])
                 self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
 
+class Pool(Blank):
+    _name = 'pool'
+
+    def render (self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+        y = self.parent.canvasHeight() - 1
+        center = self.parent.canvasCenter()
+        d = random.randint(5, 8)/2.0
+        for p in iterate_disc(center, d, d):
+            pp = Vec(self.parent.loc.x+p.x, y, self.parent.loc.z+p.z)
+            self.parent.parent.setblock(pp, materials.DoubleSlab)
+        for p in iterate_disc(center, d-1.0, d-1.0):
+            pp = Vec(self.parent.loc.x+p.x, y, self.parent.loc.z+p.z)
+            self.parent.parent.setblock(pp, materials.Water)
+
 
 def new (name, parent):
     if (name == 'entrance'):
@@ -322,4 +338,6 @@ def new (name, parent):
         return River(parent)
     if (name == 'multiverseportal'):
         return MultiVersePortal(parent)
+    if (name == 'pool'):
+        return Pool(parent)
     return Blank(parent)
