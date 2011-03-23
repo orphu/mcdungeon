@@ -294,10 +294,10 @@ def str2Vec(string):
     return Vec(m.group(1), m.group(2), m.group(3))
 
 def iterate_disc(center, rx, rz):
-    for x in drange(-rx, rx+1, 1.0):
+    for x in drange(-rx, rx+1.0, 1.0):
         for z in drange(-rz, rz+1, 1.0):
             p = Vec2f(center.x+x, center.z+z)
-            if ((x**2)/(rx**2) + (z**2)/(rz**2) <= 1):
+            if ((x**2)/(rx**2) + (z**2)/(rz**2) <= 0.7):
                 yield p
 
 def drange(start, stop, step):
