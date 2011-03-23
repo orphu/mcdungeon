@@ -77,7 +77,7 @@ def Load(filename = 'mcdungeon.cfg'):
                  >= 1.0. Check the cfg file.')
 
     if (chests < 0.0 or chests > 10.0):
-        sys.ext('Chests should be between 0 and 10. Check the cfg file.')
+        sys.exit('Chests should be between 0 and 10. Check the cfg file.')
 
     if (spawners < 0.0 or spawners > 10.0):
         sys.ext('Spawners should be between 0 and 10. Check the cfg file.')
