@@ -157,6 +157,12 @@ Try a smaller dungeon, or larger start area.')
             map_min_z = min(map_min_z, p.z)
             map_max_z = max(map_max_z, p.z)
 
+        # Include spawn
+        map_min_x = min(map_min_x, spawn_chunk.x)
+        map_max_x = max(map_max_x, spawn_chunk.x)
+        map_min_z = min(map_min_z, spawn_chunk.z)
+        map_max_z = max(map_max_z, spawn_chunk.z)
+
         sx = self.position.x/self.room_size
         sz = self.position.z/self.room_size
         d_box = Box(Vec(sx, 0, sz-self.zsize+1), self.xsize, 128, self.zsize)
