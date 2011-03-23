@@ -55,10 +55,17 @@ class Dungeon (object):
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
         min_depth = (self.levels+1)*self.room_height
-        print 'World bounds:', bounds.getOrigin(), bounds.getSize()
-        print 'Spawn position:', world.playerSpawnPosition()
+        print 'World bounds: (%d, %d) to (%d, %d)' % (bounds.getMinx(),
+                                                      bounds.getMinz(),
+                                                      bounds.getMaxx(),
+                                                      bounds.getMaxz())
+        print 'Spawn point: (%d, %d, %d)'%(world.playerSpawnPosition()[0],
+                                           world.playerSpawnPosition()[1],
+                                           world.playerSpawnPosition()[2])
         print 'Spawn chunk: (%d, %d)'%(scx, scz)
-        print 'Minimum depth:', min_depth
+        print 'Minimum depth:', min_depth, 'blocks'
+        print 'Minimum distance from spawn:', cfg.min_dist, 'chunks'
+        print 'Maximum distance from spawn:', cfg.max_dist, 'chunks'
         # List of blocks to ignore when checking depth
         ignore = (0,6,8,9,10,11,17,18,37,38,39,40,44,50,51,55,
                   59,63,64,65,66,68,70,71,72,75,76,
@@ -71,20 +78,20 @@ class Dungeon (object):
                             self.xsize,
                             16,
                             self.zsize)
-            dist_max = int(max(
+            dist_max = max(
                 (spawn_chunk-chunk_box.loc).mag2d(),
                 (spawn_chunk-(chunk_box.loc+Vec(self.xsize-1,0,0))).mag2d(),
                 ((chunk_box.loc+Vec(0,0,self.zsize-1))-spawn_chunk).mag2d(),
                 (spawn_chunk-(chunk_box.loc+
                  Vec(self.xsize-1,0,self.zsize-1))).mag2d()
-            ))
-            dist_min = int(min(
-                (spawn_chunk-chunk_box.loc).mag2d(),
-                (spawn_chunk-(chunk_box.loc+Vec(self.xsize-1,0,0))).mag2d(),
-                ((chunk_box.loc+Vec(0,0,self.zsize-1))-spawn_chunk).mag2d(),
-                (spawn_chunk-(chunk_box.loc+
-                 Vec(self.xsize-1,0,self.zsize-1))).mag2d()
-            ))
+            )
+            dist_min = (spawn_chunk-Vec(clamp(spawn_chunk.x,
+                                             chunk_box.loc.x,
+                                             chunk_box.loc.x+self.xsize-1),
+                                       0,
+                                       clamp(spawn_chunk.z,
+                                             chunk_box.loc.z,
+                                             chunk_box.loc.z+self.zsize-1))).mag2d()
             # Don't overlap with spawn...
             if (chunk_box.containsPoint(spawn_chunk) == True):
                 continue
@@ -135,23 +142,39 @@ class Dungeon (object):
         except:
             sys.exit('Could not find any suitable locations!\n\
 Try a smaller dungeon, or larger start area.')
-        print 'Final location:',self.position
+        print 'Final location: (%d, %d, %d)'% (self.position.x,
+                                               self.position.y,
+                                               self.position.z)
 
-        spawnx = spawn_chunk.x
-        spawnz = spawn_chunk.z
-        for x in xrange(spawnx-cfg.max_dist, spawnx+cfg.max_dist):
-            for z in xrange(spawnz+cfg.max_dist, spawnz-cfg.max_dist-2, -1):
+        # Draw a nice little map of the dungeon location
+        map_min_x = bounds.getMaxcx()
+        map_max_x = bounds.getMincx()
+        map_min_z = bounds.getMaxcz()
+        map_max_z = bounds.getMincz()
+        for p in final_positions:
+            map_min_x = min(map_min_x, p.x)
+            map_max_x = max(map_max_x, p.x)
+            map_min_z = min(map_min_z, p.z)
+            map_max_z = max(map_max_z, p.z)
+
+        sx = self.position.x/self.room_size
+        sz = self.position.z/self.room_size
+        d_box = Box(Vec(sx, 0, sz-self.zsize+1), self.xsize, 128, self.zsize)
+
+        for x in xrange(map_min_x-1, map_max_x+2):
+            for z in xrange(map_max_z+1, map_min_z-2, -1):
                 if (Vec(x,0,z) in final_positions):
-                    if (Vec(x,0,z) == Vec(
-                        self.position.x/self.room_size,
-                        0,
-                        self.position.z/self.room_size)):
-                        sys.stdout.write('*')
+                    if (Vec(x,0,z) == Vec(sx, 0, sz)):
+                        sys.stdout.write('X')
+                    elif (d_box.containsPoint(Vec(x,64,z))):
+                        sys.stdout.write('x')
                     else:
                         sys.stdout.write('+')
                 else:
                     if (Vec(x,0,z) == spawn_chunk):
                         sys.stdout.write('S')
+                    elif (d_box.containsPoint(Vec(x,64,z))):
+                        sys.stdout.write('x')
                     else:
                         sys.stdout.write('-')
             print
