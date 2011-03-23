@@ -38,11 +38,15 @@ class Blank(object):
     def canvasWidth(self):
         x1 = min([p.x for p in self.canvas])
         x2 = max([p.x for p in self.canvas])
+        if (x1 == 0 and x2 == 0):
+            return 0
         return x2 - x1 + 1
 
     def canvasLength(self):
         z1 = min([p.z for p in self.canvas])
         z2 = max([p.z for p in self.canvas])
+        if (z1 == 0 and z2 == 0):
+            return 0
         return z2 - z1 + 1
 
     def canvasHeight(self):
@@ -455,11 +459,12 @@ class Corridor(Blank):
         self.hallLength[2] = self.parent.room_size - z2
         self.hallLength[3] = x1+1
         # Canvas
-        self.canvas = (
-            Vec(x1+1,self.parent.room_height-2,z1+1),
-            Vec(x2-1,self.parent.room_height-2,z1+1),
-            Vec(x2-1,self.parent.room_height-2,z2-1),
-            Vec(x1+1,self.parent.room_height-2,z2-1))
+        if (x2-x1 > 2 and z2-z1 > 2):
+            self.canvas = (
+                Vec(x1+1,self.parent.room_height-2,z1+1),
+                Vec(x2-1,self.parent.room_height-2,z1+1),
+                Vec(x2-1,self.parent.room_height-2,z2-1),
+                Vec(x1+1,self.parent.room_height-2,z2-1))
         # Figure out our corners
         c1 = self.loc+Vec(x1,self.parent.room_height-1,z1)
         c2 = self.loc+Vec(x2,self.parent.room_height-1,z1)
