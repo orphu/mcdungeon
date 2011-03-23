@@ -15,6 +15,16 @@ def ceil(n):
     return int(n)+1
 
 
+def clamp(n, a, b):
+    rmin = min(a,b)
+    rmax = max(a,b)
+    if(n < rmin):
+        return rmin
+    if(n > rmax):
+        return rmax
+    return n
+
+
 class Vec(object):
     def __init__(self, x, y, z):
         self.x = int(x)
