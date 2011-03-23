@@ -153,8 +153,8 @@ Try a smaller dungeon, or larger start area.')
         map_max_z = bounds.getMincz()
         for p in final_positions:
             map_min_x = min(map_min_x, p.x)
-            map_max_x = max(map_max_x, p.x)
-            map_min_z = min(map_min_z, p.z)
+            map_max_x = max(map_max_x, p.x+self.xsize-1)
+            map_min_z = min(map_min_z, p.z-self.zsize+1)
             map_max_z = max(map_max_z, p.z)
 
         # Include spawn
@@ -169,20 +169,16 @@ Try a smaller dungeon, or larger start area.')
 
         for x in xrange(map_min_x-1, map_max_x+2):
             for z in xrange(map_max_z+1, map_min_z-2, -1):
-                if (Vec(x,0,z) in final_positions):
-                    if (Vec(x,0,z) == Vec(sx, 0, sz)):
-                        sys.stdout.write('X')
-                    elif (d_box.containsPoint(Vec(x,64,z))):
-                        sys.stdout.write('x')
-                    else:
-                        sys.stdout.write('+')
+                if (Vec(x,0,z) == spawn_chunk):
+                    sys.stdout.write('S')
+                elif (Vec(x,0,z) == Vec(sx, 0, sz)):
+                    sys.stdout.write('X')
+                elif (d_box.containsPoint(Vec(x,64,z))):
+                    sys.stdout.write('#')
+                elif (Vec(x,0,z) in final_positions):
+                    sys.stdout.write('+')
                 else:
-                    if (Vec(x,0,z) == spawn_chunk):
-                        sys.stdout.write('S')
-                    elif (d_box.containsPoint(Vec(x,64,z))):
-                        sys.stdout.write('x')
-                    else:
-                        sys.stdout.write('-')
+                    sys.stdout.write('`')
             print
 
     def addsign(self, loc, text1, text2, text3, text4):
