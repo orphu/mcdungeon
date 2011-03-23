@@ -443,7 +443,8 @@ Try a smaller dungeon, or larger start area.')
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
-            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 6):
+            if (self.rooms[room].canvasWidth() < 2 or
+                self.rooms[room].canvasLength() < 2):
                 hcount = 0
             # The weight is exponential. Base 10 seems to work well.
             candidates.append((room, 10**hcount-1))
@@ -489,7 +490,8 @@ Try a smaller dungeon, or larger start area.')
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
-            if (sum_points_inside_flat_poly(*self.rooms[room].canvas) < 6):
+            if (self.rooms[room].canvasWidth() < 2 or
+                self.rooms[room].canvasLength() < 2):
                 hcount = 0
             # The weight is exponential. Base 10 seems to work well.
             candidates.append((room, 10**hcount-1))
