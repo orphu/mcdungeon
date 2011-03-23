@@ -195,13 +195,16 @@ def iterate_points_inside_flat_poly(*poly_points):
     num_points = len(poly_points)
 
     def point_inside(p):
-        if type(p) == Vec2f: p = Vec(p.x,0,p.z)
+        if type(p) == Vec2f:
+            p = Vec(p.x,0,p.z)
         for i in xrange(num_points):
             a = poly_points[i]
             b = poly_points[(i+1) % num_points]
 
-            if type(a) == Vec2f: a = Vec(a.x,0,a.z)
-            if type(b) == Vec2f: b = Vec(b.x,0,b.z)
+            if type(a) == Vec2f:
+                a = Vec(a.x,0,a.z)
+            if type(b) == Vec2f:
+                b = Vec(b.x,0,b.z)
 
             b_to_a = Vec2f.fromVec(b-a)
             p_to_a = Vec2f.fromVec(p-a)
