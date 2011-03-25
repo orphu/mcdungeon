@@ -53,12 +53,20 @@ parser.add_argument('--seed',
                     metavar='SEED',
                     help='Provide a seed for this dungeon. This can be \
                     anything.')
+parser.add_argument('--offset',
+                    dest='offset',
+                    metavar='\'(x, y, z)\'',
+                    help='Provide a location offset. (overrides .cfg file)')
 parser.add_argument('--world',
                     dest='world',
                     metavar='SAVEDIR',
                     required=True,
                     help='Target world (path to save directory).')
 args = parser.parse_args()
+
+# Load configs
+cfg.Load(args.config)
+loottable.Load()
 
 # Do some initial error checking
 if (args.z < 2):
@@ -70,10 +78,10 @@ if (args.levels < 1 or args.levels > 18):
 
 if (args.seed is not None):
     seed(args.seed)
+    print 'Seed:',args.seed
 
-# Load configs
-cfg.Load(args.config)
-loottable.Load()
+if (args.offset is not ''):
+    cfg.offset = args.offset
 
 # Attempt to open the world.
 try:
