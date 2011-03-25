@@ -419,8 +419,8 @@ Try a smaller dungeon, or larger start area.')
                 maxcount += 1
         maxcount = perc * maxcount / 100
         for pos, val in self.torches.items():
-            if (count < maxcount and 
-               pos in self.blocks and 
+            if (count < maxcount and
+               pos in self.blocks and
                self.blocks[pos].material == materials.Air and
                pos.up(1).y/self.room_height == level):
                 self.blocks[pos].material = materials.Torch
