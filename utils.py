@@ -3,6 +3,7 @@ import math
 import re
 import sys
 from copy import *
+from itertools import *
 from pymclevel import mclevel, nbt
 
 def floor(n):
@@ -306,12 +307,71 @@ def str2Vec(string):
     m = re.search('(-{0,1}\d+)[\s,]*(-{0,1}\d+)[\s,]*(-{0,1}\d+)', string)
     return Vec(m.group(1), m.group(2), m.group(3))
 
-def iterate_disc(center, rx, rz):
-    for x in drange(-rx, rx+1.0, 1.0):
-        for z in drange(-rz, rz+1, 1.0):
-            p = Vec2f(center.x+x, center.z+z)
-            if ((x**2)/(rx**2) + (z**2)/(rz**2) <= 0.7):
-                yield p
+
+def iterate_disc(e0, e1):
+    for (p0, p1) in zip(*[iter(iterate_ellipse(e0, e1))]*2):
+        # A little wasteful. We get a few points more than once, 
+        # but oh well. 
+        for x in xrange(p0.x, p1.x+1):
+            yield Vec(x, p0.y, p0.z)
+
+
+def iterate_ellipse(p0, p1):
+    # Ellipse function based on Bresenham's. This is ported from C and probably
+    # horribly inefficient here in python, but we are dealing with tiny spaces, so
+    # it probably won't matter much.'''
+    z = min(p0.y, p1.y)
+    x0 = p0.x
+    x1 = p1.x
+    y0 = p0.z
+    y1 = p1.z
+
+    a = abs(x1 - x0)
+    b = abs(y1 - y0)
+    b1 = b & 1
+    dx = 4 * (1 - a) * b * b
+    dy = 4 * (b1 + 1) * a * a
+    err = dx + dy + b1 * a * a
+    e2 = 0
+
+    if (x0 > x1):
+        x0 = x1
+        x1 += a
+    if (y0 > y1):
+        y0 = y1
+    y0 += (b +  1) / 2
+    y1 = y0 - b1
+    a *= 8 * a
+    b1 = 8 * b * b
+
+    while  True:
+        yield Vec(x0, z, y0)
+        yield Vec(x1, z, y0)
+        yield Vec(x0, z, y1)
+        yield Vec(x1, z, y1)
+        e2 = 2 * err
+        if (e2 >= dx):
+            x0 += 1
+            x1 -= 1
+            dx += b1
+            err += dx
+        if (e2 <= dy):
+            y0 += 1
+            y1 -= 1
+            dy += a
+            err += dy
+        if (x0 > x1):
+            break
+        # flat ellipses a=1
+        # Bug here... not sure what is going on, but
+        # this is only needed for ellipese with a 
+        # horizontal radius of 1
+        #while (y0 - y1 < b):
+        #    y0 += 1
+        #    yield Vec(x0-1, z, y0)
+        #    y1 -= 1
+        #    yield Vec(x0-1, z, y1)
+
 
 def drange(start, stop, step):
     r = start

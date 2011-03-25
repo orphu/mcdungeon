@@ -176,14 +176,12 @@ class MultiVersePortal(Blank):
                             float(self.parent.loc.z) +
                             self.parent.canvasCenter().z)
             # Fix the floor. Clear an area for the portal.
-            for p in iterate_disc(centerf, 4.5, 3.5):
-                self.parent.parent.setblock(Vec(int(p.x+.5),
-                                                center.y,int(p.z+.5)),
-                                            materials.StoneSlab)
-            for p in iterate_disc(centerf, 3.5, 2.5):
-                self.parent.parent.setblock(Vec(int(p.x+.5),
-                                                center.y,int(p.z+.5)),
-                                            materials.Air)
+            for p in iterate_disc(center.trans(-4, 0, 3),
+                                  center.trans(3, 0, -4)):
+                self.parent.parent.setblock(p, materials.Air)
+            for p in iterate_ellipse(center.trans(-4, 0, 3),
+                                  center.trans(3, 0, -4)):
+                self.parent.parent.setblock(p, materials.StoneSlab)
             # Obsidian portal frame.
             for p in iterate_cube(center.trans(-2,1,0), center.trans(1,-3,0)):
                 self.parent.parent.setblock(p, materials.Obsidian)
@@ -209,9 +207,9 @@ class MultiVersePortal(Blank):
                                        self.target,
                                        '<== Exit')
             # Treasure!
-            self.parent.parent.setblock(center.trans(-3,0,0),
+            self.parent.parent.setblock(center.trans(-2,0,-3),
                                         materials.Chest)
-            self.parent.parent.addchest(center.trans(-3,0,0), 
+            self.parent.parent.addchest(center.trans(-2,0,-3), 
                                         loottable._maxtier)
 
 
@@ -312,15 +310,19 @@ class Pool(Blank):
     def render (self):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
-        y = self.parent.loc.y + self.parent.canvasHeight() - 1
         center = self.parent.canvasCenter()
-        d = random.randint(5, 8)/2.0
-        for p in iterate_disc(center, d, d):
-            pp = Vec(self.parent.loc.x+p.x, y, self.parent.loc.z+p.z)
-            self.parent.parent.setblock(pp, materials.DoubleSlab)
-        for p in iterate_disc(center, d-1.0, d-1.0):
-            pp = Vec(self.parent.loc.x+p.x, y, self.parent.loc.z+p.z)
-            self.parent.parent.setblock(pp, materials.Water)
+        size = random.randint(4,
+                                min(self.parent.canvasWidth(),
+                                    self.parent.canvasLength()) - 2)
+        p0 = Vec(center.x - size/2 + 1,
+                 self.parent.canvasHeight(),
+                 center.z - size/2 + 1) + self.parent.loc
+        p1 = p0.trans(size-1, 0, size-1)
+        for p in iterate_disc(p0, p1):
+            self.parent.parent.setblock(p, materials.Water)
+        for p in iterate_ellipse(p0, p1):
+            self.parent.parent.setblock(p, materials._floor)
+            self.parent.parent.setblock(p.up(1), materials.StoneSlab)
 
 
 def new (name, parent):
