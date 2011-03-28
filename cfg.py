@@ -62,9 +62,10 @@ def Load(filename = 'mcdungeon.cfg'):
     portcullises = parser.getint('dungeon', 'portcullises')
     torches_top = parser.getint('dungeon', 'torches_top')
     torches_bottom = parser.getint('dungeon', 'torches_bottom')
-    wall = parser.get('dungeon', 'wall')
-    ceiling = parser.get('dungeon', 'ceiling')
-    floor = parser.get('dungeon', 'floor')
+    wall = parser.get('dungeon', 'wall').lower()
+    ceiling = parser.get('dungeon', 'ceiling').lower()
+    floor = parser.get('dungeon', 'floor').lower()
+    subfloor = parser.get('dungeon', 'subfloor').lower()
     mvportal = parser.get('dungeon', 'mvportal')
     chests = parser.getfloat('dungeon', 'chests')
     spawners = parser.getfloat('dungeon', 'spawners')
@@ -91,5 +92,5 @@ def Load(filename = 'mcdungeon.cfg'):
                 materials._ceiling = copy(val)
             if (val.name == floor):
                 materials._floor = copy(val)
-
-
+            if (val.name == subfloor):
+                materials._floor = copy(val)
