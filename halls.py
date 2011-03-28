@@ -83,7 +83,7 @@ def drawHall (hall):
     for j in xrange(length):
         pen = start+stepl*j
         # First wall
-        for k in xrange(hall.parent.parent.room_height):
+        for k in xrange(hall.parent.parent.room_height-1):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
         if (trap == 1 and (j%2) == 0 and j > 0 and j < length-1):
             for k in iterate_cube(pen.down(1),
@@ -123,13 +123,9 @@ def drawHall (hall):
                     hall.parent.parent.setblock(
                         pen.down(hall.parent.parent.room_height-3),
                         materials.StonePressurePlate)
-            else:
-                hall.parent.parent.setblock(
-                    pen.down(hall.parent.parent.room_height-1),
-                    materials._floor)
         # Second wall
         pen += stepw
-        for k in xrange(hall.parent.parent.room_height):
+        for k in xrange(hall.parent.parent.room_height-1):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
         if (trap == 1 and (j%2) == 1 and j > 0 and j < length-1):
             for k in iterate_cube(pen.down(1),
