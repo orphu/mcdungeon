@@ -321,7 +321,7 @@ def str2Vec(string):
 
 
 def iterate_tube(e0, e1, height):
-    for y in xrange(height):
+    for y in xrange(height+1):
         for p in iterate_ellipse(e0.up(y), e1.up(y)):
             yield p
 
