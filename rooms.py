@@ -1,7 +1,7 @@
 import materials
 import halls
 import floors
-from utils import * 
+from utils import *
 import random
 
 
@@ -16,9 +16,9 @@ class Blank(object):
             self.pos.y * self.parent.room_height,
             self.pos.z * self.parent.room_size)
         self.halls = [None, None, None, None]
-        self.setData()
         self.features = []
         self.floors = []
+        self.setData()
         for x in xrange(4):
             if self.hallLength[x] == 0:
                 self.halls[x] = halls.new('Blank', self, x, 0)
@@ -61,7 +61,7 @@ class Blank(object):
         pass
 
     def testHall (self, side, size, a1, b1):
-        ''' Test to see if a hall will fit. return false if not, else 
+        ''' Test to see if a hall will fit. return false if not, else
         return a range of valid offsets'''
         # This side is not allowed to have a hallway
         if (self.hallLength[side] == 0):
@@ -93,10 +93,19 @@ class Blank(object):
             return True
         return False
 
+
 class Basic(Blank):
     _name = 'basic'
 
     def setData(self):
+        self.wall_func = iterate_four_walls
+        self.ceil_func = iterate_cube
+        self.floor_func = iterate_cube
+        self.air_func = iterate_cube
+        self.c1 = self.loc + Vec(2,self.parent.room_height-2,2)
+        self.c3 = self.c1 + Vec(self.parent.room_size-5,
+                                0,
+                                self.parent.room_size-5)
         # North, East, South, West
         self.hallLength = [3,3,3,3]
         self.hallSize = [[2,self.parent.room_size-2],
@@ -112,22 +121,57 @@ class Basic(Blank):
             Vec(4,self.parent.room_height-2,self.parent.room_size-5))
 
     def render (self):
-        c1 = self.loc + Vec(2,self.parent.room_height-1,2)
-        c2 = c1 + Vec(self.parent.room_size-5,0,0)
-        c3 = c1 + Vec(self.parent.room_size-5,0,self.parent.room_size-5)
-        c4 = c1 + Vec(0,0,self.parent.room_size-5)
+        height = self.parent.room_height-1
         # Air space
-        for x in iterate_cube(c1.up(1),c3.up(4)):
+        for x in self.air_func(self.c1.up(1), self.c3.up(4)):
             self.parent.setblock(x, materials.Air)
-        # Walls
-        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
-            self.parent.setblock(x, materials._wall)
         # Floor
-        for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):
+        for x in self.floor_func(self.c1, self.c3):
+            self.parent.setblock(x, materials._floor)
+        # Subfloor
+        for x in self.floor_func(self.c1.down(1), self.c3.down(1)):
             self.parent.setblock(x, materials._floor)
         # Ceiling
-        for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
+        for x in self.ceil_func(self.c1.up(5), self.c3.up(5)):
             self.parent.setblock(x, materials._ceiling)
+        # Walls
+        for x in self.wall_func(self.c1, self.c3, height):
+            self.parent.setblock(x, materials._wall)
+
+
+class Circular(Basic):
+    _name = 'circular'
+
+    def setData(self):
+        self.wall_func = iterate_tube
+        self.ceil_func = iterate_disc
+        self.floor_func = iterate_disc
+        self.air_func = iterate_cylinder
+        self.c1 = self.loc + Vec(0,self.parent.room_height-2,0)
+        self.c3 = self.c1 + Vec(self.parent.room_size-1,
+                                0,
+                                self.parent.room_size-1)
+        # North, East, South, West
+        self.hallLength = [1,1,1,1]
+        self.hallSize = [
+            [5,self.parent.room_size-5],
+            [5,self.parent.room_size-5],
+            [5,self.parent.room_size-5],
+            [5,self.parent.room_size-5]]
+        self.canvas = (
+            Vec(5,self.parent.room_height-2,2),
+            Vec(self.parent.room_size-6,self.parent.room_height-2,2),
+            Vec(self.parent.room_size-3,self.parent.room_height-2,5),
+            Vec(self.parent.room_size-3,
+                self.parent.room_height-2,
+                self.parent.room_size-6),
+            Vec(self.parent.room_size-6,
+                self.parent.room_height-2,
+                self.parent.room_size-3),
+            Vec(5,self.parent.room_height-2,self.parent.room_size-3),
+            Vec(2,self.parent.room_height-2,self.parent.room_size-6),
+            Vec(2,self.parent.room_height-2,5))
+
 
 class Pit(Blank):
     _name = 'pit'
@@ -282,116 +326,6 @@ class PitBottom(Blank):
         else:
             for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):
                 self.parent.setblock(x, materials._floor)
-
-class Circular(Blank):
-    _name = 'circular'
-
-    def setData(self):
-        # North, East, South, West
-        self.hallLength = [1,1,1,1]
-        self.hallSize = [
-            [5,self.parent.room_size-5],
-            [5,self.parent.room_size-5],
-            [5,self.parent.room_size-5],
-            [5,self.parent.room_size-5]]
-        self.canvas = (
-            Vec(5,self.parent.room_height-2,2),
-            Vec(self.parent.room_size-6,self.parent.room_height-2,2),
-            Vec(self.parent.room_size-3,self.parent.room_height-2,5),
-            Vec(self.parent.room_size-3,
-                self.parent.room_height-2,
-                self.parent.room_size-6),
-            Vec(self.parent.room_size-6,
-                self.parent.room_height-2,
-                self.parent.room_size-3),
-            Vec(5,self.parent.room_height-2,self.parent.room_size-3),
-            Vec(2,self.parent.room_height-2,self.parent.room_size-6),
-            Vec(2,self.parent.room_height-2,5))
-
-    def render (self):
-        c1 = self.loc + Vec(0,self.parent.room_height-1,0)
-        # Solid (walls)
-        for x in iterate_cube(c1.trans(5,0,0),
-                              c1.trans(10,-self.parent.room_height+1,0)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(3,0,1),
-                              c1.trans(12,-self.parent.room_height+1,1)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(2,0,2),
-                              c1.trans(13,-self.parent.room_height+1,2)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(1,0,3),
-                              c1.trans(14,-self.parent.room_height+1,4)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(0,0,5),
-                              c1.trans(15,-self.parent.room_height+1,10)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(5,0,15),
-                              c1.trans(10,-self.parent.room_height+1,15)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(3,0,14),
-                              c1.trans(12,-self.parent.room_height+1,14)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(2,0,13),
-                              c1.trans(13,-self.parent.room_height+1,13)):
-            self.parent.setblock(x, materials._wall)
-        for x in iterate_cube(c1.trans(1,0,12),
-                              c1.trans(14,-self.parent.room_height+1,11)):
-            self.parent.setblock(x, materials._wall)
-        # Air space
-        for x in iterate_cube(c1.trans(5,-2,1),
-                              c1.trans(10,-self.parent.room_height+2,1)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(3,-2,2),
-                              c1.trans(12,-self.parent.room_height+2,2)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(2,-2,3),
-                              c1.trans(13,-self.parent.room_height+2,4)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(1,-2,5),
-                              c1.trans(14,-self.parent.room_height+2,10)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(5,-2,14),
-                              c1.trans(10,-self.parent.room_height+2,14)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(3,-2,13),
-                              c1.trans(12,-self.parent.room_height+2,13)):
-            self.parent.setblock(x, materials.Air)
-        for x in iterate_cube(c1.trans(2,-2,11),
-                              c1.trans(13,-self.parent.room_height+2,12)):
-            self.parent.setblock(x, materials.Air)
-        # Ceiling
-        clevel = -self.parent.room_height+1
-        for x in iterate_cube(c1.trans(5,clevel,1),c1.trans(10,clevel,1)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(3,clevel,2),c1.trans(12,clevel,2)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(2,clevel,3),c1.trans(13,clevel,4)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(1,clevel,5),c1.trans(14,clevel,10)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(5,clevel,14),c1.trans(10,clevel,14)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(3,clevel,13),c1.trans(12,clevel,13)):
-            self.parent.setblock(x, materials._ceiling)
-        for x in iterate_cube(c1.trans(2,clevel,11),c1.trans(13,clevel,12)):
-            self.parent.setblock(x, materials._ceiling)
-        # Floor
-        clevel = 0
-        for x in iterate_cube(c1.trans(5,clevel,1),c1.trans(10,clevel-1,1)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(3,clevel,2),c1.trans(12,clevel-1,2)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(2,clevel,3),c1.trans(13,clevel-1,4)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(1,clevel,5),c1.trans(14,clevel-1,10)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(5,clevel,14),c1.trans(10,clevel-1,14)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(3,clevel,13),c1.trans(12,clevel-1,13)):
-            self.parent.setblock(x, materials._floor)
-        for x in iterate_cube(c1.trans(2,clevel,11),c1.trans(13,clevel-1,12)):
-            self.parent.setblock(x, materials._floor)
 
 
 class Corridor(Blank):
