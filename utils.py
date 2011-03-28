@@ -320,6 +320,27 @@ def str2Vec(string):
     return Vec(m.group(1), m.group(2), m.group(3))
 
 
+def iterate_tube(e0, e1, height):
+    for y in xrange(height):
+        for p in iterate_ellipse(e0.up(y), e1.up(y)):
+            yield p
+
+
+def iterate_cylinder(*points):
+    xmin = min([p.x for p in points])
+    xmax = max([p.x for p in points])
+    ymin = min([p.y for p in points])
+    ymax = max([p.y for p in points])
+    zmin = min([p.z for p in points])
+    zmax = max([p.z for p in points])
+    e0 = Vec(xmin, ymax, zmin)
+    e1 = Vec(xmax, ymax, zmax)
+    height = ymax - ymin
+    for y in xrange(0, height+1):
+        for p in iterate_disc(e0.up(y), e1.up(y)):
+            yield p
+
+
 def iterate_disc(e0, e1):
     for (p0, p1) in zip(*[iter(iterate_ellipse(e0, e1))]*2):
         # A little wasteful. We get a few points more than once, 
@@ -342,7 +363,8 @@ def iterate_ellipse(p0, p1):
     b = abs(y1 - y0)
     b1 = b & 1
     dx = 4 * (1 - a) * b * b
-    dy = 4 * (b1 + 1) * a * a
+    # 3.8 instead of 4 here makes the small circles look a little nicer.
+    dy = 3.8 * (b1 + 1) * a * a
     err = dx + dy + b1 * a * a
     e2 = 0
 
