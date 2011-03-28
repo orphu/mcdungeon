@@ -120,7 +120,7 @@ class Basic(Blank):
         for x in iterate_cube(c1.up(1),c3.up(4)):
             self.parent.setblock(x, materials.Air)
         # Walls
-        for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
             self.parent.setblock(x, materials._wall)
         # Floor
         for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):
@@ -182,7 +182,7 @@ class Pit(Blank):
         for x in iterate_cube(c1,c3.up(4)):
             self.parent.setblock(x, materials.Air)
         # Walls
-        for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
                 self.parent.setblock(x, materials._wall)
         # Lava
         if (self.lava is True):
@@ -221,7 +221,7 @@ class PitMid(Blank):
         for x in iterate_cube(c1,c3.up(5)):
             self.parent.setblock(x, materials.Air)
         # Walls
-        for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
             self.parent.setblock(x, materials._wall)
 
 
@@ -264,7 +264,7 @@ class PitBottom(Blank):
         for x in iterate_cube(c1,c3.up(5)):
             self.parent.setblock(x, materials.Air)
         # Walls
-        for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
             self.parent.setblock(x, materials._wall)
         # Lava
         if (self.floor == 'lava'):
@@ -474,7 +474,7 @@ class Corridor(Blank):
         for x in iterate_cube(c1.up(1),c3.up(4)):
             self.parent.setblock(x, materials.Air)
         # Walls
-        for x in iterate_four_walls(c1, c2, c3, c4, self.parent.room_height-1):
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
             self.parent.setblock(x, materials._wall)
         # Floor
         for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):

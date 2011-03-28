@@ -182,19 +182,31 @@ def iterate_cube(*points):
 
 
 def iterate_hollow_cube(near, far):
-    for b in iterate_cube(near, Vec(near.x,far.y,far.z)): yield b
-    for b in iterate_cube(near, Vec(far.x,near.y,far.z)): yield b
-    for b in iterate_cube(near, Vec(far.x,far.y,near.z)): yield b
-    for b in iterate_cube(Vec(near.x,near.y,far.z),far): yield b
-    for b in iterate_cube(Vec(near.x,far.y,near.z),far): yield b
-    for b in iterate_cube(Vec(far.x,near.y,near.z),far): yield b
+    for b in iterate_cube(near, Vec(near.x,far.y,far.z)):
+        yield b
+    for b in iterate_cube(near, Vec(far.x,near.y,far.z)):
+        yield b
+    for b in iterate_cube(near, Vec(far.x,far.y,near.z)):
+        yield b
+    for b in iterate_cube(Vec(near.x,near.y,far.z),far):
+        yield b
+    for b in iterate_cube(Vec(near.x,far.y,near.z),far):
+        yield b
+    for b in iterate_cube(Vec(far.x,near.y,near.z),far):
+        yield b
 
 
-def iterate_four_walls(corner1, corner2, corner3, corner4, height):
-    for b in iterate_cube(corner1, corner2, corner1.up(height)): yield b
-    for b in iterate_cube(corner2, corner3, corner2.up(height)): yield b
-    for b in iterate_cube(corner3, corner4, corner3.up(height)): yield b
-    for b in iterate_cube(corner4, corner1, corner4.up(height)): yield b
+def iterate_four_walls(corner1, corner3, height):
+    corner2 = Vec(corner3.x, corner1.y, corner1.z)
+    corner4 = Vec(corner1.x, corner1.y, corner3.z)
+    for b in iterate_cube(corner1, corner2, corner1.up(height)):
+        yield b
+    for b in iterate_cube(corner2, corner3, corner2.up(height)):
+        yield b
+    for b in iterate_cube(corner3, corner4, corner3.up(height)):
+        yield b
+    for b in iterate_cube(corner4, corner1, corner4.up(height)):
+        yield b
 
 
 def iterate_points_inside_flat_poly(*poly_points):

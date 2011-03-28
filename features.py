@@ -73,9 +73,7 @@ class Entrance(Blank):
             self.parent.parent.setblock(p, materials.Air)
         # Walls
         for p in iterate_four_walls(wstart,
-                                    wstart.trans(5,0,0),
                                     wstart.trans(5,0,5),
-                                    wstart.trans(0,0,5),
                                     self.u+self.height-1):
             self.parent.parent.setblock(p, materials._wall)
         # Chest level openings
