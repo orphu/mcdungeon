@@ -121,22 +121,25 @@ class Basic(Blank):
             Vec(4,self.parent.room_height-2,self.parent.room_size-5))
 
     def render (self):
-        height = self.parent.room_height-1
+        height = self.parent.room_height-2
         # Air space
-        for x in self.air_func(self.c1.up(1), self.c3.up(4)):
+        for x in self.air_func(self.c1.up(1), self.c3.up(3)):
             self.parent.setblock(x, materials.Air)
         # Floor
         for x in self.floor_func(self.c1, self.c3):
             self.parent.setblock(x, materials._floor)
-        # Subfloor
-        for x in self.floor_func(self.c1.down(1), self.c3.down(1)):
-            self.parent.setblock(x, materials._floor)
         # Ceiling
-        for x in self.ceil_func(self.c1.up(5), self.c3.up(5)):
+        for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
         # Walls
         for x in self.wall_func(self.c1, self.c3, height):
             self.parent.setblock(x, materials._wall)
+        # Subfloor
+        for x in iterate_plane(self.loc.down(self.parent.room_height-1),
+                                    self.loc.trans(self.parent.room_size-1,
+                                                  self.parent.room_height-1,
+                                                  self.parent.room_size-1)):
+            self.parent.setblock(x, materials._subfloor)
 
 
 class Circular(Basic):
@@ -400,22 +403,28 @@ class Corridor(Blank):
                 Vec(x2-1,self.parent.room_height-2,z2-1),
                 Vec(x1+1,self.parent.room_height-2,z2-1))
         # Figure out our corners
-        c1 = self.loc+Vec(x1,self.parent.room_height-1,z1)
-        c2 = self.loc+Vec(x2,self.parent.room_height-1,z1)
-        c3 = self.loc+Vec(x2,self.parent.room_height-1,z2)
-        c4 = self.loc+Vec(x1,self.parent.room_height-1,z2)
+        c1 = self.loc+Vec(x1,self.parent.room_height-2,z1)
+        c2 = self.loc+Vec(x2,self.parent.room_height-2,z1)
+        c3 = self.loc+Vec(x2,self.parent.room_height-2,z2)
+        c4 = self.loc+Vec(x1,self.parent.room_height-2,z2)
         # Air space
-        for x in iterate_cube(c1.up(1),c3.up(4)):
+        for x in iterate_cube(c1.up(1),c3.up(3)):
             self.parent.setblock(x, materials.Air)
-        # Walls
-        for x in iterate_four_walls(c1, c3, self.parent.room_height-1):
-            self.parent.setblock(x, materials._wall)
         # Floor
-        for x in iterate_cube(c1.trans(1,0,1),c3.trans(-1,-1,-1)):
+        for x in iterate_cube(c1, c3):
             self.parent.setblock(x, materials._floor)
         # Ceiling
-        for x in iterate_cube(c1.trans(1,-5,1),c3.trans(-1,-5,-1)):
+        for x in iterate_cube(c1.up(4),c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
+        # Walls
+        for x in iterate_four_walls(c1, c3, self.parent.room_height-2):
+            self.parent.setblock(x, materials._wall)
+        # Subfloor
+        for x in iterate_plane(self.loc.down(self.parent.room_height-1),
+                                    self.loc.trans(self.parent.room_size-1,
+                                                  self.parent.room_height-1,
+                                                  self.parent.room_size-1)):
+            self.parent.setblock(x, materials._subfloor)
 
 
 def new (name, parent, pos):
