@@ -294,25 +294,27 @@ Try a smaller dungeon, or larger start area.')
                 roomup.features.append(featureup)
                 self.setroom(posup, roomup)
                 roomup = None
-        # Place the portal
+        # Place the treasure room / portal
+        while (x == x1):
+            x = randint(0, self.xsize-1)
+        while (z == z1):
+            z = randint(0, self.zsize-1)
+        x1 = x
+        z1 = z
+        room = None
+        pos = Vec(x,self.levels-1,z)
+        while (room == None or
+               room.canvasWidth() < 8 or
+               room.canvasLength() < 8):
+            room = rooms.new(weighted_choice(cfg.master_rooms), self, pos)
         if (cfg.mvportal is not ''):
-            while (x == x1):
-                x = randint(0, self.xsize-1)
-            while (z == z1):
-                z = randint(0, self.zsize-1)
-            x1 = x
-            z1 = z
-            room = None
-            pos = Vec(x,self.levels-1,z)
-            while (room == None or
-                   room.canvasWidth() < 8 or
-                   room.canvasLength() < 8):
-                room = rooms.new(weighted_choice(cfg.master_rooms), self, pos)
             feature = features.new('multiverseportal', room)
-            feature.target = cfg.mvportal
-            room.features.append(feature)
-            feature.placed()
-            self.setroom(pos, room)
+        else:
+            feature = features.new('treasureroom', room)
+        feature.target = cfg.mvportal
+        room.features.append(feature)
+        feature.placed()
+        self.setroom(pos, room)
         # Generate the rest of the map
         for y in xrange(self.levels):
             for x in xrange(self.xsize):
