@@ -2,6 +2,7 @@
 
 import sys
 import os
+import platform
 from random import *
 from noise import pnoise3
 
@@ -617,7 +618,7 @@ Try a smaller dungeon, or larger start area.')
                             mat = materials.Cobblestone
                     sys.stdout.write(mat.c)
                 else:
-                    sys.stdout.write('%s`%s' % (materials.DGREY, materials.ENDC))
+                    sys.stdout.write(materials.NOBLOCK)
             print
 
 

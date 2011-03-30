@@ -21,6 +21,11 @@ GREY   = '\033[0;37m'
 WHITE  = '\033[1;37m'
 ENDC   = '\033[0m'
 
+NOBLOCK = '%s`%s' % (DGREY, ENDC)
+
+if (platform.system() == 'Windows'):
+    NOBLOCK = '`'
+
 class Material(object):
     name = 'Air'
     val = 0
