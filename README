@@ -1,14 +1,19 @@
-mcdungeon
+MCDungeon
 
-Mcdungeon will create a procedurally generated dungeon in a prexisting
-minecraft map. It is not yet feature complete, but can generate basic
-floor layouts. It is written in Python and makes heavy use of code from
-Paul Hodge's minetown project and David Rio Vierra's pymclevel.
+MCDungeon will create a procedurally generated dungeon in a prexisting
+minecraft map. It is not yet feature complete, but can already generate
+dungeons with quite a bit of variety. It is written in Python and
+makes use of code from Paul Hodge's minetown project and David Rio
+Vierra's pymclevel. This was inspired by BeeTLe BeTHLeHeM's MCMapper
+project which, sadly, is no more.
 
 CURRENT FEATURES:
 
    * Automatically finds a good location on a map based on range, size, and
      depth parameters. 
+
+   * Generates a tower entrance to the dungeon that can be seen for many
+     chunks. The height of the tower is configurable.
 
    * Generates room layouts based on a random weighted selection
      of rooms. 
@@ -16,8 +21,8 @@ CURRENT FEATURES:
    * Places stairwells between levels, and a tower entrance with a
      sprialing staircase.
 
-   * Connects rooms with hallways. Hall types are also chosen
-     from a random weighted list. 
+   * Connects rooms with hallways. Hall types are also chosen from
+     a random weighted list.
 
    * Places random floor decorations from a weighted list.
 
@@ -26,7 +31,8 @@ CURRENT FEATURES:
    * Places doors, portcullises, and torches in the dungeon. The amount of
      each is a configurable option. 
 
-   * Option to place fewer torches as levels go down. Less light == more danger!
+   * Option to place fewer torches as levels go down. Less light == more 
+     danger!
 
    * Places chests with loot around the dungeon in (probably) hard
      to reach places. An arbitrary number of loot tables can be configured
@@ -34,19 +40,18 @@ CURRENT FEATURES:
 
    * Places mob spawners throughout the dungeon. These will likely be near
      chests, but not always. Mob types are configurable. The density of
-     spawners is configurable.
+     spawners is configurable. Some 'non-standard' mobs are available. ;)
 
    * Random placement of secret traps.
 
    * Room, hall, floor, and feature lists are configurable via an
      external .cfg file. 
 
-   * Saves changes (with lighting!) to a Minecraft map via
-     pymclevel.
+   * Saves changes (with lighting!) to a Minecraft map thanks to pymclevel.
 
    * Cobblestone has random patches of moss growing on it.
 
-   * Output floors to ANSI terminal.
+   * Output floor maps to a terminal with color on ANSI systems.
 
    * Output entire dungeon maps to HTML.
 
@@ -57,43 +62,45 @@ TODO:
    * More room types
    * More hall types
    * More traps!
-   * Place a dungeon entrance leading to the surface (partially complete)
 
 OPTIONS:
 
-$ ./mcdungeon.py --help
-Reading items database: items.txt ...
-Loaded 228 items.
-usage: mcdungeon.py [-h] [--config CFGFILE] [--write] [--skip-relight]
-                    [--term FLOOR] [--html BASENAME] [--force] [--seed SEED]
+$ mcdungeon.py -h
+usage: mcdungeon.py [-h] [--version] [--config CFGFILE] [--write]
+                    [--skip-relight] [-t, --term FLOOR] [--html BASENAME]
+                    [--force] [-s, --seed SEED] [-o, --offset 'x, y, z'] -w,
                     --world SAVEDIR
                     z x levels
 
-Generate some DungeonQuest-like dungeons in a Minecraft map.
+Generate a tile-based dungeon in a Minecraft map.
 
 positional arguments:
-  z                 Number of rooms West -> East.
-  x                 Number of rooms North -> South.
-  levels            Number of levels
+  z                     Number of rooms West -> East
+  x                     Number of rooms North -> South
+  levels                Number of levels
 
 optional arguments:
-  -h, --help        show this help message and exit
-  --config CFGFILE  Alternate config file. Default: mcdungeon.cfg.
-  --write           Write the dungeon to disk.
-  --skip-relight    Skip relighting the level.
-  --term FLOOR      Print a text version of a given floor to the terminal.
-  --html BASENAME   Output html versions of the dungeon. This produces one
-                    file per level of the form BASENAME-(level number).html.
-  --force           Force overwriting of html output files.
-  --seed SEED       Provide a seed for this dungeon. This can be anything.
-  --world SAVEDIR   Target world (path to save directory).
+  -h, --help            show this help message and exit
+  --version             Print version and exit
+  --config CFGFILE      Alternate config file. Default: mcdungeon.cfg
+  --write               Write the dungeon to disk
+  --skip-relight        Skip relighting the level
+  -t, --term FLOOR      Print a text version of a given floor to the terminal
+  --html BASENAME       Output html versions of the dungeon. This produces one
+                        file per level of the form BASENAME-(level
+                        number).html
+  --force               Force overwriting of html output files
+  -s, --seed SEED       Provide a seed for this dungeon. This can be anything
+  -o, --offset 'x, y, z'
+                        Provide a location offset. (overrides .cfg file)
+  -w, --world SAVEDIR   Target world (path to save directory)
 
 EXAMPLES:
 
 Load a world named 'Dungeon' in the current directory, generate a
 5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
-and display the results in a terminal window. (ANSI control codes
-probably mean *nix sysems only. Sorry) The world files will not be
-modified, but are required. Basically a "dry run."
+and display the results in a terminal window. (In color on ANSI
+terminals only. Sorry Windows) The world files will not be modified,
+but are required. Basically a "dry run."
 
-./mcdungeon.py --world Dungeon 5 4 3 --term 0
+./mcdungeon.py -w Dungeon 5 4 3 --term 0
