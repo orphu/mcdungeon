@@ -21,6 +21,10 @@ CURRENT FEATURES:
    * Places stairwells between levels, and a tower entrance with a
      spiraling staircase.
 
+   * Optionally places a MultiVerse (Craftbukkit plugin) portal at
+     the bottom of the dungeon to teleport players out to the world of
+     your choice.
+
    * Connects rooms with hallways. Hall types are also chosen from
      a random weighted list.
 
