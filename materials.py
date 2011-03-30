@@ -1,4 +1,5 @@
 from copy import *
+import platform
 
 import items
 
@@ -27,7 +28,12 @@ class Material(object):
     def __init__(self, name, char, color):
         self.name = name.lower()
         self.updateData()
-        self.c = '%s%s%s' % (color,char,ENDC)
+        if (platform.system() == 'Windows'):
+            self.c = '%s' % (char)
+        else:
+            self.c = '%s%s%s' % (color,char,ENDC)
+            self.c = '%s' % (char)
+
     def updateData(self):
         self.val = items.byName(self.name).value
         self.data = items.byName(self.name).data
