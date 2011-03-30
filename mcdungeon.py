@@ -33,7 +33,7 @@ parser.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
                     help='Skip relighting the level')
-parser.add_argument('-t, --term',
+parser.add_argument('-t','--term',
                     type=int,dest='term',
                     metavar='FLOOR',
                     help='Print a text version of a given floor to the \
@@ -48,16 +48,16 @@ parser.add_argument('--force',
                     action='store_true',
                     dest='force',
                     help='Force overwriting of html output files')
-parser.add_argument('-s, --seed',
+parser.add_argument('-s', '--seed',
                     dest='seed',
                     metavar='SEED',
                     help='Provide a seed for this dungeon. This can be \
                     anything')
-parser.add_argument('-o, --offset',
+parser.add_argument('-o', '--offset',
                     dest='offset',
                     metavar='\'x, y, z\'',
                     help='Provide a location offset. (overrides .cfg file)')
-parser.add_argument('-w, --world',
+parser.add_argument('-w', '--world',
                     dest='world',
                     metavar='SAVEDIR',
                     required=True,
