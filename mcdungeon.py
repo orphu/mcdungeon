@@ -3,20 +3,20 @@
 import sys
 import argparse
 
-import cfg
-import loottable
-from dungeon import *
-from utils import *
-from pymclevel import mclevel, nbt
+__version__ = '0.0.1'
+__version_info__ = tuple([ int(num) for num in __version__.split('.')])
+_vstring = '%%(prog)s %s' % (__version__)
 
 parser = argparse.ArgumentParser(
-    description='Generate some DungeonQuest-like dungeons in a Minecraft map.')
+    description='Generate a tile-based dungeon in a Minecraft map.')
+parser.add_argument('--version', action='version', version=_vstring, 
+                    help='Print version and exit')
 parser.add_argument('z',
                     type=int,
-                    help='Number of rooms West -> East.')
+                    help='Number of rooms West -> East')
 parser.add_argument('x',
                     type=int,
-                    help='Number of rooms North -> South.')
+                    help='Number of rooms North -> South')
 parser.add_argument('levels',
                     type=int,
                     help='Number of levels')
@@ -24,45 +24,51 @@ parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
                     default='mcdungeon.cfg',
-                    help='Alternate config file. Default: mcdungeon.cfg.')
+                    help='Alternate config file. Default: mcdungeon.cfg')
 parser.add_argument('--write',
                     action='store_true',
                     dest='write' ,
-                    help='Write the dungeon to disk.')
+                    help='Write the dungeon to disk')
 parser.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
-                    help='Skip relighting the level.')
-parser.add_argument('--term',
+                    help='Skip relighting the level')
+parser.add_argument('-t, --term',
                     type=int,dest='term',
                     metavar='FLOOR',
                     help='Print a text version of a given floor to the \
-                    terminal.')
+                    terminal')
 parser.add_argument('--html',
                     dest='html',
                     metavar='BASENAME',
                     help='Output html versions of the dungeon. This \
                     produces one file per level of the form \
-                    BASENAME-(level number).html.')
+                    BASENAME-(level number).html')
 parser.add_argument('--force',
                     action='store_true',
                     dest='force',
-                    help='Force overwriting of html output files.')
-parser.add_argument('--seed',
+                    help='Force overwriting of html output files')
+parser.add_argument('-s, --seed',
                     dest='seed',
                     metavar='SEED',
                     help='Provide a seed for this dungeon. This can be \
-                    anything.')
-parser.add_argument('--offset',
+                    anything')
+parser.add_argument('-o, --offset',
                     dest='offset',
-                    metavar='\'(x, y, z)\'',
+                    metavar='\'x, y, z\'',
                     help='Provide a location offset. (overrides .cfg file)')
-parser.add_argument('--world',
+parser.add_argument('-w, --world',
                     dest='world',
                     metavar='SAVEDIR',
                     required=True,
-                    help='Target world (path to save directory).')
+                    help='Target world (path to save directory)')
 args = parser.parse_args()
+
+import cfg
+import loottable
+from dungeon import *
+from utils import *
+from pymclevel import mclevel, nbt
 
 # Load configs
 cfg.Load(args.config)
