@@ -32,7 +32,6 @@ class Material(object):
             self.c = '%s' % (char)
         else:
             self.c = '%s%s%s' % (color,char,ENDC)
-            self.c = '%s' % (char)
 
     def updateData(self):
         self.val = items.byName(self.name).value
