@@ -1,6 +1,6 @@
 MCDungeon
 
-MCDungeon will create a procedurally generated dungeon in a prexisting
+MCDungeon will create a procedurally generated dungeon in a preexisting
 minecraft map. It is not yet feature complete, but can already generate
 dungeons with quite a bit of variety. It is written in Python and
 makes use of code from Paul Hodge's minetown project and David Rio
@@ -19,7 +19,7 @@ CURRENT FEATURES:
      of rooms. 
 
    * Places stairwells between levels, and a tower entrance with a
-     sprialing staircase.
+     spiraling staircase.
 
    * Connects rooms with hallways. Hall types are also chosen from
      a random weighted list.
@@ -103,4 +103,4 @@ and display the results in a terminal window. (In color on ANSI
 terminals only. Sorry Windows) The world files will not be modified,
 but are required. Basically a "dry run."
 
-./mcdungeon.py -w Dungeon 5 4 3 --term 0
+./mcdungeon.py -w Dungeon 5 4 3 --term 1
