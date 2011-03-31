@@ -76,6 +76,14 @@ from pymclevel import mclevel, nbt
 cfg.Load(args.config)
 loottable.Load()
 
+# Random level sizes
+if (args.z < 0):
+    args.z = randint(2, cfg.max_dist - cfg.min_dist)
+if (args.x < 0):
+    args.x = randint(2, cfg.max_dist - cfg.min_dist)
+if (args.levels < 0):
+    args.levels = randint(2, 8)
+
 # Do some initial error checking
 if (args.z < 2):
     sys.exit('Too few rooms in Z direction. Try >= 2.')
@@ -84,11 +92,13 @@ if (args.x < 2):
 if (args.levels < 1 or args.levels > 18):
     sys.exit('Invalid number of levels.')
 
+print 'Dungeon size: %d x %d x %d' % (args.z, args.x, args.levels)
+
 if (args.seed is not None):
     seed(args.seed)
     print 'Seed:',args.seed
 
-if (len(args.offset) > 0):
+if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
                                  args.offset[1],
                                  args.offset[2])
