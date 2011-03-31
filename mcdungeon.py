@@ -3,7 +3,7 @@
 import sys
 import argparse
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
