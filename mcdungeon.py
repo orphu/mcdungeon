@@ -55,7 +55,9 @@ parser.add_argument('-s', '--seed',
                     anything')
 parser.add_argument('-o', '--offset',
                     dest='offset',
-                    metavar='\'x, y, z\'',
+                    nargs=3,
+                    type=int,
+                    metavar='x y z',
                     help='Provide a location offset. (overrides .cfg file)')
 parser.add_argument('-w', '--world',
                     dest='world',
@@ -86,8 +88,10 @@ if (args.seed is not None):
     seed(args.seed)
     print 'Seed:',args.seed
 
-if (args.offset is not ''):
-    cfg.offset = args.offset
+if (len(args.offset) > 0):
+    cfg.offset = '%d, %d, %d' % (args.offset[0],
+                                 args.offset[1],
+                                 args.offset[2])
 
 # Attempt to open the world.
 try:
