@@ -108,6 +108,7 @@
 92,Cake Block,0,64
 93,Redstone Repeater Off,0,64
 94,Restone Repeater On,0,64
+95,Locked Chest,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
@@ -225,5 +226,6 @@
 354,Cake,0,1
 355,Bed,0,1
 356,Redstone Repeater,0,64
+357,Cookie,0,8
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
