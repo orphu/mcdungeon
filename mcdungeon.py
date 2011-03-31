@@ -57,7 +57,7 @@ parser.add_argument('-o', '--offset',
                     dest='offset',
                     nargs=3,
                     type=int,
-                    metavar='x y z',
+                    metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset. (overrides .cfg file)')
 parser.add_argument('-w', '--world',
                     dest='world',
