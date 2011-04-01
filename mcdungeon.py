@@ -11,6 +11,9 @@ parser = argparse.ArgumentParser(
     description='Generate a tile-based dungeon in a Minecraft map.')
 parser.add_argument('--version', action='version', version=_vstring, 
                     help='Print version and exit')
+parser.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
 parser.add_argument('z',
                     type=int,
                     help='Number of rooms West -> East. Use -1 for random.')
@@ -59,11 +62,6 @@ parser.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset. (overrides .cfg file)')
-parser.add_argument('-w', '--world',
-                    dest='world',
-                    metavar='SAVEDIR',
-                    required=True,
-                    help='Target world (path to save directory)')
 args = parser.parse_args()
 
 import cfg
