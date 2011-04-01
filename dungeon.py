@@ -743,6 +743,7 @@ Try a smaller dungeon, or larger start area.')
     def applychanges(self, world):
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
+        num_blocks = len(self.blocks)
         for block in self.blocks.values():
             # Mysteriously, this block contains no material.
             if block.material is None:
@@ -771,6 +772,10 @@ Try a smaller dungeon, or larger start area.')
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
+            # Progress
+            num_blocks -= 1
+            if (num_blocks % 10000 == 0):
+                spin(num_blocks/10000)
         # Copy over tile entities
         for ent in self.tile_ents.values():
             # Calculate world coords.
@@ -791,6 +796,6 @@ Try a smaller dungeon, or larger start area.')
             chunk.TileEntities.append(ent)
             #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
             changed_chunks.add(chunk)
-        # Mark changed chunkes so pymclevel knows to recompress/relight them.
+        # Mark changed chunks so pymclevel knows to recompress/relight them.
         for chunk in changed_chunks:
             chunk.chunkChanged()
