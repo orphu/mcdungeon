@@ -13,13 +13,13 @@ parser.add_argument('--version', action='version', version=_vstring,
                     help='Print version and exit')
 parser.add_argument('z',
                     type=int,
-                    help='Number of rooms West -> East')
+                    help='Number of rooms West -> East. Use -1 for random.')
 parser.add_argument('x',
                     type=int,
-                    help='Number of rooms North -> South')
+                    help='Number of rooms North -> South. Use -1 for random.')
 parser.add_argument('levels',
                     type=int,
-                    help='Number of levels')
+                    help='Number of levels. Use -1 for random.')
 parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
