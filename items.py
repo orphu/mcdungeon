@@ -22,6 +22,11 @@ def LoadItems(filename = 'items.txt'):
     print 'Reading items database:', filename, '...'
     items = 0
     try:
+        fh = open(filename)
+    except IOError as e:
+        sys.exit(e)
+    fh.close()
+    try:
         with file(filename) as f:
             items_txt = f.read()
     except Exception, e:
