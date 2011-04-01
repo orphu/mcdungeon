@@ -71,17 +71,16 @@ OPTIONS:
 
 $ mcdungeon.py -h
 usage: mcdungeon.py [-h] [--version] [--config CFGFILE] [--write]
-                    [--skip-relight] [-t, --term FLOOR] [--html BASENAME]
-                    [--force] [-s, --seed SEED] [-o, --offset 'x, y, z'] -w,
-                    --world SAVEDIR
+                    [--skip-relight] [-t FLOOR] [--html BASENAME] [--force]
+                    [-s SEED] [-o X Y Z] -w SAVEDIR
                     z x levels
 
 Generate a tile-based dungeon in a Minecraft map.
 
 positional arguments:
-  z                     Number of rooms West -> East
-  x                     Number of rooms North -> South
-  levels                Number of levels
+  z                     Number of rooms West -> East. Use -1 for random.
+  x                     Number of rooms North -> South. Use -1 for random.
+  levels                Number of levels. Use -1 for random.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -89,15 +88,17 @@ optional arguments:
   --config CFGFILE      Alternate config file. Default: mcdungeon.cfg
   --write               Write the dungeon to disk
   --skip-relight        Skip relighting the level
-  -t, --term FLOOR      Print a text version of a given floor to the terminal
+  -t FLOOR, --term FLOOR
+                        Print a text version of a given floor to the terminal
   --html BASENAME       Output html versions of the dungeon. This produces one
                         file per level of the form BASENAME-(level
                         number).html
   --force               Force overwriting of html output files
-  -s, --seed SEED       Provide a seed for this dungeon. This can be anything
-  -o, --offset 'x, y, z'
+  -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
+  -o X Y Z, --offset X Y Z
                         Provide a location offset. (overrides .cfg file)
-  -w, --world SAVEDIR   Target world (path to save directory)
+  -w SAVEDIR, --world SAVEDIR
+                        Target world (path to save directory)
 
 EXAMPLES:
 
