@@ -1,0 +1,19 @@
+v0.0.2 - 3/31/2011
+
+	* Added Cookie and Locked Chest to items.txt.
+
+	* Added Cookie to default loot tables.
+
+        * Reworked the --offset option. It now takes three args instead
+          if just one. 
+
+	* Z, X, and LEVELS args now accept -1 as a value. This will 
+          cause the tool to pick random values for these. Z and X will
+          between 2 and the maximum distance between dist_min and dist_max
+          in the .cfg file. Levels will be between 2 and 8. This should 
+          maximize the chance that the dungeon will fit into the map, 
+          unless the map has a ton of very shallow chunks around spawn.
+
+v0.0.1 - 3/30/2011
+
+	* Initial release!
