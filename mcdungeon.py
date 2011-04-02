@@ -1,78 +1,135 @@
 #!/usr/bin/python
 
 import sys
+import os
 import argparse
+from pymclevel import mclevel, nbt
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
-parser = argparse.ArgumentParser(
+parent_parser = argparse.ArgumentParser(add_help=False,
     description='Generate a tile-based dungeon in a Minecraft map.')
-parser.add_argument('--version', action='version', version=_vstring, 
-                    help='Print version and exit')
-parser.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
-parser.add_argument('z',
-                    type=int,
-                    help='Number of rooms West -> East. Use -1 for random.')
-parser.add_argument('x',
-                    type=int,
-                    help='Number of rooms North -> South. Use -1 for random.')
-parser.add_argument('levels',
-                    type=int,
-                    help='Number of levels. Use -1 for random.')
-parser.add_argument('--config',
+parent_parser.add_argument('-v', '--version',
+                           action='version', version=_vstring,
+                           help='Print version and exit')
+parent_parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
                     default='mcdungeon.cfg',
                     help='Alternate config file. Default: mcdungeon.cfg')
-parser.add_argument('--write',
+parent_parser.add_argument('--write',
                     action='store_true',
                     dest='write' ,
                     help='Write the dungeon to disk')
-parser.add_argument('--skip-relight',
+parent_parser.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
                     help='Skip relighting the level')
-parser.add_argument('-t','--term',
+parent_parser.add_argument('-t','--term',
                     type=int,dest='term',
                     metavar='FLOOR',
                     help='Print a text version of a given floor to the \
                     terminal')
-parser.add_argument('--html',
+parent_parser.add_argument('--html',
                     dest='html',
                     metavar='BASENAME',
                     help='Output html versions of the dungeon. This \
                     produces one file per level of the form \
                     BASENAME-(level number).html')
-parser.add_argument('--force',
+parent_parser.add_argument('--force',
                     action='store_true',
                     dest='force',
                     help='Force overwriting of html output files')
-parser.add_argument('-s', '--seed',
+parent_parser.add_argument('-s', '--seed',
                     dest='seed',
                     metavar='SEED',
                     help='Provide a seed for this dungeon. This can be \
                     anything')
-parser.add_argument('-o', '--offset',
+parent_parser.add_argument('-o', '--offset',
                     dest='offset',
                     nargs=3,
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset. (overrides .cfg file)')
-args = parser.parse_args()
+
+i_parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
+i_parser.add_argument('-i', '--interactive',
+                    action='store_true',
+                    dest='interactive' ,
+                    help='Start in interactive mode. Prompt for SAVEDIR, Z, X, \
+                    LEVELS, and optional HTML output.')
+
+
+noi_parser = argparse.ArgumentParser(parents=[i_parser])
+noi_parser.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
+noi_parser.add_argument('z',
+                    metavar='Z',
+                    type=int,
+                    help='Number of rooms West -> East. Use -1 for random.')
+noi_parser.add_argument('x',
+                    metavar='X',
+                    type=int,
+                    help='Number of rooms North -> South. Use -1 for random.')
+noi_parser.add_argument('levels',
+                    metavar='LEVELS',
+                    type=int,
+                    help='Number of levels. Use -1 for random.')
+
+iargs = i_parser.parse_known_args()
+if (iargs[0].interactive == False):
+    args = noi_parser.parse_args()
+else:
+    args = iargs[0]
 
 import cfg
 import loottable
 from dungeon import *
 from utils import *
-from pymclevel import mclevel, nbt
 
 # Load configs
 cfg.Load(args.config)
 loottable.Load()
+
+if (args.interactive == True):
+    print 'Starting interactive mode!'
+
+    saveFileDir = mclevel.saveFileDir
+    print '\nYour save directory is:\n', saveFileDir
+    if (os.path.isdir(saveFileDir) == False):
+        sys.exit('\nI cannot find your save directory! Aborting!')
+    print '\nWorlds in your save directory:\n'
+    for file in os.listdir(saveFileDir):
+        file_path = os.path.join(saveFileDir, file)
+        if os.path.isdir(file_path):
+            print '   ',file
+    world = raw_input('\nEnter the name of the world you wish to modify: ')
+    args.world = os.path.join(saveFileDir, world)
+
+    m = cfg.max_dist - cfg.min_dist
+    print '\nEnter the size of the dungeon from East to West. (Z size)'
+    print 'This should be between 2 and %d, but you can try larger sizes.'%(m)
+    print 'Enter -1 to generate a random size.'
+    args.z = int(raw_input('Z size: '))
+
+    print '\nEnter the size of the dungeon from North to South. (X size)'
+    print 'This should be between 2 and %d, but you can try larger sizes.'%(m)
+    print 'Enter -1 to generate a random size.'
+    args.x = int(raw_input('X size: '))
+
+    print '\nEnter a number of levels for the dungeon.'
+    print 'This should be greater than zero.'
+    print 'Enter -1 to generate a random number of levels.'
+    args.levels = int(raw_input('Levels: '))
+
+    #html = raw_input('\nWould you like to create an HTML map? (y/n): ')
+    #if (html.lower() == 'y'):
+    #    args.html = world
+    #    args.force = True
+    args.write = True
 
 # Random level sizes
 if (args.z < 0):
@@ -84,11 +141,11 @@ if (args.levels < 0):
 
 # Do some initial error checking
 if (args.z < 2):
-    sys.exit('Too few rooms in Z direction. Try >= 2.')
+    sys.exit('Too few rooms in Z direction. (%d) Try >= 2.'%(args.z))
 if (args.x < 2):
-    sys.exit('Too few rooms in X direction. Try >= 2.')
+    sys.exit('Too few rooms in X direction. (%d) Try >= 2.'%(args.x))
 if (args.levels < 1 or args.levels > 18):
-    sys.exit('Invalid number of levels.')
+    sys.exit('Invalid number of levels. (%d)'%(args.levels))
 
 print 'Dungeon size: %d x %d x %d' % (args.z, args.x, args.levels)
 
