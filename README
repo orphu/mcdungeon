@@ -70,21 +70,20 @@ TODO:
 OPTIONS:
 
 $ mcdungeon.py -h
-usage: mcdungeon.py [-h] [--version] [--config CFGFILE] [--write]
-                    [--skip-relight] [-t FLOOR] [--html BASENAME] [--force]
-                    [-s SEED] [-o X Y Z] -w SAVEDIR
-                    z x levels
-
-Generate a tile-based dungeon in a Minecraft map.
+usage: mcdungeon.py [-h] [-v] [--config CFGFILE] [--write] [--skip-relight]
+                    [-t FLOOR] [--html BASENAME] [--force] [-s SEED]
+                    [-o X Y Z] [-i]
+                    SAVEDIR Z X LEVELS
 
 positional arguments:
-  z                     Number of rooms West -> East. Use -1 for random.
-  x                     Number of rooms North -> South. Use -1 for random.
-  levels                Number of levels. Use -1 for random.
+  SAVEDIR               Target world (path to save directory)
+  Z                     Number of rooms West -> East. Use -1 for random.
+  X                     Number of rooms North -> South. Use -1 for random.
+  LEVELS                Number of levels. Use -1 for random.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --version             Print version and exit
+  -v, --version         Print version and exit
   --config CFGFILE      Alternate config file. Default: mcdungeon.cfg
   --write               Write the dungeon to disk
   --skip-relight        Skip relighting the level
@@ -97,8 +96,8 @@ optional arguments:
   -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
   -o X Y Z, --offset X Y Z
                         Provide a location offset. (overrides .cfg file)
-  -w SAVEDIR, --world SAVEDIR
-                        Target world (path to save directory)
+  -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,
+                        and LEVELS.
 
 EXAMPLES:
 

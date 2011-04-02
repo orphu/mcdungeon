@@ -1,3 +1,14 @@
+v0.0.3 - 4/1/2011
+
+	* Removed --world option and replaced it with a positional argument.
+
+	* Added --interactive option. This will prompt for SAVEDIR, Z, X, 
+          and LEVEL
+
+        * Added batch file for windows to start in interactive mode.
+
+        * Added a little more progress feedback.
+
 v0.0.2 - 3/31/2011
 
 	* Added Cookie and Locked Chest to items.txt.
