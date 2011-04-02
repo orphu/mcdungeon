@@ -59,7 +59,7 @@ i_parser.add_argument('-i', '--interactive',
                     action='store_true',
                     dest='interactive' ,
                     help='Start in interactive mode. Prompt for SAVEDIR, Z, X, \
-                    LEVELS, and optional HTML output.')
+                    and LEVELS.')
 
 
 noi_parser = argparse.ArgumentParser(parents=[i_parser])
