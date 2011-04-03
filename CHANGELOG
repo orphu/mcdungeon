@@ -1,5 +1,7 @@
 v0.0.3 - 4/1/2011
 
+	* A few tweaks to the default .cfg file.
+
 	* Removed --world option and replaced it with a positional argument.
 
 	* Added --interactive option. This will prompt for SAVEDIR, Z, X, 
