@@ -44,7 +44,16 @@ class Dungeon (object):
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
         self.blocks[loc].material = material
-        self.blocks[loc].data = data
+        if (data == 0):
+            self.blocks[loc].data = material.data
+        else:
+            self.blocks[loc].data = data
+
+
+    def getblock(self, loc):
+        if loc in self.blocks:
+            return self.blocks[loc].material
+        return False
 
 
     def findlocation(self, world):
@@ -269,7 +278,8 @@ Try a smaller dungeon, or larger start area.')
             posup = pos.up(1)
             if (pos.y < self.levels):
                 while (room == None or
-                       sum_points_inside_flat_poly(*room.canvas) < 24):
+                       sum_points_inside_flat_poly(*room.canvas) < 24 or
+                      len(room.features) > 0):
                     room = rooms.new(weighted_choice(cfg.master_rooms),
                                      self,
                                      pos)
@@ -287,7 +297,8 @@ Try a smaller dungeon, or larger start area.')
             # If there is a level above, make room for the stairwell
             if (posup.y >= 0):
                 while (roomup == None or
-                       sum_points_inside_flat_poly(*roomup.canvas) < 24):
+                       sum_points_inside_flat_poly(*roomup.canvas) < 24 or
+                      len(roomup.features) > 0):
                     roomup = rooms.new(weighted_choice(cfg.master_rooms),
                                        self,
                                        posup)
@@ -306,7 +317,8 @@ Try a smaller dungeon, or larger start area.')
         pos = Vec(x,self.levels-1,z)
         while (room == None or
                room.canvasWidth() < 8 or
-               room.canvasLength() < 8):
+               room.canvasLength() < 8 or 
+              len(room.features) > 0):
             room = rooms.new(weighted_choice(cfg.master_rooms), self, pos)
         if (cfg.mvportal is not ''):
             feature = features.new('multiverseportal', room)
@@ -471,29 +483,31 @@ Try a smaller dungeon, or larger start area.')
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
+            # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
                 self.rooms[room].canvasLength() < 2):
                 hcount = 0
-            # The weight is exponential. Base 10 seems to work well.
-            candidates.append((room, 10**hcount-1))
+            # The weight is exponential. Base 20 seems to work well.
+            candidates.append((room, 20**hcount-1))
+        # Shuffle potential locations.
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and chests > 0):
             spin()
             room = self.rooms[locations.pop()]
-            attempts = 0
-            while(attempts < 10):
-                point = random_point_inside_flat_poly(*room.canvas)
-                point = point+room.loc
-                if (self.blocks[point].material.val not in ignore and
-                    self.blocks[point.up(1)].material.val == 0 and
-                    self.blocks[point.up(2)].material.val == 0):
-                    self.setblock(point.up(1), materials.Chest)
-                    self.addchest(point.up(1))
-                    chests -= 1
-                    break
-                attempts += 1
-            if (attempts >= 10):
-                print 'Failed place chest:', room.pos, point
+            points = []
+            # Catalog all valid points in the room that can hold a chest.
+            for point in iterate_points_inside_flat_poly(*room.canvas):
+                point += room.loc
+                if(self.blocks[point].material.val not in ignore and
+                   self.blocks[point.up(1)].material.val == 0 and 
+                   self.blocks[point.up(2)].material.val == 0):
+                    points.append(point)
+            # Pick a spot, if one exists.
+            if (len(points) > 0):
+                point = random.choice(points)
+                self.setblock(point.up(1), materials.Chest)
+                self.addchest(point.up(1))
+                chests -= 1
         if (level < self.levels-1):
             self.placechests(level+1)
 
@@ -518,28 +532,30 @@ Try a smaller dungeon, or larger start area.')
             for h in self.rooms[room].halls:
                 if (h.size == 0):
                     hcount += 1
+            # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
                 self.rooms[room].canvasLength() < 2):
                 hcount = 0
-            # The weight is exponential. Base 10 seems to work well.
-            candidates.append((room, 10**hcount-1))
+            # The weight is exponential. Base 20 seems to work well.
+            candidates.append((room, 20**hcount-1))
+        # Shuffle potential locations.
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and spawners > 0):
             spin()
             room = self.rooms[locations.pop()]
-            attempts = 0
-            while(attempts < 10):
-                point = random_point_inside_flat_poly(*room.canvas)
-                point = point+room.loc
-                if (self.blocks[point].material.val not in ignore and
-                    self.blocks[point.up(1)].material.val == 0):
-                    self.setblock(point.up(1), materials.Spawner)
-                    self.addspawner(point.up(1))
-                    spawners -= 1
-                    break
-                attempts += 1
-            if (attempts >= 10):
-                print 'Failed place spawner:', room.pos, point
+            points = []
+            # Catalog all valid points in the room that can hold a spawner.
+            for point in iterate_points_inside_flat_poly(*room.canvas):
+                point += room.loc
+                if(self.blocks[point].material.val not in ignore and
+                   self.blocks[point.up(1)].material.val == 0):
+                    points.append(point)
+            # Pick a spot, if one exists.
+            if (len(points) > 0):
+                point = random.choice(points)
+                self.setblock(point.up(1), materials.Spawner)
+                self.addspawner(point.up(1))
+                spawners -= 1
         if (level < self.levels-1):
             self.placespawners(level+1)
 
