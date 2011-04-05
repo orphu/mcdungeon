@@ -341,6 +341,8 @@ class Pool(Blank):
 
 
 def new (name, parent):
+    if (name == 'blank'):
+        return Blank(parent)
     if (name == 'entrance'):
         return Entrance(parent)
     if (name == 'stairwell'):
