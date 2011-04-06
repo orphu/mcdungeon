@@ -419,9 +419,6 @@ class PitBottom(Blank):
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):
             self.parent.setblock(x, materials.Air)
-        # Walls
-        for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
-            self.parent.setblock(x, materials._wall)
         # Lava
         if (self.floor == 'lava'):
             for x in self.floor_func(self.c1.trans(0,1,0),
@@ -468,6 +465,9 @@ class PitBottom(Blank):
                                      self.c3.trans(0,0,0)):
                 self.parent.setblock(x, materials._floor)
                 self.parent.setblock(x.down(1), materials._subfloor)
+        # Walls
+        for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
+            self.parent.setblock(x, materials._wall)
 
 
 class CircularPitBottom(PitBottom):
