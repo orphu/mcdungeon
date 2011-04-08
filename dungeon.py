@@ -35,6 +35,14 @@ class Dungeon (object):
         self.xsize = xsize
         self.zsize = zsize
         self.levels = levels
+        self.maze = [ [ [ 0 for z in
+                    xrange(self.zsize) ] for y in
+                  xrange(self.levels) ] for x in
+                xrange(self.xsize) ]
+        self.halls = [ [ [ [None, None, None, None] for z in
+                         xrange(self.zsize) ] for y in
+                       xrange(self.levels) ] for x in
+                     xrange(self.xsize) ]
         self.room_size = 16
         self.room_height = 6
         self.position = Vec(0,0,0)
@@ -255,154 +263,270 @@ Try a smaller dungeon, or larger start area.')
         item_tag['Damage'] = nbt.TAG_Short(0)
         inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
+
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
             room.placed()
+
     def genrooms(self):
-        # Place stairwells
-        x = -1
-        z = -1
-        x1 = -1
-        z1 = -1
-        room = None
-        roomup = None
-        for y in xrange(0, self.levels):
-            while (x == x1):
-                x = randint(0, self.xsize-1)
-            while (z == z1):
-                z = randint(0, self.zsize-1)
-            x1 = x
-            z1 = z
-            pos = Vec(x,y,z)
-            posup = pos.up(1)
-            if (pos.y < self.levels):
-                while (room == None or
-                       sum_points_inside_flat_poly(*room.canvas) < 24 or
-                      len(room.features) > 0):
-                    room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                # Place an entrance at level zero
-                if (pos.y == 0):
-                    feature = features.new('entrance', room)
-                    self.entrance = feature
-                # All other levels are stairwells
-                else:
-                    feature = features.new('stairwell', room)
-                room.features.append(feature)
-                feature.placed()
-                self.setroom(pos, room)
-                room = None
-            # If there is a level above, make room for the stairwell
-            if (posup.y >= 0):
-                while (roomup == None or
-                       sum_points_inside_flat_poly(*roomup.canvas) < 24 or
-                      len(roomup.features) > 0):
-                    roomup = rooms.new(weighted_choice(cfg.master_rooms),
-                                       self,
-                                       posup)
-                featureup = features.new('blank', roomup)
-                roomup.features.append(featureup)
-                self.setroom(posup, roomup)
-                roomup = None
-        # Place the treasure room / portal
-        while (x == x1):
-            x = randint(0, self.xsize-1)
-        while (z == z1):
-            z = randint(0, self.zsize-1)
-        x1 = x
-        z1 = z
-        room = None
-        pos = Vec(x,self.levels-1,z)
-        while (room == None or
-               room.canvasWidth() < 8 or
-               room.canvasLength() < 8 or 
-              len(room.features) > 0):
-            room = rooms.new(weighted_choice(cfg.master_rooms), self, pos)
-        if (cfg.mvportal is not ''):
-            feature = features.new('multiverseportal', room)
-        else:
-            feature = features.new('treasureroom', room)
-        feature.target = cfg.mvportal
-        room.features.append(feature)
-        feature.placed()
-        self.setroom(pos, room)
-        # Generate the rest of the map
+        # Generate the maze used for room and hall placement.
+        stairwells = []
+        entrance_pos = None
+        exit_pos = None
+        dirs = {'N': Vec(-1,0,0),
+                'S': Vec(1,0,0),
+                'E': Vec(0,0,1),
+                'W': Vec(0,0,-1)}
+        sides = {'N': 3,
+                 'S': 1,
+                 'E': 2,
+                 'W': 0}
+        osides = {'N': 1,
+                  'S': 3,
+                  'E': 0,
+                  'W': 2}
+        dkeys = dirs.keys()
+
+        # Start in a random location on level 1
+        x = random.randint(0, self.xsize-1)
+        z = random.randint(0, self.zsize-1)
+        maxdepth = self.xsize * self.zsize * self.levels + 1
+        for y in xrange(self.levels):
+            self.maze[x][y][z] = 1
+            if (y == 0):
+                entrance_pos = Vec(x,y,z)
+            else:
+                stairwells.append(Vec(x,y,z))
+            while 1:
+                # Walk the maze
+                random.shuffle(dkeys)
+                lx = x
+                lz = z
+                for d in dkeys:
+                    nx = x + dirs[d].x
+                    nz = z + dirs[d].z
+                    if (nx >= 0 and
+                        nz >= 0 and
+                        nx < self.xsize and
+                        nz < self.zsize and
+                        self.maze[nx][y][nz] == 0):
+                        #depth += 1
+                        self.maze[nx][y][nz] = maxdepth
+                        self.halls[x][y][z][sides[d]] = 1
+                        self.halls[nx][y][nz][osides[d]] = 1
+                        x = nx
+                        z = nz
+                        break
+
+                # If we're stuck, hunt for a new location.
+                if (lx == x and lz == z):
+                    for p in iterate_plane(Vec(0,y,0),
+                                           Vec(self.xsize-1,y,self.zsize-1)):
+                        if (self.maze[p.x][y][p.z] > 0):
+                            continue
+                        neighbors = []
+                        if (p.x > 0 and self.maze[p.x-1][y][p.z] > 0):
+                            neighbors.append('N')
+                        if (p.z > 0 and self.maze[p.x][y][p.z-1] > 0):
+                            neighbors.append('W')
+                        if (p.x < self.xsize-1 and
+                            self.maze[p.x+1][y][p.z] > 0):
+                            neighbors.append('S')
+                        if (p.z < self.zsize-1 and
+                            self.maze[p.x][y][p.z+1] > 0):
+                            neighbors.append('E')
+                        if (len(neighbors) == 0):
+                            continue
+                        d = random.choice(neighbors)
+                        x = p.x
+                        z = p.z
+                        ox = x + dirs[d].x
+                        oz = z + dirs[d].z
+                        #depth =  self.maze[ox][y][oz] + 1
+                        self.maze[x][y][z] = maxdepth
+                        self.halls[x][y][z][sides[d]] = 1
+                        self.halls[ox][y][oz][osides[d]] = 1
+                        break
+
+                # All cells are filled. We're done with this level.
+                # Recalculate the depth tree and find the deepest cell on
+                # this level and use it for the # stairwell on the next
+                if (lx == x and lz == z):
+                    # insert some loops
+                    for p in iterate_plane(Vec(0,y,0),
+                                           Vec(self.xsize-1,y,self.zsize-1)):
+                        for d in dirs.keys():
+                            if (self.halls[p.x][y][p.z][sides[d]] is not 1 and
+                                random.randint(1,100) < cfg.loops):
+                                nx = p.x + dirs[d].x
+                                nz = p.z + dirs[d].z
+                                if (nx >= 0 and
+                                    nz >= 0 and
+                                    nx < self.xsize and
+                                    nz < self.zsize):
+                                    self.halls[p.x][y][p.z][sides[d]] = 1
+                                    self.halls[nx][y][nz][osides[d]] = 1
+                    # Rebuild the depth tree.
+                    recurse = True
+                    while (recurse == True):
+                        recurse = False
+                        for p in iterate_plane(Vec(0,y,0),
+                                           Vec(self.xsize-1,y,self.zsize-1)):
+                            if (self.maze[p.x][y][p.z] == maxdepth):
+                                recurse = True
+                                depth = maxdepth
+                                for d in dirs.keys():
+                                    if (self.halls[p.x][y][p.z][sides[d]]==1):
+                                        depth = min(
+                                self.maze[p.x+dirs[d].x][y][p.z+dirs[d].z]+1,
+                                self.maze[p.x][y][p.z])
+                                        self.maze[p.x][y][p.z] = depth
+                    # Find the deepest cell on this level.
+                    depth = 0
+                    for p in iterate_plane(Vec(0,y,0),
+                                           Vec(self.xsize-1,y,self.zsize-1)):
+                        if (self.maze[p.x][y][p.z] > depth):
+                            depth = self.maze[p.x][y][p.z]
+                            x = p.x
+                            z = p.z
+                    break
+
+        # The exit!
+        exit_pos = Vec(x, y, z)
+
+        print 'Entrance:', entrance_pos
+        print 'Exit:', exit_pos
+
+        # Fill-in all the special rooms.
         for y in xrange(self.levels):
             for x in xrange(self.xsize):
                 for z in xrange(self.zsize):
-                    loc = Vec(x*self.room_size,
-                              y*self.room_height,
-                              z*self.room_size)
+                    if (self.maze[x][y][z] == 0):
+                        print "WARNING: Blank room at", x, y, z
+                        continue
                     pos = Vec(x,y,z)
-                    self.setroom(pos,
-                                 rooms.new(weighted_choice(cfg.master_rooms),
-                                           self,
-                                           pos)
-                                )
+                    room = None
+                    # This is the entrance
+                    if (pos == entrance_pos):
+                        while (room == None or
+                               room.canvasWidth() < 8 or
+                               room.canvasLength() < 8 or
+                               len(room.features) > 0):
+                            room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
+                        feature = features.new('entrance', room)
+                        self.entrance = feature
+                        room.features.append(feature)
+                        feature.placed()
+                    # This is the exit. MultiVerse Portal or treasure
+                    # room.
+                    elif (pos == exit_pos):
+                        while (room == None or
+                               room.canvasWidth() < 8 or
+                               room.canvasLength() < 8 or
+                               len(room.features) > 0):
+                            room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
+                        if (cfg.mvportal is not ''):
+                            feature = features.new('multiverseportal', room)
+                            feature.target = cfg.mvportal
+                        else:
+                            feature = features.new('treasureroom', room)
+                        room.features.append(feature)
+                        feature.placed()
+                    # This is the lower half of a stairwell
+                    elif (pos in stairwells):
+                        while (room == None or
+                               room.canvasWidth() < 6 or
+                               room.canvasLength() < 8 or
+                               len(room.features) > 0):
+                            room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
+                        feature = features.new('stairwell', room)
+                        room.features.append(feature)
+                        feature.placed()
+                    # This is the upper half of a stairwell.
+                    elif(pos.down(1) in stairwells):
+                        while (room == None or
+                               room.canvasWidth() < 6 or
+                               room.canvasLength() < 8 or
+                               len(room.features) > 0):
+                            room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
+                        feature = features.new('blank', room)
+                        room.features.append(feature)
+                        feature.placed()
+                    if (room is not None):
+                        self.setroom(pos, room)
+
+        # Fill-in the rest of the rooms.
+        for y in xrange(self.levels):
+            for x in xrange(self.xsize):
+                for z in xrange(self.zsize):
+                    if (self.maze[x][y][z] == 0):
+                        print "WARNING: Blank room at", x, y, z
+                        continue
+                    pos = Vec(x,y,z)
+                    room = None
+                    room = rooms.new(weighted_choice(cfg.master_rooms),
+                                     self,
+                                     pos)
+                    self.setroom(pos, room)
+
+
     def genhalls(self):
         '''Step through all rooms and generate halls where possible'''
         for y in xrange(self.levels):
             for x in xrange(self.xsize):
                 for z in xrange(self.zsize):
                     pos = Vec(x,y,z)
-                    if (self.rooms[pos] is not None):
-                        # Maximum halls this room could potentially handle
-                        # Minimum hall size is 3, so we see if that side
-                        # can handle the smallest possible hall
-                        maxhalls = 0
-                        for d in xrange(4):
-                            if (self.rooms[pos].testHall(d,
-                                             3,
-                                             self.rooms[pos].hallSize[d][0],
-                                             self.rooms[pos].hallSize[d][1]
-                                            ) and
-                                self.rooms[pos].halls[d] is None):
-                                maxhalls += 1
-                        # Each room is guaranteed to have 1 hall, and a
-                        # max of 3
-                        hallsremain = randint(min(1,maxhalls), min(2,maxhalls))
-                        # Start on a random side
-                        d = randint(0,3)
-                        count = 4
-                        while (hallsremain and count > 0):
-                            # This is our list to try. We should (hopefully)
-                            # never get to Blank as long as the rooms are
-                            # structured well. (And nobody disables size
-                            # 3 halls)
-                            hall_list = weighted_shuffle(cfg.master_halls)
-                            hall_list.insert(0, 'Blank')
-                            if (self.rooms[pos].hallLength[d] > 0 and
-                                self.rooms[pos].isOnEdge(d) is False):
-                                if (self.rooms[pos].halls[d] is None):
-                                    while (len(hall_list)):
-                                        newhall = hall_list.pop()
-                                        newsize = halls.sizeByName(newhall)
-                                        nextpos = pos+pos.d(d)
-                                        nextd = (d+2)%4
-                                        # Get valid offsets for this room
-                                        # and the ajoining room.
-                                        # First test the current room.
-                                        if (self.rooms[pos].isOnEdge(d) is False):
-                                            result1 = self.rooms[pos].testHall(d, newsize, self.rooms[nextpos].hallSize[nextd][0], self.rooms[nextpos].hallSize[nextd][1])
-                                            result2 = self.rooms[nextpos].testHall(nextd, newsize, self.rooms[pos].hallSize[d][0], self.rooms[pos].hallSize[d][1])
-                                            if (result1 is not False and result2 is not False):
-                                                offset = randint(min(result1[0], result2[0]), max(result1[1], result2[1]))
-                                                self.rooms[pos].halls[d] = halls.new(newhall, self.rooms[pos], d, offset)
-                                                self.rooms[nextpos].halls[nextd] = halls.new(newhall, self.rooms[nextpos], nextd, offset)
-                                                hall_list = []
-                                                hallsremain -= 1
-                            d = (d+1)%4
-                            count -= 1
-                        # Close off any routes that didn't generate a hall
-                        for d in xrange(4):
-                            if (self.rooms[pos].halls[d] == None):
-                                self.rooms[pos].halls[d] = halls.new('blank', self.rooms[pos], d, 0)
-                                if (self.rooms[pos].isOnEdge(d) is False):
-                                    nextpos = pos+pos.d(d)
-                                    nextd = (d+2)%4
-                                    self.rooms[nextpos].halls[nextd] = halls.new('blank', self.rooms[nextpos], nextd, 0)
+                    if (pos not in self.rooms):
+                        continue
+                    for d in xrange(4):
+                        if (self.halls[x][y][z][d] == 1 and
+                           self.rooms[pos].hallLength[d] > 0):
+                               hall_list = weighted_shuffle(cfg.master_halls)
+                               hall_list.insert(0, 'Blank')
+                               while (len(hall_list)):
+                                   newhall = hall_list.pop()
+                                   newsize = halls.sizeByName(newhall)
+                                   nextpos = pos+pos.d(d)
+                                   nextd = (d+2)%4
+                                   # Get valid offsets for this room
+                                   # and the ajoining room.
+                                   # First test the current room.
+                                   result1 = self.rooms[pos].testHall(
+                                       d,
+                                       newsize,
+                                       self.rooms[nextpos].hallSize[nextd][0],
+                                       self.rooms[nextpos].hallSize[nextd][1])
+                                   result2 = self.rooms[nextpos].testHall(
+                                       nextd,
+                                       newsize,
+                                       self.rooms[pos].hallSize[d][0],
+                                       self.rooms[pos].hallSize[d][1])
+                                   if (result1 is not False and
+                                       result2 is not False):
+                                       offset = randint(min(result1[0],
+                                                            result2[0]),
+                                                        max(result1[1],
+                                                            result2[1]))
+                                       self.rooms[pos].halls[d] = \
+                                       halls.new(newhall, self.rooms[pos], d,
+                                                 offset)
+                                       self.rooms[nextpos].halls[nextd] = \
+                                       halls.new(newhall, self.rooms[nextpos],
+                                                 nextd, offset)
+                                       hall_list = []
+                        else:
+                            self.rooms[pos].halls[d] = halls.new('blank',
+                                                             self.rooms[pos],
+                                                             d, 6)
 
     def genfloors(self):
         for pos in self.rooms:
