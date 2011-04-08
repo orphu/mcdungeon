@@ -197,7 +197,10 @@ def drawHall (hall):
             # They can be 1 (open) or 3 (closed) blocks high
             hall.parent.parent.portcullises[port] = portcullises.Portcullis()
             hall.parent.parent.portcullises[port].material = materials.Fence
-            hall.parent.parent.portcullises[port].size = 1 + randint(0,1)*2
+            if (randint(1,100) < cfg.portcullis_closed):
+                hall.parent.parent.portcullises[port].size = 1+randint(0,1)*2
+            else:
+                hall.parent.parent.portcullises[port].size = 1
             # place the actual portcullis positions
             for x in xrange(hall.size-2):
                 pen += stepw

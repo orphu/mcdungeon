@@ -12,6 +12,7 @@ max_dist = 16
 tower = 1.0
 doors = 50
 portcullises = 50
+portcullis_closed = 10
 torches_top = 50
 torches_bottom = 50
 wall = 'Cobblestone'
@@ -33,7 +34,7 @@ def Load(filename = 'mcdungeon.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
-    max_dist, arrow_traps, loops
+    max_dist, arrow_traps, loops, portcullis_closed
 
     print 'Reading config from', filename, '...'
     try:
@@ -61,6 +62,7 @@ def Load(filename = 'mcdungeon.cfg'):
     tower = parser.getfloat('dungeon','tower')
     doors = parser.getint('dungeon','doors')
     portcullises = parser.getint('dungeon', 'portcullises')
+    portcullis_closed = parser.getint('dungeon', 'portcullis_closed')
     torches_top = parser.getint('dungeon', 'torches_top')
     torches_bottom = parser.getint('dungeon', 'torches_bottom')
     wall = parser.get('dungeon', 'wall').lower()
