@@ -184,8 +184,8 @@ class Bridges(Blank):
         hallcount = 0
         for h in xrange(4):
             # If a hall is available, use it 75% of the time.
-            if (self.parent.halls[h].size > 0 and
-               random.uniform(0.0,1.0) <= 0.75):
+            if (self.parent.halls[h].size > 0):
+               #and random.uniform(0.0,1.0) <= 0.75):
                 halls[h] = \
                     self.parent.halls[h].offset + 1 + \
                     random.randint(0, self.parent.halls[h].size - 3)
