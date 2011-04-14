@@ -9,6 +9,7 @@ from noise import pnoise3
 
 class Blank(object):
     _name = 'blank'
+    _min_size = Vec(1,1,1)
 
     def __init__ (self, parent, pos):
         self.parent = parent
@@ -621,3 +622,24 @@ def new (name, parent, pos):
     if (name == 'circularpitbottom'):
             return CircularPitBottom(parent, pos)
     return Blank(parent, pos)
+
+def sizeByName (name):
+    if (name == 'basic'):
+        return Basic._min_size
+    if (name == 'corridor'):
+        return Corridor._min_size
+    if (name == 'circular'):
+        return Circular._min_size
+    if (name == 'pit'):
+        return Pit._min_size
+    if (name == 'pitmid'):
+        return PitMid._min_size
+    if (name == 'pitbottom'):
+        return PitBottom._min_size
+    if (name == 'circularpit'):
+        return CircularPit._min_size
+    if (name == 'circularpitmid'):
+        return CircularPitMid._min_size
+    if (name == 'circularpitbottom'):
+        return CircularPitBottom._min_size
+    return Blank._min_size
