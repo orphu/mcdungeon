@@ -97,4 +97,4 @@ def Load(filename = 'mcdungeon.cfg'):
             if (val.name == floor):
                 materials._floor = copy(val)
             if (val.name == subfloor):
-                materials._floor = copy(val)
+                materials._subfloor = copy(val)
