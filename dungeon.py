@@ -399,70 +399,68 @@ Try a smaller dungeon, or larger start area.')
         print 'Exit:', exit_pos
 
         # Fill-in all the special rooms.
-        for y in xrange(self.levels):
-            for x in xrange(self.xsize):
-                for z in xrange(self.zsize):
-                    if (self.maze[x][y][z] == 0):
-                        print "WARNING: Blank room at", x, y, z
-                        continue
-                    pos = Vec(x,y,z)
-                    room = None
-                    # This is the entrance
-                    if (pos == entrance_pos):
-                        while (room == None or
-                               room.canvasWidth() < 8 or
-                               room.canvasLength() < 8 or
-                               len(room.features) > 0):
-                            room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                        feature = features.new('entrance', room)
-                        self.entrance = feature
-                        room.features.append(feature)
-                        feature.placed()
-                    # This is the exit. MultiVerse Portal or treasure
-                    # room.
-                    elif (pos == exit_pos):
-                        while (room == None or
-                               room.canvasWidth() < 8 or
-                               room.canvasLength() < 8 or
-                               len(room.features) > 0):
-                            room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                        if (cfg.mvportal is not ''):
-                            feature = features.new('multiverseportal', room)
-                            feature.target = cfg.mvportal
-                        else:
-                            feature = features.new('treasureroom', room)
-                        room.features.append(feature)
-                        feature.placed()
-                    # This is the lower half of a stairwell
-                    elif (pos in stairwells):
-                        while (room == None or
-                               room.canvasWidth() < 6 or
-                               room.canvasLength() < 8 or
-                               len(room.features) > 0):
-                            room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                        feature = features.new('stairwell', room)
-                        room.features.append(feature)
-                        feature.placed()
-                    # This is the upper half of a stairwell.
-                    elif(pos.down(1) in stairwells):
-                        while (room == None or
-                               room.canvasWidth() < 6 or
-                               room.canvasLength() < 8 or
-                               len(room.features) > 0):
-                            room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                        feature = features.new('blank', room)
-                        room.features.append(feature)
-                        feature.placed()
-                    if (room is not None):
-                        self.setroom(pos, room)
+        # This is the entrance
+        room = None
+        pos = entrance_pos
+        while (room == None or
+               room.canvasWidth() < 8 or
+               room.canvasLength() < 8 or
+               len(room.features) > 0):
+            room = rooms.new(weighted_choice(cfg.master_rooms),
+                             self,
+                             pos)
+        feature = features.new('entrance', room)
+        self.entrance = feature
+        room.features.append(feature)
+        feature.placed()
+        self.setroom(pos, room)
+
+        # This is the exit. MultiVerse Portal or treasure room.
+        room = None
+        pos = exit_pos
+        while (room == None or
+               room.canvasWidth() < 8 or
+               room.canvasLength() < 8 or
+               len(room.features) > 0):
+            room = rooms.new(weighted_choice(cfg.master_rooms),
+                             self,
+                             pos)
+        if (cfg.mvportal is not ''):
+            feature = features.new('multiverseportal', room)
+            feature.target = cfg.mvportal
+        else:
+            feature = features.new('treasureroom', room)
+        room.features.append(feature)
+        feature.placed()
+        self.setroom(pos, room)
+
+        # These are the stairwells
+        room = None
+        for pos in stairwells:
+            while (room == None or
+                   room.canvasWidth() < 6 or
+                   room.canvasLength() < 8 or
+                   len(room.features) > 0):
+                room = rooms.new(weighted_choice(cfg.master_rooms),
+                                 self,
+                                 pos)
+            feature = features.new('stairwell', room)
+            room.features.append(feature)
+            feature.placed()
+            self.setroom(pos, room)
+            # This is the upper half of a stairwell.
+            posup = pos.up(1)
+            while (room == None or
+                   room.canvasWidth() < 6 or
+                   room.canvasLength() < 8 or
+                   len(room.features) > 0):
+                room = rooms.new(weighted_choice(cfg.master_rooms),
+                                 self,
+                                 posup)
+            feature = features.new('blank', room)
+            room.features.append(feature)
+            feature.placed()
+            self.setroom(posup, room)
 
         # Fill-in the rest of the rooms.
         for y in xrange(self.levels):
