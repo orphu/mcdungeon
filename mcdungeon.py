@@ -5,7 +5,7 @@ import os
 import argparse
 from pymclevel import mclevel, nbt
 
-__version__ = '0.0.3'
+__version__ = '0.1.0'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
