@@ -244,4 +244,9 @@ if (args.write):
     print "Saving..."
     world.saveInPlace()
 
-print "Done!                   "
+print 'Done!                   '
+start = dungeon.position
+end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
+          start.y - dungeon.levels * dungeon.room_height + 1,
+          start.z - dungeon.zsize * dungeon.room_size + 1)
+print 'Final dungeon bounds:', start, 'to', end
