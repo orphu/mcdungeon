@@ -149,10 +149,6 @@ if (args.levels < 1 or args.levels > 18):
 
 print 'Dungeon size: %d x %d x %d' % (args.z, args.x, args.levels)
 
-if (args.seed is not None):
-    seed(args.seed)
-    print 'Seed:',args.seed
-
 if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
                                  args.offset[1],
@@ -180,6 +176,10 @@ try:
 except:
     print "Searching for a good location..."
     dungeon.findlocation(world)
+
+if (args.seed is not None):
+    seed(args.seed)
+    print 'Seed:',args.seed
 
 print "Generating rooms..."
 dungeon.genrooms()
