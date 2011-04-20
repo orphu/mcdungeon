@@ -28,6 +28,7 @@
 24,Sandstone,0,64
 25,Note Block,0,64
 26,Bed Block,0,64
+30,Web,0,64
 35,Wool,0,64
 35,Orange Wool,1,64
 35,Magenta Wool,2,64
