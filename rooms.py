@@ -527,12 +527,15 @@ class Corridor(Blank):
         x2 = -1
         z1 = 1000
         z2 = -1
+        numhalls = 0
         # Lets take a look at our halls and try to connect them
         # x1 bounds (West side)
         if (self.halls[0].size):
             x1 = self.halls[0].offset
+            numhalls += 1
         if (self.halls[2].size):
             x1 = min(x1, self.halls[2].offset)
+            numhalls += 1
         if (x1 is 1000):
             x1 = self.parent.room_size/2-2
         # x2 bounds (East side)
@@ -545,8 +548,10 @@ class Corridor(Blank):
         # z1 bounds (North side)
         if (self.halls[1].size):
             z1 = self.halls[1].offset
+            numhalls += 1
         if (self.halls[3].size):
             z1 = min(z1, self.halls[3].offset)
+            numhalls += 1
         if (z1 is 1000):
             z1 = self.parent.room_size/2-2
         # z2 bounds (South side)
@@ -565,6 +570,13 @@ class Corridor(Blank):
             t = z1
             z1= z2
             z2 = t
+        # If there is only one hall, override
+        if (numhalls == 1):
+            print 'cave-in'
+            x1 = min(x1, 5)
+            x2 = max(x2, self.parent.room_size-6)
+            z1 = min(z1, 5)
+            z2 = max(z2, self.parent.room_size-6)
         # Extend the halls
         self.hallLength[0] = z1+1
         self.hallLength[1] = self.parent.room_size - x2
@@ -600,6 +612,49 @@ class Corridor(Blank):
                                                   self.parent.room_height-1,
                                                   self.parent.room_size-1)):
             self.parent.setblock(x, materials._subfloor)
+        # Cave-in
+        if (numhalls == 1):
+            ores = (
+                # Resource distribution
+                (materials.Cobblestone,150),
+                (materials._wall,150),
+                (materials.CoalOre,90),
+                (materials.IronOre,40),
+                (materials.GoldOre,1),
+                (materials.DiamondOre,1),
+                (materials.RedStoneOre,50),
+                (materials.LapisOre,1)
+            )
+            start = c4.trans(1,1,-2)
+            width = x2-x1-1
+            length = self.parent.room_height-3
+            stepw = Vec(1,0,0)
+            stepl = Vec(0,0,-1)
+            if (self.halls[0].size):
+                start = c1.trans(1,1,2)
+                width = x2-x1-1
+                stepw = Vec(1,0,0)
+                stepl = Vec(0,0,1)
+            elif (self.halls[1].size):
+                start = c2.trans(-2,1,1)
+                width = z2-z1-1
+                stepw = Vec(0,0,1)
+                stepl = Vec(-1,0,0)
+            elif (self.halls[3].size):
+                start = c1.trans(2,1,1)
+                width = z2-z1-1
+                stepw = Vec(0,0,1)
+                stepl = Vec(1,0,0)
+            h = 1
+            print start, width, length, stepw, stepl
+            for l in xrange(length):
+                for w in xrange(width):
+                    p = start + (stepw*w) + (stepl*l)
+                    print p
+                    for x in iterate_cube(p, p.up(h+random.randint(0,1))):
+                        mat = weighted_choice(ores)
+                        self.parent.setblock(x, mat)
+                h += 1
 
 
 def new (name, parent, pos):
