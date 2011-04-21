@@ -877,6 +877,9 @@ Try a smaller dungeon, or larger start area.')
         if (newheight - baseheight > 0):
             self.entrance.height += newheight - baseheight
         self.entrance.u = int(cfg.tower*self.entrance.u)
+        # Check the upper bounds of the tower
+        if (newheight + self.entrance.u >= 128):
+            self.entrance.u = 124 - newheight
 
     def applychanges(self, world):
         '''Write the block buffer to the specified world'''
