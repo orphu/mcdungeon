@@ -39,10 +39,15 @@ class Entrance(Blank):
         c3 = c1.trans(9,0,9)
         c4 = c1.trans(0,0,9)
         # Battlements (chest level)
+        #    This is the solid outer wall right under the battlements
         for p in iterate_cube(c1,c3):
             self.parent.parent.setblock(p, materials._wall)
-        for p in iterate_cube(c1.trans(1,1,1),c3.trans(-1, 1, -1)):
+        #    The "floor" This extends to the ground to make the base thicker. 
+        for p in iterate_cube(c1.trans(1,1,1),c3.trans(-1,
+                                                       self.height+2,
+                                                       -1)):
             self.parent.parent.setblock(p, materials._wall)
+        #    Place the battlement blocks on the wall
         for p in iterate_cube(Vec(0,-1,0), Vec(4,-1,4)):
             if (((p.x+p.z)&1) == 0):
                 self.parent.parent.setblock(c1+p, materials._wall)
@@ -52,12 +57,15 @@ class Entrance(Blank):
                                             materials._wall)
                 self.parent.parent.setblock(c4.trans(p.x,p.y,-p.z),
                                             materials._wall)
+        #     Carve out a walkway
         for p in iterate_cube(c1.trans(1,0,1),
                               c3.trans(-1,-10,-1)):
             self.parent.parent.setblock(p, materials.Air)
         # Battlements (top of the tower)
+        #    This is the solid outer wall right under the battlements
         for p in iterate_cube(b1,b3):
             self.parent.parent.setblock(p, materials._wall)
+        #    Place the battlement blocks on the wall
         for p in iterate_cube(Vec(0,-1,0), Vec(2,-1,2)):
             if (((p.x+p.z)&1) == 0):
                 self.parent.parent.setblock(b1+p, materials._wall)
@@ -105,19 +113,19 @@ class Entrance(Blank):
         # Ground level openings
         # W side
         for p in iterate_cube(wstart.trans(2,0,0),
-                              wstart.trans(3,-3,0)):
+                              wstart.trans(3,-3,-1)):
                 self.parent.parent.setblock(p.trans(0,-self.height,0),
                                             materials.Air)
         # E side
-        for p in iterate_cube(wstart.trans(2,0,5), wstart.trans(3,-3,5)):
+        for p in iterate_cube(wstart.trans(2,0,5), wstart.trans(3,-3,6)):
                 self.parent.parent.setblock(p.trans(0,-self.height,0),
                                             materials.Air)
         # N side
-        for p in iterate_cube(wstart.trans(0,0,2), wstart.trans(0,-3,3)):
+        for p in iterate_cube(wstart.trans(0,0,2), wstart.trans(-1,-3,3)):
                 self.parent.parent.setblock(p.trans(0,-self.height,0),
                                             materials.Air)
         # S side
-        for p in iterate_cube(wstart.trans(5,0,2), wstart.trans(5,-3,3)):
+        for p in iterate_cube(wstart.trans(5,0,2), wstart.trans(6,-3,3)):
                 self.parent.parent.setblock(p.trans(0,-self.height,0),
                                             materials.Air)
         # Draw the staircase
