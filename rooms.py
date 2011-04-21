@@ -572,7 +572,6 @@ class Corridor(Blank):
             z2 = t
         # If there is only one hall, override
         if (numhalls == 1):
-            print 'cave-in'
             x1 = min(x1, 5)
             x2 = max(x2, self.parent.room_size-6)
             z1 = min(z1, 5)
@@ -646,11 +645,9 @@ class Corridor(Blank):
                 stepw = Vec(0,0,1)
                 stepl = Vec(1,0,0)
             h = 1
-            print start, width, length, stepw, stepl
             for l in xrange(length):
                 for w in xrange(width):
                     p = start + (stepw*w) + (stepl*l)
-                    print p
                     for x in iterate_cube(p, p.up(h+random.randint(0,1))):
                         mat = weighted_choice(ores)
                         self.parent.setblock(x, mat)
