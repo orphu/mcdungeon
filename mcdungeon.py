@@ -243,6 +243,8 @@ if (args.write):
 if (args.write):
     print "Saving..."
     world.saveInPlace()
+else:
+    print "Map NOT saved! This was a dry run. Use --write to enable saving."
 
 print 'Done!                   '
 start = dungeon.position
