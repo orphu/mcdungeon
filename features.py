@@ -148,6 +148,20 @@ class Entrance(Blank):
         pos = c1.trans(1, 0, 1)
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
+        # Sandbar island
+        if (self.inwater is False):
+            return
+        d = 2
+        s1 = wstart.trans(-3,-self.height,-3)
+        s3 = wstart.trans(8,-self.height,8)
+        for y in xrange(self.parent.parent.levels *
+                        self.parent.parent.room_height +
+                        self.height):
+            for p in iterate_disc(s1.trans(-d,y+1,-d),
+                                  s3.trans(d,y+1,d)):
+                if (p not in self.parent.parent.blocks):
+                    self.parent.parent.setblock(p, materials.Sand)
+            d += 1
 
 
 class Stairwell(Blank):
