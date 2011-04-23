@@ -23,6 +23,7 @@ chests = 1
 spawners = 2
 arrow_traps = 5
 loops = 0
+hard_mode = 0
 
 master_halls = {}
 master_rooms = {}
@@ -34,7 +35,7 @@ def Load(filename = 'mcdungeon.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
-    max_dist, arrow_traps, loops, portcullis_closed
+    max_dist, arrow_traps, loops, portcullis_closed, hard_mode
 
     print 'Reading config from', filename, '...'
     try:
@@ -76,6 +77,7 @@ def Load(filename = 'mcdungeon.cfg'):
     max_dist = parser.getint('dungeon', 'max_dist')
     arrow_traps = parser.getint('dungeon', 'arrow_traps')
     loops = parser.getint('dungeon', 'loops')
+    hard_mode = parser.getboolean('dungeon', 'hard_mode')
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be \

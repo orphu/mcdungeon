@@ -885,6 +885,21 @@ Try a smaller dungeon, or larger start area.')
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
         num_blocks = len(self.blocks)
+        # Hard mode
+        if (cfg.hard_mode is True):
+            print 'Filling in caves (hard mode)...'
+            for z in xrange((self.position.z>>4)-self.zsize-2,
+                            (self.position.z>>4)+3):
+                for x in xrange((self.position.x>>4)-2,
+                                (self.position.x>>4)+self.xsize+3):
+                    if (world.containsChunk(x, z)):
+                        chunk = world.getChunk(x, z)
+                        miny = self.position.y
+                        air = ( chunk.Blocks[:,:,0:miny] == 0)
+                        chunk.Blocks[air] = materials._subfloor.val
+                        changed_chunks.add(chunk)
+        # Blocks
+        print 'Writing block buffer...'
         for block in self.blocks.values():
             # Mysteriously, this block contains no material.
             if block.material is None:
@@ -899,7 +914,11 @@ Try a smaller dungeon, or larger start area.')
             xInChunk = x & 0xf
             zInChunk = z & 0xf
             # get the chunk
-            chunk = world.getChunk(chunk_x, chunk_z)
+            if (world.containsChunk(chunk_x, chunk_z)):
+                chunk = world.getChunk(chunk_x, chunk_z)
+            else:
+                print "Whoops! Can't find chunk at", chunk_x,',',chunk_z
+                sys.exit(1)
             # 3D perlin moss!
             mat = block.material
             dat = block.data
@@ -918,6 +937,7 @@ Try a smaller dungeon, or larger start area.')
             if (num_blocks % 10000 == 0):
                 spin(num_blocks/10000)
         # Copy over tile entities
+        print 'Creating tile entities...'
         for ent in self.tile_ents.values():
             # Calculate world coords.
             x = ent['x'].value + self.position.x
