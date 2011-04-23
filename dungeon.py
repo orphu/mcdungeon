@@ -888,9 +888,9 @@ Try a smaller dungeon, or larger start area.')
         # Hard mode
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'
-            for z in xrange((self.position.z>>4)-self.zsize-2,
+            for z in xrange((self.position.z>>4)-self.zsize-3,
                             (self.position.z>>4)+3):
-                for x in xrange((self.position.x>>4)-2,
+                for x in xrange((self.position.x>>4)-3,
                                 (self.position.x>>4)+self.xsize+3):
                     if (world.containsChunk(x, z)):
                         chunk = world.getChunk(x, z)
