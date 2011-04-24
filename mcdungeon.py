@@ -17,8 +17,8 @@ parent_parser.add_argument('-v', '--version',
 parent_parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
-                    default='mcdungeon.cfg',
-                    help='Alternate config file. Default: mcdungeon.cfg')
+                    default='configs/default.cfg',
+                    help='Alternate config file. Default: configs/default.cfg')
 parent_parser.add_argument('--write',
                     action='store_true',
                     dest='write' ,
@@ -90,12 +90,24 @@ import loottable
 from dungeon import *
 from utils import *
 
-# Load configs
-cfg.Load(args.config)
-loottable.Load()
-
 if (args.interactive == True):
     print 'Starting interactive mode!'
+
+    configDir = 'configs'
+    if (os.path.isdir(configDir) == False):
+        sys.exit('\nI cannot find your configs directory! Aborting!')
+    print '\nConfigurations in your configs directory:\n'
+    for file in os.listdir(configDir):
+        file_path = os.path.join(configDir, file)
+        file = file.replace('.cfg', '')
+        if (os.path.isfile(file_path) and
+           file_path.endswith('.cfg')):
+            print '   ',file
+    print '\nEnter the name of the configuration you wish to use.'
+    config = raw_input('(leave blank for default): ')
+    if (config == ''):
+        config = 'default'
+    args.config = str(os.path.join(configDir, config))+'.cfg'
 
     saveFileDir = mclevel.saveFileDir
     print '\nYour save directory is:\n', saveFileDir
@@ -130,6 +142,10 @@ if (args.interactive == True):
     #    args.html = world
     #    args.force = True
     args.write = True
+
+# Load configs
+cfg.Load(args.config)
+loottable.Load()
 
 # Random level sizes
 if (args.z < 0):

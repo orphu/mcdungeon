@@ -31,7 +31,7 @@ master_features = {}
 master_floors = {}
 master_mobs = []
 
-def Load(filename = 'mcdungeon.cfg'):
+def Load(filename = 'configs/default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
