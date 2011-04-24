@@ -438,9 +438,28 @@ def dumpEnts(world):
         if i % 100 == 0:
             print "Chunk {0}...".format(i)
 
+
 def spin(c = ''):
     spinner = ['|', '/', '-', '\\']
     if (c == ''):
         c = spinner[random.randint(0,len(spinner)-1)]
     sys.stdout.write("\r"+str(c)+"   \r")
     sys.stdout.flush()
+
+
+def findChunkDepth(p, world):
+    try:
+        chunk = world.getChunk(p.x, p.z)
+    except mclevel.ChunkMalformed:
+        return 0
+    depth = 128
+    # list of IDs that are solid. (for our purposes anyway)
+    solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82)
+    for x in xrange(16):
+        for z in xrange(16):
+            y = chunk.HeightMap[z, x]-1
+            while (y > 0 and
+                   chunk.Blocks[x, z, y] not in solids):
+                y = y - 1
+            depth = min(y, depth)
+    return depth
