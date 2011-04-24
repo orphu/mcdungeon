@@ -384,6 +384,12 @@ am.NoteBlock = am.Block(25,
     texture=(0xA0,0x40),
     )
 
+am.Web = am.Block(30, 
+    name="Web",
+    texture=(0x10,0x30),
+    opacity=0,
+    )
+
 
 am.WhiteWool = am.Block(35, 
     name="White Wool",
