@@ -84,7 +84,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         Print version and exit
-  --config CFGFILE      Alternate config file. Default: mcdungeon.cfg
+  --config CFGFILE      Alternate config file. Default: configs/default.cfg
   --write               Write the dungeon to disk
   --skip-relight        Skip relighting the level
   -t FLOOR, --term FLOOR
@@ -97,7 +97,7 @@ optional arguments:
   -o X Y Z, --offset X Y Z
                         Provide a location offset. (overrides .cfg file)
   -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,
-                        and LEVELS.
+                        CFGFILE, and LEVELS.
 
 EXAMPLES:
 
@@ -107,4 +107,4 @@ and display the results in a terminal window. (In color on ANSI
 terminals only. Sorry Windows) The world files will not be modified,
 but are required. Basically a "dry run."
 
-./mcdungeon.py -w Dungeon 5 4 3 --term 1
+./mcdungeon.py Dungeon 5 4 3 --term 1
