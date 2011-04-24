@@ -163,4 +163,3 @@ def Load(filename = 'configs/default.cfg'):
             if (val.name == subfloor):
                 materials._subfloor = copy(val)
 
-    print 'halls:', master_halls
