@@ -13,6 +13,7 @@ tower = 1.0
 doors = 50
 portcullises = 50
 portcullis_closed = 10
+portcullis_web = 50
 torches_top = 50
 torches_bottom = 50
 wall = 'Cobblestone'
@@ -35,7 +36,7 @@ def Load(filename = 'configs/default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
-    max_dist, arrow_traps, loops, portcullis_closed, hard_mode
+    max_dist, arrow_traps, loops, portcullis_closed, hard_mode, portcullis_web
 
     print 'Reading config from', filename, '...'
     try:
@@ -64,6 +65,7 @@ def Load(filename = 'configs/default.cfg'):
     doors = parser.getint('dungeon','doors')
     portcullises = parser.getint('dungeon', 'portcullises')
     portcullis_closed = parser.getint('dungeon', 'portcullis_closed')
+    portcullis_web = parser.getint('dungeon', 'portcullis_web')
     torches_top = parser.getint('dungeon', 'torches_top')
     torches_bottom = parser.getint('dungeon', 'torches_bottom')
     wall = parser.get('dungeon', 'wall').lower()

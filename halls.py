@@ -193,14 +193,18 @@ def drawHall (hall):
                 abort = True
         # Create the portcullis.
         if (abort == False):
-            # All portcullises are fences.
+            # All portcullises are fences. Except webs. 
             # They can be 1 (open) or 3 (closed) blocks high
             hall.parent.parent.portcullises[port] = portcullises.Portcullis()
             hall.parent.parent.portcullises[port].material = materials.Fence
             if (randint(1,100) < cfg.portcullis_closed):
-                hall.parent.parent.portcullises[port].size = 1+randint(0,1)*2
+                hall.parent.parent.portcullises[port].size = 3
             else:
                 hall.parent.parent.portcullises[port].size = 1
+            # Make this a web instead
+            if (randint(1,100) < cfg.portcullis_web):
+                hall.parent.parent.portcullises[port].material = materials.Web
+                hall.parent.parent.portcullises[port].size = 3
             # place the actual portcullis positions
             for x in xrange(hall.size-2):
                 pen += stepw
