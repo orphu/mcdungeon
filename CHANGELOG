@@ -49,6 +49,8 @@ v0.1.0 - TBD
  
     * Fixed a crash bug if the tower option was set too high. 
 
+    * Spider webs.
+
 v0.0.4 - 4/14/2011
 
     * Fixed the "subfloor" setting not reading properly from the .cfg file.
