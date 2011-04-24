@@ -450,7 +450,7 @@ def spin(c = ''):
 def findChunkDepth(p, world):
     try:
         chunk = world.getChunk(p.x, p.z)
-    except mclevel.ChunkMalformed:
+    except:
         return 0
     depth = 128
     # list of IDs that are solid. (for our purposes anyway)
