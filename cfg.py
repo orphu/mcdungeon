@@ -4,14 +4,15 @@ import ConfigParser
 
 from utils import *
 
+loops = '0'
+min_dist = '2'
+max_dist = '10'
 offset = ''
-min_dist = '1'
-max_dist = '16'
-tower = '1.0'
-doors = '50'
-portcullises = '50'
+tower = '2.0'
+doors = '25'
+portcullises = '25'
 portcullis_closed = '10'
-portcullis_web = '50'
+portcullis_web = '5'
 torches_top = '50'
 torches_bottom = '50'
 wall = 'Cobblestone'
@@ -19,11 +20,10 @@ floor = 'Stone'
 ceiling = 'Cobblestone'
 subfloor = 'Bedrock'
 mvportal = ''
-chests = '1'
+chests = '10'
 spawners = '2'
 arrow_traps = '5'
-loops = '0'
-hard_mode = '0'
+hard_mode = 'False'
 
 master_halls = []
 master_rooms = []
@@ -31,30 +31,15 @@ master_features = []
 master_floors = []
 master_mobs = []
 
-defaults = {
-    'offset': offset,
-    'min_dist': min_dist,
-    'max_dist': max_dist,
-    'tower': tower,
-    'doors': doors,
-    'portcullises': portcullises,
-    'portcullis_closed': portcullis_closed,
-    'portcullis_web': portcullis_web,
-    'torches_top': torches_top,
-    'torches_bottom': torches_bottom,
-    'wall': wall,
-    'floor': floor,
-    'ceiling': ceiling,
-    'subfloor': subfloor,
-    'mvportal': mvportal,
-    'chests': chests,
-    'spawners': spawners,
-    'arrow_traps': arrow_traps,
-    'loops': loops,
-    'hard_mode': hard_mode,
-}
-
 parser = ConfigParser.SafeConfigParser()
+
+def get(section, var, default):
+    global parser
+    try:
+        temp = parser.get(section, var)
+    except:
+        return default
+    return temp
 
 def Load(filename = 'configs/default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
@@ -85,61 +70,39 @@ def Load(filename = 'configs/default.cfg'):
         master_mobs.append((mob2, mob[1]))
 
     # Load other config options
-    offset = parser.get('dungeon',
-                        'offset',
-                        True,
-                        defaults)
+    offset = get('dungeon', 'offset', offset)
 
-    tower = float(parser.get('dungeon',
-                             'tower',
-                             True,
-                             defaults))
+    tower = float(get('dungeon', 'tower', tower))
+    doors = int(get('dungeon', 'doors', doors))
+    portcullises = int(get('dungeon', 'portcullises', portcullises))
+    portcullis_closed = int(get('dungeon',
+                                'portcullis_closed',
+                                portcullis_closed))
+    portcullis_web = int(get('dungeon',
+                             'portcullis_web',
+                             portcullis_web))
+    torches_top = int(get('dungeon',
+                          'torches_top',
+                          torches_top))
+    torches_bottom = int(get('dungeon',
+                             'torches_bottom',
+                             torches_bottom))
 
-    doors = int(parser.get('dungeon',
-                           'doors',
-                           True,
-                           defaults))
+    wall = get('dungeon', 'wall', wall).lower()
+    ceiling = get('dungeon', 'ceiling', ceiling).lower()
+    floor = get('dungeon', 'floor', floor).lower()
+    subfloor = get('dungeon', 'subfloor', subfloor).lower()
 
-    portcullises = int(parser.get('dungeon',
-                                  'portcullises',
-                                  True,
-                                  defaults))
+    mvportal = get('dungeon', 'mvportal', mvportal)
 
-    portcullis_closed = int(parser.get('dungeon',
-                                       'portcullis_closed',
-                                       True,
-                                       defaults))
+    chests = float(get('dungeon', 'chests', chests))
+    spawners = float(get('dungeon', 'spawners', spawners))
+    min_dist = int(get('dungeon', 'min_dist', min_dist))
+    max_dist = int(get('dungeon', 'max_dist', max_dist))
+    arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
+    loops = int(get('dungeon', 'loops', loops))
 
-    portcullis_web = int(parser.get('dungeon',
-                                       'portcullis_web',
-                                       True,
-                                       defaults))
-
-    torches_top = int(parser.get('dungeon',
-                                    'torches_top',
-                                       True,
-                                       defaults))
-
-    torches_bottom = int(parser.get('dungeon',
-                                       'torches_bottom',
-                                       True,
-                                       defaults))
-
-
-    wall = parser.get('dungeon', 'wall', True, defaults).lower()
-    ceiling = parser.get('dungeon', 'ceiling', True, defaults).lower()
-    floor = parser.get('dungeon', 'floor', True, defaults).lower()
-    subfloor = parser.get('dungeon', 'subfloor', True, defaults).lower()
-    mvportal = parser.get('dungeon', 'mvportal', True, defaults)
-
-    chests = float(parser.get('dungeon', 'chests', True, defaults))
-    spawners = float(parser.get('dungeon', 'spawners', True, defaults))
-    min_dist = int(parser.get('dungeon', 'min_dist', True, defaults))
-    max_dist = int(parser.get('dungeon', 'max_dist', True, defaults))
-    arrow_traps = int(parser.get('dungeon', 'arrow_traps', True, defaults))
-    loops = int(parser.get('dungeon', 'loops', True, defaults))
-
-    hard_mode = bool(parser.get('dungeon', 'hard_mode', True, defaults))
+    hard_mode = bool(get('dungeon', 'hard_mode', hard_mode))
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be \
