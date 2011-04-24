@@ -1,3 +1,54 @@
+v0.1.0 - TBD
+
+    * More interesting lava floors.
+
+    * Revamped chest and spawner placement. These can now appear in lava and
+      other rooms with very little floor space. 
+
+    * Pit rooms can now be circular. (and possibly more shapes in the future)
+
+    * Images used for tiles in HTML maps are now 12x12. More tiles added.
+
+    * All new maze generation algorithm. How convoluted mazes are can now be
+      controlled in the config file. Entry and exit stairs are now guaranteed
+      to be as far away from each other as possible on a given level.
+  
+    * New config option: loops - Controls how many loops the maze will have.
+      0 = no loops, just a few branches. 100 = A grid. Values around 20-30
+      will produce mazes similar to the old algorithm. 
+
+    * Bridges in pit rooms now always connect all hallways. Pit floors now
+      never have bridges since there are other ways to cross them. 
+
+    * New config option: portcullises_closed - Percentage of portcullises that
+      will be rendered closed. 0 = none, 100 = all.
+
+    * The final bounds of the dungeon are printed on the last line. Handy for
+      folks running WorldGuard or similar. 
+
+    * Single hall corridor dead ends are now special cave in rooms that can
+      contain ores in similar proportions to the world. (coal is common,
+      diamond and lapis are rare, etc)
+
+    * The default tower entrance has a few improvements, and will now build a
+      sand bar around itself if placed in water. 
+
+    * More verbose output in certain situations.
+
+    * Configuration files are now kept in a directory named "configs" in the 
+      mcdungeon directory. Several example configs have been added. 
+
+    * New config option: hard_mode - Hard mode will fill in caves under and
+      around the dungeon in an attempt to concentrate monster spawns inside the
+      walls of the dungeon. This works best on larger maps that already have 
+      chunks within the start area generated. Medium to large sized 
+      dungeons with 5-8 levels will work best as well. 
+
+    * Interactive mode will now prompt for which configuration file you want 
+      to use. 
+ 
+    * Fixed a crash bug if the tower option was set too high. 
+
 v0.0.4 - 4/14/2011
 
     * Fixed the "subfloor" setting not reading properly from the .cfg file.
