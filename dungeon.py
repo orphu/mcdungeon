@@ -875,10 +875,10 @@ Try a smaller dungeon, or larger start area.')
         # Hard mode
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'
-            for z in xrange((self.position.z>>4)-self.zsize-3,
-                            (self.position.z>>4)+3):
-                for x in xrange((self.position.x>>4)-3,
-                                (self.position.x>>4)+self.xsize+3):
+            for z in xrange((self.position.z>>4)-self.zsize-5,
+                            (self.position.z>>4)+5):
+                for x in xrange((self.position.x>>4)-5,
+                                (self.position.x>>4)+self.xsize+5):
                     if (world.containsChunk(x, z)):
                         p = Vec(x,0,z)
                         chunk = world.getChunk(x, z)
@@ -886,7 +886,7 @@ Try a smaller dungeon, or larger start area.')
                             self.depths[p] = findChunkDepth(p, world)
                         miny = self.depths[p]
                         air = ( chunk.Blocks[:,:,0:miny] == 0)
-                        chunk.Blocks[air] = materials._subfloor.val
+                        chunk.Blocks[air] = materials._floor.val
                         changed_chunks.add(chunk)
         # Blocks
         print 'Writing block buffer...'
