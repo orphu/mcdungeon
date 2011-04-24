@@ -607,9 +607,12 @@ Try a smaller dungeon, or larger start area.')
             # Catalog all valid points in the room that can hold a chest.
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
-                if(self.blocks[point].material.val not in ignore and
-                   self.blocks[point.up(1)].material.val == 0 and 
-                   self.blocks[point.up(2)].material.val == 0):
+                if((self.blocks[point].material.val not in ignore and
+                    self.blocks[point.up(1)].material.val == 0 and 
+                    self.blocks[point.up(2)].material.val == 0) or
+                   (self.blocks[point.down(1)].material.val not in ignore and
+                    self.blocks[point].material.val == 0 and
+                    self.blocks[point.up(1)].material.val == 0)):
                     points.append(point)
             # Pick a spot, if one exists.
             if (len(points) > 0):
