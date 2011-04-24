@@ -853,7 +853,8 @@ Try a smaller dungeon, or larger start area.')
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
                 while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):
                     y -= 1
-                if (chunk.Blocks[xInChunk, zInChunk, y] == 9):
+                if (chunk.Blocks[xInChunk, zInChunk, y] == 9 or
+                    chunk.Blocks[xInChunk, zInChunk, y] == 79):
                     self.entrance.inwater = True
                 #chunk.Blocks[xInChunk, zInChunk, y] = 1
                 newheight = max(y, newheight)
