@@ -26,6 +26,7 @@ class Block(object):
 class Dungeon (object):
     def __init__(self, xsize, zsize, levels):
         self.rooms = {}
+        self.depths = {}
         self.blocks = {}
         self.tile_ents = {}
         self.torches = {}
@@ -67,7 +68,7 @@ class Dungeon (object):
     def findlocation(self, world):
         positions = {}
         final_positions = {}
-        depths = {}
+        self.depths = {}
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
@@ -131,23 +132,9 @@ class Dungeon (object):
             for p in iterate_cube(chunk, chunk+Vec(self.xsize-1,
                                                    0,
                                                    1-self.zsize)):
-                try:
-                    this_chunk = world.getChunk(p.x, p.z)
-                except:
-                    depths[p] = 0
-                if (p in depths):
-                    depth = min(depth, depths[p])
-                    continue
-                depths[p] = 128
-                for x in xrange(16):
-                    for z in xrange(16):
-                        # Heightmap is a good starting place, but I need to
-                        # look down 
-                        y = this_chunk.HeightMap[z, x]-1
-                        while (this_chunk.Blocks[x, z, y] in ignore):
-                            y -= 1
-                        depths[p] = min(y, depths[p])
-                depth = min(depth, depths[p])
+                if (p not in self.depths):
+                    self.depths[p] = findChunkDepth(p, world)
+                depth = min(depth, self.depths[p])
             if (depth >= min_depth):
                 final_positions[Vec(chunk.x, 0, chunk.z)] = Vec(
                     chunk.x*self.room_size,
@@ -893,8 +880,11 @@ Try a smaller dungeon, or larger start area.')
                 for x in xrange((self.position.x>>4)-3,
                                 (self.position.x>>4)+self.xsize+3):
                     if (world.containsChunk(x, z)):
+                        p = Vec(x,0,z)
                         chunk = world.getChunk(x, z)
-                        miny = self.position.y
+                        if (p not in self.depths):
+                            self.depths[p] = findChunkDepth(p, world)
+                        miny = self.depths[p]
                         air = ( chunk.Blocks[:,:,0:miny] == 0)
                         chunk.Blocks[air] = materials._subfloor.val
                         changed_chunks.add(chunk)
