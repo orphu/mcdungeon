@@ -3,6 +3,7 @@
 import sys
 import os
 import argparse
+import logging
 from pymclevel import mclevel, nbt
 
 __version__ = '0.1.0'
@@ -241,10 +242,6 @@ dungeon.placechests()
 print "Placing spawners..."
 dungeon.placespawners()
 
-# Output a slice of the dungoen to the terminal if requested.
-if (args.term is not None):
-    dungeon.outputterminal(args.term)
-
 # Output an html version.
 if (args.html is not None):
     dungeon.outputhtml(args.html, args.force)
@@ -255,7 +252,13 @@ if (args.write):
     dungeon.applychanges(world)
     if (args.skiprelight is False):
         print "Relighting chunks..."
+        #logging.basicConfig(format='%(levelname)s:%(message)s')
+        logging.getLogger().level = logging.INFO
         world.generateLights()
+
+# Output a slice of the dungoen to the terminal if requested.
+if (args.term is not None):
+    dungeon.outputterminal(args.term)
 
 # Save the world.
 if (args.write):

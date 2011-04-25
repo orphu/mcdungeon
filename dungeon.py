@@ -879,10 +879,13 @@ Try a smaller dungeon, or larger start area.')
         # Hard mode
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'
+            num = (self.zsize+10) * (self.xsize+10)
             for z in xrange((self.position.z>>4)-self.zsize-5,
                             (self.position.z>>4)+5):
                 for x in xrange((self.position.x>>4)-5,
                                 (self.position.x>>4)+self.xsize+5):
+                    spin(num)
+                    num -= 1
                     if (world.containsChunk(x, z)):
                         p = Vec(x,0,z)
                         chunk = world.getChunk(x, z)
@@ -932,7 +935,10 @@ Try a smaller dungeon, or larger start area.')
                 spin(num_blocks/10000)
         # Copy over tile entities
         print 'Creating tile entities...'
+        num = len(self.tile_ents)
         for ent in self.tile_ents.values():
+            spin(num)
+            num -= 1
             # Calculate world coords.
             x = ent['x'].value + self.position.x
             y = self.position.y - ent['y'].value
@@ -952,5 +958,9 @@ Try a smaller dungeon, or larger start area.')
             #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
             changed_chunks.add(chunk)
         # Mark changed chunks so pymclevel knows to recompress/relight them.
+        print 'Marking dirty chunks...'
+        num = len(changed_chunks)
         for chunk in changed_chunks:
+            spin(num)
+            num -= 1
             chunk.chunkChanged()
