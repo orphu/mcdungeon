@@ -154,8 +154,7 @@ class Entrance(Blank):
         d = 2
         s1 = wstart.trans(-3,-self.height,-3)
         s3 = wstart.trans(8,-self.height,8)
-        for y in xrange(self.parent.parent.levels *
-                        self.parent.parent.room_height +
+        for y in xrange(self.parent.parent.room_height +
                         self.height):
             for p in iterate_disc(s1.trans(-d,y+1,-d),
                                   s3.trans(d,y+1,d)):
