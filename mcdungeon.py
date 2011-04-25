@@ -108,6 +108,7 @@ if (args.interactive == True):
     if (config == ''):
         config = 'default'
     args.config = str(os.path.join(configDir, config))+'.cfg'
+    cfg.Load(args.config)
 
     saveFileDir = mclevel.saveFileDir
     print '\nYour save directory is:\n', saveFileDir
@@ -142,9 +143,10 @@ if (args.interactive == True):
     #    args.html = world
     #    args.force = True
     args.write = True
+else:
+    cfg.Load(args.config)
 
-# Load configs
-cfg.Load(args.config)
+# Load lewts
 loottable.Load()
 
 # Random level sizes
