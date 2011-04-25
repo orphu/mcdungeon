@@ -41,6 +41,14 @@ def get(section, var, default):
         return default
     return temp
 
+def str2bool(string):
+    if (string.lower() is False or
+        string.lower() == 'false' or
+        string.lower() == 'no' or
+        string == '0'):
+        return False
+    return True
+
 def Load(filename = 'configs/default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
@@ -102,7 +110,7 @@ def Load(filename = 'configs/default.cfg'):
     arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
     loops = int(get('dungeon', 'loops', loops))
 
-    hard_mode = bool(get('dungeon', 'hard_mode', hard_mode))
+    hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be \
