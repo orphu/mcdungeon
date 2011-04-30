@@ -159,7 +159,7 @@ class Entrance(Blank):
             for p in iterate_disc(s1.trans(-d,y+1,-d),
                                   s3.trans(d,y+1,d)):
                 if (p not in self.parent.parent.blocks):
-                    self.parent.parent.setblock(p, materials.Sand)
+                    self.parent.parent.setblock(p, materials._sandbar)
             d += 1
 
 

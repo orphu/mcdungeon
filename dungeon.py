@@ -898,6 +898,10 @@ Try a smaller dungeon, or larger start area.')
         # Blocks
         print 'Writing block buffer...'
         for block in self.blocks.values():
+            # Progress
+            num_blocks -= 1
+            if (num_blocks % 10000 == 0):
+                spin(num_blocks/10000)
             # Mysteriously, this block contains no material.
             if block.material is None:
                 continue
@@ -924,15 +928,15 @@ Try a smaller dungeon, or larger start area.')
                     mat = materials.MossStone
                 else:
                     mat = materials.Cobblestone
+            if (mat == materials._sandbar and
+                (chunk.Blocks[xInChunk, zInChunk, y] == materials.Water.val or
+                 chunk.Blocks[xInChunk, zInChunk, y] == materials.Ice.val)):
+                continue
             # Write the block.
             chunk.Blocks[xInChunk, zInChunk, y] = mat.val
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
-            # Progress
-            num_blocks -= 1
-            if (num_blocks % 10000 == 0):
-                spin(num_blocks/10000)
         # Copy over tile entities
         print 'Creating tile entities...'
         num = len(self.tile_ents)
