@@ -24,9 +24,9 @@ class Block(object):
         self.data = 0
 
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels):
+    def __init__(self, xsize, zsize, levels, depths):
         self.rooms = {}
-        self.depths = {}
+        self.depths = depths
         self.blocks = {}
         self.tile_ents = {}
         self.torches = {}
@@ -68,7 +68,6 @@ class Dungeon (object):
     def findlocation(self, world):
         positions = {}
         final_positions = {}
-        self.depths = {}
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
@@ -145,8 +144,7 @@ class Dungeon (object):
         try:
             self.position = random.choice(final_positions.values())
         except:
-            sys.exit('Could not find any suitable locations!\n\
-Try a smaller dungeon, or larger start area.')
+            return False
         print 'Final location: (%d, %d, %d)'% (self.position.x,
                                                self.position.y,
                                                self.position.z)
@@ -178,13 +176,20 @@ Try a smaller dungeon, or larger start area.')
                     sys.stdout.write('S')
                 elif (Vec(x,0,z) == Vec(sx, 0, sz)):
                     sys.stdout.write('X')
+                    # Mark this chunk out for future dungeons
+                    p = Vec(x, 0, z)
+                    self.depths[p] = 0
                 elif (d_box.containsPoint(Vec(x,64,z))):
                     sys.stdout.write('#')
+                    # Mark this chunk out for future dungeons
+                    p = Vec(x, 0, z)
+                    self.depths[p] = 0
                 elif (Vec(x,0,z) in final_positions):
                     sys.stdout.write('+')
                 else:
                     sys.stdout.write('`')
             print
+        return True
 
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
@@ -929,8 +934,9 @@ Try a smaller dungeon, or larger start area.')
                 else:
                     mat = materials.Cobblestone
             if (mat == materials._sandbar and
-                (chunk.Blocks[xInChunk, zInChunk, y] == materials.Water.val or
-                 chunk.Blocks[xInChunk, zInChunk, y] == materials.Ice.val)):
+                chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
+                chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and
+                chunk.Blocks[xInChunk, zInChunk, y] != materials.Ice.val):
                 continue
             # Write the block.
             chunk.Blocks[xInChunk, zInChunk, y] = mat.val

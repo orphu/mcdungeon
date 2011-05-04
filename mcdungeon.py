@@ -54,6 +54,12 @@ parent_parser.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset. (overrides .cfg file)')
+parent_parser.add_argument('-n','--number',
+                    type=int,dest='number',
+                    metavar='NUM',
+                    default=1,
+                    help='Number of dungeons to generate. -1 will create as \
+                    many as possible given X, Z, and LEVEL settings.')
 
 i_parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
 i_parser.add_argument('-i', '--interactive',
@@ -150,28 +156,31 @@ else:
 # Load lewts
 loottable.Load()
 
-# Random level sizes
-if (args.z < 0):
-    args.z = randint(2, cfg.max_dist - cfg.min_dist)
-if (args.x < 0):
-    args.x = randint(2, cfg.max_dist - cfg.min_dist)
-if (args.levels < 0):
-    args.levels = randint(2, 8)
-
 # Do some initial error checking
-if (args.z < 2):
+if (args.z < 2 and args.z >= 0):
     sys.exit('Too few rooms in Z direction. (%d) Try >= 2.'%(args.z))
-if (args.x < 2):
+if (args.x < 2 and args.z >= 0):
     sys.exit('Too few rooms in X direction. (%d) Try >= 2.'%(args.x))
-if (args.levels < 1 or args.levels > 18):
+if (args.levels == 0 or args.levels > 18):
     sys.exit('Invalid number of levels. (%d)'%(args.levels))
-
-print 'Dungeon size: %d x %d x %d' % (args.z, args.x, args.levels)
 
 if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
                                  args.offset[1],
                                  args.offset[2])
+
+# Some options don't work with multidungeons
+if (args.number is not 1):
+    if (args.offset is not None):
+        print 'WARN: Offset option is ignored when generating multiple dungeons.'
+        cfg.offset = None
+    if  (args.html is not None):
+        print 'WARN: HTML option is ignored when generating multiple dungeons.'
+        args.html = None
+    if  (args.seed is not None):
+        print 'WARN: Seed option is ignored when generating multiple dungeons.'
+        args.seed = None
+
 
 # Attempt to open the world.
 try:
@@ -186,90 +195,149 @@ print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
 print "Startup compete. "
 
-# Define our dungeon.
-dungeon = Dungeon(args.x, args.z, args.levels)
+depths = {}
+dungeons = []
 
-try:
-    dungeon.position = str2Vec(cfg.offset)
-    print "location set to",cfg.offset
-except:
-    print "Searching for a good location..."
-    dungeon.findlocation(world)
+while args.number is not 0:
 
-if (args.seed is not None):
-    seed(args.seed)
-    print 'Seed:',args.seed
+    # Define our dungeon.
+    x = args.x
+    z = args.z
+    levels = args.levels
+    if (args.z < 0):
+        z = randint(2, cfg.max_dist - cfg.min_dist)
+    if (args.x < 0):
+        x = randint(2, cfg.max_dist - cfg.min_dist)
+    if (args.levels < 0):
+        levels = randint(2, 8)
 
-print "Generating rooms..."
-dungeon.genrooms()
+    dungeon = None
+    located = False
 
-print "Generating halls..."
-dungeon.genhalls()
+    if (cfg.offset is not None and cfg.offset is not ''):
+        dungeon = Dungeon(x, z, levels, depths)
+        print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+        dungeon.position = str2Vec(cfg.offset)
+        print "location set to",cfg.offset
+        located = True
 
-print "Generating floors..."
-dungeon.genfloors()
+    else:
+        print "Searching for a suitable location..."
+        while (located is False):
+            dungeon = Dungeon(x, z, levels, depths)
+            print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+            located = dungeon.findlocation(world)
+            if (located is False):
+                print 'No locations found.'
+                adjusted = False
+                if (args.x < 0 and x > 2):
+                    x -= 1
+                    adjusted = True
+                if (args.z < 0 and z > 2):
+                    z -= 1
+                    adjusted = True
+                if (args.levels < 0 and levels > 1):
+                    levels -= 1
+                    adjusted = True
+                if (adjusted is False):
+                    print 'Unable to place any more dungeons.'
+                    break
+    if (located is True):
+        if (args.seed is not None):
+            seed(args.seed)
+            print 'Seed:',args.seed
 
-print "Generating features..."
-dungeon.genfeatures()
+        print "Generating rooms..."
+        dungeon.genrooms()
 
-print "Extending the entrance to the surface..."
-dungeon.setentrance(world)
+        print "Generating halls..."
+        dungeon.genhalls()
 
-print "Rendering rooms..."
-dungeon.renderrooms()
+        print "Generating floors..."
+        dungeon.genfloors()
 
-print "Rendering halls..."
-dungeon.renderhalls()
+        print "Generating features..."
+        dungeon.genfeatures()
 
-print "Rendering floors..."
-dungeon.renderfloors()
+        print "Extending the entrance to the surface..."
+        dungeon.setentrance(world)
 
-print "Rendering features..."
-dungeon.renderfeatures()
+        print "Rendering rooms..."
+        dungeon.renderrooms()
 
-print "Placing doors..."
-dungeon.placedoors(cfg.doors)
+        print "Rendering halls..."
+        dungeon.renderhalls()
 
-print "Placing portcullises..."
-dungeon.placeportcullises(cfg.portcullises)
+        print "Rendering floors..."
+        dungeon.renderfloors()
 
-print "Placing torches..."
-dungeon.placetorches()
+        print "Rendering features..."
+        dungeon.renderfeatures()
 
-print "Placing chests..."
-dungeon.placechests()
+        print "Placing doors..."
+        dungeon.placedoors(cfg.doors)
 
-print "Placing spawners..."
-dungeon.placespawners()
+        print "Placing portcullises..."
+        dungeon.placeportcullises(cfg.portcullises)
 
-# Output an html version.
-if (args.html is not None):
-    dungeon.outputhtml(args.html, args.force)
+        print "Placing torches..."
+        dungeon.placetorches()
 
-# Write the changes to teh world.
-if (args.write):
-    print "Writing blocks..."
-    dungeon.applychanges(world)
-    if (args.skiprelight is False):
-        print "Relighting chunks..."
-        #logging.basicConfig(format='%(levelname)s:%(message)s')
-        logging.getLogger().level = logging.INFO
-        world.generateLights()
+        print "Placing chests..."
+        dungeon.placechests()
 
-# Output a slice of the dungoen to the terminal if requested.
-if (args.term is not None):
-    dungeon.outputterminal(args.term)
+        print "Placing spawners..."
+        dungeon.placespawners()
+
+        # Write the changes to the world.
+        if (args.write is True):
+            print "Writing blocks..."
+            dungeon.applychanges(world)
+
+        # Output an html version.
+        if (args.html is not None):
+            dungeon.outputhtml(args.html, args.force)
+
+        # Output a slice of the dungeon to the terminal if requested.
+        if (args.term is not None):
+            dungeon.outputterminal(args.term)
+
+        start = dungeon.position
+        end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
+          start.y - dungeon.levels * dungeon.room_height + 1,
+          start.z - dungeon.zsize * dungeon.room_size + 1)
+        dungeons.append('Dungeon %d (%d x %d x %d): %s to %s' %
+                        (len(dungeons)+1,
+                         z,
+                         x,
+                         levels,
+                         start.__str__(),
+                         end.__str__()))
+
+    args.number -= 1
+    if (located is False):
+        args.number = 0
+
+if (dungeons is 0):
+    print 'Unable to place any dungeons. Check your settings.'
+    sys.exit(1)
+
+# Relight
+if (args.write is True and args.skiprelight is False):
+    print "Relighting chunks..."
+    logging.getLogger().level = logging.INFO
+    world.generateLights()
 
 # Save the world.
-if (args.write):
+if (args.write is True):
     print "Saving..."
     world.saveInPlace()
 else:
     print "Map NOT saved! This was a dry run. Use --write to enable saving."
 
 print 'Done!                   '
-start = dungeon.position
-end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
-          start.y - dungeon.levels * dungeon.room_height + 1,
-          start.z - dungeon.zsize * dungeon.room_size + 1)
-print 'Final dungeon bounds:', start, 'to', end
+
+print 'Placed', len(dungeons), 'dungeons!'
+for d in dungeons:
+    print d
+
