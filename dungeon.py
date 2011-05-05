@@ -77,6 +77,10 @@ class Dungeon (object):
                                                       bounds.getMinz(),
                                                       bounds.getMaxx(),
                                                       bounds.getMaxz())
+        print 'World chunks: (%d, %d) to (%d, %d)' % (bounds.getMincx(),
+                                                      bounds.getMincz(),
+                                                      bounds.getMaxcx(),
+                                                      bounds.getMaxcz())
         print 'Spawn point: (%d, %d, %d)'%(world.playerSpawnPosition()[0],
                                            world.playerSpawnPosition()[1],
                                            world.playerSpawnPosition()[2])
@@ -833,7 +837,7 @@ class Dungeon (object):
     def setentrance(self, world):
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
             self.position.y - self.entrance.parent.loc.y,
-            self.position.z - self.entrance.parent.loc.z)
+            self.position.z - self.entrance.parent.loc.z + 15)
         print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         newheight = baseheight
@@ -849,7 +853,12 @@ class Dungeon (object):
                 chunk_x = x>>4
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
-                chunk = world.getChunk(chunk_x, chunk_z)
+                if (world.containsChunk(chunk_x, chunk_z)):
+                    chunk = world.getChunk(chunk_x, chunk_z)
+                else:
+                    print 'Entrance in nonexistent chunk!',
+                    print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
+                    continue
                 # Heightmap is a good starting place, but I need to look
                 # down through foliage.
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
@@ -907,7 +916,7 @@ class Dungeon (object):
             # Translate block coords to world coords
             x = block.loc.x + self.position.x
             y = self.position.y - block.loc.y
-            z = self.position.z - block.loc.z
+            z = self.position.z - block.loc.z + 15
             # Figure out the chunk and chunk offset
             chunk_z = z>>4
             chunk_x = x>>4
@@ -917,8 +926,11 @@ class Dungeon (object):
             if (world.containsChunk(chunk_x, chunk_z)):
                 chunk = world.getChunk(chunk_x, chunk_z)
             else:
-                print "Whoops! Can't find chunk at", chunk_x,',',chunk_z
-                sys.exit(1)
+                if (block.material != materials._sandbar):
+                    print 'Whoops! Block in nonexistent chunk!',
+                    print 'crd: (%d, %d) chk: (%d, %d) mat: %s' % \
+                        (x, z, chunk_x, chunk_z, block.material.name)
+                continue
             # 3D perlin moss!
             mat = block.material
             dat = block.data
@@ -948,7 +960,7 @@ class Dungeon (object):
             # Calculate world coords.
             x = ent['x'].value + self.position.x
             y = self.position.y - ent['y'].value
-            z = self.position.z - ent['z'].value
+            z = self.position.z - ent['z'].value + 15
             # Move this tile ent to the world coords.
             ent['x'].value = x
             ent['y'].value = y
@@ -958,7 +970,13 @@ class Dungeon (object):
             chunk_x = x>>4
             xInChunk = x & 0xf
             zInChunk = z & 0xf
-            chunk = world.getChunk(chunk_x, chunk_z)
+            # get the chunk
+            if (world.containsChunk(chunk_x, chunk_z)):
+                chunk = world.getChunk(chunk_x, chunk_z)
+            else:
+                print 'Whoops! Tile entity in nonexistent chunk!',
+                print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
+                continue
             # copy rhe ent to the chunk
             chunk.TileEntities.append(ent)
             #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
