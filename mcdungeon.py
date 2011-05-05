@@ -131,20 +131,32 @@ if (args.interactive == True):
     args.world = os.path.join(saveFileDir, world)
 
     m = cfg.max_dist - cfg.min_dist
-    print '\nEnter the size of the dungeon from East to West. (Z size)'
-    print 'This should be between 2 and %d, but you can try larger sizes.'%(m)
-    print 'Enter -1 to generate a random size.'
-    args.z = int(raw_input('Z size: '))
+    print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
+    print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
+    print 'Enter -1 to pick random values between 2 and %d.'%(m)
+    args.z = raw_input('Z size: ')
 
-    print '\nEnter the size of the dungeon from North to South. (X size)'
-    print 'This should be between 2 and %d, but you can try larger sizes.'%(m)
-    print 'Enter -1 to generate a random size.'
-    args.x = int(raw_input('X size: '))
+    print '\nEnter the size of the dungeon(s) from North to South. (X size)'
+    print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
+    print 'Enter -1 to pick random values between 2 and %d.'%(m)
+    args.x = raw_input('X size: ')
 
-    print '\nEnter a number of levels for the dungeon.'
-    print 'This should be greater than zero.'
-    print 'Enter -1 to generate a random number of levels.'
-    args.levels = int(raw_input('Levels: '))
+    print '\nEnter a number of levels.'
+    print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
+    print 'Enter -1 to pick random values between 1 and 8.'
+    args.levels = raw_input('Levels: ')
+
+    print '\nEnter the maximum number of dungeons to add.'
+    print 'Depending on the characteristics of your world, and size of your'
+    print 'dungeons, the actual number placed may be less.'
+    print 'Enter -1 to add as many dungeons as possible.'
+    args.number = raw_input('Number of dungeons (leave blank for 1): ')
+    if (args.number == ''):
+        args.number = 1
+    try:
+        args.number  = int(args.number)
+    except ValueError:
+        sys.exit('You must enter an integer.')
 
     #html = raw_input('\nWould you like to create an HTML map? (y/n): ')
     #if (html.lower() == 'y'):
@@ -383,6 +395,10 @@ if (args.write is True and args.skiprelight is False):
     logging.getLogger().level = logging.INFO
     world.generateLights()
 
+print 'Placed', len(dungeons), 'dungeons!'
+for d in dungeons:
+    print d
+
 # Save the world.
 if (args.write is True):
     print "Saving..."
@@ -391,8 +407,4 @@ else:
     print "Map NOT saved! This was a dry run. Use --write to enable saving."
 
 print 'Done!                   '
-
-print 'Placed', len(dungeons), 'dungeons!'
-for d in dungeons:
-    print d
 
