@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import logging
+import re
 from pymclevel import mclevel, nbt
 
 __version__ = '0.2.0'
@@ -75,16 +76,16 @@ noi_parser.add_argument('world',
                     help='Target world (path to save directory)')
 noi_parser.add_argument('z',
                     metavar='Z',
-                    type=int,
-                    help='Number of rooms West -> East. Use -1 for random.')
+                    help='Number of rooms West -> East. Use -1 for random, or \
+                        provide a range.')
 noi_parser.add_argument('x',
                     metavar='X',
-                    type=int,
-                    help='Number of rooms North -> South. Use -1 for random.')
+                    help='Number of rooms North -> South. Use -1 for random, or \
+                        provide a range.')
 noi_parser.add_argument('levels',
                     metavar='LEVELS',
-                    type=int,
-                    help='Number of levels. Use -1 for random.')
+                    help='Number of levels. Use -1 for random, or provide a \
+                        range.')
 
 iargs = i_parser.parse_known_args()
 if (iargs[0].interactive == False):
@@ -156,13 +157,66 @@ else:
 # Load lewts
 loottable.Load()
 
-# Do some initial error checking
+# Parse out the sizes
+min_x = 2
+max_x = cfg.max_dist - cfg.min_dist
+min_z = 2
+max_z = cfg.max_dist - cfg.min_dist
+min_levels = 1
+max_levels = 8
+
+# Range for Z
+result = re.search('(\d+)-(\d+)', args.z)
+if (result):
+    min_z = int(result.group(1))
+    max_z = int(result.group(2))
+    args.z = -1
+    if (min_z > max_z):
+        sys.exit('Minimum Z must be equal or less than maximum Z.')
+    if (min_z < 2):
+        sys.exit('Minimum Z must be equal or greater than 2.')
+# Range for X
+result = re.search('(\d+)-(\d+)', args.x)
+if (result):
+    min_x = int(result.group(1))
+    max_x = int(result.group(2))
+    args.x = -1
+    if (min_x > max_x):
+        sys.exit('Minimum X must be equal or less than maximum X.')
+    if (min_x < 2):
+        sys.exit('Minimum X must be equal or greater than 2.')
+# Range for Levels
+result = re.search('(\d+)-(\d+)', args.levels)
+if (result):
+    min_levels = int(result.group(1))
+    max_levels = int(result.group(2))
+    args.levels = -1
+    if (min_levels > max_levels):
+        sys.exit('Minimum levels must be equal or less than maximum levels.')
+    if (min_levels < 1):
+        sys.exit('Minimum levels must be equal or greater than 1.')
+    if (max_levels > 18):
+        sys.exit('Maximum levels must be equal or less than 18.')
+
+try:
+    args.z = int(args.z)
+except ValueError:
+    sys.exit('Z doesn\'t appear to be an integer!')
+try:
+    args.x = int(args.x)
+except ValueError:
+    sys.exit('X doesn\'t appear to be an integer!')
+try:
+    args.levels = int(args.levels)
+except ValueError:
+    sys.exit('Levels doesn\'t appear to be an integer!')
+
 if (args.z < 2 and args.z >= 0):
     sys.exit('Too few rooms in Z direction. (%d) Try >= 2.'%(args.z))
 if (args.x < 2 and args.z >= 0):
     sys.exit('Too few rooms in X direction. (%d) Try >= 2.'%(args.x))
 if (args.levels == 0 or args.levels > 18):
-    sys.exit('Invalid number of levels. (%d)'%(args.levels))
+    sys.exit('Invalid number of levels. (%d) Try between 1 and 18.'%(args.levels))
 
 if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
@@ -205,11 +259,11 @@ while args.number is not 0:
     z = args.z
     levels = args.levels
     if (args.z < 0):
-        z = randint(2, cfg.max_dist - cfg.min_dist)
+        z = randint(min_z, max_z)
     if (args.x < 0):
-        x = randint(2, cfg.max_dist - cfg.min_dist)
+        x = randint(min_x, max_x)
     if (args.levels < 0):
-        levels = randint(2, 8)
+        levels = randint(min_levels, max_levels)
 
     dungeon = None
     located = False
@@ -230,13 +284,15 @@ while args.number is not 0:
             if (located is False):
                 print 'No locations found.'
                 adjusted = False
-                if (args.x < 0 and x > 2):
+                if (args.x < 0 and x > min_x):
                     x -= 1
                     adjusted = True
-                if (args.z < 0 and z > 2):
+                if (args.z < 0 and z > min_z):
                     z -= 1
                     adjusted = True
-                if (args.levels < 0 and levels > 1):
+                if (adjusted is False and
+                    args.levels < 0 and
+                    levels > min_levels):
                     levels -= 1
                     adjusted = True
                 if (adjusted is False):
