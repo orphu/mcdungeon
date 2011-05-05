@@ -290,9 +290,8 @@ while args.number is not 0:
         dungeon.placespawners()
 
         # Write the changes to the world.
-        if (args.write is True):
-            print "Writing blocks..."
-            dungeon.applychanges(world)
+        print "Writing blocks..."
+        dungeon.applychanges(world)
 
         # Output an html version.
         if (args.html is not None):

@@ -176,14 +176,8 @@ class Dungeon (object):
                     sys.stdout.write('S')
                 elif (Vec(x,0,z) == Vec(sx, 0, sz)):
                     sys.stdout.write('X')
-                    # Mark this chunk out for future dungeons
-                    p = Vec(x, 0, z)
-                    self.depths[p] = 0
                 elif (d_box.containsPoint(Vec(x,64,z))):
                     sys.stdout.write('#')
-                    # Mark this chunk out for future dungeons
-                    p = Vec(x, 0, z)
-                    self.depths[p] = 0
                 elif (Vec(x,0,z) in final_positions):
                     sys.stdout.write('+')
                 else:
@@ -943,6 +937,8 @@ class Dungeon (object):
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
+            # Make sure we don't overwrite this chunk in the future. 
+            self.depths[Vec(chunk_x, 0, chunk_z)] = 0
         # Copy over tile entities
         print 'Creating tile entities...'
         num = len(self.tile_ents)
