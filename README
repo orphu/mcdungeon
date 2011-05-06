@@ -12,31 +12,27 @@ CURRENT FEATURES:
    * Automatically finds a good location on a map based on range, size, and
      depth parameters. 
 
-   * Generates a tower entrance to the dungeon that can be seen for many
-     chunks. The height of the tower is configurable.
+   * Can generate N number of dungeons in a map, or try to fill the
+     map with as many dungeons as possible.
 
    * Generates room layouts based on a random weighted selection
-     of rooms. 
+     of rooms. Rooms are filled with ranomd hallways, floors, and room
+     features, all of which are configurable.
+
+   * The density and placement of doors, portcullises, and torches are 
+     configurable. Option to place fewer torches as levels go down. Less 
+     light == more danger!
+
+   * A "hard mode" that will attempt to fill in nearby natural caves in an 
+     attempt to concentrate random monster spawns inside the dungeon. 
 
    * Places stairwells between levels, and a tower entrance with a
-     spiraling staircase.
+     spiraling staircase. The tower height is configurable so it can be seen
+     for many chunks. 
 
    * Optionally places a MultiVerse (Craftbukkit plugin) portal at
      the bottom of the dungeon to teleport players out to the world of
      your choice.
-
-   * Connects rooms with hallways. Hall types are also chosen from
-     a random weighted list.
-
-   * Places random floor decorations from a weighted list.
-
-   * Places features in rooms.
-
-   * Places doors, portcullises, and torches in the dungeon. The amount of
-     each is a configurable option. 
-
-   * Option to place fewer torches as levels go down. Less light == more 
-     danger!
 
    * Places chests with loot around the dungeon in (probably) hard
      to reach places. An arbitrary number of loot tables can be configured
@@ -48,13 +44,6 @@ CURRENT FEATURES:
 
    * Random placement of secret traps.
 
-   * Room, hall, floor, and feature lists are configurable via an
-     external .cfg file. 
-
-   * Saves changes (with lighting!) to a Minecraft map thanks to pymclevel.
-
-   * Cobblestone has random patches of moss growing on it.
-
    * Output floor maps to a terminal with color on ANSI systems.
 
    * Output entire dungeon maps to HTML.
@@ -63,7 +52,7 @@ TODO:
 
    * More floor types
    * More room features
-   * More room types
+   * More (and larger) room types
    * More hall types
    * More traps!
 
@@ -72,14 +61,17 @@ OPTIONS:
 $ mcdungeon.py -h
 usage: mcdungeon.py [-h] [-v] [--config CFGFILE] [--write] [--skip-relight]
                     [-t FLOOR] [--html BASENAME] [--force] [-s SEED]
-                    [-o X Y Z] [-i]
+                    [-o X Y Z] [-n NUM] [-i]
                     SAVEDIR Z X LEVELS
 
 positional arguments:
   SAVEDIR               Target world (path to save directory)
-  Z                     Number of rooms West -> East. Use -1 for random.
-  X                     Number of rooms North -> South. Use -1 for random.
-  LEVELS                Number of levels. Use -1 for random.
+  Z                     Number of rooms West -> East. Use -1 for random, or
+                        provide a range.
+  X                     Number of rooms North -> South. Use -1 for random, or
+                        provide a range.
+  LEVELS                Number of levels. Use -1 for random, or provide a
+                        range.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -96,6 +88,8 @@ optional arguments:
   -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
   -o X Y Z, --offset X Y Z
                         Provide a location offset. (overrides .cfg file)
+  -n NUM, --number NUM  Number of dungeons to generate. -1 will create as many
+                        as possible given X, Z, and LEVEL settings.
   -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,
                         CFGFILE, and LEVELS.
 
@@ -108,3 +102,13 @@ terminals only. Sorry Windows) The world files will not be modified,
 but are required. Basically a "dry run."
 
 ./mcdungeon.py Dungeon 5 4 3 --term 1
+
+Generate five random dungeons between the sizes of 3x3x5 and 6x6x8 and 
+save them to the world.
+
+./mcdungeon.py Dungeon 3-6 3-6 5-8 -n 5 --write
+
+Run in interactive mode, prompting for the config file, world, dungeon size,
+and number of dungeons.
+
+./mcdungeon -i
