@@ -545,12 +545,13 @@ class Dungeon (object):
             if (pos.up(1).y/self.room_height == level):
                 maxcount += 1
         maxcount = perc * maxcount / 100
+        offset = 3 - cfg.torches_position
         for pos, val in self.torches.items():
             if (count < maxcount and
                pos in self.blocks and
-               self.blocks[pos].material == materials.Air and
+               self.blocks[pos.down(offset)].material == materials.Air and
                pos.up(1).y/self.room_height == level):
-                self.blocks[pos].material = materials.Torch
+                self.blocks[pos.down(offset)].material = materials.Torch
                 count += 1
         if (level < self.levels-1):
             self.placetorches(level+1)

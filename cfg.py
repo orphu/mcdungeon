@@ -24,6 +24,7 @@ chests = '10'
 spawners = '2'
 arrow_traps = '5'
 hard_mode = 'False'
+torches_position = 3
 
 master_halls = []
 master_rooms = []
@@ -54,7 +55,7 @@ def Load(filename = 'configs/default.cfg'):
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
-    portcullis_web, subfloor
+    portcullis_web, subfloor, torches_position
 
     print 'Reading config from', filename, '...'
     try:
@@ -95,6 +96,9 @@ def Load(filename = 'configs/default.cfg'):
     torches_bottom = int(get('dungeon',
                              'torches_bottom',
                              torches_bottom))
+    torches_position = int(get('dungeon',
+                             'torches_position',
+                             torches_position))
 
     wall = get('dungeon', 'wall', wall).lower()
     ceiling = get('dungeon', 'ceiling', ceiling).lower()
@@ -121,6 +125,9 @@ def Load(filename = 'configs/default.cfg'):
 
     if (spawners < 0.0 or spawners > 10.0):
         sys.ext('Spawners should be between 0 and 10. Check the cfg file.')
+
+    if (torches_position < 1 or torches_position > 3):
+        sys.ext('torches_position should be between 1-3. Check the cfg file.')
 
     # Set the wall, ceiling, and floor materials
     for name, val in materials.__dict__.items():
