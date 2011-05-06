@@ -259,7 +259,7 @@ print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 #dumpEnts(world)
 #sys.exit()
 
-print "Startup compete. "
+print "MCDungeon",__version__,"startup compete. "
 
 depths = {}
 dungeons = []
