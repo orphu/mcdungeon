@@ -263,6 +263,7 @@ print "Startup compete. "
 
 depths = {}
 dungeons = []
+total_rooms = 0
 
 while args.number is not 0:
 
@@ -380,6 +381,7 @@ while args.number is not 0:
                          levels,
                          start.__str__(),
                          end.__str__()))
+        total_rooms += (x * z * levels)
 
     args.number -= 1
     if (located is False):
@@ -398,6 +400,7 @@ if (args.write is True and args.skiprelight is False):
 print 'Placed', len(dungeons), 'dungeons!'
 for d in dungeons:
     print d
+print 'Total rooms:', total_rooms
 
 # Save the world.
 if (args.write is True):
