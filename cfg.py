@@ -1,4 +1,5 @@
 import sys
+import os
 import materials
 import ConfigParser
 
@@ -50,12 +51,14 @@ def str2bool(string):
         return False
     return True
 
-def Load(filename = 'configs/default.cfg'):
+def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position
+
+    filename = os.path.join(sys.path[0], 'configs', filename)
 
     print 'Reading config from', filename, '...'
     try:

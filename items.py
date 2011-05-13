@@ -18,7 +18,7 @@ class ItemInfo (object):
             self.maxstack)
 
 
-def LoadItems(filename = 'items.txt'):
+def LoadItems(filename = sys.path[0]+'/items.txt'):
     print 'Reading items database:', filename, '...'
     items = 0
     try:

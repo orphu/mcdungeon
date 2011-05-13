@@ -19,8 +19,8 @@ parent_parser.add_argument('-v', '--version',
 parent_parser.add_argument('--config',
                     dest='config',
                     metavar='CFGFILE',
-                    default='configs/default.cfg',
-                    help='Alternate config file. Default: configs/default.cfg')
+                    default='default.cfg',
+                    help='Alternate config file. Default: default.cfg')
 parent_parser.add_argument('--write',
                     action='store_true',
                     dest='write' ,
@@ -101,7 +101,7 @@ from utils import *
 if (args.interactive == True):
     print 'Starting interactive mode!'
 
-    configDir = 'configs'
+    configDir = os.path.join(sys.path[0], 'configs')
     if (os.path.isdir(configDir) == False):
         sys.exit('\nI cannot find your configs directory! Aborting!')
     print '\nConfigurations in your configs directory:\n'
@@ -115,7 +115,8 @@ if (args.interactive == True):
     config = raw_input('(leave blank for default): ')
     if (config == ''):
         config = 'default'
-    args.config = str(os.path.join(configDir, config))+'.cfg'
+    #args.config = str(os.path.join(configDir, config))+'.cfg'
+    args.config = str(config)+'.cfg'
     cfg.Load(args.config)
 
     saveFileDir = mclevel.saveFileDir
