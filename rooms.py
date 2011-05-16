@@ -208,6 +208,7 @@ class Pit(Blank):
                 self.parent.room_size-5),
             Vec(4,self.parent.room_height-2,self.parent.room_size-5))
         self.lava = False
+        self.toLava = False
         self.features.append(features.new('blank', self))
         self.floors.append(floors.new('blank', self))
 
@@ -228,6 +229,8 @@ class Pit(Blank):
                 room = new(self.bottomroom, self.parent, pos)
                 self.parent.setroom(pos, room)
                 depth += 1
+                if (room.floor == 'lava'):
+                    self.toLava = True
                 break
             room = new(self.midroom, self.parent, pos)
             self.parent.setroom(pos, room)
@@ -275,6 +278,12 @@ class Pit(Blank):
         # Ceiling
         for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
+        # Lava streams from ceiling
+        if (self.toLava == True):
+            for x in xrange(random.randint(0,3)):
+                p = self.loc + random_point_inside_flat_poly(*self.canvas)
+                self.parent.setblock(p.up(4), materials.Lava)
+                print 'Lava stream'
         # Walls
         for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
             self.parent.setblock(x, materials._wall)
@@ -314,6 +323,7 @@ class CircularPit(Pit):
             Vec(2,self.parent.room_height-2,self.parent.room_size-6),
             Vec(2,self.parent.room_height-2,5))
         self.lava = False
+        self.toLava = False
         self.features.append(features.new('blank', self))
         self.floors.append(floors.new('blank', self))
 
