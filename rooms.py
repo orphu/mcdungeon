@@ -283,7 +283,6 @@ class Pit(Blank):
             for x in xrange(random.randint(0,3)):
                 p = self.loc + random_point_inside_flat_poly(*self.canvas)
                 self.parent.setblock(p.up(4), materials.Lava)
-                print 'Lava stream'
         # Walls
         for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
             self.parent.setblock(x, materials._wall)
