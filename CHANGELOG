@@ -10,7 +10,7 @@ v0.2.0 - ??/??/????
       example: ./mcdungeon.py MAP 3-5 2-5 5-8 -n 2
       Will generate two random dungeons between 3x2x5 and 5x5x8 in size.
 
-    * More progress info and verbose outbut for troubleshooting.
+    * More progress info and verbose output for troubleshooting.
 
     * New cfg option: torches_position will specify the height of torches on
       walls.
@@ -18,7 +18,7 @@ v0.2.0 - ??/??/????
     * MCDungeon will now look in its current running directory for support
       files and configs. (you no longer need to run it from its directory)
 
-    * Lava pits can sometimes have lava streaming form the ceiling. 
+    * Lava pits can sometimes have lava streaming from the ceiling. 
 
     * Skeleton balconies.
 
