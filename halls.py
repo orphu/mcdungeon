@@ -115,14 +115,24 @@ def drawHall (hall):
             hall.parent.parent.setblock(
                 pen.down(hall.parent.parent.room_height-2),
                 materials._floor)
+            # Arrow trap place redstone under the floor, and a button.
+            # For TNT traps, redstone might be TNT instead
             if (trap == 1 and j < length-1):
-                hall.parent.parent.setblock(
-                    pen.down(hall.parent.parent.room_height-1),
-                    materials.RedStoneWire)
-                if (randint(1,100) <= 33):
+                if (randint(1,100) <= cfg.arrow_trap_defects):
+                    hall.parent.parent.setblock(
+                        pen.down(hall.parent.parent.room_height-1),
+                        materials.TNT)
                     hall.parent.parent.setblock(
                         pen.down(hall.parent.parent.room_height-3),
                         materials.StonePressurePlate)
+                else:
+                    hall.parent.parent.setblock(
+                        pen.down(hall.parent.parent.room_height-1),
+                        materials.RedStoneWire)
+                    if (randint(1,100) <= 66):
+                        hall.parent.parent.setblock(
+                            pen.down(hall.parent.parent.room_height-3),
+                            materials.StonePressurePlate)
         # Second wall
         pen += stepw
         for k in xrange(hall.parent.parent.room_height-1):

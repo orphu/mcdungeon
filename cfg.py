@@ -23,7 +23,8 @@ subfloor = 'Bedrock'
 mvportal = ''
 chests = '10'
 spawners = '2'
-arrow_traps = '5'
+arrow_traps = '3'
+arrow_trap_defects = '1'
 skeleton_balconies = '25'
 hard_mode = 'False'
 torches_position = 3
@@ -57,7 +58,8 @@ def Load(filename = 'default.cfg'):
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
-    portcullis_web, subfloor, torches_position, skeleton_balconies
+    portcullis_web, subfloor, torches_position, skeleton_balconies, \
+    arrow_trap_defects
 
     filename = os.path.join(sys.path[0], 'configs', filename)
 
@@ -116,6 +118,8 @@ def Load(filename = 'default.cfg'):
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
+    arrow_trap_defects = int(get('dungeon', 'arrow_trap_defects',
+                                 arrow_trap_defects))
     skeleton_balconies = int(get('dungeon', 'skeleton_balconies',
                                  skeleton_balconies))
     loops = int(get('dungeon', 'loops', loops))
