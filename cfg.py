@@ -24,6 +24,7 @@ mvportal = ''
 chests = '10'
 spawners = '2'
 arrow_traps = '5'
+skeleton_balconies = '25'
 hard_mode = 'False'
 torches_position = 3
 
@@ -56,7 +57,7 @@ def Load(filename = 'default.cfg'):
     floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
-    portcullis_web, subfloor, torches_position
+    portcullis_web, subfloor, torches_position, skeleton_balconies
 
     filename = os.path.join(sys.path[0], 'configs', filename)
 
@@ -115,6 +116,8 @@ def Load(filename = 'default.cfg'):
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
+    skeleton_balconies = int(get('dungeon', 'skeleton_balconies',
+                                 skeleton_balconies))
     loops = int(get('dungeon', 'loops', loops))
 
     hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))

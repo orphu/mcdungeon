@@ -2,6 +2,7 @@ import materials
 import halls
 import floors
 import features
+import cfg
 from utils import *
 import random
 from noise import pnoise3
@@ -280,9 +281,8 @@ class Pit(Blank):
             self.parent.setblock(x, materials._ceiling)
         # Lava streams from ceiling
         if (self.toLava == True):
-            for x in xrange(random.randint(0,3)):
-                p = self.loc + random_point_inside_flat_poly(*self.canvas)
-                self.parent.setblock(p.up(4), materials.Lava)
+            p = self.loc + random_point_inside_flat_poly(*self.canvas)
+            self.parent.setblock(p.up(4), materials.Lava)
         # Walls
         for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
             self.parent.setblock(x, materials._wall)
@@ -360,9 +360,51 @@ class PitMid(Blank):
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):
             self.parent.setblock(x, materials.Air)
+        # Skeleton balconies! (for circular pit rooms only)
+        corner =  1 if self.halls[0].size>0 else 0
+        corner += 2 if self.halls[1].size>0 else 0
+        corner += 4 if self.halls[2].size>0 else 0
+        corner += 8 if self.halls[3].size>0 else 0
+        b1 = Vec(0,0,0)     # corner 1 of the balcony
+        b2 = Vec(0,0,0)  # corner 2 of the balcony
+        b3 = Vec(0,0,0) # Skeleton spawner
+        balcony = False
+        if (self._name == 'circularpitmid' and random.randint(1,100) <=
+            cfg.skeleton_balconies):
+            if (corner == 3):
+                balcony = True
+                b1 = self.loc.down(height+1)+Vec(0,0,self.parent.room_size-1)
+                b2 = b1+Vec(6,0,-6)
+                b3 = b1+Vec(2,-1,-2)
+            if (corner == 6):
+                balcony = True
+                b1 = self.loc.down(height+1)
+                b2 = b1+Vec(6,0,6)
+                b3 = b1+Vec(2,-1,2)
+            if (corner == 9):
+                balcony = True
+                b1 = self.loc.down(height+1)+Vec(self.parent.room_size-1,
+                                                 0,
+                                                 self.parent.room_size-1)
+                b2 = b1+Vec(-6,0,-6)
+                b3 = b1+Vec(-2,-1,-2)
+            if (corner == 12):
+                balcony = True
+                b1 = self.loc.down(height+1)+Vec(self.parent.room_size-1,0,0)
+                b2 = b1+Vec(-6,0,6)
+                b3 = b1+Vec(-2,-1,2)
+        if balcony == True:
+            for p in iterate_tube(b1, b2, 1):
+                self.parent.setblock(p, materials.Fence)
+            for p in iterate_disc(b1, b2):
+                self.parent.setblock(p, materials._floor)
         # Walls
         for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
             self.parent.setblock(x, materials._wall)
+        # Skeleton balconies!
+        if balcony == True:
+            self.parent.addspawner(b3, 'Skeleton')
+            self.parent.setblock(b3, materials.Spawner)
 
 
 class CircularPitMid(PitMid):
