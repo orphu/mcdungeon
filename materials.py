@@ -90,6 +90,7 @@ Web = Material('Web','*',WHITE)
 Wood = Material('Wood', 'W',RED)
 WoodPlanks = Material('Wooden Plank', '=',RED)
 WoodenDoor = Material('Wooden Door Block', 'D',RED)
+WoodenSlab = Material('Wooden Slab', 'd',RED)
 Wool = Material('Wool', 'W',GREY)
 
 _wall = copy(Cobblestone)
