@@ -177,15 +177,15 @@ class Sand(Blank):
 
 class Bridges(Blank):
     _name = 'bridges'
+    sandpit = False
     def render(self):
         # Find all the valid halls. These are halls with a size > 0.
         # We'll store a random position within the range of the hall.
         halls = [0,0,0,0]
         hallcount = 0
+        buttons = set()
         for h in xrange(4):
-            # If a hall is available, use it 75% of the time.
             if (self.parent.halls[h].size > 0):
-               #and random.uniform(0.0,1.0) <= 0.75):
                 halls[h] = \
                     self.parent.halls[h].offset + 1 + \
                     random.randint(0, self.parent.halls[h].size - 3)
@@ -241,6 +241,54 @@ class Bridges(Blank):
         h3 = Vec(self.parent.hallLength[3],
                  y,
                  z2)
+        # Sandpit?
+        mat = materials.WoodenSlab
+        if (self.sandpit == True):
+            # Draw the false sand floor
+            mat = materials.Sand
+            c = self.parent.canvasCenter()
+            y = self.parent.canvasHeight()
+            r = random.randint(1,1000)
+            maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+                p = x+self.parent.loc
+                d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+                n = (pnoise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3, 2) + 1.0) / 2.0
+                if (n >= d+.10):
+                    self.parent.parent.setblock(p, materials.Sand)
+                elif (n >= d):
+                    self.parent.parent.setblock(p, materials.Gravel)
+                else:
+                    self.parent.parent.setblock(p, materials._floor)
+            # Find button locations
+            # h0
+            if (halls[0] !=  0):
+                for x in xrange(0, self.parent.halls[0].size - 2):
+                    buttons.add(Vec(self.parent.halls[0].offset+1+x,
+                                    y-1,
+                                    self.parent.hallLength[0]))
+            # h1
+            if (halls[1] !=  0):
+                for x in xrange(0, self.parent.halls[1].size - 2):
+                    buttons.add(Vec(self.parent.parent.room_size-self.parent.hallLength[1]-1,
+                                    y-1,
+                                    self.parent.halls[1].offset+1+x))
+            # h2
+            if (halls[2] !=  0):
+                for x in xrange(0, self.parent.halls[2].size - 2):
+                    buttons.add(Vec(self.parent.halls[2].offset+1+x,
+                                    y-1,
+                                    self.parent.parent.room_size-self.parent.hallLength[2]-1))
+            # h3
+            if (halls[3] !=  0):
+                for x in xrange(0, self.parent.halls[3].size - 2):
+                    buttons.add(Vec(self.parent.hallLength[3],
+                                    y-1,
+                                    self.parent.halls[3].offset+1+x))
+            for p in buttons:
+                self.parent.parent.setblock(offset+p.down(1), mat)
+                self.parent.parent.setblock(offset+p,
+                                            materials.StonePressurePlate)
         # Draw the bridges, if a hallway exists.
         # h0 -> c1
         # h1 -> c2
@@ -248,33 +296,26 @@ class Bridges(Blank):
         # h3 -> c4
         if (halls[0] !=  0):
             for p in iterate_cube(offset+h0,offset+c1):
-                self.parent.parent.setblock(p, materials.StoneSlab)
-                self.parent.parent.blocks[p].data = 2
+                self.parent.parent.setblock(p, mat)
         if (halls[1] != 0):
             for p in iterate_cube(offset+h1,offset+c2):
-                self.parent.parent.setblock(p, materials.StoneSlab)
-                self.parent.parent.blocks[p].data = 2
+                self.parent.parent.setblock(p, mat)
         if (halls[2] != 0):
             for p in iterate_cube(offset+h2,offset+c3):
-                self.parent.parent.setblock(p, materials.StoneSlab)
-                self.parent.parent.blocks[p].data = 2
+                self.parent.parent.setblock(p, mat)
         if (halls[3] != 0):
             for p in iterate_cube(offset+h3,offset+c4):
-                self.parent.parent.setblock(p, materials.StoneSlab)
-                self.parent.parent.blocks[p].data = 2
+                self.parent.parent.setblock(p, mat)
         # Draw the connecting bridges.
         # c1 -> c2
         # c2 -> c3
         # c3 -> c4
         for p in iterate_cube(offset+c1,offset+c2):
-            self.parent.parent.setblock(p, materials.StoneSlab)
-            self.parent.parent.blocks[p].data = 2
+            self.parent.parent.setblock(p, mat)
         for p in iterate_cube(offset+c2,offset+c3):
-            self.parent.parent.setblock(p, materials.StoneSlab)
-            self.parent.parent.blocks[p].data = 2
+            self.parent.parent.setblock(p, mat)
         for p in iterate_cube(offset+c3,offset+c4):
-            self.parent.parent.setblock(p, materials.StoneSlab)
-            self.parent.parent.blocks[p].data = 2
+            self.parent.parent.setblock(p, mat)
 
 def new (name, parent):
     if (name == 'cobble'):

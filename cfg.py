@@ -24,6 +24,7 @@ mvportal = ''
 chests = '10'
 spawners = '2'
 arrow_traps = '3'
+sand_traps = '40'
 arrow_trap_defects = '1'
 skeleton_balconies = '25'
 hard_mode = 'False'
@@ -59,7 +60,7 @@ def Load(filename = 'default.cfg'):
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
-    arrow_trap_defects
+    arrow_trap_defects, sand_traps
 
     filename = os.path.join(sys.path[0], 'configs', filename)
 
@@ -122,6 +123,7 @@ def Load(filename = 'default.cfg'):
                                  arrow_trap_defects))
     skeleton_balconies = int(get('dungeon', 'skeleton_balconies',
                                  skeleton_balconies))
+    sand_traps = int(get('dungeon', 'sand_traps', sand_traps))
     loops = int(get('dungeon', 'loops', loops))
 
     hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))

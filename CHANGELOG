@@ -24,6 +24,8 @@ v0.2.0 - ??/??/????
 
     * Defective arrow traps can explode. 
 
+    * Pit rooms can contain falling sand traps.
+
     * Bugfix: Chests hovering above subfloor and half blocks in lava pits.
 
 v0.1.0 - 4/27/2011

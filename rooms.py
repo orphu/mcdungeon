@@ -210,6 +210,7 @@ class Pit(Blank):
             Vec(4,self.parent.room_height-2,self.parent.room_size-5))
         self.lava = False
         self.toLava = False
+        self.sandpit = False
         self.features.append(features.new('blank', self))
         self.floors.append(floors.new('blank', self))
 
@@ -239,10 +240,19 @@ class Pit(Blank):
         # If this is the only level, make it a lava pit.
         if (depth == 1):
             self.lava = True
+        # Otherwise build bridges. Or maybe a sand trap. 
         else:
             self.floors.append(floors.new('bridges', self))
 
     def render (self):
+        # Sand pit!
+        # Restrict sandpits to rooms with small halls.
+        maxhall = max(map(lambda x: x.size, self.halls))
+        if maxhall<=4 and random.randint(1,100) <= cfg.sand_traps:
+            self.sandpit = True
+            if [f for f in self.floors if f._name == 'bridges']:
+                f.sandpit = True
+
         height = self.parent.room_height-2
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):
@@ -280,9 +290,14 @@ class Pit(Blank):
         for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
         # Lava streams from ceiling
-        if (self.toLava == True):
+        if (self.toLava == True and self.sandpit == False):
             p = self.loc + random_point_inside_flat_poly(*self.canvas)
             self.parent.setblock(p.up(4), materials.Lava)
+        # Floor with no subfloor if this is a sand pit
+        if (self.sandpit == True):
+            for x in self.floor_func(self.c1.trans(0,0,0),
+                                     self.c3.trans(0,0,0)):
+                self.parent.setblock(x, materials._floor)
         # Walls
         for x in self.wall_func(self.c1.down(1), self.c3.down(1), height+1):
             self.parent.setblock(x, materials._wall)
@@ -323,6 +338,7 @@ class CircularPit(Pit):
             Vec(2,self.parent.room_height-2,5))
         self.lava = False
         self.toLava = False
+        self.sandpit = False
         self.features.append(features.new('blank', self))
         self.floors.append(floors.new('blank', self))
 
