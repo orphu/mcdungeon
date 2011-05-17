@@ -202,14 +202,15 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
 
 
-    def addspawner(self, loc):
+    def addspawner(self, loc, entity=''):
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('MobSpawner')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        root_tag['EntityId'] = nbt.TAG_String(
-                weighted_choice(cfg.master_mobs))
+        if (entity == ''):
+            entity = weighted_choice(cfg.master_mobs)
+        root_tag['EntityId'] = nbt.TAG_String(entity)
         root_tag['Delay'] = nbt.TAG_Short(0)
         self.tile_ents[loc] = root_tag
     def addchest(self, loc, tier=-1):
