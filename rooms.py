@@ -354,6 +354,7 @@ class PitMid(Blank):
     def placed(self):
         # This room needs bridges
         self.floors.append(floors.new('bridges', self))
+        self.features.append(features.new('blank', self))
 
     def render (self):
         height = self.parent.room_height-2
@@ -426,10 +427,23 @@ class CircularPitMid(PitMid):
             [5,self.parent.room_size-5],
             [5,self.parent.room_size-5],
             [5,self.parent.room_size-5]]
+        #self.canvas = (
+        #    Vec(0,self.parent.room_height-2,0),
+        #    Vec(0,self.parent.room_height-2,0),
+        #    Vec(0,self.parent.room_height-2,0))
         self.canvas = (
-            Vec(0,self.parent.room_height-2,0),
-            Vec(0,self.parent.room_height-2,0),
-            Vec(0,self.parent.room_height-2,0))
+            Vec(5,self.parent.room_height-2,2),
+            Vec(self.parent.room_size-6,self.parent.room_height-2,2),
+            Vec(self.parent.room_size-3,self.parent.room_height-2,5),
+            Vec(self.parent.room_size-3,
+                self.parent.room_height-2,
+                self.parent.room_size-6),
+            Vec(self.parent.room_size-6,
+                self.parent.room_height-2,
+                self.parent.room_size-3),
+            Vec(5,self.parent.room_height-2,self.parent.room_size-3),
+            Vec(2,self.parent.room_height-2,self.parent.room_size-6),
+            Vec(2,self.parent.room_height-2,5))
 
 
 class PitBottom(Blank):
