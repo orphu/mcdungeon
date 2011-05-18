@@ -4,7 +4,8 @@ v0.2.0 - ??/??/????
       drawn on water or ice blocks. 
 
     * Multiple dungeons can now be drawn in one pass. use the --number option.
-      -1 will fill in as many dungeons as possible. 
+      -1 will fill in as many dungeons as possible given the min/max chunk
+      settings in your config file. 
 
     * X, Z, and LEVELS options will now take ranges for random sizes. 
       example: ./mcdungeon.py MAP 3-5 2-5 5-8 -n 2
