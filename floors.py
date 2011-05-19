@@ -190,8 +190,8 @@ class Bridges(Blank):
                     self.parent.halls[h].offset + 1 + \
                     random.randint(0, self.parent.halls[h].size - 3)
                 hallcount += 1
-        # We won't draw just half a bridge. (yet)
-        if (hallcount < 2):
+        # We won't draw just half a bridge, unless this is a sandpit. (yet)
+        if (hallcount < 2 and self.sandpit == False):
             return
         midpoint = self.parent.parent.room_size / 2
         y = self.parent.canvasHeight()

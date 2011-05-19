@@ -219,26 +219,26 @@ class Pit(Blank):
         # we would like to go. 
         thisfloor = self.pos.y+1
         targetdepth = random.randint(1, self.parent.levels-thisfloor+1)
-        depth = 1
+        self.depth = 1
         # Place lower rooms.
         pos = self.pos
-        while (depth < targetdepth):
+        while (self.depth < targetdepth):
             pos = pos.down(1)
             if (pos in self.parent.rooms):
                 break
             if (pos.down(1) in self.parent.rooms or
-               depth+1 == targetdepth):
+               self.depth+1 == targetdepth):
                 room = new(self.bottomroom, self.parent, pos)
                 self.parent.setroom(pos, room)
-                depth += 1
+                self.depth += 1
                 if (room.floor == 'lava'):
                     self.toLava = True
                 break
             room = new(self.midroom, self.parent, pos)
             self.parent.setroom(pos, room)
-            depth += 1
+            self.depth += 1
         # If this is the only level, make it a lava pit.
-        if (depth == 1):
+        if (self.depth == 1):
             self.lava = True
         # Otherwise build bridges. Or maybe a sand trap. 
         else:
@@ -248,10 +248,17 @@ class Pit(Blank):
         # Sand pit!
         # Restrict sandpits to rooms with small halls.
         maxhall = max(map(lambda x: x.size, self.halls))
-        if maxhall<=4 and random.randint(1,100) <= cfg.sand_traps:
+        if (self.depth > 1 and
+            maxhall<=4 and
+            random.randint(1,100) <= cfg.sand_traps):
             self.sandpit = True
             if [f for f in self.floors if f._name == 'bridges']:
                 f.sandpit = True
+            # 50/50 chance of adding some columns to further the illusion.
+            if ([f for f in cfg.master_features if (f[0] == 'columns' and
+                                            f[1] > 0)] and
+                random.randint(1,100) <= 50):
+                self.features.append(features.new('columns', self))
 
         height = self.parent.room_height-2
         # Air space
