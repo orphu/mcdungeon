@@ -55,6 +55,10 @@ parent_parser.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset. (overrides .cfg file)')
+parent_parser.add_argument('--bury',
+                    action='store_true',
+                    dest='bury',
+                    help='Attempt to calculate Y when using --offset')
 parent_parser.add_argument('-n','--number',
                     type=int,dest='number',
                     metavar='NUM',
@@ -285,9 +289,19 @@ while args.number is not 0:
     if (cfg.offset is not None and cfg.offset is not ''):
         dungeon = Dungeon(x, z, levels, depths)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
-        dungeon.position = str2Vec(cfg.offset)
-        print "location set to",cfg.offset
-        located = True
+        if (args.bury is False):
+            dungeon.position = str2Vec(cfg.offset)
+            print "location set to", dungeon.position
+            located = True
+        else:
+            pos = str2Vec(cfg.offset)
+            located = dungeon.bury(world, {Vec(pos.x>>4,
+                                               0,
+                                               pos.z>>4): True})
+            if (located == False):
+                print 'Unable to bury a dungeon of requested depth at', pos
+                print 'Try fewer levels, or a smaller size.'
+                sys.exit(1)
 
     else:
         print "Searching for a suitable location..."
@@ -296,7 +310,6 @@ while args.number is not 0:
             print 'Dungeon size: %d x %d x %d' % (z, x, levels)
             located = dungeon.findlocation(world)
             if (located is False):
-                print 'No locations found.'
                 adjusted = False
                 if (args.x < 0 and x > min_x):
                     x -= 1
@@ -388,8 +401,11 @@ while args.number is not 0:
     if (located is False):
         args.number = 0
 
-if (dungeons is 0):
-    print 'Unable to place any dungeons. Check your settings.'
+if (len(dungeons) == 0):
+    print 'No dungeons were generated!'
+    print 'You may have requested too deep or too large a dungeon, or'
+    print 'your allowed spawn region is too small.'
+    print 'Check your settings in the config file.'
     sys.exit(1)
 
 # Relight

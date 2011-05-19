@@ -67,12 +67,10 @@ class Dungeon (object):
 
     def findlocation(self, world):
         positions = {}
-        final_positions = {}
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
-        min_depth = (self.levels+1)*self.room_height
         print 'World bounds: (%d, %d) to (%d, %d)' % (bounds.getMinx(),
                                                       bounds.getMinz(),
                                                       bounds.getMaxx(),
@@ -85,7 +83,6 @@ class Dungeon (object):
                                            world.playerSpawnPosition()[1],
                                            world.playerSpawnPosition()[2])
         print 'Spawn chunk: (%d, %d)'%(scx, scz)
-        print 'Minimum depth:', min_depth, 'blocks'
         print 'Minimum distance from spawn:', cfg.min_dist, 'chunks'
         print 'Maximum distance from spawn:', cfg.max_dist, 'chunks'
         # List of blocks to ignore when checking depth
@@ -126,8 +123,18 @@ class Dungeon (object):
             # Looks good so far
             positions[Vec(chunk[0], 0, chunk[1])] = True
         print 'Found',len(positions),'possible locations.'
+        return self.bury(world, positions)
+
+    def bury(self, world, positions):
+        final_positions = {}
+        min_depth = (self.levels+1)*self.room_height
+        bounds = world.bounds
+        scx = world.playerSpawnPosition()[0]>>4
+        scz = world.playerSpawnPosition()[2]>>4
+        spawn_chunk = Vec(scx, 0, scz)
         # Now we have to weed out the areas that are not deep enough
         print 'Pass 2: Depth and chunk check...'
+        print 'Minimum depth:', min_depth, 'blocks'
         for chunk in positions:
             spin(chunk)
             # Fill in any missing depth info for this area

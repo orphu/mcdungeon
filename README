@@ -88,6 +88,7 @@ optional arguments:
   -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
   -o X Y Z, --offset X Y Z
                         Provide a location offset. (overrides .cfg file)
+  --bury                Attempt to calculate Y when using --offset
   -n NUM, --number NUM  Number of dungeons to generate. -1 will create as many
                         as possible given X, Z, and LEVEL settings.
   -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,
