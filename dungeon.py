@@ -89,7 +89,7 @@ class Dungeon (object):
         ignore = (0,6,8,9,10,11,17,18,37,38,39,40,44,50,51,55,
                   59,63,64,65,66,68,70,71,72,75,76,
                   77,81,83,85,86,90,91,92,93,94)
-        print 'Pass 1: Bounds check...'
+        print 'Location bounds check...'
         for chunk in bounds.chunkPositions:
             # First some basic distance from spawn checks...
             spin()
@@ -133,7 +133,7 @@ class Dungeon (object):
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
         # Now we have to weed out the areas that are not deep enough
-        print 'Pass 2: Depth and chunk check...'
+        print 'Depth and chunk check...'
         print 'Minimum depth:', min_depth, 'blocks'
         for chunk in positions:
             spin(chunk)
@@ -267,7 +267,7 @@ class Dungeon (object):
             self.rooms[coord] = room
             room.placed()
 
-    def genrooms(self):
+    def genrooms(self, args_entrance):
         # Generate the maze used for room and hall placement.
         stairwells = []
         entrance_pos = None
@@ -287,8 +287,12 @@ class Dungeon (object):
         dkeys = dirs.keys()
 
         # Start in a random location on level 1
-        x = random.randint(0, self.xsize-1)
-        z = random.randint(0, self.zsize-1)
+        if (args_entrance is not None):
+            x = args_entrance[1]
+            z = args_entrance[0]
+        else:
+            x = random.randint(0, self.xsize-1)
+            z = random.randint(0, self.zsize-1)
         maxdepth = self.xsize * self.zsize * self.levels + 1
         for y in xrange(self.levels):
             self.maze[x][y][z] = 1

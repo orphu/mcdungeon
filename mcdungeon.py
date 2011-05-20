@@ -16,7 +16,7 @@ parent_parser = argparse.ArgumentParser(add_help=False,
 parent_parser.add_argument('-v', '--version',
                            action='version', version=_vstring,
                            help='Print version and exit')
-parent_parser.add_argument('--config',
+parent_parser.add_argument('-c', '--config',
                     dest='config',
                     metavar='CFGFILE',
                     default='default.cfg',
@@ -54,11 +54,17 @@ parent_parser.add_argument('-o', '--offset',
                     nargs=3,
                     type=int,
                     metavar=('X', 'Y', 'Z'),
-                    help='Provide a location offset. (overrides .cfg file)')
-parent_parser.add_argument('--bury',
+                    help='Provide a location offset in blocks')
+parent_parser.add_argument('-b', '--bury',
                     action='store_true',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
+parent_parser.add_argument('-e', '--entrance',
+                    dest='entrance',
+                    nargs=2,
+                    type=int,
+                    metavar=('Z', 'X'),
+                    help='Provide an offset for the entrance in chunks')
 parent_parser.add_argument('-n','--number',
                     type=int,dest='number',
                     metavar='NUM',
@@ -240,10 +246,21 @@ if (args.offset is not None):
                                  args.offset[1],
                                  args.offset[2])
 
+if (args.entrance[0] >= args.z or
+    args.entrance[0] < 0 or
+    args.entrance[1] >= args.x or
+    args.entrance[1] < 0):
+    print 'Entrance offset values out of range.'
+    print 'These should be >= 0 and < the maximum width or length of the dungeon.'
+    sys.exit(1)
+
 # Some options don't work with multidungeons
 if (args.number is not 1):
     if (args.offset is not None):
         print 'WARN: Offset option is ignored when generating multiple dungeons.'
+        cfg.offset = None
+    if (args.entrance is not None):
+        print 'WARN: Entrance option is ignored when generating multiple dungeons.'
         cfg.offset = None
     if  (args.html is not None):
         print 'WARN: HTML option is ignored when generating multiple dungeons.'
@@ -333,7 +350,7 @@ while args.number is not 0:
             print 'Seed:',args.seed
 
         print "Generating rooms..."
-        dungeon.genrooms()
+        dungeon.genrooms(args.entrance)
 
         print "Generating halls..."
         dungeon.genhalls()
