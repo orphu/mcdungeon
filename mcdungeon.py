@@ -287,14 +287,16 @@ while args.number is not 0:
     located = False
 
     if (cfg.offset is not None and cfg.offset is not ''):
+        pos = str2Vec(cfg.offset)
+        pos.x = pos.x &~15
+        pos.z = pos.z &~15
         dungeon = Dungeon(x, z, levels, depths)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         if (args.bury is False):
-            dungeon.position = str2Vec(cfg.offset)
+            dungeon.position = pos
             print "location set to", dungeon.position
             located = True
         else:
-            pos = str2Vec(cfg.offset)
             located = dungeon.bury(world, {Vec(pos.x>>4,
                                                0,
                                                pos.z>>4): True})
