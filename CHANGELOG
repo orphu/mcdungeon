@@ -1,35 +1,50 @@
 v0.2.0 - ??/??/????
 
-    * Sandbars now merge with the existing world better. Sand will only be
-      drawn on water or ice blocks. 
+    * Multiple dungeons can now be drawn in one pass. Use the --number option
+      to sepcify the number of non-overlapping dungeons that the tool should
+      attempt to generate. -1 will fill in as many dungeons as possible given 
+      the min/max chunk settings in your config file. This is also supported in
+      interactive mode. 
 
-    * Multiple dungeons can now be drawn in one pass. use the --number option.
-      -1 will fill in as many dungeons as possible given the min/max chunk
-      settings in your config file. 
+    * Surface level ruins. Ruins are chosen from a customizable weighted list
+      like other dungeon features. 
 
     * X, Z, and LEVELS options will now take ranges for random sizes. 
       example: ./mcdungeon.py MAP 3-5 2-5 5-8 -n 2
       Will generate two random dungeons between 3x2x5 and 5x5x8 in size.
+      This also works in interactive mode.
 
-    * Added --bury option to calculate Y coordinate when using --offset.
-
-    * More progress info and verbose output for troubleshooting.
-
-    * New cfg option: torches_position will specify the height of torches on
-      walls.
-
-    * MCDungeon will now look in its current running directory for support
-      files and configs. (you no longer need to run it from its directory)
+    * Sandbars now merge with the existing world better. Sand will only be
+      drawn on water or ice blocks. 
 
     * Lava pits can sometimes have lava streaming from the ceiling. 
 
     * Skeleton balconies.
 
-    * Defective arrow traps can explode. 
+    * Defective arrow traps can sometimes explode. 
 
     * Pit rooms can contain falling sand traps.
 
-    * Bugfix: Chests hovering above subfloor and half blocks in lava pits.
+    * Added --bury option to calculate Y coordinate when using --offset.
+
+    * Added --entrance option to specify the location of the tower when using
+      --offset. 
+
+    * New cfg option: torches_position will specify the height of torches on
+      walls.
+
+    * New cfg option: tower_ruin will make the entrance towers crumble. 
+
+    * MCDungeon will now look in its current running directory for support
+      files and configs. (you no longer need to cd to its directory before
+      running it.)
+
+    * More progress info and verbose output for troubleshooting.
+
+    * Bugfix: Chests hovering above subfloor and half blocks in lava pits and
+      treasure rooms.
+
+    * Several other bugs and unhandled exeptions fixed. 
 
 v0.1.0 - 4/27/2011
 
