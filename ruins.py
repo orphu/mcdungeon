@@ -2,6 +2,7 @@ import materials
 import utils
 import rooms
 import loottable
+import cfg
 from noise import pnoise3
 from utils import *
 
@@ -112,7 +113,8 @@ class Arches(Blank):
                 # Top layer
                 p = p.trans(0,-1,0)
                 for p in iterate_four_walls(p, p.trans(7,0,7), 0):
-                    if (random.randint(1,100) <= 50):
+                    if (cfg.ruin_ruins == False or
+                        random.randint(1,100) <= 50):
                         sb(p, materials.StoneSlab)
                 # Maybe ruin this section
                 if (random.randint(1,100) <= 50):
@@ -120,7 +122,8 @@ class Arches(Blank):
 
 
 def ruinBlocks (p1, p2, height, dungeon):
-    # pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0
+    if (cfg.ruin_ruins == False):
+        return
     for x in xrange(p1.x, p2.x+1):
         for z in xrange(p1.z, p2.z+1):
             depth = (pnoise3(x / 3.0, 0, z / 3.0, 1) + 1.0) / 2.0 * height
