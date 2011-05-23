@@ -2,6 +2,7 @@ import materials
 import halls
 import floors
 import features
+import ruins
 import cfg
 from utils import *
 import random
@@ -22,6 +23,7 @@ class Blank(object):
         self.halls = [None, None, None, None]
         self.features = []
         self.floors = []
+        self.ruins = []
         self.setData()
         for x in xrange(4):
             if self.hallLength[x] == 0:

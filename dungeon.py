@@ -14,6 +14,7 @@ import rooms
 import halls
 import floors
 import features
+import ruins
 from utils import *
 from pymclevel import mclevel, nbt
 
@@ -58,6 +59,9 @@ class Dungeon (object):
         else:
             self.blocks[loc].data = data
 
+    def delblock(self, loc):
+        if loc in self.blocks:
+            del self.blocks[loc]
 
     def getblock(self, loc):
         if loc in self.blocks:
@@ -360,7 +364,7 @@ class Dungeon (object):
                                            Vec(self.xsize-1,y,self.zsize-1)):
                         for d in dirs.keys():
                             if (self.halls[p.x][y][p.z][sides[d]] is not 1 and
-                                random.randint(1,100) < cfg.loops):
+                                random.randint(1,100) <= cfg.loops):
                                 nx = p.x + dirs[d].x
                                 nz = p.z + dirs[d].z
                                 if (nx >= 0 and
@@ -542,6 +546,16 @@ class Dungeon (object):
                                        self.rooms[pos])
                 self.rooms[pos].features.append(feature)
                 feature.placed()
+
+    def genruins(self, world):
+        for pos in self.rooms:
+            if (pos.y == 0 and
+                pos != self.entrance.parent.pos and
+                len(self.rooms[pos].ruins) == 0):
+                ruin = ruins.new(weighted_choice(cfg.master_ruins),
+                                 self.rooms[pos])
+                self.rooms[pos].ruins.append(ruin)
+                ruin.placed(world)
 
     def placetorches(self, level=0):
         '''Place a proportion of the torches where possible'''
@@ -740,6 +754,13 @@ class Dungeon (object):
                 count -= 1
                 if (count%10 == 0):
                     spin(count)
+
+    def renderruins(self):
+        ''' Call render() on all ruins'''
+        for pos in self.rooms:
+            for x in self.rooms[pos].ruins:
+                x.render()
+                spin()
 
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.

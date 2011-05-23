@@ -1,6 +1,8 @@
 import materials
 import rooms
+import ruins
 import loottable
+import cfg
 from utils import *
 
 
@@ -148,6 +150,13 @@ class Entrance(Blank):
         pos = c1.trans(1, 0, 1)
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
+        # Ruin
+        if (random.randint(1,100) <= cfg.tower_ruin):
+            r = self.parent.parent.room_height*2
+            ruins.ruinBlocks(b1.trans(0,r-1,0),
+                             b3.trans(0,r-1,0),
+                             r,
+                             self.parent.parent)
         # Sandbar island
         if (self.inwater is False):
             return

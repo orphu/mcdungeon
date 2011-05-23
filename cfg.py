@@ -10,6 +10,7 @@ min_dist = '2'
 max_dist = '10'
 offset = ''
 tower = '2.0'
+tower_ruin = '80'
 doors = '25'
 portcullises = '25'
 portcullis_closed = '10'
@@ -34,6 +35,7 @@ master_halls = []
 master_rooms = []
 master_features = []
 master_floors = []
+master_ruins = [('blank',1)]
 master_mobs = []
 
 parser = ConfigParser.SafeConfigParser()
@@ -60,7 +62,7 @@ def Load(filename = 'default.cfg'):
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
-    arrow_trap_defects, sand_traps
+    arrow_trap_defects, sand_traps, master_ruins, tower_ruin
 
     filename = os.path.join(sys.path[0], 'configs', filename)
 
@@ -77,6 +79,10 @@ def Load(filename = 'default.cfg'):
     master_features = parser.items('features')
     master_floors = parser.items('floors')
     temp_mobs = parser.items('mobs')
+    try:
+        master_ruins = parser.items('ruins')
+    except:
+        print 'WARNING: No ruins section found in config. Using default.'
 
     # Fix the mob names...
     for mob in temp_mobs:
@@ -89,6 +95,7 @@ def Load(filename = 'default.cfg'):
     offset = get('dungeon', 'offset', offset)
 
     tower = float(get('dungeon', 'tower', tower))
+    tower_ruin = int(get('dungeon', 'tower_ruin', tower_ruin))
     doors = int(get('dungeon', 'doors', doors))
     portcullises = int(get('dungeon', 'portcullises', portcullises))
     portcullis_closed = int(get('dungeon',
@@ -129,8 +136,7 @@ def Load(filename = 'default.cfg'):
     hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))
 
     if (tower < 1.0):
-        sys.exit('The tower height parameter is too small. This should be \
-                 >= 1.0. Check the cfg file.')
+        sys.exit('The tower height parameter is too small. This should be >= 1.0. Check the cfg file.')
 
     if (chests < 0.0 or chests > 10.0):
         sys.exit('Chests should be between 0 and 10. Check the cfg file.')

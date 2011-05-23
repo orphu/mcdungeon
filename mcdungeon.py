@@ -246,10 +246,11 @@ if (args.offset is not None):
                                  args.offset[1],
                                  args.offset[2])
 
-if (args.entrance[0] >= args.z or
+if (args.entrance is not None and (
+    args.entrance[0] >= args.z or
     args.entrance[0] < 0 or
     args.entrance[1] >= args.x or
-    args.entrance[1] < 0):
+    args.entrance[1] < 0)):
     print 'Entrance offset values out of range.'
     print 'These should be >= 0 and < the maximum width or length of the dungeon.'
     sys.exit(1)
@@ -361,6 +362,9 @@ while args.number is not 0:
         print "Generating features..."
         dungeon.genfeatures()
 
+        print "Generating ruins..."
+        dungeon.genruins(world)
+
         print "Extending the entrance to the surface..."
         dungeon.setentrance(world)
 
@@ -375,6 +379,9 @@ while args.number is not 0:
 
         print "Rendering features..."
         dungeon.renderfeatures()
+
+        print "Rendering ruins..."
+        dungeon.renderruins()
 
         print "Placing doors..."
         dungeon.placedoors(cfg.doors)

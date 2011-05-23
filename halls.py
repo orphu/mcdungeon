@@ -207,12 +207,12 @@ def drawHall (hall):
             # They can be 1 (open) or 3 (closed) blocks high
             hall.parent.parent.portcullises[port] = portcullises.Portcullis()
             hall.parent.parent.portcullises[port].material = materials.Fence
-            if (randint(1,100) < cfg.portcullis_closed):
+            if (randint(1,100) <= cfg.portcullis_closed):
                 hall.parent.parent.portcullises[port].size = 3
             else:
                 hall.parent.parent.portcullises[port].size = 1
             # Make this a web instead
-            if (randint(1,100) < cfg.portcullis_web):
+            if (randint(1,100) <= cfg.portcullis_web):
                 hall.parent.parent.portcullises[port].material = materials.Web
                 hall.parent.parent.portcullises[port].size = 3
             # place the actual portcullis positions
