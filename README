@@ -16,8 +16,8 @@ CURRENT FEATURES:
      map with as many dungeons as possible.
 
    * Generates room layouts based on a random weighted selection
-     of rooms. Rooms are filled with ranomd hallways, floors, and room
-     features, all of which are configurable.
+     of rooms. Rooms are filled with ranomd hallways, floors, room
+     features, and ruins on the surface, all of which are configurable.
 
    * The density and placement of doors, portcullises, and torches are 
      configurable. Option to place fewer torches as levels go down. Less 
@@ -50,18 +50,17 @@ CURRENT FEATURES:
 
 TODO:
 
-   * More floor types
-   * More room features
-   * More (and larger) room types
-   * More hall types
+   * More room, hall, floor, feature, and ruin types.
+   * Multi-tile room sizes.
    * More traps!
+   * More stuff as Minecraft evolves!
 
 OPTIONS:
 
 $ mcdungeon.py -h
-usage: mcdungeon.py [-h] [-v] [--config CFGFILE] [--write] [--skip-relight]
+usage: mcdungeon.py [-h] [-v] [-c CFGFILE] [--write] [--skip-relight]
                     [-t FLOOR] [--html BASENAME] [--force] [-s SEED]
-                    [-o X Y Z] [-n NUM] [-i]
+                    [-o X Y Z] [-b] [-e Z X] [-n NUM] [-i]
                     SAVEDIR Z X LEVELS
 
 positional arguments:
@@ -76,7 +75,8 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         Print version and exit
-  --config CFGFILE      Alternate config file. Default: configs/default.cfg
+  -c CFGFILE, --config CFGFILE
+                        Alternate config file. Default: default.cfg
   --write               Write the dungeon to disk
   --skip-relight        Skip relighting the level
   -t FLOOR, --term FLOOR
@@ -87,8 +87,10 @@ optional arguments:
   --force               Force overwriting of html output files
   -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
   -o X Y Z, --offset X Y Z
-                        Provide a location offset. (overrides .cfg file)
-  --bury                Attempt to calculate Y when using --offset
+                        Provide a location offset in blocks
+  -b, --bury            Attempt to calculate Y when using --offset
+  -e Z X, --entrance Z X
+                        Provide an offset for the entrance in chunks
   -n NUM, --number NUM  Number of dungeons to generate. -1 will create as many
                         as possible given X, Z, and LEVEL settings.
   -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,

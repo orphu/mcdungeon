@@ -87,11 +87,11 @@ noi_parser.add_argument('world',
 noi_parser.add_argument('z',
                     metavar='Z',
                     help='Number of rooms West -> East. Use -1 for random, or \
-                        provide a range.')
+                        provide a range. (ie: 3-7)')
 noi_parser.add_argument('x',
                     metavar='X',
-                    help='Number of rooms North -> South. Use -1 for random, or \
-                        provide a range.')
+                    help='Number of rooms North -> South. Use -1 for random, \
+                        or provide a range.')
 noi_parser.add_argument('levels',
                     metavar='LEVELS',
                     help='Number of levels. Use -1 for random, or provide a \
