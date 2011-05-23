@@ -144,12 +144,12 @@ if (args.interactive == True):
     m = cfg.max_dist - cfg.min_dist
     print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
     print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
-    print 'Enter -1 to pick random values between 2 and %d.'%(m)
+    print 'Enter -1 to pick random values between 2 and %d. (based on your config)'%(m)
     args.z = raw_input('Z size: ')
 
     print '\nEnter the size of the dungeon(s) from North to South. (X size)'
     print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
-    print 'Enter -1 to pick random values between 2 and %d.'%(m)
+    print 'Enter -1 to pick random values between 2 and %d. (based on your config)'%(m)
     args.x = raw_input('X size: ')
 
     print '\nEnter a number of levels.'
@@ -282,7 +282,7 @@ print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 #dumpEnts(world)
 #sys.exit()
 
-print "MCDungeon",__version__,"startup compete. "
+print "MCDungeon",__version__,"startup complete. "
 
 depths = {}
 dungeons = []
