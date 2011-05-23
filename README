@@ -7,6 +7,13 @@ makes use of code from Paul Hodge's minetown project and David Rio
 Vierra's pymclevel. This was inspired by BeeTLe BeTHLeHeM's MCMapper
 project which, sadly, is no more.
 
+Thanks to the following for thier interest, inspiration, and great ideas! 
+(in no particular order)
+
+BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
+Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
+SuddenLee, Silre, NuclearDemon, bking1138, and BarthVader.
+
 CURRENT FEATURES:
 
    * Automatically finds a good location on a map based on range, size, and
@@ -53,6 +60,7 @@ TODO:
    * More room, hall, floor, feature, and ruin types.
    * Multi-tile room sizes.
    * More traps!
+   * Harder hard mode!
    * More stuff as Minecraft evolves!
 
 OPTIONS:
