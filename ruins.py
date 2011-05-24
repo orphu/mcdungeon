@@ -115,7 +115,11 @@ class Arches(Blank):
                 for p in iterate_four_walls(p, p.trans(7,0,7), 0):
                     if (cfg.ruin_ruins == False or
                         random.randint(1,100) <= 50):
-                        sb(p, materials.StoneSlab)
+                        if (random.randint(1,100) <= 25):
+                            sb(p, materials.StoneSlab)
+                        else:
+                            sb(p, materials.CobblestoneSlab)
+
                 # Maybe ruin this section
                 if (random.randint(1,100) <= 50):
                     ruinBlocks(c1, c3, height, self.parent.parent)
