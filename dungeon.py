@@ -69,7 +69,7 @@ class Dungeon (object):
         return False
 
 
-    def findlocation(self, world):
+    def findlocation(self, world, dungeon_locations):
         positions = {}
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
@@ -125,11 +125,22 @@ class Dungeon (object):
             if (dist_min < cfg.min_dist):
                 continue
             # Looks good so far
-            positions[Vec(chunk[0], 0, chunk[1])] = True
+            positions[Vec(chunk[0], 0, chunk[1])] = 1
         print 'Found',len(positions),'possible locations.'
-        return self.bury(world, positions)
+        return self.bury(world, positions, dungeon_locations)
 
-    def bury(self, world, positions):
+    def bury(self, world, positions, dungeon_locations):
+        # Filter for the maximum distance.
+        maxd = 1
+        if (cfg.maximize_distance == True and
+            len(dungeon_locations) > 0):
+            print 'Marking distances...'
+            for chunk in positions:
+                d = 2^64
+                for dungeon in dungeon_locations:
+                    d = min(d, (dungeon - chunk).mag2d())
+                positions[chunk] = d
+                maxd = max(maxd, d)
         final_positions = {}
         min_depth = (self.levels+1)*self.room_height
         bounds = world.bounds
@@ -137,7 +148,7 @@ class Dungeon (object):
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
         # Now we have to weed out the areas that are not deep enough
-        print 'Depth and chunk check...'
+        print 'Depth, distance, and chunk check...'
         print 'Minimum depth:', min_depth, 'blocks'
         for chunk in positions:
             spin(chunk)
@@ -149,7 +160,8 @@ class Dungeon (object):
                 if (p not in self.depths):
                     self.depths[p] = findChunkDepth(p, world)
                 depth = min(depth, self.depths[p])
-            if (depth >= min_depth):
+            if (depth >= min_depth and
+               positions[chunk] == maxd):
                 final_positions[Vec(chunk.x, 0, chunk.z)] = Vec(
                     chunk.x*self.room_size,
                     depth,

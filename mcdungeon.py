@@ -286,6 +286,7 @@ print "MCDungeon",__version__,"startup complete. "
 
 depths = {}
 dungeons = []
+dungeon_positions = {}
 total_rooms = 0
 
 while args.number is not 0:
@@ -315,9 +316,11 @@ while args.number is not 0:
             print "location set to", dungeon.position
             located = True
         else:
-            located = dungeon.bury(world, {Vec(pos.x>>4,
-                                               0,
-                                               pos.z>>4): True})
+            located = dungeon.bury(world,
+                                   {Vec(pos.x>>4,
+                                        0,
+                                        pos.z>>4): True},
+                                  dungeon_positions)
             if (located == False):
                 print 'Unable to bury a dungeon of requested depth at', pos
                 print 'Try fewer levels, or a smaller size.'
@@ -328,7 +331,7 @@ while args.number is not 0:
         while (located is False):
             dungeon = Dungeon(x, z, levels, depths)
             print 'Dungeon size: %d x %d x %d' % (z, x, levels)
-            located = dungeon.findlocation(world)
+            located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):
                 adjusted = False
                 if (args.x < 0 and x > min_x):
@@ -414,6 +417,9 @@ while args.number is not 0:
         end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
           start.y - dungeon.levels * dungeon.room_height + 1,
           start.z - dungeon.zsize * dungeon.room_size + 1)
+        dungeon_positions[Vec(start.x>>4,
+                             0,
+                             start.z>>4)] = start
         dungeons.append('Dungeon %d (%d x %d x %d): %s to %s' %
                         (len(dungeons)+1,
                          z,

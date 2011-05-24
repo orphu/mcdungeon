@@ -8,6 +8,7 @@ from utils import *
 loops = '0'
 min_dist = '2'
 max_dist = '10'
+maximize_distance = 'True'
 offset = ''
 tower = '2.0'
 tower_ruin = '80'
@@ -63,7 +64,8 @@ def Load(filename = 'default.cfg'):
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
-    arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins
+    arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
+    maximize_distance
 
     filename = os.path.join(sys.path[0], 'configs', filename)
 
@@ -127,6 +129,8 @@ def Load(filename = 'default.cfg'):
     spawners = float(get('dungeon', 'spawners', spawners))
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
+    maximize_distance = str2bool(get('dungeon', 'maximize_distance',
+                                     maximize_distance))
     arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
     arrow_trap_defects = int(get('dungeon', 'arrow_trap_defects',
                                  arrow_trap_defects))
