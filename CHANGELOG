@@ -35,8 +35,8 @@ v0.2.0 - ??/??/????
 
     * New cfg option: tower_ruin will make the entrance towers crumble. 
 
-    * New cfg option: ruin_ruins will skip any attempt to "ruin" surface
-      structures. 
+    * New cfg option: ruin_ruins. Setting this to False will skip any attempt
+      to "ruin" surface structures. 
 
     * New cfg option: maximize_distance will attempt to place dungeons as far
       apart as possible when rendering multi-dungeons.
