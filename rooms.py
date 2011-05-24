@@ -709,10 +709,10 @@ class Corridor(Blank):
                 (materials._wall,150),
                 (materials.CoalOre,90),
                 (materials.IronOre,40),
-                (materials.GoldOre,1),
-                (materials.DiamondOre,1),
-                (materials.RedStoneOre,50),
-                (materials.LapisOre,1)
+                (materials.GoldOre,5),
+                (materials.DiamondOre,5),
+                (materials.RedStoneOre,40),
+                (materials.LapisOre,5)
             )
             start = c4.trans(1,1,-2)
             width = x2-x1-1
