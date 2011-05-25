@@ -73,7 +73,7 @@ def Load(filename = 'default.cfg'):
         fh.close
         filename = temp
     except:
-        pass
+        filename = os.path.join('configs', filename)
 
     print 'Reading config from', filename, '...'
     try:
