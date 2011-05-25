@@ -67,7 +67,13 @@ def Load(filename = 'default.cfg'):
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
     maximize_distance
 
-    filename = os.path.join(sys.path[0], 'configs', filename)
+    temp = os.path.join(sys.path[0], 'configs', filename)
+    try:
+        fh = open(temp)
+        fh.close
+        filename = temp
+    except:
+        pass
 
     print 'Reading config from', filename, '...'
     try:

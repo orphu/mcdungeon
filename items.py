@@ -1,4 +1,5 @@
 import sys
+import os
 
 _items = {}
 _by_id = {}
@@ -18,7 +19,16 @@ class ItemInfo (object):
             self.maxstack)
 
 
-def LoadItems(filename = sys.path[0]+'/items.txt'):
+def LoadItems(filename = 'items.txt'):
+    # Try to load items from sys.path[0] if we can, 
+    # otherwise default to the cd. 
+    temp = os.path.join(sys.path[0],filename)
+    try:
+        fh = open(temp)
+        fh.close
+        filename = temp
+    except:
+        pass
     print 'Reading items database:', filename, '...'
     items = 0
     try:
