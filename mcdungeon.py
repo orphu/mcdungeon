@@ -113,6 +113,8 @@ if (args.interactive == True):
 
     configDir = os.path.join(sys.path[0], 'configs')
     if (os.path.isdir(configDir) == False):
+        configDir = 'configs'
+    if (os.path.isdir(configDir) == False):
         sys.exit('\nI cannot find your configs directory! Aborting!')
     print '\nConfigurations in your configs directory:\n'
     for file in os.listdir(configDir):
