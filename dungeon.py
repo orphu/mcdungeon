@@ -964,6 +964,10 @@ class Dungeon (object):
             x = block.loc.x + self.position.x
             y = self.position.y - block.loc.y
             z = self.position.z - block.loc.z + 15
+            # Due to bad planning, sometimes we try to draw outside the bounds
+            if (y < 0 or y > 127):
+                print 'WARN: Block outside height bounds. y =', y
+                continue
             # Figure out the chunk and chunk offset
             chunk_z = z>>4
             chunk_x = x>>4

@@ -1,3 +1,8 @@
+v0.2.1 - 05/26/2011
+  
+    * Added a bounds to prevent crashing when placing dungeons on very high
+      plateaus.
+
 v0.2.0 - 05/26/2011
 
     * Multiple dungeons can now be drawn in one pass. Use the --number option
