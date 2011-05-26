@@ -1,4 +1,4 @@
-v0.2.0 - ??/??/????
+v0.2.0 - 05/26/2011
 
     * Multiple dungeons can now be drawn in one pass. Use the --number option
       to sepcify the number of non-overlapping dungeons that the tool should
@@ -52,7 +52,7 @@ v0.2.0 - ??/??/????
 
     * Several other bugs and unhandled exeptions fixed. 
 
-v0.1.0 - 4/27/2011
+v0.1.0 - 04/27/2011
 
     * More interesting lava floors.
 
@@ -105,11 +105,11 @@ v0.1.0 - 4/27/2011
 
     * Spider webs.
 
-v0.0.4 - 4/14/2011
+v0.0.4 - 04/14/2011
 
     * Fixed the "subfloor" setting not reading properly from the .cfg file.
 
-v0.0.3 - 4/1/2011
+v0.0.3 - 04/1/2011
 
     * A few tweaks to the default .cfg file.
 
@@ -122,7 +122,7 @@ v0.0.3 - 4/1/2011
 
     * Added a little more progress feedback.
 
-v0.0.2 - 3/31/2011
+v0.0.2 - 03/31/2011
 
     * Added Cookie and Locked Chest to items.txt.
 
@@ -138,6 +138,6 @@ v0.0.2 - 3/31/2011
       maximize the chance that the dungeon will fit into the map, 
       unless the map has a ton of very shallow chunks around spawn.
 
-v0.0.1 - 3/30/2011
+v0.0.1 - 03/30/2011
 
     * Initial release!
