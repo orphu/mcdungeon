@@ -1,7 +1,7 @@
 v0.2.0 - 05/26/2011
 
     * Multiple dungeons can now be drawn in one pass. Use the --number option
-      to sepcify the number of non-overlapping dungeons that the tool should
+      to specify the number of non-overlapping dungeons that the tool should
       attempt to generate. -1 will fill in as many dungeons as possible given 
       the min/max chunk settings in your config file. This is also supported in
       interactive mode. 
