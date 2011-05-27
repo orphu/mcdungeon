@@ -93,8 +93,11 @@ class Dungeon (object):
         ignore = (0,6,8,9,10,11,17,18,37,38,39,40,44,50,51,55,
                   59,63,64,65,66,68,70,71,72,75,76,
                   77,81,83,85,86,90,91,92,93,94)
-        print 'Location bounds check...'
+        print 'Bounds and chunk check...'
         for chunk in bounds.chunkPositions:
+            # Does this chunk even exist?
+            if (world.containsChunk(chunk[0], chunk[1]) == False):
+                continue
             # First some basic distance from spawn checks...
             spin()
             chunk_box = Box(Vec(chunk[0], 0, chunk[1]-self.zsize+1),
@@ -140,7 +143,7 @@ class Dungeon (object):
                 for dungeon in dungeon_locations:
                     d = min(d, (dungeon - chunk).mag2d())
                 positions[chunk] = d
-                maxd = max(maxd, d)
+        depth_positions = {}
         final_positions = {}
         min_depth = (self.levels+1)*self.room_height
         bounds = world.bounds
@@ -148,7 +151,7 @@ class Dungeon (object):
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
         # Now we have to weed out the areas that are not deep enough
-        print 'Depth, distance, and chunk check...'
+        print 'Depth check...'
         print 'Minimum depth:', min_depth, 'blocks'
         for chunk in positions:
             spin(chunk)
@@ -160,12 +163,18 @@ class Dungeon (object):
                 if (p not in self.depths):
                     self.depths[p] = findChunkDepth(p, world)
                 depth = min(depth, self.depths[p])
-            if (depth >= min_depth and
-               positions[chunk] == maxd):
-                final_positions[Vec(chunk.x, 0, chunk.z)] = Vec(
+            if (depth >= min_depth):
+                maxd = max(maxd, positions[chunk])
+                depth_positions[chunk] = Vec(
                     chunk.x*self.room_size,
                     depth,
                     chunk.z*self.room_size)
+        print 'Found',len(depth_positions),'possible locations.'
+        # Filter out all but the furthest positions
+        print 'Distance check...'
+        for chunk, pos in depth_positions.iteritems():
+            if (positions[chunk] >= maxd):
+                final_positions[chunk] = depth_positions[chunk]
         # The final list. Make a choice!
         print 'Found',len(final_positions),'possible locations.'
         try:

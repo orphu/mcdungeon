@@ -1,3 +1,8 @@
+v0.2.2 - 05/26/2011
+
+    * Fixed an issue where multi-dungeon would bail out early when
+      maximize_distance was true and the map had a very irregular shape. 
+
 v0.2.1 - 05/26/2011
   
     * Added a bounds to prevent crashing when placing dungeons on very high
