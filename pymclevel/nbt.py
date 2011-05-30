@@ -28,6 +28,8 @@ from contextlib import closing
 from numpy import array, zeros, uint8, fromstring
 TAGfmt = ">b"
 
+class NBTFormatError(RuntimeError): pass
+
 class TAG_Value(object):
     """Simple values. Subclasses override fmt to change the type and size. 
     Subclasses may set dataType instead of overriding setValue for automatic data type coercion"""
@@ -194,25 +196,28 @@ class TAG_Int_Array(TAG_Byte_Array):
         buf.write(struct.pack(self.fmt % (len(valuestr),), len(valuestr)/4, valuestr))
        
 class TAG_String(TAG_Value):
-    "String in UTF-8"
-
+    """String in UTF-8
+    The data parameter should either be a 'unicode' or an ascii-encoded 'str'
+    """
+    
     tag = 8;
     fmt = ">h%ds"
-    dataType = str
+    dataType = unicode
     
     def __init__(self, value="", name=None, data=""):
         self.name = name
         if(data == ""):
-            self.value = value;
+            self.value = value
         else:
             (string_len,) = struct.unpack_from(">H", data);
-            self.value = data[2:string_len + 2].tostring();
+            self.value = data[2:string_len + 2].tostring().decode('utf-8');
 
     def nbt_length(self) :
-        return len(self.value) + 2;
+        return len(self.value.encode('utf-8')) + 2;
 
     def write_value(self, buf):
-        buf.write(struct.pack(self.fmt % (len(self.value),), len(self.value), self.value))
+        u8value = self.value.encode('utf-8')
+        buf.write(struct.pack(self.fmt % (len(u8value),), len(u8value), u8value))
         
 
 
@@ -402,11 +407,18 @@ tag_handlers = {
 def assert_type(t, offset) :
     if not t in tag_handlers: raise TypeError("Unexpected type %d at %d" % (t, offset));
 
+import zlib  
+def gunzip(data):
+    #strip off the header and use negative WBITS to tell zlib there's no header
+    return zlib.decompress(data[10:], -zlib.MAX_WBITS)
+      
 def loadFile(filename):
     #sio = StringIO.StringIO();
-    inputGz = gzip.GzipFile(filename, mode="rb")
+    with file(filename, "rb") as f:
+        inputdata = f.read()
+    #inputGz = gzip.GzipFile(filename, mode="rb")
     try:
-        data = inputGz.read();
+        data = gunzip(inputdata)
     except IOError:
         print "File %s not zipped" % filename
         data = file(filename, "rb").read();
@@ -433,12 +445,12 @@ def load(filename="", buf=None):
     data = buf;
     #if buf != None: data = buf
     if not len(buf):
-        raise IOError, "Asked to load root tag of zero length"
+        raise NBTFormatError, "Asked to load root tag of zero length"
 
     data_cursor = 0;
     tag_type = data[data_cursor];
     if tag_type != 10:
-        raise IOError, 'Not an NBT file with a root TAG_Compound (found {0})'.format(tag_type);
+        raise NBTFormatError, 'Not an NBT file with a root TAG_Compound (found {0})'.format(tag_type);
     data_cursor += 1;
 
     data_cursor, tag = load_named(data, data_cursor, tag_type)
@@ -578,6 +590,6 @@ def runtests():
 if(__name__ == "__main__") :
     runtests()
 
-    
+__all__ = [a.__name__ for a in tag_handlers.itervalues()] + ["loadFile"]
     
     

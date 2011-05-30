@@ -10,6 +10,8 @@ import itertools
 import traceback
 import shlex
 import operator
+import codecs
+
 from math import floor
 try:
     import readline
@@ -40,6 +42,7 @@ class mce(object):
     Entity commands:
        {commandPrefix}removeEntities [ <EntityID> ]
        {commandPrefix}dumpSigns [ <filename> ]
+       {commandPrefix}dumpChests [ <filename> ]
        
     Chunk commands:
        {commandPrefix}createChunks <box>
@@ -96,6 +99,7 @@ class mce(object):
         
         "removeentities",
         "dumpsigns",
+        "dumpchests",
         
         "createchunks",
         "deletechunks",
@@ -439,7 +443,6 @@ class mce(object):
         
         
         for i, cPos in enumerate(self.level.allChunks, 1):
-            print cPos
             ch = self.level.getChunk(*cPos);
             btypes = numpy.array(ch.Data.ravel(), dtype='uint16')
             btypes <<= 8
@@ -597,7 +600,7 @@ class mce(object):
         else:
             filename = self.level.displayName + ".signs"
         
-        outFile = file(filename, "w");
+        outFile = codecs.open(filename, "w", encoding = 'utf-8');
         
         print "Dumping signs..."
         signCount = 0;
@@ -614,7 +617,7 @@ class mce(object):
                     
                     outFile.write(str(map(lambda x:tileEntity[x].value, "xyz")) + "\n");
                     for i in range(4):
-                        outFile.write(tileEntity["Text{0}".format(i+1)].value + "\n");
+                        outFile.write(tileEntity["Text{0}".format(i+1)].value + u"\n");
                     
             if i % 100 == 0:
                 print "Chunk {0}...".format(i)
@@ -624,7 +627,7 @@ class mce(object):
         print "Dumped {0} signs to {1}".format(signCount, filename);
         
         outFile.close();
-    
+
     def _repair(self, command):
         """
     repair
@@ -644,7 +647,74 @@ class mce(object):
             for rf in self.level.regionFiles.itervalues():
                 rf.repair()
                 
+     
+    def _dumpchests(self, command):
+        """
+    dumpChests [ <filename> ]
+    
+    Saves the content and location of every chest in the world to a text file. 
+    With no filename, saves signs to <worldname>.chests
+    
+    Output is delimited by brackets and newlines. A set of coordinates in 
+    brackets begins a chest, followed by a line for each inventory slot. 
+    For example:
+    
+        [222, 51, 22]
+        2 String
+        3 String
+        3 Iron bar
+        
+    Coordinates are ordered the same as point inputs: 
+        [North/South, Down/Up, East/West]
+        
+    """
+        from items import items
+        if len(command):
+            filename = command[0]
+        else:
+            filename = self.level.displayName + ".chests"
+        
+        outFile = file(filename, "w");
+        
+        print "Dumping chests..."
+        chestCount = 0;
+        
+        for i, cPos in enumerate(self.level.allChunks):
+            try:
+                chunk = self.level.getChunk(*cPos);
+            except mclevel.ChunkMalformed:
+                continue;
+                
+            for tileEntity in chunk.TileEntities:
+                if tileEntity["id"].value == "Chest":
+                    chestCount += 1;
+                               
+                    outFile.write(str(map(lambda x:tileEntity[x].value, "xyz")) + "\n");
+                    itemsTag = tileEntity["Items"]
+                    if len(itemsTag):
+                        for itemTag in itemsTag:
+                            try:
+                                id = itemTag["id"].value
+                                damage = itemTag["Damage"].value
+                                item = items.findItem(id, damage)
+                                itemname=item.name
+                            except KeyError:
+                                itemname="Unknown Item {0}".format(itemTag)
+                            except Exception, e:
+                                itemname = repr(e)
+                            outFile.write("{0} {1}\n".format(itemTag["Count"].value,itemname));
+                    else:
+                        outFile.write("Empty Chest\n")
+                    
+            if i % 100 == 0:
+                print "Chunk {0}...".format(i)
             
+            chunk.unload();
+        
+        print "Dumped {0} chests to {1}".format(chestCount, filename);
+        
+        outFile.close();
+    
     def _removeentities(self, command):
         """
     removeEntities [ [except] [ <EntityID> [ <EntityID> ... ] ] ]
@@ -921,7 +991,7 @@ class mce(object):
                 raise UsageError, "Expected a long integer."
             
             self.level.RandomSeed = seed;
-            
+            self.needsSave = True
         else:
             print "Random Seed: ", self.level.RandomSeed
     

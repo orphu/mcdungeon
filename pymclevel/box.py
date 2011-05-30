@@ -3,7 +3,11 @@ import itertools
 class BoundingBox (object):
     
     def __init__(self, origin = (0,0,0), size = (0,0,0)):
-        self._origin, self._size = list(map(int, origin)),list(map(int, size))
+        if isinstance(origin, BoundingBox):
+            self._origin = list(origin._origin)
+            self._size = list(origin._size)
+        else:
+            self._origin, self._size = list(map(int, origin)),list(map(int, size))
     
     def getMinx(self): return self.origin[0];
     def getMiny(self): return self.origin[1];
@@ -78,9 +82,9 @@ class BoundingBox (object):
     def getHeight(self): return self._size[1];
     def getLength(self): return self._size[2];
     
-    def setWidth(self, w): self.size[0] = int(w);
-    def setHeight(self, h): self.size[1] = int(h);
-    def setLength(self, l): self.size[2] = int(l);
+    def setWidth(self, w): self.size[0] = max(0, int(w))
+    def setHeight(self, h): self.size[1] = max(0, int(h))
+    def setLength(self, l): self.size[2] = max(0, int(l))
     
     width = property(getWidth, setWidth, None, "The dimension along the X axis");
     height = property(getHeight, setHeight, None, "The dimension along the Y axis");

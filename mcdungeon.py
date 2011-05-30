@@ -7,7 +7,7 @@ import logging
 import re
 from pymclevel import mclevel, nbt
 
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 __version_info__ = tuple([ int(num) for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 

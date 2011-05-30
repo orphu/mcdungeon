@@ -1,3 +1,9 @@
+v0.2.3 - 05/30/2011
+
+    * Updated pymclevel files to 2011-05-01 (commit 20223cae8edfc47a8723)
+      This will hopefully help with reading some types of levels that were
+      edited or genertaed with certain other tools. (Seibai, and others)
+
 v0.2.2 - 05/26/2011
 
     * Fixed an issue where multi-dungeon would bail out early when

@@ -194,6 +194,7 @@ class MCMaterials(object):
         self.flatColors[blockID, (blockData or slice(None))] = block.color
             
         texture = kw.pop('texture', None)
+        
         if texture:
             self.blockTextures[blockID,(blockData or slice(None))] = texture
         
@@ -261,6 +262,18 @@ am.Sapling = am.Block(6,
     texture=(0xF0,0x00),
     opacity=0,
     )
+
+am.BirchSapling = am.Block(6, blockData=1,
+    name="Birch Sapling",
+    texture=(0xF0,0x40),
+    opacity=0,
+    )
+am.SpruceSapling = am.Block(6, blockData=2,
+    name="Spruce Sapling",
+    texture=(0xF0,0x30),
+    opacity=0,
+    )
+
 
 am.Bedrock = am.Block(7, 
     name="Bedrock",
@@ -339,14 +352,42 @@ am.Leaves = am.Block(18,
     name="Leaves",
     texture=(0x50,0x30),
     opacity=1,
+    color=(99, 188, 76, 128),
     )
 
 am.PineLeaves = am.Block(18, blockData=1, 
     name="Pine Leaves",
     texture=(0x50,0x80),
     opacity=1,
+    color=(74, 131, 66, 128),
     )
 
+am.BirchLeaves = am.Block(18, blockData=2, 
+    name="Birch Leaves",
+    texture=(0x50,0x30),
+    opacity=1,
+    color=(89, 151, 76, 128),
+    )
+
+am.LeavesDecaying = am.Block(18, blockData=0 | 4, 
+    name="Leaves (Decaying)",
+    texture=(0x50,0x30),
+    opacity=1,
+    )
+
+am.PineLeavesDecaying = am.Block(18, blockData=1 | 4, 
+    name="Pine Leaves (Decaying)",
+    texture=(0x50,0x80),
+    opacity=1,
+    color=am.PineLeaves.color
+    )
+
+am.BirchLeavesDecaying = am.Block(18, blockData=2 | 4, 
+    name="Birch Leaves (Decaying)",
+    texture=(0x50,0x30),
+    opacity=1,
+    color=am.BirchLeaves.color
+    )    
 
 am.Sponge = am.Block(19, 
     name="Sponge",
@@ -384,9 +425,22 @@ am.NoteBlock = am.Block(25,
     texture=(0xA0,0x40),
     )
 
-am.Web = am.Block(30, 
-    name="Web",
-    texture=(0x10,0x30),
+am.Bed = am.Block(26, 
+    name="Bed",
+    texture=(0x60, 0x80),
+    opacity=0,
+    )
+
+am.PoweredRail = am.Block(27, 
+    name="Powered Rail",
+    texture=(0x30, 0xA0),
+    opacity=0,
+    )
+am.blockTextures[am.PoweredRail.ID][8:] = (0x30, 0xB0)
+
+am.DetectorRail = am.Block(28, 
+    name="Detector Rail",
+    texture=(0x30, 0xC0),
     opacity=0,
     )
 
@@ -627,7 +681,7 @@ am.Chest = am.Block(54,
 
 am.RedstoneWire = am.Block(55, 
     name="Redstone Wire",
-    texture=(0x40,0x60),
+    texture=(0x40,0xA0), #note: as of 1.5 the texture is unsaturated like leaves
     opacity=0,
     )
 
@@ -850,16 +904,19 @@ am.JackOLantern = am.Block(91,
 am.Cake = am.Block(92, 
     name="Cake",
     texture=((0xA0,0x70), (0xA0,0x70), (0x90,0x70), (0xC0,0x70), (0xA0,0x70), (0xA0,0x70)),
+    opacity=0,
     )
 
 am.RedstoneRepeaterOff = am.Block(93, 
     name="Redstone Repeater (Off)",
     texture=(0x30, 0x80),
+    opacity=0,
     )
 
 am.RedstoneRepeaterOn = am.Block(94, 
     name="Redstone Repeater (On)",
     texture=(0x30, 0x90),
+    opacity=0,
     )
 
 del am
