@@ -238,7 +238,7 @@ except ValueError:
 
 if (args.z < 2 and args.z >= 0):
     sys.exit('Too few rooms in Z direction. (%d) Try >= 2.'%(args.z))
-if (args.x < 2 and args.z >= 0):
+if (args.x < 2 and args.x >= 0):
     sys.exit('Too few rooms in X direction. (%d) Try >= 2.'%(args.x))
 if (args.levels == 0 or args.levels > 18):
     sys.exit('Invalid number of levels. (%d) Try between 1 and 18.'%(args.levels))
