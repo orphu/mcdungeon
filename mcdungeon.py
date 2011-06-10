@@ -264,7 +264,7 @@ if (args.number is not 1):
         cfg.offset = None
     if (args.entrance is not None):
         print 'WARN: Entrance option is ignored when generating multiple dungeons.'
-        cfg.offset = None
+        cfg.entrance = None
     if  (args.html is not None):
         print 'WARN: HTML option is ignored when generating multiple dungeons.'
         args.html = None
