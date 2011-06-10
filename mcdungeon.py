@@ -94,7 +94,7 @@ noi_parser.add_argument('x',
                         or provide a range.')
 noi_parser.add_argument('levels',
                     metavar='LEVELS',
-                    help='Number of levels. Use -1 for random, or provide a \
+                    help='Number of levels. Enter a positive value, or provide a \
                         range.')
 
 iargs = i_parser.parse_known_args()

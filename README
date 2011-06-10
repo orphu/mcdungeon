@@ -74,10 +74,10 @@ usage: mcdungeon.py [-h] [-v] [-c CFGFILE] [--write] [--skip-relight]
 positional arguments:
   SAVEDIR               Target world (path to save directory)
   Z                     Number of rooms West -> East. Use -1 for random, or
-                        provide a range.
+                        provide a range. (ie: 3-7)
   X                     Number of rooms North -> South. Use -1 for random, or
                         provide a range.
-  LEVELS                Number of levels. Use -1 for random, or provide a
+  LEVELS                Number of levels. Enter a positive value, or provide a
                         range.
 
 optional arguments:
