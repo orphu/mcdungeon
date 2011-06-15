@@ -73,7 +73,7 @@ v0.2.0 - 05/26/2011
     * Bugfix: Chests hovering above subfloor and half blocks in lava pits and
       treasure rooms.
 
-    * Several other bugs and unhandled exeptions fixed. 
+    * Several other bugs and unhandled exceptions fixed. 
 
 v0.1.0 - 04/27/2011
 
@@ -113,7 +113,7 @@ v0.1.0 - 04/27/2011
     * More verbose output in certain situations.
 
     * Configuration files are now kept in a directory named "configs" in the 
-      mcdungeon directory. Several example configs have been added. 
+      MCDungeon directory. Several example configs have been added. 
 
     * New config option: hard_mode - Hard mode will fill in caves under and
       around the dungeon in an attempt to concentrate monster spawns inside the
