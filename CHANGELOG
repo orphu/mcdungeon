@@ -1,3 +1,10 @@
+v0.3.0 - ??/??/????
+
+   * Bugfix: Fixed a problem parsing ranges when Z was fixed and X
+     was a range.
+
+   * Bugfix: Fixed bug with multi-dungeon not properly disabling -e 
+
 v0.2.3 - 05/30/2011
 
     * Updated pymclevel files to 2011-05-01 (commit 20223cae8edfc47a8723)

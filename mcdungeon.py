@@ -7,8 +7,8 @@ import logging
 import re
 from pymclevel import mclevel, nbt
 
-__version__ = '0.2.3'
-__version_info__ = tuple([ int(num) for num in __version__.split('.')])
+__version__ = '0.3.0-dev'
+__version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
 parent_parser = argparse.ArgumentParser(add_help=False,
