@@ -24,6 +24,14 @@ class Block(object):
         self.material = None
         self.data = 0
 
+class MazeCell(object):
+    states = enum('BLANK', 'USED')
+    def __init__(self, loc):
+        self.loc = loc
+        self.size = Vec(0,0,0)
+        self.depth = 0
+        self.state = 0
+
 class Dungeon (object):
     def __init__(self, xsize, zsize, levels, depths):
         self.rooms = {}
@@ -37,10 +45,11 @@ class Dungeon (object):
         self.xsize = xsize
         self.zsize = zsize
         self.levels = levels
-        self.maze = [ [ [ 0 for z in
-                    xrange(self.zsize) ] for y in
-                  xrange(self.levels) ] for x in
-                xrange(self.xsize) ]
+        self.maze = {}
+        for x in xrange(self.xsize):
+            for y in xrange(self.levels):
+                for z in xrange(self.zsize):
+                    self.maze[Vec(x,y,z)] = MazeCell(Vec(x,y,z))
         self.halls = [ [ [ [None, None, None, None] for z in
                          xrange(self.zsize) ] for y in
                        xrange(self.levels) ] for x in
@@ -297,90 +306,138 @@ class Dungeon (object):
         stairwells = []
         entrance_pos = None
         exit_pos = None
+        # Some convenient lookups.
+        # dirs holds vectors for moving in a cardinal direction.
         dirs = {'N': Vec(-1,0,0),
                 'S': Vec(1,0,0),
                 'E': Vec(0,0,1),
                 'W': Vec(0,0,-1)}
+        # Map dirs to room "sides" for hall placement.
         sides = {'N': 3,
                  'S': 1,
                  'E': 2,
                  'W': 0}
+        # opposite sides for setting the matching hall in the adjacent room. 
         osides = {'N': 1,
                   'S': 3,
                   'E': 0,
                   'W': 2}
+        # dkeys holds our valid directions.
         dkeys = dirs.keys()
+        # Our maze state flags
+        state = MazeCell.states
 
-        # Start in a random location on level 1
+        # Start in a random location on level 1, unless the -e
+        # options was used. 
         if (args_entrance is not None):
             x = args_entrance[1]
             z = args_entrance[0]
         else:
             x = random.randint(0, self.xsize-1)
             z = random.randint(0, self.zsize-1)
+
+        # A maximum depth value. No one room can be this deep on a single
+        # level. 
         maxdepth = self.xsize * self.zsize * self.levels + 1
+
+        # Generate a maze for each level. 
         for y in xrange(self.levels):
-            self.maze[x][y][z] = 1
+            # The first cell is "used" has a depth of 1 and a size of 1.
+            self.maze[Vec(x,y,z)].state = state.USED
+            self.maze[Vec(x,y,z)].depth = 1
+            self.maze[Vec(x,y,z)].size = Vec(1,1,1)
+            #print 'Set:', Vec(x,y,z)
+            # The first cell contains an entrance. This is a tower if we are on
+            # level 1, otherwise it's a stairwell. 
             if (y == 0):
                 entrance_pos = Vec(x,y,z)
             else:
                 stairwells.append(Vec(x,y,z))
             while 1:
-                # Walk the maze
+                # Walk the maze.
+                # Shuffle the directions.
                 random.shuffle(dkeys)
+                # Store the last known cell. 
                 lx = x
                 lz = z
+                # Work through all possible directions, looking for a valid
+                # one. 
                 for d in dkeys:
+                    # (nx, nz) is the next cell to consider. 
                     nx = x + dirs[d].x
                     nz = z + dirs[d].z
+                    # Check to see if the next cell is valid. It must
+                    # be within the bounds of the level, and not yet used. 
                     if (nx >= 0 and
                         nz >= 0 and
                         nx < self.xsize and
                         nz < self.zsize and
-                        self.maze[nx][y][nz] == 0):
-                        #depth += 1
-                        self.maze[nx][y][nz] = maxdepth
+                        self.maze[Vec(nx,y,nz)].state == state.BLANK):
+                        # Set the status to maxdepth. Later we will calculate
+                        # this. 
+                        self.maze[Vec(nx,y,nz)].depth = maxdepth
+                        self.maze[Vec(nx,y,nz)].state = state.USED
+                        self.maze[Vec(nx,y,nz)].size = Vec(1,1,1)
+                        # Mark the halls leaving the current cell and the
+                        # next cell as used. We'll set the hall class
+                        # later. 
                         self.halls[x][y][z][sides[d]] = 1
                         self.halls[nx][y][nz][osides[d]] = 1
+                        # Set the current cell. 
                         x = nx
                         z = nz
+                        # We found a good cell, no need to look further.
+                        #print 'Moved:', d, dirs[d]
+                        #print 'Set:', Vec(x,y,z)
                         break
 
-                # If we're stuck, hunt for a new location.
+                # If we're stuck, hunt for a new starting cell. If
+                # the above loop found a direction to move then we skip
+                # this. Otherwise we start at (0,0) and try to find an
+                # unused cell that has a used neighbor we can connect to.  
                 if (lx == x and lz == z):
+                    #print 'Hunting...'
                     for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
-                        if (self.maze[p.x][y][p.z] > 0):
+                        # Cell was used, keep looking.
+                        if (self.maze[Vec(p.x,y,p.z)].state != state.BLANK):
                             continue
+                        # Cell is unused. Let's try to connect it to a
+                        # neighbor. First, catalog which directions have a
+                        # used neighbor. 
                         neighbors = []
-                        if (p.x > 0 and self.maze[p.x-1][y][p.z] > 0):
-                            neighbors.append('N')
-                        if (p.z > 0 and self.maze[p.x][y][p.z-1] > 0):
-                            neighbors.append('W')
-                        if (p.x < self.xsize-1 and
-                            self.maze[p.x+1][y][p.z] > 0):
-                            neighbors.append('S')
-                        if (p.z < self.zsize-1 and
-                            self.maze[p.x][y][p.z+1] > 0):
-                            neighbors.append('E')
+                        for d in dkeys:
+                            key = Vec(p.x,y,p.z)+dirs[d]
+                            if(key in self.maze and
+                               self.maze[key].state != state.BLANK ):
+                                neighbors.append(d)
+                        # If there are no used neighbors, keep looking. 
                         if (len(neighbors) == 0):
                             continue
+                        # We found one! Pick a random used neighbor cell
+                        # and connect the halls. Set our current cell and move
+                        # on. 
                         d = random.choice(neighbors)
                         x = p.x
                         z = p.z
                         ox = x + dirs[d].x
                         oz = z + dirs[d].z
-                        #depth =  self.maze[ox][y][oz] + 1
-                        self.maze[x][y][z] = maxdepth
+                        #print 'Set:', Vec(x,y,z), 'connect to', Vec(ox,y,oz)
+                        self.maze[Vec(x,y,z)].depth = maxdepth
+                        self.maze[Vec(x,y,z)].state = state.USED
+                        self.maze[Vec(x,y,z)].size = Vec(1,1,1)
                         self.halls[x][y][z][sides[d]] = 1
                         self.halls[ox][y][oz][osides[d]] = 1
                         break
 
-                # All cells are filled. We're done with this level.
+                # If the last cell and current cell are still the same (we could
+                # not move, and the hunt failed) then we've filled the level. 
                 # Recalculate the depth tree and find the deepest cell on
-                # this level and use it for the # stairwell on the next
+                # this level and use it for the stairwell on the next.
                 if (lx == x and lz == z):
-                    # insert some loops
+                    #print 'Finished level'
+                    # Insert some extra hallways into the dungeon using the
+                    # loops config parameter. 
                     for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
                         for d in dirs.keys():
@@ -400,26 +457,26 @@ class Dungeon (object):
                         recurse = False
                         for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
-                            if (self.maze[p.x][y][p.z] == maxdepth):
+                            if (self.maze[Vec(p.x,y,p.z)].depth == maxdepth):
                                 recurse = True
                                 depth = maxdepth
                                 for d in dirs.keys():
                                     if (self.halls[p.x][y][p.z][sides[d]]==1):
                                         depth = min(
-                                self.maze[p.x+dirs[d].x][y][p.z+dirs[d].z]+1,
-                                self.maze[p.x][y][p.z])
-                                        self.maze[p.x][y][p.z] = depth
+                                self.maze[Vec(p.x,y,p.z)+dirs[d]].depth+1,
+                                self.maze[Vec(p.x,y,p.z)].depth)
+                                        self.maze[Vec(p.x,y,p.z)].depth = depth
                     # Find the deepest cell on this level.
                     depth = 0
                     for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
-                        if (self.maze[p.x][y][p.z] > depth):
-                            depth = self.maze[p.x][y][p.z]
+                        if (self.maze[Vec(p.x,y,p.z)].depth > depth):
+                            depth = self.maze[Vec(p.x,y,p.z)].depth
                             x = p.x
                             z = p.z
                     break
 
-        # The exit!
+        # The exit is the deepest cell on this level. 
         exit_pos = Vec(x, y, z)
 
         print 'Entrance:', entrance_pos
@@ -433,7 +490,7 @@ class Dungeon (object):
                room.canvasWidth() < 8 or
                room.canvasLength() < 8 or
                len(room.features) > 0):
-            room = rooms.new(weighted_choice(cfg.master_rooms),
+            room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
                              self,
                              pos)
         feature = features.new('entrance', room)
@@ -449,7 +506,7 @@ class Dungeon (object):
                room.canvasWidth() < 8 or
                room.canvasLength() < 8 or
                len(room.features) > 0):
-            room = rooms.new(weighted_choice(cfg.master_rooms),
+            room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
                              self,
                              pos)
         if (cfg.mvportal is not ''):
@@ -468,7 +525,7 @@ class Dungeon (object):
                    room.canvasWidth() < 6 or
                    room.canvasLength() < 8 or
                    len(room.features) > 0):
-                room = rooms.new(weighted_choice(cfg.master_rooms),
+                room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
                                  self,
                                  pos)
             feature = features.new('stairwell', room)
@@ -481,7 +538,7 @@ class Dungeon (object):
                    room.canvasWidth() < 6 or
                    room.canvasLength() < 8 or
                    len(room.features) > 0):
-                room = rooms.new(weighted_choice(cfg.master_rooms),
+                room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
                                  self,
                                  posup)
             feature = features.new('blank', room)
@@ -490,18 +547,36 @@ class Dungeon (object):
             self.setroom(posup, room)
 
         # Fill-in the rest of the rooms.
-        for y in xrange(self.levels):
-            for x in xrange(self.xsize):
-                for z in xrange(self.zsize):
-                    if (self.maze[x][y][z] == 0):
-                        print "WARNING: Blank room at", x, y, z
-                        continue
-                    pos = Vec(x,y,z)
-                    room = None
-                    room = rooms.new(weighted_choice(cfg.master_rooms),
-                                     self,
-                                     pos)
-                    self.setroom(pos, room)
+        # Iterate through random cells in the maze filling it in with rooms as
+        # we go. 
+        keys = self.maze.keys()
+        shuffle(keys)
+        for pos in keys:
+            if (self.maze[pos].state == state.BLANK):
+                print "WARNING: Blank room at", pos
+                continue
+            if pos not in self.rooms:
+                # Figure out our size limit
+                max_size = Vec(0,0,0)
+                # Figure out our maximum volume. 
+                while (pos.x+max_size.x+1 < self.xsize-1  and
+                       any(p in self.rooms for p in iterate_cube(pos,
+                                        pos+max_size+Vec(1,0,0))) is False):
+                    max_size.x += 1
+                while (pos.z+max_size.z < self.zsize-1  and
+                       any(p in self.rooms for p in iterate_cube(pos,
+                                        pos+max_size+Vec(0,0,1))) is False):
+                    max_size.z += 1
+                while (pos.y+max_size.y < self.levels-1  and
+                       any(p in self.rooms for p in iterate_cube(pos,
+                                        pos+max_size+Vec(0,1,0))) is False):
+                    max_size.y += 1
+                max_size = max_size + Vec(1,1,1)
+                room = rooms.new(rooms.pickRoom(Vec(1,1,1), max_size),
+                                 self,
+                                 pos)
+                print 'Room',room._name,'at',pos,' max_size:', max_size
+                self.setroom(pos, room)
 
 
     def genhalls(self):

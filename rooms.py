@@ -1,3 +1,6 @@
+import sys
+import inspect
+
 import materials
 import halls
 import floors
@@ -12,6 +15,8 @@ from noise import pnoise3
 class Blank(object):
     _name = 'blank'
     _min_size = Vec(1,1,1)
+    _max_size = Vec(1,1,1)
+    size = Vec(1,1,1)
 
     def __init__ (self, parent, pos):
         self.parent = parent
@@ -33,7 +38,7 @@ class Blank(object):
         pass
 
     def setData(self):
-        # North, East, South, West
+        # West, South, East, North
         self.hallLength = [0,0,0,0]
         self.hallSize = [[1,15], [1,15], [1,15], [1,15]]
         self.canvas = (
@@ -108,26 +113,29 @@ class Basic(Blank):
         self.ceil_func = iterate_cube
         self.floor_func = iterate_cube
         self.air_func = iterate_cube
-        self.c1 = self.loc + Vec(2,self.parent.room_height-2,2)
-        self.c3 = self.c1 + Vec(self.parent.room_size-5,
-                                0,
-                                self.parent.room_size-5)
-        # North, East, South, West
+
+        # size of the room
+        sx = self.size.x * self.parent.room_size
+        sz = self.size.z * self.parent.room_size
+        sy = self.size.y * self.parent.room_height
+
+        # Some paramters. 
+        self.c1 = self.loc + Vec(2,sy-2,2)
+        self.c3 = self.c1 + Vec(sx-5, 0, sz-5)
+
         self.hallLength = [3,3,3,3]
-        self.hallSize = [[2,self.parent.room_size-2],
-                         [2,self.parent.room_size-2],
-                         [2,self.parent.room_size-2],
-                         [2,self.parent.room_size-2]]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
         self.canvas = (
-            Vec(4,self.parent.room_height-2,4),
-            Vec(self.parent.room_size-5,self.parent.room_height-2,4),
-            Vec(self.parent.room_size-5,
-                self.parent.room_height-2,
-                self.parent.room_size-5),
-            Vec(4,self.parent.room_height-2,self.parent.room_size-5))
+            Vec(4   ,sy-2, 4),
+            Vec(sx-5,sy-2, 4),
+            Vec(sx-5,sy-2, sz-5),
+            Vec(4   ,sy-2, sz-5))
 
     def render (self):
-        height = self.parent.room_height-2
+        height = self.size.y * self.parent.room_height - 2
         # Air space
         for x in self.air_func(self.c1.up(1), self.c3.up(3)):
             self.parent.setblock(x, materials.Air)
@@ -135,17 +143,76 @@ class Basic(Blank):
         for x in self.floor_func(self.c1, self.c3):
             self.parent.setblock(x, materials._floor)
         # Ceiling
-        for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
+        for x in self.ceil_func(self.c1.up(height), self.c3.up(height)):
             self.parent.setblock(x, materials._ceiling)
         # Walls
         for x in self.wall_func(self.c1, self.c3, height):
             self.parent.setblock(x, materials._wall)
         # Subfloor
-        for x in iterate_plane(self.loc.down(self.parent.room_height-1),
-                                    self.loc.trans(self.parent.room_size-1,
-                                                  self.parent.room_height-1,
-                                                  self.parent.room_size-1)):
+        sf1 = self.loc.trans(0,
+                             self.size.y * self.parent.room_height - 1,
+                             0)
+        sf2 = sf1.trans(self.size.x * self.parent.room_size-1,
+                       0,
+                       self.size.z * self.parent.room_size-1)
+        for x in iterate_plane(sf1, sf2):
             self.parent.setblock(x, materials._subfloor)
+
+class Basic2x2(Basic):
+    _name = 'basic2x2'
+    _min_size = Vec(2,1,2)
+    _max_size = Vec(2,1,2)
+    size = Vec(2,1,2)
+
+    def placed(self):
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # Fix our halls so they only show N and W sides
+        # West, South, East, North
+        pos = self.pos
+        self.hallLength = [3,0,0,3]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        # place three more blank rooms to hold the hallways
+        # This is the Southern room
+        pos = self.pos + Vec(1,0,0)
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [3,3,0,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.canvas = (
+            Vec(4   ,sy-2, 4),
+            Vec(sx-5,sy-2, 4),
+            Vec(sx-5,sy-2, sz-5),
+            Vec(4   ,sy-2, sz-5))
+
+        # Eastern room.
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [0,0,3,3]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        # South East room.
+        pos = self.pos + Vec(1,0,1)
+        self.parent.halls[pos.x][pos.y][pos.z][0] = 0
+        self.parent.halls[pos.x][pos.y][pos.z][3] = 0
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [0,3,3,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+
 
 
 class Circular(Basic):
@@ -184,6 +251,9 @@ class Circular(Basic):
 
 class Pit(Blank):
     _name = 'pit'
+    _min_size = Vec(1,1,1)
+    _max_size = Vec(1,18,1)
+    size = Vec(1,1,1)
 
     def setData(self):
         self.midroom = 'pitmid'
@@ -743,45 +813,37 @@ class Corridor(Blank):
                         self.parent.setblock(x, mat)
                 h += 1
 
+# Catalog the rooms we know about. 
+_rooms = {}
+# List of classes in this module.
+for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    # Only count the ones that are subclasses if of rooms.Blank
+    if issubclass(obj, Blank):
+        _rooms[obj._name] = obj
+
+print _rooms
 
 def new (name, parent, pos):
-    if (name == 'basic'):
-            return Basic(parent, pos)
-    if (name == 'corridor'):
-            return Corridor(parent, pos)
-    if (name == 'circular'):
-            return Circular(parent, pos)
-    if (name == 'pit'):
-            return Pit(parent, pos)
-    if (name == 'pitmid'):
-            return PitMid(parent, pos)
-    if (name == 'pitbottom'):
-            return PitBottom(parent, pos)
-    if (name == 'circularpit'):
-            return CircularPit(parent, pos)
-    if (name == 'circularpitmid'):
-            return CircularPitMid(parent, pos)
-    if (name == 'circularpitbottom'):
-            return CircularPitBottom(parent, pos)
+    '''Return a new instance of the room of a given name. Supply the parent
+    dungeon object and maze position.'''
+    if name in _rooms.keys():
+        return _rooms[name](parent, pos)
     return Blank(parent, pos)
 
-def sizeByName (name):
-    if (name == 'basic'):
-        return Basic._min_size
-    if (name == 'corridor'):
-        return Corridor._min_size
-    if (name == 'circular'):
-        return Circular._min_size
-    if (name == 'pit'):
-        return Pit._min_size
-    if (name == 'pitmid'):
-        return PitMid._min_size
-    if (name == 'pitbottom'):
-        return PitBottom._min_size
-    if (name == 'circularpit'):
-        return CircularPit._min_size
-    if (name == 'circularpitmid'):
-        return CircularPitMid._min_size
-    if (name == 'circularpitbottom'):
-        return CircularPitBottom._min_size
-    return Blank._min_size
+def pickRoom (min_size, max_size):
+    '''Returns the name of a valid room class given min and max sizes. Rooms
+    will be chosen from a weighted list based on cfg.master_rooms, with a
+    fallback to Basic.'''
+    room_list = weighted_shuffle(cfg.master_rooms)
+    while (len(room_list)):
+        newroom = room_list.pop()
+        if newroom not in _rooms:
+            continue
+        tmin = _rooms[newroom]._min_size
+        tmax = _rooms[newroom]._max_size
+        #print '    Trying',newroom, min_size, max_size, tmin, tmax
+        if (max_size.x >= tmin.x and
+            max_size.y >= tmin.y and
+            max_size.z >= tmin.z ):
+            return newroom
+    return 'basic'
