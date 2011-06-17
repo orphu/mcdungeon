@@ -463,3 +463,13 @@ def findChunkDepth(p, world):
                 y = y - 1
             depth = min(y, depth)
     return depth
+
+def enum(*sequential, **named):
+    '''Defines an object that can be used as an enum. Example:
+        > Numbers = enum('ZERO', 'ONE', 'TWO')
+        > Numbers.ZERO
+        0
+        > Numbers.ONE
+        1'''
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    return type('Enum', (), enums)
