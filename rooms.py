@@ -830,20 +830,26 @@ def new (name, parent, pos):
         return _rooms[name](parent, pos)
     return Blank(parent, pos)
 
-def pickRoom (min_size, max_size):
-    '''Returns the name of a valid room class given min and max sizes. Rooms
+def pickRoom (rooms, dsize, pos, maxsize):
+    '''Returns the name of a valid room class given rthe current maze. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
     fallback to Basic.'''
     room_list = weighted_shuffle(cfg.master_rooms)
+    room_list.insert(0, 'Basic')
     while (len(room_list)):
         newroom = room_list.pop()
         if newroom not in _rooms:
             continue
-        tmin = _rooms[newroom]._min_size
-        tmax = _rooms[newroom]._max_size
-        #print '    Trying',newroom, min_size, max_size, tmin, tmax
-        if (max_size.x >= tmin.x and
-            max_size.y >= tmin.y and
-            max_size.z >= tmin.z ):
+        size = _rooms[newroom]._min_size - Vec(1,1,1)
+        print '\t',newroom, 'Size:', size+Vec(1,1,1), 'Max:', maxsize, 'Dungeon:', dsize
+        if (pos.x + size.x < dsize.x and
+            pos.y + size.y < dsize.y and
+            pos.z + size.z < dsize.z and
+            size.x+1 <= maxsize.x and
+            size.y+1 <= maxsize.y and
+            size.z+1 <= maxsize.z and
+            any(p in rooms for p in iterate_cube(pos, pos+size)) is False):
+            print 'Room:', newroom, 'at', pos
             return newroom
+    print 'Room: basic', 'at', pos
     return 'basic'

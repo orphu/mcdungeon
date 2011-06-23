@@ -490,7 +490,12 @@ class Dungeon (object):
                room.canvasWidth() < 8 or
                room.canvasLength() < 8 or
                len(room.features) > 0):
-            room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
+            room = rooms.new(rooms.pickRoom(self.rooms,
+                                            Vec(self.xsize,
+                                                self.levels,
+                                                self.zsize),
+                                            pos,
+                                            Vec(1,1,1)),
                              self,
                              pos)
         feature = features.new('entrance', room)
@@ -506,7 +511,12 @@ class Dungeon (object):
                room.canvasWidth() < 8 or
                room.canvasLength() < 8 or
                len(room.features) > 0):
-            room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
+            room = rooms.new(rooms.pickRoom(self.rooms,
+                                            Vec(self.xsize,
+                                                self.levels,
+                                                self.zsize),
+                                            pos,
+                                            Vec(1,1,1)),
                              self,
                              pos)
         if (cfg.mvportal is not ''):
@@ -525,7 +535,12 @@ class Dungeon (object):
                    room.canvasWidth() < 6 or
                    room.canvasLength() < 8 or
                    len(room.features) > 0):
-                room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
+                room = rooms.new(rooms.pickRoom(self.rooms,
+                                            Vec(self.xsize,
+                                                self.levels,
+                                                self.zsize),
+                                            pos,
+                                            Vec(1,1,1)),
                                  self,
                                  pos)
             feature = features.new('stairwell', room)
@@ -538,7 +553,12 @@ class Dungeon (object):
                    room.canvasWidth() < 6 or
                    room.canvasLength() < 8 or
                    len(room.features) > 0):
-                room = rooms.new(rooms.pickRoom(Vec(1,1,1), Vec(1,1,1)),
+                room = rooms.new(rooms.pickRoom(self.rooms,
+                                            Vec(self.xsize,
+                                                self.levels,
+                                                self.zsize),
+                                            pos,
+                                            Vec(1,1,1)),
                                  self,
                                  posup)
             feature = features.new('blank', room)
@@ -556,26 +576,14 @@ class Dungeon (object):
                 print "WARNING: Blank room at", pos
                 continue
             if pos not in self.rooms:
-                # Figure out our size limit
-                max_size = Vec(0,0,0)
-                # Figure out our maximum volume. 
-                while (pos.x+max_size.x+1 < self.xsize-1  and
-                       any(p in self.rooms for p in iterate_cube(pos,
-                                        pos+max_size+Vec(1,0,0))) is False):
-                    max_size.x += 1
-                while (pos.z+max_size.z < self.zsize-1  and
-                       any(p in self.rooms for p in iterate_cube(pos,
-                                        pos+max_size+Vec(0,0,1))) is False):
-                    max_size.z += 1
-                while (pos.y+max_size.y < self.levels-1  and
-                       any(p in self.rooms for p in iterate_cube(pos,
-                                        pos+max_size+Vec(0,1,0))) is False):
-                    max_size.y += 1
-                max_size = max_size + Vec(1,1,1)
-                room = rooms.new(rooms.pickRoom(Vec(1,1,1), max_size),
+                room = rooms.new(rooms.pickRoom(self.rooms,
+                                            Vec(self.xsize,
+                                                self.levels,
+                                                self.zsize),
+                                            pos,
+                                            Vec(10,18,10)),
                                  self,
                                  pos)
-                print 'Room',room._name,'at',pos,' max_size:', max_size
                 self.setroom(pos, room)
 
 
