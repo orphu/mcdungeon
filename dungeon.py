@@ -187,7 +187,9 @@ class Dungeon (object):
         # The final list. Make a choice!
         print 'Found',len(final_positions),'possible locations.'
         try:
-            self.position = random.choice(final_positions.values())
+            self.position = random.choice(final_positions.values()) + Vec(0,
+                                                                          -1,
+                                                                          0)
         except:
             return False
         print 'Final location: (%d, %d, %d)'% (self.position.x,
