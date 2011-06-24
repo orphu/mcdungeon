@@ -186,11 +186,11 @@ class Basic2x2(Basic):
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
-        room.canvas = (
-            Vec(4   ,sy-2, 4),
-            Vec(sx-5,sy-2, 4),
-            Vec(sx-5,sy-2, sz-5),
-            Vec(4   ,sy-2, sz-5))
+        #room.canvas = (
+        #    Vec(4   ,sy-2, 4),
+        #    Vec(sx-5,sy-2, 4),
+        #    Vec(sx-5,sy-2, sz-5),
+        #    Vec(4   ,sy-2, sz-5))
 
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
