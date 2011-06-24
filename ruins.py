@@ -1,3 +1,6 @@
+import sys
+import inspect
+
 import materials
 import utils
 import rooms
@@ -136,14 +139,18 @@ def ruinBlocks (p1, p2, height, dungeon):
                 dungeon.delblock(p)
                 #dungeon.setblock(p, materials.TNT)
 
+# Catalog the ruins we know about. 
+_ruins = {}
+# List of classes in this module.
+for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    # Only count the ones that are subclasses if of ruins.Blank
+    if issubclass(obj, Blank):
+        _ruins[obj._name] = obj
 
 def new (name, parent):
-    if (name == 'blank'):
-        return Blank(parent)
-    if (name == 'circulartower'):
-        return CircularTower(parent)
-    if (name == 'squaretower'):
-        return SquareTower(parent)
-    if (name == 'arches'):
-        return Arches(parent)
+    '''Return a new instance of the ruin of a given name. Supply the parent
+    dungeon object.'''
+    if name in _ruins.keys():
+        return _ruins[name](parent)
     return Blank(parent)
+

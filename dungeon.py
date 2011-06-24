@@ -148,6 +148,7 @@ class Dungeon (object):
             len(dungeon_locations) > 0):
             print 'Marking distances...'
             for chunk in positions:
+                spin()
                 d = 2^64
                 for dungeon in dungeon_locations:
                     d = min(d, (dungeon - chunk).mag2d())
@@ -832,34 +833,25 @@ class Dungeon (object):
 
     def renderhalls(self):
         ''' Call render() on all halls'''
-        count = len(self.rooms)*4
         for pos in self.rooms:
             for x in xrange(0,4):
                 if (self.rooms[pos].halls[x]):
                     self.rooms[pos].halls[x].render()
-                count -= 1
-                if (count%10 == 0):
-                    spin(count)
+                    spin()
 
     def renderfloors(self):
         ''' Call render() on all floors'''
-        count = len(self.rooms)
         for pos in self.rooms:
             for x in self.rooms[pos].floors:
                 x.render()
-                count -= 1
-                if (count%10 == 0):
-                    spin(count)
+                spin()
 
     def renderfeatures(self):
         ''' Call render() on all features'''
-        count = len(self.rooms)
         for pos in self.rooms:
             for x in self.rooms[pos].features:
                 x.render()
-                count -= 1
-                if (count%10 == 0):
-                    spin(count)
+                spin()
 
     def renderruins(self):
         ''' Call render() on all ruins'''

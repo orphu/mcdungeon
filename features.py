@@ -1,3 +1,6 @@
+import sys
+import inspect
+
 import materials
 import rooms
 import ruins
@@ -370,25 +373,17 @@ class Pool(Blank):
             self.parent.parent.setblock(p.up(1), materials.StoneSlab)
 
 
+# Catalog the features we know about. 
+_features = {}
+# List of classes in this module.
+for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    # Only count the ones that are subclasses if of features.Blank
+    if issubclass(obj, Blank):
+        _features[obj._name] = obj
+
 def new (name, parent):
-    if (name == 'blank'):
-        return Blank(parent)
-    if (name == 'entrance'):
-        return Entrance(parent)
-    if (name == 'stairwell'):
-        return Stairwell(parent)
-    if (name == 'columns'):
-        return Columns(parent)
-    if (name == 'chasm'):
-        return Chasm(parent)
-    if (name == 'lavachasm'):
-        return LavaChasm(parent)
-    if (name == 'river'):
-        return River(parent)
-    if (name == 'treasureroom'):
-        return TreasureRoom(parent)
-    if (name == 'multiverseportal'):
-        return MultiVersePortal(parent)
-    if (name == 'pool'):
-        return Pool(parent)
+    '''Return a new instance of the feature of a given name. Supply the parent
+    dungeon object.'''
+    if name in _features.keys():
+        return _features[name](parent)
     return Blank(parent)

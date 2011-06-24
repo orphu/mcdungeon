@@ -821,8 +821,6 @@ for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
     if issubclass(obj, Blank):
         _rooms[obj._name] = obj
 
-print _rooms
-
 def new (name, parent, pos):
     '''Return a new instance of the room of a given name. Supply the parent
     dungeon object and maze position.'''
@@ -841,7 +839,7 @@ def pickRoom (rooms, dsize, pos, maxsize):
         if newroom not in _rooms:
             continue
         size = _rooms[newroom]._min_size - Vec(1,1,1)
-        print '\t',newroom, 'Size:', size+Vec(1,1,1), 'Max:', maxsize, 'Dungeon:', dsize
+        #print '\t',newroom, 'Size:', size+Vec(1,1,1), 'Max:', maxsize, 'Dungeon:', dsize
         if (pos.x + size.x < dsize.x and
             pos.y + size.y < dsize.y and
             pos.z + size.z < dsize.z and
@@ -849,7 +847,7 @@ def pickRoom (rooms, dsize, pos, maxsize):
             size.y+1 <= maxsize.y and
             size.z+1 <= maxsize.z and
             any(p in rooms for p in iterate_cube(pos, pos+size)) is False):
-            print 'Room:', newroom, 'at', pos
+            #print 'Room:', newroom, 'at', pos
             return newroom
-    print 'Room: basic', 'at', pos
+    #print 'Room: basic', 'at', pos
     return 'basic'

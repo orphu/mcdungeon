@@ -1,3 +1,6 @@
+import sys
+import inspect
+
 import materials
 import doors
 import portcullises
@@ -6,6 +9,7 @@ from utils import *
 from random import *
 
 class Blank(object):
+    _name = 'blank'
     size = 0
     def __init__(self, parent, direction, offset):
         self.parent = parent
@@ -16,12 +20,14 @@ class Blank(object):
 
 
 class Single(Blank):
+    _name = 'single'
     size = 3
     def render (self):
         drawHall(self)
 
 
 class Double(Blank):
+    _name = 'double'
     size = 4
     def render (self):
         drawHall(self)
@@ -29,18 +35,21 @@ class Double(Blank):
 
 
 class Triple(Blank):
+    _name = 'triple'
     size = 5
     def render (self):
         drawHall(self)
 
 
 class Four(Blank):
+    _name = 'four'
     size = 6
     def render (self):
         drawHall(self)
 
 
 class Ten(Blank):
+    _name = 'ten'
     size = 12
     def render (self):
         drawHall(self)
@@ -220,19 +229,6 @@ def drawHall (hall):
                 pen += stepw
                 hall.parent.parent.portcullises[port].portcullises[pen] = True
 
-def new (name, parent, direction, offset):
-    if (name == 'single'):
-            return Single(parent, direction, offset)
-    if (name == 'double'):
-            return Double(parent, direction, offset)
-    if (name == 'triple'):
-            return Triple(parent, direction, offset)
-    if (name == 'four'):
-            return Four(parent, direction, offset)
-    if (name == 'ten'):
-            return Ten(parent, direction, offset)
-    return Blank(parent, direction, offset)
-
 def sizeByName (name):
     if (name == 'single'):
             return Single.size
@@ -244,4 +240,24 @@ def sizeByName (name):
             return Four.size
     if (name == 'ten'):
             return Ten.size
+    return Blank.size
+
+# Catalog the halls we know about. 
+_halls = {}
+# List of classes in this module.
+for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    # Only count the ones that are subclasses if of halls.Blank
+    if issubclass(obj, Blank):
+        _halls[obj._name] = obj
+
+def new (name, parent, direction, offset):
+    '''Return a new instance of the hall of a given name. Supply the parent
+    dungeon object.'''
+    if name in _halls.keys():
+        return _halls[name](parent, direction, offset)
+    return Blank(parent, direction, offset)
+
+def sizeByName(name):
+    if name in _halls:
+        return _halls[name].size
     return Blank.size

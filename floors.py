@@ -1,3 +1,6 @@
+import sys
+import inspect
+
 import materials
 import random
 from noise import *
@@ -317,25 +320,17 @@ class Bridges(Blank):
         for p in iterate_cube(offset+c3,offset+c4):
             self.parent.parent.setblock(p, mat)
 
+# Catalog the floors we know about. 
+_floors = {}
+# List of classes in this module.
+for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+    # Only count the ones that are subclasses if of floors.Blank
+    if issubclass(obj, Blank):
+        _floors[obj._name] = obj
+
 def new (name, parent):
-    if (name == 'cobble'):
-            return Cobble(parent)
-    if (name == 'brokencobble'):
-            return BrokenCobble(parent)
-    if (name == 'doubleslab'):
-            return DoubleSlab(parent)
-    if (name == 'brokendoubleslab'):
-            return BrokenDoubleSlab(parent)
-    if (name == 'woodtile'):
-            return WoodTile(parent)
-    if (name == 'checkerrug'):
-            return CheckerRug(parent)
-    if (name == 'brokencheckerrug'):
-            return BrokenCheckerRug(parent)
-    if (name == 'mud'):
-            return Mud(parent)
-    if (name == 'sand'):
-            return Sand(parent)
-    if (name == 'bridges'):
-            return Bridges(parent)
+    '''Return a new instance of the floor of a given name. Supply the parent
+    dungeon object.'''
+    if name in _floors.keys():
+        return _floors[name](parent)
     return Blank(parent)
