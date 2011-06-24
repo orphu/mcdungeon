@@ -270,17 +270,17 @@ class Chasm(Blank):
         if (self.parent.canvasWidth() < 4 or
             self.parent.canvasLength() < 4):
             return
-        # We'll render across the while block, since that will look cool
+        # We'll render across the whole block, since that will look cool
         y = self.parent.canvasHeight()
         flip = random.randint(0,1)
-        for x in xrange(2, self.parent.parent.room_size-2):
+        for x in xrange(2, self.parent.parent.room_size*self.parent.size.x-2):
             if (flip == 1):
                 for p in iterate_cube(self.parent.loc +
-                                      Vec(self.parent.parent.room_size-x-1,
+                                      Vec(self.parent.parent.room_size*self.parent.size.x-x-1,
                                           y,
                                           x+random.randint(-1,0)),
                                       self.parent.loc +
-                                      Vec(self.parent.parent.room_size-x-1,
+                                      Vec(self.parent.parent.room_size*self.parent.size.x-x-1,
                                           y + self.depth,
                                           x+random.randint(1,2))
                                      ):
