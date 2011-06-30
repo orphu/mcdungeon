@@ -43,6 +43,13 @@ class new:
             print
         print
 
+    def iterate_walls(self):
+        for c in xrange(0,self.__width):
+            for r in xrange(0,self.__length):
+                if self.__map[r][c] == WALL:
+                    if (self.__adj_flr_count(r, c) > 0):
+                        yield (c, r)
+
     def iterate_map(self, cell_type):
         for c in xrange(0,self.__width):
             for r in xrange(0,self.__length):
@@ -51,7 +58,13 @@ class new:
 
     def add_exit(self, pt1, pt2):
         while (pt1 != pt2):
-            self.__exits.append(pt1)
+            if (pt1[0] < 0 or
+                pt1[0] >= self.__width or
+                pt1[1] < 0 or
+                pt1[1] >= self.__length):
+                print 'WARN: Exit out of range',pt1
+            else:
+                self.__exits.append(pt1)
             pt1 = (pt1[0] + cmp(pt2[0], pt1[0]),
                    pt1[1] + cmp(pt2[1], pt1[1]))
 
@@ -122,6 +135,19 @@ class new:
                     p[1] >= self.__length-1):
                     continue
                 a_map[p[0]][p[1]] = FLOOR
+
+    def __adj_flr_count(self,sr,sc):
+        count = 0
+        for pos in ((-1,0), (1,0), (0,-1), (0,1)):
+            p = (sr+pos[0], sc+pos[1])
+            if (p[0] < 0 or p[1] < 0):
+                continue
+            if (p[0] > self.__width-1 or
+                p[1] > self.__length-1):
+                continue
+            if (self.__map[p[0]][p[1]] == FLOOR):
+                count += 1
+        return count
 
     def __adj_wall_count(self,sr,sc,rng=1):
         count = 0
