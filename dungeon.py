@@ -744,7 +744,10 @@ class Dungeon (object):
             # Catalog all valid points in the room that can hold a chest.
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
-                if point not in self.blocks:
+                if (point not in self.blocks or
+                    point.up(1) not in self.blocks or
+                    point.up(2) not in self.blocks or
+                    point.down(1) not in self.blocks):
                     continue
                 if(self.blocks[point].material.val not in ignore and
                    self.blocks[point.up(1)].material.val == 0 and 
@@ -799,7 +802,10 @@ class Dungeon (object):
             # Catalog all valid points in the room that can hold a spawner.
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
-                if point not in self.blocks:
+                if (point not in self.blocks or
+                    point.up(1) not in self.blocks or
+                    point.up(2) not in self.blocks or
+                    point.down(1) not in self.blocks):
                     continue
                 if(self.blocks[point].material.val not in ignore and
                    self.blocks[point.up(1)].material.val == 0):
@@ -870,7 +876,7 @@ class Dungeon (object):
         layer = (floor-1)*self.room_height
         for x in xrange(self.xsize*self.room_size):
             for z in xrange(self.zsize*self.room_size):
-                y = layer
+                y = layer + 1
                 while (y < layer + self.room_height - 1 and
                        Vec(x,y,z) in self.blocks and
                          (self.blocks[Vec(x,y,z)].material == materials.Air or
@@ -942,7 +948,7 @@ class Dungeon (object):
             for x in xrange(self.xsize*self.room_size):
                 f.write('<tr>')
                 for z in xrange(self.zsize*self.room_size):
-                    y = layer
+                    y = layer + 1
                     while (y < layer + self.room_height - 1 and
                            Vec(x,y,z) in self.blocks and
                             (self.blocks[Vec(x,y,z)].material ==
