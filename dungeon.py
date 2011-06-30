@@ -744,6 +744,8 @@ class Dungeon (object):
             # Catalog all valid points in the room that can hold a chest.
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
+                if point not in self.blocks:
+                    continue
                 if(self.blocks[point].material.val not in ignore and
                    self.blocks[point.up(1)].material.val == 0 and 
                    self.blocks[point.up(2)].material.val == 0):
@@ -797,6 +799,8 @@ class Dungeon (object):
             # Catalog all valid points in the room that can hold a spawner.
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
+                if point not in self.blocks:
+                    continue
                 if(self.blocks[point].material.val not in ignore and
                    self.blocks[point.up(1)].material.val == 0):
                     points.append(point)
