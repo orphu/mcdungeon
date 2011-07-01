@@ -23,6 +23,7 @@ class Block(object):
         self.loc = loc
         self.material = None
         self.data = 0
+        self.hide = False
 
 class MazeCell(object):
     states = enum('BLANK', 'USED')
@@ -59,7 +60,7 @@ class Dungeon (object):
         self.position = Vec(0,0,0)
 
 
-    def setblock(self, loc, material, data=0):
+    def setblock(self, loc, material, data=0, hide=False):
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
         self.blocks[loc].material = material
@@ -67,6 +68,7 @@ class Dungeon (object):
             self.blocks[loc].data = material.data
         else:
             self.blocks[loc].data = data
+        self.blocks[loc].hide = hide
 
     def delblock(self, loc):
         if loc in self.blocks:
@@ -876,11 +878,12 @@ class Dungeon (object):
         layer = (floor-1)*self.room_height
         for x in xrange(self.xsize*self.room_size):
             for z in xrange(self.zsize*self.room_size):
-                y = layer + 1
+                y = layer
                 while (y < layer + self.room_height - 1 and
                        Vec(x,y,z) in self.blocks and
-                         (self.blocks[Vec(x,y,z)].material == materials.Air or
-                         self.blocks[Vec(x,y,z)].material == materials._ceiling)):
+                         (self.blocks[Vec(x,y,z)].hide == True or
+                          self.blocks[Vec(x,y,z)].material == materials.Air or
+                          self.blocks[Vec(x,y,z)].material == materials._ceiling)):
                     y += 1
                 if Vec(x,y,z) in self.blocks:
                     mat = self.blocks[Vec(x,y,z)].material
@@ -948,13 +951,14 @@ class Dungeon (object):
             for x in xrange(self.xsize*self.room_size):
                 f.write('<tr>')
                 for z in xrange(self.zsize*self.room_size):
-                    y = layer + 1
+                    y = layer 
                     while (y < layer + self.room_height - 1 and
                            Vec(x,y,z) in self.blocks and
-                            (self.blocks[Vec(x,y,z)].material ==
-                            materials.Air or
-                            self.blocks[Vec(x,y,z)].material ==
-                            materials._ceiling)):
+                            (self.blocks[Vec(x,y,z)].hide == True or
+                             self.blocks[Vec(x,y,z)].material ==
+                             materials.Air or
+                             self.blocks[Vec(x,y,z)].material ==
+                             materials._ceiling)):
                         y += 1
                     if Vec(x,y,z) in self.blocks:
                         mat = self.blocks[Vec(x,y,z)].material
