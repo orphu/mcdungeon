@@ -10,6 +10,7 @@ import cfg
 from utils import *
 import random
 from noise import pnoise3
+import cave_factory
 
 
 class Blank(object):
@@ -213,7 +214,85 @@ class Basic2x2(Basic):
                          [2,sz-2],
                          [2,sz-2]]
 
+class SandstoneCavern(Blank):
+    _name = 'sandstonecavern'
 
+    def setData(self):
+        self.ceil_func = iterate_cube
+        self.floor_func = iterate_cube
+        self.air_func = iterate_cube
+
+        # size of the room
+        self.sx = self.size.x * self.parent.room_size
+        self.sz = self.size.z * self.parent.room_size
+        self.sy = self.size.y * self.parent.room_height
+
+        self.c1 = self.loc + Vec(0,self.sy-2,0)
+        self.c3 = self.c1 + Vec(self.sx-1, 0, self.sz-1)
+
+        self.hallLength = [1,1,1,1]
+        self.hallSize = [[2,self.sx-2],
+                         [2,self.sx-2],
+                         [2,self.sz-2],
+                         [2,self.sz-2]]
+
+        self.canvas = (
+            Vec(0   ,self.sy-2, 0),
+            Vec(self.sx-1,self.sy-2, 0),
+            Vec(self.sx-1,self.sy-2, self.sz-1),
+            Vec(0   ,self.sy-2, self.sz-1))
+        self.features.append(features.new('blank', self))
+        self.floors.append(floors.new('sand', self))
+
+    def render(self):
+        height = self.size.y * self.parent.room_height - 2
+        cave = cave_factory.new(self.sx, self.sz)
+        # Layer in the halls
+        # West side
+        if (self.halls[0].size > 0):
+            cave.add_exit((0, self.halls[0].offset),
+                          (0, self.halls[0].offset+self.halls[0].size))
+        # South side
+        if (self.halls[1].size > 0):
+            cave.add_exit((self.halls[1].offset, self.sz-1),
+                          (self.halls[1].offset+self.halls[1].size, self.sz-1))
+        # East side
+        if (self.halls[2].size > 0):
+            cave.add_exit((self.sx-1, self.halls[2].offset),
+                          (self.sx-1, self.halls[2].offset+self.halls[2].size))
+        # North side
+        if (self.halls[3].size > 0):
+            cave.add_exit((self.halls[3].offset, 0),
+                          (self.halls[3].offset+self.halls[3].size, 0))
+        cave.gen_map()
+        # Air space, Floor, and Ceiling
+        for p in cave.iterate_map(cave_factory.FLOOR):
+            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Air)
+            self.parent.setblock(self.c1+Vec(p[0],-2,p[1]), materials.Air)
+            self.parent.setblock(self.c1+Vec(p[0],-1,p[1]), materials.Air)
+            self.parent.setblock(self.c1+Vec(p[0],0,p[1]), materials._floor)
+            self.parent.setblock(self.c1+Vec(p[0],-height,p[1]),
+                                 materials.Sandstone, 0, True)
+        # Walls
+        for p in cave.iterate_walls():
+            self.parent.setblock(self.c1+Vec(p[0],-4,p[1]), materials.Sandstone,
+                                0, True)
+            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Sandstone)
+            self.parent.setblock(self.c1+Vec(p[0],-2,p[1]), materials.Sandstone)
+            self.parent.setblock(self.c1+Vec(p[0],-1,p[1]), materials.Sandstone)
+        cave.grow_map()
+        for p in cave.iterate_walls():
+            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Sandstone,
+                                0, True)
+        # Subfloor
+        sf1 = self.loc.trans(0,
+                             self.size.y * self.parent.room_height - 1,
+                             0)
+        sf2 = sf1.trans(self.size.x * self.parent.room_size-1,
+                       0,
+                       self.size.z * self.parent.room_size-1)
+        for x in iterate_plane(sf1, sf2):
+            self.parent.setblock(x, materials._subfloor)
 
 class Circular(Basic):
     _name = 'circular'
