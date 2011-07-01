@@ -218,10 +218,6 @@ class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
 
     def setData(self):
-        self.ceil_func = iterate_cube
-        self.floor_func = iterate_cube
-        self.air_func = iterate_cube
-
         # size of the room
         self.sx = self.size.x * self.parent.room_size
         self.sz = self.size.z * self.parent.room_size
