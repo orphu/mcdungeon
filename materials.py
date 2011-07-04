@@ -42,7 +42,7 @@ class Material(object):
         self.val = items.byName(self.name).value
         self.data = items.byName(self.name).data
 
-Air = Material('Air', ' ','')
+Air = Material('Air', ' ',BLACK)
 Bedrock = Material('Bedrock', '#', DGREY)
 Cactus = Material('Cactus', "*", BGREEN)
 Chest = Material('Chest', 'C',BPURPLE)
@@ -98,3 +98,4 @@ _ceiling = copy(Cobblestone)
 _floor = copy(Stone)
 _subfloor = copy(Bedrock)
 _sandbar = copy(Sand)
+_natural = copy(Air)
