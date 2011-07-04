@@ -216,6 +216,10 @@ class Basic2x2(Basic):
 
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
+    _walls = materials.Sandstone
+    _floor = materials._floor
+    _subfloor = materials._subfloor
+    _floortype = 'sand'
 
     def setData(self):
         # size of the room
@@ -238,12 +242,10 @@ class SandstoneCavern(Blank):
             Vec(self.sx-1,self.sy-2, self.sz-1),
             Vec(0   ,self.sy-2, self.sz-1))
         self.features.append(features.new('blank', self))
-        self.floors.append(floors.new('sand', self))
+        if self._floortype is not '':
+            self.floors.append(floors.new(self._floortype, self))
 
-    def render(self):
-        height = self.size.y * self.parent.room_height - 2
-        cave = cave_factory.new(self.sx, self.sz)
-        # Layer in the halls
+    def placeCavernHalls(self, cave):
         # West side
         if (self.halls[0].size > 0):
             cave.add_exit((0, self.halls[0].offset),
@@ -260,25 +262,33 @@ class SandstoneCavern(Blank):
         if (self.halls[3].size > 0):
             cave.add_exit((self.halls[3].offset, 0),
                           (self.halls[3].offset+self.halls[3].size, 0))
+
+    def render(self):
+        height = self.size.y * self.parent.room_height - 2
+        cave = cave_factory.new(self.sx, self.sz)
+
+        # Layer in the halls
+        self.placeCavernHalls(cave)
+
         cave.gen_map()
         # Air space, Floor, and Ceiling
         for p in cave.iterate_map(cave_factory.FLOOR):
             self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Air)
             self.parent.setblock(self.c1+Vec(p[0],-2,p[1]), materials.Air)
             self.parent.setblock(self.c1+Vec(p[0],-1,p[1]), materials.Air)
-            self.parent.setblock(self.c1+Vec(p[0],0,p[1]), materials._floor)
+            self.parent.setblock(self.c1+Vec(p[0],0,p[1]), self._floor)
             self.parent.setblock(self.c1+Vec(p[0],-height,p[1]),
-                                 materials.Sandstone, 0, True)
+                                 self._walls, 0, True)
         # Walls
         for p in cave.iterate_walls():
-            self.parent.setblock(self.c1+Vec(p[0],-4,p[1]), materials.Sandstone,
+            self.parent.setblock(self.c1+Vec(p[0],-4,p[1]), self._walls,
                                 0, True)
-            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Sandstone)
-            self.parent.setblock(self.c1+Vec(p[0],-2,p[1]), materials.Sandstone)
-            self.parent.setblock(self.c1+Vec(p[0],-1,p[1]), materials.Sandstone)
+            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), self._walls)
+            self.parent.setblock(self.c1+Vec(p[0],-2,p[1]), self._walls)
+            self.parent.setblock(self.c1+Vec(p[0],-1,p[1]), self._walls)
         cave.grow_map()
         for p in cave.iterate_walls():
-            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), materials.Sandstone,
+            self.parent.setblock(self.c1+Vec(p[0],-3,p[1]), self._walls,
                                 0, True)
         # Subfloor
         sf1 = self.loc.trans(0,
@@ -288,7 +298,145 @@ class SandstoneCavern(Blank):
                        0,
                        self.size.z * self.parent.room_size-1)
         for x in iterate_plane(sf1, sf2):
-            self.parent.setblock(x, materials._subfloor)
+            self.parent.setblock(x, self._subfloor)
+
+class SandstoneCavernLarge(SandstoneCavern):
+    _name = 'sandstonecavernlarge'
+    _min_size = Vec(2,1,2)
+    _max_size = Vec(2,1,2)
+    size = Vec(2,1,2)
+    _spread_chance = .30
+    _small_cavern = 'sandstonecavern'
+
+    def placed(self):
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # Fix our halls so they only show N and W sides
+        # West, South, East, North
+        pos = self.pos
+        self.hallLength = [1,0,0,1]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        # place three more blank rooms to hold the hallways
+        # This is the Southern room
+        pos = self.pos + Vec(1,0,0)
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [1,1,0,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+
+        # Eastern room.
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [0,0,1,1]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        # South East room.
+        pos = self.pos + Vec(1,0,1)
+        self.parent.halls[pos.x][pos.y][pos.z][0] = 0
+        self.parent.halls[pos.x][pos.y][pos.z][3] = 0
+        room = new('blank', self.parent, pos)
+        self.parent.setroom(pos, room)
+        room.hallLength = [0,1,1,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        # There's a chance large caverns will spawn adjacent small cavern rooms.
+        for p in (Vec(-1, 0, 0), Vec(-1, 0, 1),  # North
+                  Vec( 2, 0, 0), Vec( 2, 0, 1),  # South
+                  Vec( 0, 0, 2), Vec( 1, 0, 2),  # East
+                  Vec( 0, 0,-1), Vec( 1, 0,-1)): # West
+            pos = self.pos + p
+            if (pos.x >= 0 and
+                pos.z >= 0 and
+                pos.x < self.parent.xsize and
+                pos.z < self.parent.zsize and
+                pos not in self.parent.rooms and
+                random.random() < self._spread_chance):
+                room = new(self._small_cavern, self.parent, pos)
+                self.parent.setroom(pos, room)
+
+    def placeCavernHalls(self, cave):
+        # NE room
+        room_ne = self.parent.rooms[self.pos + Vec(0,0,1)]
+        # SE room
+        room_se = self.parent.rooms[self.pos + Vec(1,0,1)]
+        # SW room
+        room_sw = self.parent.rooms[self.pos + Vec(1,0,0)]
+
+        # West side
+        if (self.halls[0].size > 0):
+            cave.add_exit((0, self.halls[0].offset),
+                          (0, self.halls[0].offset+self.halls[0].size))
+        if (room_sw.halls[0].size > 0):
+            cave.add_exit((0, 16+room_sw.halls[0].offset),
+                          (0, 16+room_sw.halls[0].offset+room_sw.halls[0].size))
+        # South side
+        if (room_se.halls[1].size > 0):
+            cave.add_exit((16+room_se.halls[1].offset, self.sz-1),
+                          (16+room_se.halls[1].offset+room_se.halls[1].size, self.sz-1))
+        if (room_sw.halls[1].size > 0):
+            cave.add_exit((room_sw.halls[1].offset, self.sz-1),
+                          (room_sw.halls[1].offset+room_sw.halls[1].size, self.sz-1))
+        # East side
+        if (room_ne.halls[2].size > 0):
+            cave.add_exit((self.sx-1, room_ne.halls[2].offset),
+                          (self.sx-1, room_ne.halls[2].offset+room_ne.halls[2].size))
+        if (room_se.halls[2].size > 0):
+            cave.add_exit((self.sx-1, 16+room_se.halls[2].offset),
+                          (self.sx-1, 16+room_se.halls[2].offset+room_se.halls[2].size))
+        # North side
+        if (self.halls[3].size > 0):
+            cave.add_exit((self.halls[3].offset, 0),
+                          (self.halls[3].offset+self.halls[3].size, 0))
+        if (room_ne.halls[3].size > 0):
+            cave.add_exit((16+room_ne.halls[3].offset, 0),
+                          (16+room_ne.halls[3].offset+room_ne.halls[3].size, 0))
+
+
+class Cavern(SandstoneCavern):
+    _name = 'cavern'
+    _walls = materials._wall
+    _floor = materials._floor
+    _subfloor = materials._subfloor
+    _floortype = 'blank'
+
+
+class CavernLarge(SandstoneCavernLarge):
+    _name = 'cavernlarge'
+    _walls = materials._wall
+    _floor = materials._floor
+    _subfloor = materials._subfloor
+    _floortype = 'blank'
+    _small_cavern = 'cavern'
+
+
+class NaturalCavern(SandstoneCavern):
+    _name = 'naturalcavern'
+    _walls = materials._natural
+    _floor = materials._natural
+    _subfloor = materials._natural
+    _floortype = 'blank'
+
+
+class NaturalCavernLarge(SandstoneCavernLarge):
+    _name = 'naturalcavernlarge'
+    _walls = materials._natural
+    _floor = materials._natural
+    _subfloor = materials._natural
+    _floortype = 'blank'
+    _small_cavern = 'naturalcavern'
+
 
 class Circular(Basic):
     _name = 'circular'
@@ -903,7 +1051,7 @@ def new (name, parent, pos):
         return _rooms[name](parent, pos)
     return Blank(parent, pos)
 
-def pickRoom (rooms, dsize, pos, maxsize):
+def pickRoom (rooms, dsize, pos, maxsize=Vec(10,18,10)):
     '''Returns the name of a valid room class given rthe current maze. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
     fallback to Basic.'''
