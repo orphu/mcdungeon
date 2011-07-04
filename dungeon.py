@@ -61,13 +61,26 @@ class Dungeon (object):
 
 
     def setblock(self, loc, material, data=0, hide=False):
+        # If material is None, remove this block
+        if material == None:
+            if loc in self.blocks:
+                del(self.blocks[loc])
+            return
+
+        # Build a block if we need to 
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
+
+        # Setup the material
         self.blocks[loc].material = material
+
+        # Set the data value
         if (data == 0):
             self.blocks[loc].data = material.data
         else:
             self.blocks[loc].data = data
+
+        # Hide this from the map generator if requested
         self.blocks[loc].hide = hide
 
     def delblock(self, loc):
@@ -585,8 +598,7 @@ class Dungeon (object):
                                             Vec(self.xsize,
                                                 self.levels,
                                                 self.zsize),
-                                            pos,
-                                            Vec(10,18,10)),
+                                            pos),
                                  self,
                                  pos)
                 self.setroom(pos, room)
@@ -1094,6 +1106,8 @@ class Dungeon (object):
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.Ice.val):
+                continue
+            if (mat == materials._natural):
                 continue
             # Write the block.
             chunk.Blocks[xInChunk, zInChunk, y] = mat.val
