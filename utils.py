@@ -44,6 +44,9 @@ class Vec(object):
     def __eq__(self, b):
         if type(b) != Vec: return False
         return self.x==b.x and self.y==b.y and self.z==b.z
+    def __ne__(self, b):
+        if type(b) != Vec: return True
+        return self.x!=b.x or self.y!=b.y or self.z!=b.z
     def __hash__(self):
         return self.x + (self.y<<4) + (self.z<<8)
     def east(self, x):
@@ -303,7 +306,7 @@ def weighted_shuffle(master_list):
             items.append([item, int(weight)])
     # Return the items in a weighted random order
     while (len(items) > 0):
-        item = weighted_choice(items)
+        #item = weighted_choice(items)
         weight_total = sum((item[1] for item in items))
         n = random.uniform(0, weight_total)
         for item, weight in items:
