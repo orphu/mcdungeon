@@ -494,8 +494,32 @@ class Dungeon (object):
                             z = p.z
                     break
 
-        # The exit is the deepest cell on this level. 
-        exit_pos = Vec(x, y, z)
+        # The exit is the deepest cell on the last level. Treasure rooms are now
+        # 2x2, so we have a few possibilities. First grab a weighted random list
+        # of positions based on depth from the stairwell on this level. 
+        # We'll pop through them looking for a good location. 
+        tchoices = []
+        for p in iterate_plane(Vec(0,y,0),
+                               Vec(self.xsize-1,y,self.zsize-1)):
+            tchoices.append((self.maze[p].depth, p))
+        tchoices.sort()
+        # 1) Rooms extending East and South are available. We're good!
+        while len(tchoices) > 0:
+            d, p = tchoices.pop()
+        #    if (p != entrance_pos and
+        #        p.x < self.xsize-1 and
+        #        p.z < self.zsize-1 and
+        #        p+Vec(1,0,0) not in stairwells and
+        #        p+Vec(0,0,1) not in stairwells and
+        #        p+Vec(1,0,1) not in stairwells and
+        #        p+Vec(1,0,0) != entrance_pos and
+        #        p+Vec(0,0,1) != entrance_pos and
+        #        p+Vec(1,0,1) != entrance_pos):
+            exit_pos = p
+            break
+
+        if exit_pos == None:
+            sys.exit('Unable to find treasure room location. :(')
 
         print 'Entrance:', entrance_pos
         print 'Exit:', exit_pos
@@ -525,18 +549,7 @@ class Dungeon (object):
         # This is the exit. MultiVerse Portal or treasure room.
         room = None
         pos = exit_pos
-        while (room == None or
-               room.canvasWidth() < 8 or
-               room.canvasLength() < 8 or
-               len(room.features) > 0):
-            room = rooms.new(rooms.pickRoom(self.rooms,
-                                            Vec(self.xsize,
-                                                self.levels,
-                                                self.zsize),
-                                            pos,
-                                            Vec(1,1,1)),
-                             self,
-                             pos)
+        room = rooms.new('circular', self, pos)
         if (cfg.mvportal is not ''):
             feature = features.new('multiverseportal', room)
             feature.target = cfg.mvportal
@@ -741,7 +754,7 @@ class Dungeon (object):
                 continue
             hcount = 1
             for h in self.rooms[room].halls:
-                if (h.size == 0):
+                if (h is not None and h.size == 0):
                     hcount += 1
             # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
@@ -799,7 +812,7 @@ class Dungeon (object):
                 continue
             hcount = 1
             for h in self.rooms[room].halls:
-                if (h.size == 0):
+                if (h is not None and h.size == 0):
                     hcount += 1
             # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
