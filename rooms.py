@@ -540,7 +540,7 @@ class Pit(Blank):
             self.floors.append(floors.new('bridges', self))
 
     def render (self):
-        pn = perlin.SimplexNoise()
+        pn = perlin.SimplexNoise(256)
         # Sand pit!
         # Restrict sandpits to rooms with small halls.
         maxhall = max(map(lambda x: x.size, self.halls))
@@ -800,7 +800,7 @@ class PitBottom(Blank):
             self.features.append(features.new('blank', self))
 
     def render (self):
-        pn = perlin.SimplexNoise()
+        pn = perlin.SimplexNoise(256)
         height = self.parent.room_height-2
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):

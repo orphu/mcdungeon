@@ -900,7 +900,7 @@ class Dungeon (object):
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
-        pn = perlin.SimplexNoise(1)
+        pn = perlin.SimplexNoise(256)
         layer = (floor-1)*self.room_height
         for x in xrange(self.xsize*self.room_size):
             for z in xrange(self.zsize*self.room_size):
@@ -928,7 +928,7 @@ class Dungeon (object):
     def outputhtml(self, basename, force):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
-        pn = perlin.SimplexNoise(1)
+        pn = perlin.SimplexNoise(256)
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
@@ -1058,7 +1058,7 @@ class Dungeon (object):
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
         num_blocks = len(self.blocks)
-        pn = perlin.SimplexNoise(1)
+        pn = perlin.SimplexNoise(256)
         # Hard mode
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'

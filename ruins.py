@@ -129,7 +129,7 @@ class Arches(Blank):
 
 
 def ruinBlocks (p1, p2, height, dungeon):
-    pn = perlin.SimplexNoise(1)
+    pn = perlin.SimplexNoise(256)
     if (cfg.ruin_ruins == False):
         return
     for x in xrange(p1.x, p2.x+1):

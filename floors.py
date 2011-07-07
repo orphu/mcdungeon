@@ -17,7 +17,7 @@ class Cobble(Blank):
     _name = 'cobble'
     ruin = False
     def render (self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
@@ -84,7 +84,7 @@ class CheckerRug(Blank):
             else:
                 self.parent.parent.blocks[x+self.parent.loc].data = color[1]
         # Runined
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         if (self.ruin is False):
             return
         c = self.parent.canvasCenter()
@@ -115,7 +115,7 @@ class DoubleSlab(Blank):
             self.parent.parent.setblock(x+self.parent.loc,
                                         materials.DoubleSlab)
         # Runined
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         if (self.ruin is False):
             return
         c = self.parent.canvasCenter()
@@ -139,7 +139,7 @@ class BrokenDoubleSlab(DoubleSlab):
 class Mud(Blank):
     _name = 'mud'
     def render (self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         c = self.parent.canvasCenter()
@@ -164,7 +164,7 @@ class Mud(Blank):
 class Sand(Blank):
     _name = 'sand'
     def render (self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         c = self.parent.canvasCenter()
@@ -187,7 +187,7 @@ class Bridges(Blank):
     _name = 'bridges'
     sandpit = False
     def render(self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise(256)
         # Find all the valid halls. These are halls with a size > 0.
         # We'll store a random position within the range of the hall.
         halls = [0,0,0,0]
