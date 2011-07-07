@@ -4,7 +4,7 @@ import sys
 import os
 import platform
 from random import *
-from noise import pnoise3
+import perlin
 
 import cfg
 import items
@@ -900,6 +900,7 @@ class Dungeon (object):
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
+        pn = perlin.SimplexNoise(1)
         layer = (floor-1)*self.room_height
         for x in xrange(self.xsize*self.room_size):
             for z in xrange(self.zsize*self.room_size):
@@ -914,7 +915,7 @@ class Dungeon (object):
                     mat = self.blocks[Vec(x,y,z)].material
                     # 3D perlin moss!
                     if (mat.name == 'cobblestone'):
-                        if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
+                        if ((pn.noise3(x / 3.0, y / 3.0, z / 3.0) + 1.0) / 2.0 < 0.5):
                             mat = materials.MossStone
                         else:
                             mat = materials.Cobblestone
@@ -927,6 +928,7 @@ class Dungeon (object):
     def outputhtml(self, basename, force):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
+        pn = perlin.SimplexNoise(1)
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
@@ -989,10 +991,10 @@ class Dungeon (object):
                         mat = self.blocks[Vec(x,y,z)].material
                         # 3D perlin moss!
                         if (mat.name == 'cobblestone'):
-                            if ((pnoise3(x / 3.0,
+                            if ((pn.noise3(x / 3.0,
                                          y / 3.0,
                                          z / 3.0,
-                                         1) + 1.0) / 2.0 < 0.5):
+                                         ) + 1.0) / 2.0 < 0.5):
                                 mat = materials.MossStone
                             else:
                                 mat = materials.Cobblestone
@@ -1056,6 +1058,7 @@ class Dungeon (object):
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
         num_blocks = len(self.blocks)
+        pn = perlin.SimplexNoise(1)
         # Hard mode
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'
@@ -1111,7 +1114,7 @@ class Dungeon (object):
             mat = block.material
             dat = block.data
             if (mat.name == 'cobblestone'):
-                if ((pnoise3(x / 3.0, y / 3.0, z / 3.0, 1) + 1.0) / 2.0 < 0.5):
+                if ((pn.noise3(x / 3.0, y / 3.0, z / 3.0) + 1.0) / 2.0 < 0.5):
                     mat = materials.MossStone
                 else:
                     mat = materials.Cobblestone

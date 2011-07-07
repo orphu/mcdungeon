@@ -6,7 +6,7 @@ import utils
 import rooms
 import loottable
 import cfg
-from noise import pnoise3
+import perlin
 from utils import *
 
 
@@ -129,11 +129,12 @@ class Arches(Blank):
 
 
 def ruinBlocks (p1, p2, height, dungeon):
+    pn = perlin.SimplexNoise(1)
     if (cfg.ruin_ruins == False):
         return
     for x in xrange(p1.x, p2.x+1):
         for z in xrange(p1.z, p2.z+1):
-            depth = (pnoise3(x / 3.0, 0, z / 3.0, 1) + 1.0) / 2.0 * height
+            depth = (pn.noise3(x / 3.0, 0, z / 3.0) + 1.0) / 2.0 * height
             for p in iterate_cube(Vec(x, p1.y-depth, z),
                                   Vec(x, p1.y-height, z)):
                 dungeon.delblock(p)

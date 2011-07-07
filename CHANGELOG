@@ -1,5 +1,7 @@
 v0.3.0 - ??/??/????
 
+   * External noise module is no longer required. (perlin.py is now bundled)
+
    * Bugfix: Fixed a problem parsing ranges when Z was fixed and X
      was a range.
 

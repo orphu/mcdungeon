@@ -1,20 +1,10 @@
 Requirements:
 
 * Python
-    * Tested with 2.6.6 and 2.7.1
+    * Tested with 2.6.6 and 2.7.2
 * Required Python Modules:
     * numpy (for pymclevel) 
         * http://pypi.python.org/pypi/numpy/
-    * noise http://pypi.python.org/pypi/noise/
-        * Windows:
-            * 2.6 binary: http://code.google.com/p/caseman/downloads/list
-            * For 2.7, you'll have to build this.
-            * If building noise from source on Windows, use mingw.
-              http://sourceforge.net/projects/mingw/files/
-              Add c:\mingw\bin to your path (or wherever you installed it)
-              python setup.py install build --compiler=mingw32
-        * Everyone else:
-            * You probably have a C compiler installed.
     * argparse (only for Python 2.6) 
         * http://pypi.python.org/pypi/argparse/
     * Windows users should also install pywin32:

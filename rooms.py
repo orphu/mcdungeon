@@ -9,7 +9,7 @@ import ruins
 import cfg
 from utils import *
 import random
-from noise import pnoise3
+import perlin
 import cave_factory
 
 
@@ -540,6 +540,7 @@ class Pit(Blank):
             self.floors.append(floors.new('bridges', self))
 
     def render (self):
+        pn = perlin.SimplexNoise(2)
         # Sand pit!
         # Restrict sandpits to rooms with small halls.
         maxhall = max(map(lambda x: x.size, self.halls))
@@ -567,7 +568,7 @@ class Pit(Blank):
             r = random.randint(1,1000)
             for x in self.floor_func(self.c1.trans(0,1,0),
                                      self.c3.trans(0,1,0)):
-                n = (pnoise3(x.x/2.3, r/2.3, x.z/2.3, 2) + 1.0) / 2.0
+                n = (pn.noise3(x.x/2.3, r/2.3, x.z/2.3) + 1.0) / 2.0
                 if (n > 0.625):
                     self.parent.setblock(x.up(1), materials.CobblestoneSlab)
                     if (self.parent.getblock(x.trans(1,0,0)) is
@@ -799,6 +800,7 @@ class PitBottom(Blank):
             self.features.append(features.new('blank', self))
 
     def render (self):
+        pn = perlin.SimplexNoise(2)
         height = self.parent.room_height-2
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):
@@ -811,7 +813,7 @@ class PitBottom(Blank):
             r = random.randint(1,1000)
             for x in self.floor_func(self.c1.trans(0,1,0),
                                      self.c3.trans(0,1,0)):
-                n = (pnoise3(x.x/2.3, r/2.3, x.z/2.3, 2) + 1.0) / 2.0
+                n = (pn.noise3(x.x/2.3, r/2.3, x.z/2.3) + 1.0) / 2.0
                 if (n > 0.625):
                     self.parent.setblock(x.up(1), materials.CobblestoneSlab)
                     if (self.parent.getblock(x.trans(1,0,0)) is
