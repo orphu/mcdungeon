@@ -21,7 +21,7 @@ GREY   = '\033[0;37m'
 WHITE  = '\033[1;37m'
 ENDC   = '\033[0m'
 
-NOBLOCK = '%s`%s' % (DGREY, ENDC)
+NOBLOCK = '%s`%s' % (BLACK, ENDC)
 
 if (platform.system() == 'Windows'):
     NOBLOCK = '`'
@@ -43,11 +43,11 @@ class Material(object):
         self.data = items.byName(self.name).data
 
 Air = Material('Air', ' ',BLACK)
-Bedrock = Material('Bedrock', '#', DGREY)
+Bedrock = Material('Bedrock', '#', BLACK)
 Cactus = Material('Cactus', "*", BGREEN)
 Chest = Material('Chest', 'C',BPURPLE)
-CoalOre = Material('Coal Ore', 'o',DGREY)
-Cobblestone = Material('Cobblestone', '%',DGREY)
+CoalOre = Material('Coal Ore', 'o',ENDC)
+Cobblestone = Material('Cobblestone', '%',ENDC)
 CobblestoneSlab = Material('Cobblestone Slab', '%',GREY)
 DiamondOre = Material('Diamond Ore', 'o',WHITE)
 Dirt = Material('Dirt', '*',YELLOW)
@@ -68,7 +68,7 @@ LapisOre = Material('Lapis Lazuli Ore', 'o',BBLUE)
 Lava = Material('Lava', 'L',BRED)
 MossStone = Material('Moss Stone', '%',GREEN)
 NetherPortal = Material('Portal', '@',BPURPLE)
-Obsidian = Material('Obsidian', "@", DGREY)
+Obsidian = Material('Obsidian', "@", BLACK)
 RedStoneOre = Material('Redstone Ore', 'o',RED)
 RedStoneTorchOff = Material('Redstone Torch off', '|', RED)
 RedStoneTorchOn = Material('Redstone Torch', '|', BRED)
@@ -76,12 +76,12 @@ RedStoneWire = Material('Redstone Wire', '+', RED)
 Sand = Material('Sand','"',BYELLOW)
 Sandstone = Material('Sandstone', '~',BYELLOW)
 SoulSand = Material('Soul Sand', 'S',PURPLE)
-Spawner = Material('Monster Spawner', 'S',DGREY)
+Spawner = Material('Monster Spawner', 'S',ENDC)
 StillWater = Material('StillWater','~',BBLUE)
 Stone = Material('Stone' ,'#',GREY)
 StonePressurePlate = Material('Stone Pressure Plate' ,'O',GREY)
 StoneSlab = Material('Stone Slab', 'd',WHITE)
-StoneStairs = Material('Cobblestone Stairs', 'L',DGREY)
+StoneStairs = Material('Cobblestone Stairs', 'L',ENDC)
 Torch = Material('Torch', 'T',BYELLOW)
 TNT = Material('TNT', 'X',RED)
 WallSign = Material('Wall Sign','[',RED)

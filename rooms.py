@@ -540,7 +540,7 @@ class Pit(Blank):
             self.floors.append(floors.new('bridges', self))
 
     def render (self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise()
         # Sand pit!
         # Restrict sandpits to rooms with small halls.
         maxhall = max(map(lambda x: x.size, self.halls))
@@ -568,8 +568,8 @@ class Pit(Blank):
             r = random.randint(1,1000)
             for x in self.floor_func(self.c1.trans(0,1,0),
                                      self.c3.trans(0,1,0)):
-                n = (pn.noise3(x.x/2.3, r/2.3, x.z/2.3) + 1.0) / 2.0
-                if (n > 0.625):
+                n = (pn.noise3(x.x/4.0, r/4.0, x.z/4.0) + 1.0) / 2.0
+                if (n > 0.7):
                     self.parent.setblock(x.up(1), materials.CobblestoneSlab)
                     if (self.parent.getblock(x.trans(1,0,0)) is
                         materials.Lava):
@@ -587,7 +587,7 @@ class Pit(Blank):
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,-1),
                                              materials.Cobblestone)
-                if (n < 0.32):
+                if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
         # Ceiling
         for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
@@ -800,7 +800,7 @@ class PitBottom(Blank):
             self.features.append(features.new('blank', self))
 
     def render (self):
-        pn = perlin.SimplexNoise(2)
+        pn = perlin.SimplexNoise()
         height = self.parent.room_height-2
         # Air space
         for x in self.air_func(self.c1.down(1), self.c3.up(4)):
@@ -813,8 +813,8 @@ class PitBottom(Blank):
             r = random.randint(1,1000)
             for x in self.floor_func(self.c1.trans(0,1,0),
                                      self.c3.trans(0,1,0)):
-                n = (pn.noise3(x.x/2.3, r/2.3, x.z/2.3) + 1.0) / 2.0
-                if (n > 0.625):
+                n = (pn.noise3(x.x/4.0, r/4.0, x.z/4.0) + 1.0) / 2.0
+                if (n > 0.7):
                     self.parent.setblock(x.up(1), materials.CobblestoneSlab)
                     if (self.parent.getblock(x.trans(1,0,0)) is
                         materials.Lava):
@@ -832,7 +832,7 @@ class PitBottom(Blank):
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,-1),
                                              materials.Cobblestone)
-                if (n < 0.32):
+                if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
         # Cactus (spike trap)
         elif (self.floor == 'cactus'):

@@ -134,7 +134,7 @@ def ruinBlocks (p1, p2, height, dungeon):
         return
     for x in xrange(p1.x, p2.x+1):
         for z in xrange(p1.z, p2.z+1):
-            depth = (pn.noise3(x / 3.0, 0, z / 3.0) + 1.0) / 2.0 * height
+            depth = (pn.noise3(x / 4.0, 0, z / 4.0) + 1.0) / 2.0 * height
             for p in iterate_cube(Vec(x, p1.y-depth, z),
                                   Vec(x, p1.y-height, z)):
                 dungeon.delblock(p)

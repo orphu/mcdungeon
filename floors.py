@@ -33,7 +33,7 @@ class Cobble(Blank):
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -94,7 +94,7 @@ class CheckerRug(Blank):
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -125,7 +125,7 @@ class DoubleSlab(Blank):
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -149,7 +149,7 @@ class Mud(Blank):
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n >= d+.50):
                 self.parent.parent.setblock(p, materials.Water)
             elif (n >= d+.30):
@@ -174,7 +174,7 @@ class Sand(Blank):
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n >= d+.20):
                 self.parent.parent.setblock(p, materials.Sand)
             elif (n >= d+.10):
@@ -262,7 +262,7 @@ class Bridges(Blank):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 p = x+self.parent.loc
                 d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-                n = (pn.noise3((p.x+r) / 2.3, y / 2.3, p.z / 2.3) + 1.0) / 2.0
+                n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
                 if (n >= d+.10):
                     self.parent.parent.setblock(p, materials.Sand)
                 elif (n >= d):

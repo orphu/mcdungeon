@@ -915,7 +915,7 @@ class Dungeon (object):
                     mat = self.blocks[Vec(x,y,z)].material
                     # 3D perlin moss!
                     if (mat.name == 'cobblestone'):
-                        if ((pn.noise3(x / 3.0, y / 3.0, z / 3.0) + 1.0) / 2.0 < 0.5):
+                        if ((pn.noise3(x / 4.0, y / 4.0, z / 4.0) + 1.0) / 2.0 < 0.5):
                             mat = materials.MossStone
                         else:
                             mat = materials.Cobblestone
@@ -991,9 +991,9 @@ class Dungeon (object):
                         mat = self.blocks[Vec(x,y,z)].material
                         # 3D perlin moss!
                         if (mat.name == 'cobblestone'):
-                            if ((pn.noise3(x / 3.0,
-                                         y / 3.0,
-                                         z / 3.0,
+                            if ((pn.noise3(x / 4.0,
+                                         y / 4.0,
+                                         z / 4.0,
                                          ) + 1.0) / 2.0 < 0.5):
                                 mat = materials.MossStone
                             else:
@@ -1114,7 +1114,7 @@ class Dungeon (object):
             mat = block.material
             dat = block.data
             if (mat.name == 'cobblestone'):
-                if ((pn.noise3(x / 3.0, y / 3.0, z / 3.0) + 1.0) / 2.0 < 0.5):
+                if ((pn.noise3(x / 4.0, y / 4.0, z / 4.0) + 1.0) / 2.0 < 0.5):
                     mat = materials.MossStone
                 else:
                     mat = materials.Cobblestone
