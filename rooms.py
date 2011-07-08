@@ -513,7 +513,7 @@ class Pit(Blank):
         # Extend downward. First, figure out where we are and how far down
         # we would like to go. 
         thisfloor = self.pos.y+1
-        targetdepth = random.randint(1, self.parent.levels-thisfloor+1)
+        targetdepth = random.randint(1, max(self.parent.levels-thisfloor,1))
         self.depth = 1
         # Place lower rooms.
         pos = self.pos
@@ -1054,7 +1054,7 @@ def new (name, parent, pos):
     return Blank(parent, pos)
 
 def pickRoom (rooms, dsize, pos, maxsize=Vec(10,18,10)):
-    '''Returns the name of a valid room class given rthe current maze. Rooms
+    '''Returns the name of a valid room class given rthe current room set. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
     fallback to Basic.'''
     room_list = weighted_shuffle(cfg.master_rooms)
