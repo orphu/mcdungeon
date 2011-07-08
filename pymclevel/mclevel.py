@@ -490,6 +490,10 @@ class MCLevel(object):
         return self.allChunks #backward compatibility
     
     @property
+    def chunkCount(self):
+        return (self.Width+15>>4) * (self.Length+15>>4)
+        
+    @property
     def allChunks(self):
         """Returns a synthetic list of chunk positions (xPos, zPos), to fake 
         being a chunked level format."""
@@ -612,6 +616,12 @@ class MCLevel(object):
 
     def chunkIsLoaded(self, cx, cz):
         return self.containsChunk(cx,cz)
+        
+    def chunkIsCompressed(self, cx, cz):
+        return False
+    
+    def chunkIsDirty(self, cx, cz):
+        return True
         
     
     def fakeBlocksForChunk(self, cx, cz):
@@ -1010,10 +1020,10 @@ class MCLevel(object):
     def getPlayerDimension(self, player = "Player"): return 0;
     def setPlayerDimension(self, d, player = "Player"): return;
     
-    def setPlayerSpawnPosition(self, pos, player = "Player"):
+    def setPlayerSpawnPosition(self, pos, player = None):
         pass;
 
-    def playerSpawnPosition(self, player = "Player"):
+    def playerSpawnPosition(self, player = None):
         return self.getPlayerPosition();
 
     def setPlayerOrientation(self, yp, player = "Player"):
@@ -1796,6 +1806,7 @@ class InfdevChunk(MCLevel):
             return self.chunkFilename
     def __init__(self, world, chunkPosition, create = False):
         self.world = world;
+        #self.materials = self.world.materials
         self.chunkPosition = chunkPosition;
         self.chunkFilename = world.chunkFilename(*chunkPosition)
         #self.filename = "UNUSED" + world.chunkFilename(*chunkPosition);
@@ -1816,6 +1827,9 @@ class InfdevChunk(MCLevel):
             if not world.containsChunk(*chunkPosition):
                 raise ChunkNotPresent("Chunk {0} not found", self.chunkPosition)
     
+    @property
+    def materials(self):
+        return self.world.materials
     
     def compressTagGzip(self, root_tag):
         buf = StringIO.StringIO()
@@ -1862,6 +1876,22 @@ class InfdevChunk(MCLevel):
         return len(self.compressedTag)
     
     
+    def sanitizeBlocks(self):
+        #change grass to dirt where needed so Minecraft doesn't flip out and die
+        grass = self.Blocks == self.materials.Grass.ID
+        badgrass = grass[:,:,1:] & grass[:,:,:-1]
+        
+        self.Blocks[:,:,:-1][badgrass] = self.materials.Dirt.ID
+        
+        #remove any thin snow layers immediately above other thin snow layers.
+        #minecraft doesn't flip out, but it's almost never intended
+        if hasattr(self.materials, "SnowLayer"):
+            snowlayer = self.Blocks == self.materials.SnowLayer.ID
+            badsnow = snowlayer[:,:,1:] & snowlayer[:,:,:-1]
+            
+            self.Blocks[:,:,1:][badsnow] = self.materials.Air.ID
+        
+        
     def compress(self):
         
         
@@ -1870,6 +1900,8 @@ class InfdevChunk(MCLevel):
             #uncompressed tag structure away. rely on the OS disk cache.
             self.root_tag = None
         else:
+            self.sanitizeBlocks() #xxx
+            
             self.packChunkData()
             self._compressChunk()
             
@@ -2674,7 +2706,8 @@ class MCInfdevOldLevel(MCLevel):
         self.Length = 0
         self.Width = 0
         self.Height = 128 #subject to change?
-        
+        self.playerTagCache = {}
+    
         if not os.path.exists(filename):
             if not create:
                 raise IOError, 'File not found'
@@ -3197,12 +3230,22 @@ class MCInfdevOldLevel(MCLevel):
     
     def chunkIsLoaded(self, cx, cz):
         if (cx,cz) in self._loadedChunks:
-            if( self._loadedChunks[(cx,cz)].compressedTag is not None or 
-                self._loadedChunks[(cx,cz)].root_tag is not None):
-                return True
+            return self._loadedChunks[(cx,cz)].isLoaded()
                 
         return False
-        
+    
+    def chunkIsCompressed(self, cx, cz):
+        if (cx,cz) in self._loadedChunks:
+            return self._loadedChunks[(cx,cz)].isCompressed()
+                
+        return False
+    
+    def chunkIsDirty(self, cx, cz):
+        if (cx,cz) in self._loadedChunks:
+            return self._loadedChunks[(cx,cz)].dirty
+                
+        return False
+    
     def getChunk(self, cx, cz):
         """ read the chunk from disk, load it, and return it. 
         decompression and unpacking is done lazily."""
@@ -3235,6 +3278,10 @@ class MCInfdevOldLevel(MCLevel):
                     dirtyChunkCount += 1;
                 chunk.save();
         
+        for path, tag in self.playerTagCache.iteritems():
+            tag.saveGzipped(path)
+        
+        self.playerTagCache = {}
         
         self.root_tag.save(self.filename);
         info( u"Saved {0} chunks".format(dirtyChunkCount) )
@@ -3970,95 +4017,81 @@ class MCInfdevOldLevel(MCLevel):
         
         return ret
     
-    def setPlayerSpawnPosition(self, pos):
-        xyz = ["SpawnX", "SpawnY", "SpawnZ"]
-        for name, val in zip(xyz, pos):
-            self.root_tag["Data"][name] = nbt.TAG_Int(val);
-
-        #self.saveInPlace();
-
-    def playerSpawnPosition(self):
-        xyz = ["SpawnX", "SpawnY", "SpawnZ"]
-        return [self.root_tag["Data"][i].value for i in xyz]
-   
-    def getPlayerDimension(self, player = "Player"):
-        if player == "Player" and player in self.root_tag["Data"]:
-            #single-player world
-            playerTag = self.root_tag["Data"]["Player"];
-            if "Dimension" not in playerTag: return 0;
-            
-            return playerTag["Dimension"].value
-        else:
-            playerFilePath = os.path.join(self.worldDir, "players", player + ".dat")
-            if os.path.exists(playerFilePath):
-                #multiplayer world, found this player
-                playerTag = nbt.loadFile(playerFilePath)
-                if "Dimension" not in playerTag: return 0;
-                return playerTag["Dimension"].value
-            else:
-                raise PlayerNotFound, "{0}".format(player)
+  
+    spawnxyz = ["SpawnX", "SpawnY", "SpawnZ"]
         
-    def setPlayerDimension(self, d, player = "Player"):
+    def playerSpawnPosition(self, player = None):
+        """ 
+        xxx if player is None then it gets the default spawn position for the world
+        if player hasn't used a bed then it gets the default spawn position 
+        """
+        dataTag = self.root_tag["Data"]
+        if player is None:
+            playerSpawnTag = dataTag
+        else:
+            playerSpawnTag = self.getPlayerTag(player)
+        
+        return [playerSpawnTag.get(i, dataTag[i]).value for i in self.spawnxyz]
+   
+    def setPlayerSpawnPosition(self, pos, player = None):
+        """ xxx if player is None then it sets the default spawn position for the world """
+        if player is None:
+            playerSpawnTag = self.root_tag["Data"]
+        else:
+            playerSpawnTag = self.getPlayerTag(player)
+        for name, val in zip(self.spawnxyz, pos):
+            playerSpawnTag[name] = nbt.TAG_Int(val);
+    
+            
+    def getPlayerTag(self, player = "Player"):
         if player == "Player" and player in self.root_tag["Data"]:
             #single-player world
-            playerTag = self.root_tag["Data"]["Player"];
-            if "Dimension" not in playerTag: playerTag["Dimension"] = nbt.TAG_Int(0);
-            playerTag["Dimension"].value = d;
-                
+            return self.root_tag["Data"]["Player"];
+            
         else:
             playerFilePath = os.path.join(self.worldDir, "players", player + ".dat")
             if os.path.exists(playerFilePath):
                 #multiplayer world, found this player
-                playerTag = nbt.loadFile(playerFilePath)
+                playerTag = self.playerTagCache.get(playerFilePath)
+                if playerTag is None:
+                    playerTag = nbt.loadFile(playerFilePath)
+                    self.playerTagCache[playerFilePath] = playerTag
+                return playerTag
                 
-                if "Dimension" not in playerTag: playerTag["Dimension"] = nbt.TAG_Int(0);
-                playerTag["Dimension"].value = d;
-                
-                playerTag.saveGzipped(playerFilePath)
             else:
                 raise PlayerNotFound, "{0}".format(player)
+                #return None
+    
+    def getPlayerDimension(self, player = "Player"):
+        playerTag = self.getPlayerTag(player)
+        if "Dimension" not in playerTag: return 0;
+        return playerTag["Dimension"].value
+    
+    def setPlayerDimension(self, d, player = "Player"):
+        playerTag = self.getPlayerTag(player)
+        if "Dimension" not in playerTag: playerTag["Dimension"] = nbt.TAG_Int(0);
+        playerTag["Dimension"].value = d;
         
         
     def setPlayerPosition(self, pos, player = "Player"):
         posList = nbt.TAG_List([nbt.TAG_Double(p) for p in pos]);
+        playerTag = self.getPlayerTag(player)
         
-        if player == "Player" and player in self.root_tag["Data"]:
-            #single-player world
-            self.root_tag["Data"]["Player"]["Pos"] = posList
-            posList = self.root_tag["Data"]["Player"]["Pos"];
-        else:
-            playerFilePath = os.path.join(self.worldDir, "players", player + ".dat")
-            if os.path.exists(playerFilePath):
-                #multiplayer world, found this player
-                playerTag = nbt.loadFile(playerFilePath)
-                playerTag["Pos"] = posList
-                playerTag.saveGzipped(playerFilePath)
-            else:
-                raise PlayerNotFound, "{0}".format(player)
+        playerTag["Pos"] = posList
         
     def getPlayerPosition(self, player = "Player"):
-        if player == "Player" and player in self.root_tag["Data"]:
-            #single-player world
-            posList = self.root_tag["Data"]["Player"]["Pos"];
-        else:
-            playerFilePath = os.path.join(self.worldDir, "players", player + ".dat")
-            if os.path.exists(playerFilePath):
-                #multiplayer world, found this player
-                playerTag = nbt.loadFile(playerFilePath)
-                posList = playerTag["Pos"]
-            else:
-                raise PlayerNotFound, "{0}".format(player)
-                 
-
+        playerTag = self.getPlayerTag(player)
+        posList = playerTag["Pos"];
+        
         pos = map(lambda x:x.value, posList);
         return pos;
             
     def setPlayerOrientation(self, yp, player = "Player"):
-        self.root_tag["Data"]["Player"]["Rotation"] = nbt.TAG_List([nbt.TAG_Float(p) for p in yp])
+        self.getPlayerTag(player)["Rotation"] = nbt.TAG_List([nbt.TAG_Float(p) for p in yp])
     
     def playerOrientation(self, player = "Player"):
         """ returns (yaw, pitch) """
-        yp = map(lambda x:x.value, self.root_tag["Data"]["Player"]["Rotation"]);
+        yp = map(lambda x:x.value, self.getPlayerTag(player)["Rotation"]);
         y,p = yp;
         if p==0: p=0.000000001;
         if p==180.0:  p-=0.000000001;
@@ -4089,7 +4122,9 @@ class Entity(object):
 class MCAlphaDimension (MCInfdevOldLevel):
     def loadLevelDat(self, create, random_seed, last_played):
         pass;
-    
+    def preloadDimensions(self):
+        pass
+        
     dimensionNames = { -1: "Nether" };
     @property
     def displayName(self):
@@ -4205,11 +4240,11 @@ class MCIndevLevel(MCLevel):
     swapping to be consistent with infinite levels."""
     hasEntities = True
         
-    def setPlayerSpawnPosition(self, pos):
+    def setPlayerSpawnPosition(self, pos, player = None):
         assert len(pos) == 3
         self.Spawn = array(pos);
 
-    def playerSpawnPosition(self):
+    def playerSpawnPosition(self, player = None):
         return self.Spawn;
         
     def setPlayerPosition(self, pos, player = "Ignored"):
