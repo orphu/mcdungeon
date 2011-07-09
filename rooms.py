@@ -18,6 +18,9 @@ class Blank(object):
     _min_size = Vec(1,1,1)
     _max_size = Vec(1,1,1)
     size = Vec(1,1,1)
+    _can_entrance = False
+    _can_stairwell = False
+    _is_treasureroom = False
 
     def __init__ (self, parent, pos):
         self.parent = parent
@@ -36,7 +39,7 @@ class Blank(object):
                 self.halls[x] = halls.new('Blank', self, x, 0)
 
     def placed(self):
-        pass
+        return [self.pos]
 
     def setData(self):
         # West, South, East, North
@@ -108,6 +111,8 @@ class Blank(object):
 
 class Basic(Blank):
     _name = 'basic'
+    _can_entrance = True
+    _can_stairwell = True
 
     def setData(self):
         self.wall_func = iterate_four_walls
@@ -164,14 +169,18 @@ class Basic2x2(Basic):
     _min_size = Vec(2,1,2)
     _max_size = Vec(2,1,2)
     size = Vec(2,1,2)
+    _can_entrance = True
+    _can_stairwell = True
 
     def placed(self):
+        rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
         sy = self.parent.room_height
         # Fix our halls so they only show N and W sides
         # West, South, East, North
         pos = self.pos
+        rooms.append(pos)
         self.hallLength = [3,0,0,3]
         self.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -181,7 +190,7 @@ class Basic2x2(Basic):
         # This is the Southern room
         pos = self.pos + Vec(1,0,0)
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [3,3,0,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -196,7 +205,7 @@ class Basic2x2(Basic):
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [0,0,3,3]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -207,12 +216,13 @@ class Basic2x2(Basic):
         self.parent.halls[pos.x][pos.y][pos.z][0] = 0
         self.parent.halls[pos.x][pos.y][pos.z][3] = 0
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [0,3,3,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        return rooms
 
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
@@ -309,12 +319,14 @@ class SandstoneCavernLarge(SandstoneCavern):
     _small_cavern = 'sandstonecavern'
 
     def placed(self):
+        rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
         sy = self.parent.room_height
         # Fix our halls so they only show N and W sides
         # West, South, East, North
         pos = self.pos
+        rooms.append(pos)
         self.hallLength = [1,0,0,1]
         self.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -324,7 +336,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         # This is the Southern room
         pos = self.pos + Vec(1,0,0)
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [1,1,0,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -334,7 +346,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [0,0,1,1]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -345,7 +357,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         self.parent.halls[pos.x][pos.y][pos.z][0] = 0
         self.parent.halls[pos.x][pos.y][pos.z][3] = 0
         room = new('blank', self.parent, pos)
-        self.parent.setroom(pos, room)
+        rooms.append(self.parent.setroom(pos, room))
         room.hallLength = [0,1,1,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
@@ -364,7 +376,8 @@ class SandstoneCavernLarge(SandstoneCavern):
                 pos not in self.parent.rooms and
                 random.random() < self._spread_chance):
                 room = new(self._small_cavern, self.parent, pos)
-                self.parent.setroom(pos, room)
+                rooms.append(self.parent.setroom(pos, room))
+        return rooms
 
     def placeCavernHalls(self, cave):
         # NE room
@@ -440,6 +453,8 @@ class NaturalCavernLarge(SandstoneCavernLarge):
 
 class Circular(Basic):
     _name = 'circular'
+    _can_entrance = True
+    _can_stairwell = True
 
     def setData(self):
         self.wall_func = iterate_tube
@@ -510,6 +525,7 @@ class Pit(Blank):
         self.floors.append(floors.new('blank', self))
 
     def placed(self):
+        rooms = []
         # Extend downward. First, figure out where we are and how far down
         # we would like to go. 
         thisfloor = self.pos.y+1
@@ -517,6 +533,7 @@ class Pit(Blank):
         self.depth = 1
         # Place lower rooms.
         pos = self.pos
+        rooms.append(pos)
         while (self.depth < targetdepth):
             pos = pos.down(1)
             if (pos in self.parent.rooms):
@@ -524,13 +541,13 @@ class Pit(Blank):
             if (pos.down(1) in self.parent.rooms or
                self.depth+1 == targetdepth):
                 room = new(self.bottomroom, self.parent, pos)
-                self.parent.setroom(pos, room)
+                rooms.append(self.parent.setroom(pos, room))
                 self.depth += 1
                 if (room.floor == 'lava'):
                     self.toLava = True
                 break
             room = new(self.midroom, self.parent, pos)
-            self.parent.setroom(pos, room)
+            rooms.append(self.parent.setroom(pos, room))
             self.depth += 1
         # If this is the only level, make it a lava pit.
         if (self.depth == 1):
@@ -538,6 +555,7 @@ class Pit(Blank):
         # Otherwise build bridges. Or maybe a sand trap. 
         else:
             self.floors.append(floors.new('bridges', self))
+        return rooms
 
     def render (self):
         pn = perlin.SimplexNoise(256)
@@ -674,6 +692,7 @@ class PitMid(Blank):
         # This room needs bridges
         self.floors.append(floors.new('bridges', self))
         self.features.append(features.new('blank', self))
+        return self.pos
 
     def render (self):
         height = self.parent.room_height-2
@@ -798,6 +817,7 @@ class PitBottom(Blank):
         if (self.floor is not 'floor'):
             self.floors.append(floors.new('blank', self))
             self.features.append(features.new('blank', self))
+        return self.pos
 
     def render (self):
         pn = perlin.SimplexNoise(256)
