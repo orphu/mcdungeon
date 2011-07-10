@@ -1,5 +1,10 @@
 v0.3.0 - ??/??/????
 
+   * Tweaks, tweaks, and more tweaks. 
+
+   * The minimum dungeon size is now 4x4x1. This is to accomodate large tile types
+     and treasure rooms. 
+
    * New room type Basicx2x2: Large 2x2 tile version of Basic. 
 
    * New room type Cavern: Creates randomly sized cavern shaped rooms. These are
