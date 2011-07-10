@@ -48,5 +48,9 @@ class DisjointSet:
         return sets
 
     def dump(self):
-        print self.__items
+        sets = self.split_sets()
+        for k,v in sets.items():
+            print k
+            for l in v:
+                print '\t',l
 
