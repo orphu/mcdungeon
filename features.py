@@ -182,7 +182,7 @@ class Stairwell(Blank):
         if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
             start = self.parent.loc.trans(5,self.parent.parent.room_height-3,5)
             # Clear a stairwell
-            for x in iterate_cube(start.trans(0,0,1), start.trans(5,-6,4)):
+            for x in iterate_cube(start.trans(0,0,1), start.trans(5,-5,4)):
                 self.parent.parent.setblock(x, materials.Air)
             # Draw the steps
             for x in xrange(6):
