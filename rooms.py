@@ -1134,7 +1134,7 @@ def pickRoom (dungeon, dsize, pos,
     room_list = weighted_shuffle(cfg.master_rooms)
     name = ''
     fpos = pos
-    print 'finding room @:', fpos
+    #print 'finding room @:', fpos
     # Cycle through the weithed shuffled list of room names.
     while (len(room_list) and name == ''):
         newroom = room_list.pop()
@@ -1158,10 +1158,10 @@ def pickRoom (dungeon, dsize, pos,
             stairwell_test = _rooms[newroom]._is_stairwell
         else:
             stairwell_test = True
-        print 'trying:', newroom, '(', 'E:', entrance_test,\
-                                       'S:', stairwell_test,\
-                                       'T:', treasure_test,\
-                                       ')'
+        #print 'trying:', newroom, '(', 'E:', entrance_test,\
+        #                               'S:', stairwell_test,\
+        #                               'T:', treasure_test,\
+        #                               ')'
         # Generate a list of horizontal offsets to test, and test them in a
         # random order.
         of = []
@@ -1171,7 +1171,7 @@ def pickRoom (dungeon, dsize, pos,
         random.shuffle(of)
         for o in of:
             ppos = pos + o
-            print ' ppos:',ppos
+            #print ' ppos:',ppos
             if (entrance_test and
                 stairwell_test and
                 treasure_test and
@@ -1191,6 +1191,6 @@ def pickRoom (dungeon, dsize, pos,
     # If we didn't find a room, fall back to basic. 
     if name == '':
         name = 'basic'
-    print 'picked:', name, '@', fpos
+    #print 'picked:', name, '@', fpos
     # Return the room instance and the new offset location. 
     return new(name, dungeon, fpos), fpos

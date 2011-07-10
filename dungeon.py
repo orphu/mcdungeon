@@ -60,6 +60,7 @@ class Dungeon (object):
         self.position = Vec(0,0,0)
 
     def printmaze(self, y, cursor=None):
+        return
         for x in xrange(self.xsize):
             line = u''
             for z in xrange(self.zsize):
@@ -365,7 +366,7 @@ class Dungeon (object):
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
-            print 'setroom:', coord
+            #print 'setroom:', coord
             return room.placed()
         print 'FATAL: Tried to place a room in a filled location!'
         print coord
@@ -419,7 +420,6 @@ class Dungeon (object):
         ds = DisjointSet()
         # Generate a maze for each level. 
         for y in xrange(self.levels):
-            print '===Placing entrance==='
             # If we are on the last level, allow rooms on this level.
             if (y == self.levels-1):
                 dsize = dsize.down(1)
@@ -461,7 +461,6 @@ class Dungeon (object):
                 x = p.x
                 z = p.z
             else:
-                print '===Placing stairwell==='
                 #Any other start cell on a lower level is a stairwell
                 stairwells.append(Vec(x,y,z))
                 room, pos = rooms.pickRoom(self, dsize, level_start, stairwell=True)
@@ -494,7 +493,6 @@ class Dungeon (object):
                 feature.placed()
             # If we are on the last level, place a treasure room. 
             if (y == self.levels-1):
-                print '===Placing treasure room==='
                 # Try to find a location as far away form the level_start as
                 # possible.
                 pos = Vec(0,y,0)
@@ -502,6 +500,7 @@ class Dungeon (object):
                     pos.x = self.xsize-1
                 if (level_start.z <= self.zsize/2):
                     pos.z = self.zsize-1
+                exit_pos = pos
                 # Pick a treasure capable room
                 room, pos = rooms.pickRoom(self, dsize, pos, treasure=True)
                 ps = self.setroom(pos, room)
@@ -523,7 +522,7 @@ class Dungeon (object):
                     self.maze[p].state = state.USED
                     self.maze[p].depth = maxdepth
             while 1:
-                ds.dump()
+                #ds.dump()
                 self.printmaze(y, cursor=Vec(x,y,z))
                 # Walk the maze.
                 # Shuffle the directions.
@@ -547,7 +546,6 @@ class Dungeon (object):
                         # For blank cells, we generate a new room
                         if self.maze[Vec(nx,y,nz)].state == state.BLANK:
                             room, pos = rooms.pickRoom(self, dsize, Vec(nx,y,nz))
-                            print room._name
                             ps = self.setroom(pos, room)
                             roots = {}
                             for p in ps:
@@ -622,7 +620,6 @@ class Dungeon (object):
                         # If this is a BLANK cell, generate a new room.
                         if (self.maze[Vec(x,y,z)].state == state.BLANK):
                             room, pos = rooms.pickRoom(self, dsize, Vec(x,y,z))
-                            print room._name
                             ps = self.setroom(pos, room)
                             roots = {}
                             for p in ps:
@@ -644,7 +641,6 @@ class Dungeon (object):
                             sets = ds.split_sets()
                             ps = sets[root]
                             for p in ps:
-                                print p
                                 self.maze[p].state = state.CONNECTED
                         self.halls[x][y][z][sides[d]] = 1
                         self.halls[ox][y][oz][osides[d]] = 1
@@ -659,7 +655,6 @@ class Dungeon (object):
                 # this level, and use it for the stairwell (starting point)
                 # on the next.
                 if (lx == x and lz == z):
-                    print 'Finished level'
                     # Sprinkle some extra hallways into the dungeon using the
                     # loops config parameter. 
                     for p in iterate_plane(Vec(0,y,0),
@@ -704,49 +699,8 @@ class Dungeon (object):
                             z = p.z
                     break
 
-        # The exit is the deepest cell on the last level. Treasure rooms are now
-        # 2x2, so we have a few possibilities. First grab a weighted random list
-        # of positions based on depth from the stairwell on this level. 
-        # We'll pop through them looking for a good location. 
-        tchoices = []
-        for p in iterate_plane(Vec(0,y,0),
-                               Vec(self.xsize-1,y,self.zsize-1)):
-            tchoices.append((self.maze[p].depth, p))
-        tchoices.sort()
-        # 1) Rooms extending East and South are available. We're good!
-        while len(tchoices) > 0:
-            d, p = tchoices.pop()
-        #    if (p != entrance_pos and
-        #        p.x < self.xsize-1 and
-        #        p.z < self.zsize-1 and
-        #        p+Vec(1,0,0) not in stairwells and
-        #        p+Vec(0,0,1) not in stairwells and
-        #        p+Vec(1,0,1) not in stairwells and
-        #        p+Vec(1,0,0) != entrance_pos and
-        #        p+Vec(0,0,1) != entrance_pos and
-        #        p+Vec(1,0,1) != entrance_pos):
-            exit_pos = p
-            break
-
-        if exit_pos == None:
-            sys.exit('Unable to find treasure room location. :(')
-
         print 'Entrance:', entrance_pos
         print 'Exit:', exit_pos
-
-        # Fill-in all the special rooms.
-        # This is the exit. MultiVerse Portal or treasure room.
-        #room = None
-        #pos = exit_pos
-        #room = rooms.new('circular', self, pos)
-        #if (cfg.mvportal is not ''):
-        #    feature = features.new('multiverseportal', room)
-        #    feature.target = cfg.mvportal
-        #else:
-        #    feature = features.new('treasureroom', room)
-        #room.features.append(feature)
-        #feature.placed()
-        #self.setroom(pos, room)
 
 
     def genhalls(self):
