@@ -1,5 +1,22 @@
 v0.3.0 - ??/??/????
 
+   * New room type Basicx2x2: Large 2x2 tile version of Basic. 
+
+   * New room type Cavern: Creates randomly sized cavern shaped rooms. These are
+     large, and will be a random shape and size.
+
+   * New room type SandstoneCavern: Like caverns, but made of sandstone and sand
+     floors.
+
+   * New room type NaturalCavern: The wall of this cavern will be the naturally
+     occurring blocks in the surrounding area. These may link up with natural caves
+     surrounding the dungeon (unless hard mode is used).
+
+   * More updates to pymclevel handle grass and additional oddball compression
+     of chunks.
+
+   * Rooms can be larger than one chunk. They can also be irregularly shaped. 
+
    * External noise module is no longer required. (perlin.py is now bundled)
 
    * Bugfix: Fixed a problem parsing ranges when Z was fixed and X
