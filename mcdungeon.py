@@ -87,7 +87,7 @@ noi_parser.add_argument('world',
 noi_parser.add_argument('z',
                     metavar='Z',
                     help='Number of rooms West -> East. Use -1 for random, or \
-                        provide a range. (ie: 3-7)')
+                        provide a range. (ie: 4-7)')
 noi_parser.add_argument('x',
                     metavar='X',
                     help='Number of rooms North -> South. Use -1 for random, \
@@ -145,13 +145,13 @@ if (args.interactive == True):
 
     m = cfg.max_dist - cfg.min_dist
     print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
-    print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
-    print 'Enter -1 to pick random values between 2 and %d. (based on your config)'%(m)
+    print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
+    print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
     args.z = raw_input('Z size: ')
 
     print '\nEnter the size of the dungeon(s) from North to South. (X size)'
-    print 'You can enter a fixed value >= 2, or a range (ie: 3-5)'
-    print 'Enter -1 to pick random values between 2 and %d. (based on your config)'%(m)
+    print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
+    print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
     args.x = raw_input('X size: ')
 
     print '\nEnter a number of levels.'
@@ -183,9 +183,9 @@ else:
 loottable.Load()
 
 # Parse out the sizes
-min_x = 2
+min_x = 4
 max_x = cfg.max_dist - cfg.min_dist
-min_z = 2
+min_z = 4
 max_z = cfg.max_dist - cfg.min_dist
 min_levels = 1
 max_levels = 8
@@ -198,8 +198,8 @@ if (result):
     args.z = -1
     if (min_z > max_z):
         sys.exit('Minimum Z must be equal or less than maximum Z.')
-    if (min_z < 2):
-        sys.exit('Minimum Z must be equal or greater than 2.')
+    if (min_z < 4):
+        sys.exit('Minimum Z must be equal or greater than 4.')
 # Range for X
 result = re.search('(\d+)-(\d+)', args.x)
 if (result):
@@ -208,8 +208,8 @@ if (result):
     args.x = -1
     if (min_x > max_x):
         sys.exit('Minimum X must be equal or less than maximum X.')
-    if (min_x < 2):
-        sys.exit('Minimum X must be equal or greater than 2.')
+    if (min_x < 4):
+        sys.exit('Minimum X must be equal or greater than 4.')
 # Range for Levels
 result = re.search('(\d+)-(\d+)', args.levels)
 if (result):
@@ -236,11 +236,11 @@ try:
 except ValueError:
     sys.exit('Levels doesn\'t appear to be an integer!')
 
-if (args.z < 2 and args.z >= 0):
-    sys.exit('Too few rooms in Z direction. (%d) Try >= 2.'%(args.z))
-if (args.x < 2 and args.x >= 0):
-    sys.exit('Too few rooms in X direction. (%d) Try >= 2.'%(args.x))
-if (args.levels == 0 or args.levels > 18):
+if (args.z < 4 and args.z >= 0):
+    sys.exit('Too few rooms in Z direction. (%d) Try >= 4.'%(args.z))
+if (args.x < 4 and args.x >= 0):
+    sys.exit('Too few rooms in X direction. (%d) Try >= 4.'%(args.x))
+if (args.levels < 1 or args.levels > 18):
     sys.exit('Invalid number of levels. (%d) Try between 1 and 18.'%(args.levels))
 
 if (args.offset is not None):
