@@ -18,8 +18,8 @@ class Blank(object):
     _min_size = Vec(1,1,1)
     _max_size = Vec(1,1,1)
     size = Vec(1,1,1)
-    _can_entrance = False
-    _can_stairwell = False
+    _is_entrance = False
+    _is_stairwell = False
     _is_treasureroom = False
 
     def __init__ (self, parent, pos):
@@ -111,8 +111,8 @@ class Blank(object):
 
 class Basic(Blank):
     _name = 'basic'
-    _can_entrance = True
-    _can_stairwell = True
+    _is_entrance = True
+    _is_stairwell = True
 
     def setData(self):
         self.wall_func = iterate_four_walls
@@ -169,8 +169,9 @@ class Basic2x2(Basic):
     _min_size = Vec(2,1,2)
     _max_size = Vec(2,1,2)
     size = Vec(2,1,2)
-    _can_entrance = True
-    _can_stairwell = True
+    _is_entrance = True
+    _is_stairwell = True
+    _is_treasureroom = True
 
     def placed(self):
         rooms = []
@@ -186,16 +187,20 @@ class Basic2x2(Basic):
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        self.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        self.parent.halls[pos.x][pos.y][pos.z][2] = 1
         # place three more blank rooms to hold the hallways
         # This is the Southern room
         pos = self.pos + Vec(1,0,0)
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [3,3,0,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         #room.canvas = (
         #    Vec(4   ,sy-2, 4),
         #    Vec(sx-5,sy-2, 4),
@@ -205,23 +210,25 @@ class Basic2x2(Basic):
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,0,3,3]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
         # South East room.
         pos = self.pos + Vec(1,0,1)
-        self.parent.halls[pos.x][pos.y][pos.z][0] = 0
-        self.parent.halls[pos.x][pos.y][pos.z][3] = 0
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,3,3,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         return rooms
 
 class SandstoneCavern(Blank):
@@ -332,38 +339,46 @@ class SandstoneCavernLarge(SandstoneCavern):
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        self.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        self.parent.halls[pos.x][pos.y][pos.z][2] = 1
         # place three more blank rooms to hold the hallways
         # This is the Southern room
         pos = self.pos + Vec(1,0,0)
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [1,1,0,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
 
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,0,1,1]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
         # South East room.
         pos = self.pos + Vec(1,0,1)
-        self.parent.halls[pos.x][pos.y][pos.z][0] = 0
-        self.parent.halls[pos.x][pos.y][pos.z][3] = 0
         room = new('blank', self.parent, pos)
-        rooms.append(self.parent.setroom(pos, room))
+        rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,1,1,0]
         room.hallSize = [[2,sx-2],
                          [2,sx-2],
                          [2,sz-2],
                          [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         # There's a chance large caverns will spawn adjacent small cavern rooms.
+        h = self.parent.halls
+        s = self.pos
         for p in (Vec(-1, 0, 0), Vec(-1, 0, 1),  # North
                   Vec( 2, 0, 0), Vec( 2, 0, 1),  # South
                   Vec( 0, 0, 2), Vec( 1, 0, 2),  # East
@@ -376,10 +391,43 @@ class SandstoneCavernLarge(SandstoneCavern):
                 pos not in self.parent.rooms and
                 random.random() < self._spread_chance):
                 room = new(self._small_cavern, self.parent, pos)
-                rooms.append(self.parent.setroom(pos, room))
+                rooms.extend(self.parent.setroom(pos, room))
+                # Connect teh halls for each case
+                # North
+                if (p == Vec(-1, 0, 0)):
+                    h[s.x][s.y][s.z][3] = 1
+                    h[s.x-1][s.y][s.z][1] = 1
+                elif (p == Vec(-1, 0, 1)):
+                    h[s.x][s.y][s.z+1][3] = 1
+                    h[s.x-1][s.y][s.z+1][1] = 1
+                # South
+                elif (p == Vec(2, 0, 0)):
+                    h[s.x+1][s.y][s.z][1] = 1
+                    h[s.x+2][s.y][s.z][3] = 1
+                elif (p == Vec(2, 0, 1)):
+                    h[s.x+1][s.y][s.z+1][1] = 1
+                    h[s.x+2][s.y][s.z+1][3] = 1
+                # East
+                elif (p == Vec(0, 0, 2)):
+                    h[s.x][s.y][s.z+1][2] = 1
+                    h[s.x][s.y][s.z+2][0] = 1
+                elif (p == Vec(1, 0, 2)):
+                    h[s.x+1][s.y][s.z+1][2] = 1
+                    h[s.x+1][s.y][s.z+2][0] = 1
+                # West
+                elif (p == Vec(0, 0, -1)):
+                    h[s.x][s.y][s.z][0] = 1
+                    h[s.x][s.y][s.z-1][2] = 1
+                elif (p == Vec(1, 0, -1)):
+                    h[s.x+1][s.y][s.z][0] = 1
+                    h[s.x+1][s.y][s.z-1][2] = 1
+                else:
+                    sys.exit('Cavern connected to unknown room! Aiiee!')
+
         return rooms
 
     def placeCavernHalls(self, cave):
+        ''' Used when rendering to set exit zones for the cave factory'''
         # NE room
         room_ne = self.parent.rooms[self.pos + Vec(0,0,1)]
         # SE room
@@ -453,8 +501,8 @@ class NaturalCavernLarge(SandstoneCavernLarge):
 
 class Circular(Basic):
     _name = 'circular'
-    _can_entrance = True
-    _can_stairwell = True
+    _is_entrance = True
+    _is_stairwell = True
 
     def setData(self):
         self.wall_func = iterate_tube
@@ -541,13 +589,13 @@ class Pit(Blank):
             if (pos.down(1) in self.parent.rooms or
                self.depth+1 == targetdepth):
                 room = new(self.bottomroom, self.parent, pos)
-                rooms.append(self.parent.setroom(pos, room))
+                rooms.extend(self.parent.setroom(pos, room))
                 self.depth += 1
                 if (room.floor == 'lava'):
                     self.toLava = True
                 break
             room = new(self.midroom, self.parent, pos)
-            rooms.append(self.parent.setroom(pos, room))
+            rooms.extend(self.parent.setroom(pos, room))
             self.depth += 1
         # If this is the only level, make it a lava pit.
         if (self.depth == 1):
@@ -692,7 +740,7 @@ class PitMid(Blank):
         # This room needs bridges
         self.floors.append(floors.new('bridges', self))
         self.features.append(features.new('blank', self))
-        return self.pos
+        return [self.pos]
 
     def render (self):
         height = self.parent.room_height-2
@@ -817,7 +865,7 @@ class PitBottom(Blank):
         if (self.floor is not 'floor'):
             self.floors.append(floors.new('blank', self))
             self.features.append(features.new('blank', self))
-        return self.pos
+        return [self.pos]
 
     def render (self):
         pn = perlin.SimplexNoise(256)
@@ -1073,26 +1121,76 @@ def new (name, parent, pos):
         return _rooms[name](parent, pos)
     return Blank(parent, pos)
 
-def pickRoom (rooms, dsize, pos, maxsize=Vec(10,18,10)):
-    '''Returns the name of a valid room class given rthe current room set. Rooms
+def pickRoom (dungeon, dsize, pos,
+              maxsize=Vec(10,18,10),
+              entrance=False,
+              treasure=False,
+              stairwell=False):
+    '''Returns a pointer to a room instance given the current room set. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
-    fallback to Basic.'''
+    fall back to Basic. Restrictions on size, entrance, treasure, and stairwell
+    can be specified.'''
+    rooms = dungeon.rooms
     room_list = weighted_shuffle(cfg.master_rooms)
-    room_list.insert(0, 'Basic')
-    while (len(room_list)):
+    name = ''
+    fpos = pos
+    print 'finding room @:', fpos
+    # Cycle through the weithed shuffled list of room names.
+    while (len(room_list) and name == ''):
         newroom = room_list.pop()
+        # If the name doesn't really exist, ignore it.
         if newroom not in _rooms:
             continue
+        # Find the room size.
         size = _rooms[newroom]._min_size - Vec(1,1,1)
-        #print '\t',newroom, 'Size:', size+Vec(1,1,1), 'Max:', maxsize, 'Dungeon:', dsize
-        if (pos.x + size.x < dsize.x and
-            pos.y + size.y < dsize.y and
-            pos.z + size.z < dsize.z and
-            size.x+1 <= maxsize.x and
-            size.y+1 <= maxsize.y and
-            size.z+1 <= maxsize.z and
-            any(p in rooms for p in iterate_cube(pos, pos+size)) is False):
-            #print 'Room:', newroom, 'at', pos
-            return newroom
-    #print 'Room: basic', 'at', pos
-    return 'basic'
+        # Check if we need an entrance capable room.
+        if (entrance == True):
+            entrance_test = _rooms[newroom]._is_entrance
+        else:
+            entrance_test = True
+        # Check if we need a treasure capable room.
+        if (treasure == True):
+            treasure_test = _rooms[newroom]._is_treasureroom
+        else:
+            treasure_test = True
+        # Check if we need a stairwell capable room.
+        if (stairwell == True):
+            stairwell_test = _rooms[newroom]._is_stairwell
+        else:
+            stairwell_test = True
+        print 'trying:', newroom, '(', 'E:', entrance_test,\
+                                       'S:', stairwell_test,\
+                                       'T:', treasure_test,\
+                                       ')'
+        # Generate a list of horizontal offsets to test, and test them in a
+        # random order.
+        of = []
+        for x in xrange(size.x+1):
+            for z in xrange(size.z+1):
+                of.append(Vec(-x,0,-z))
+        random.shuffle(of)
+        for o in of:
+            ppos = pos + o
+            print ' ppos:',ppos
+            if (entrance_test and
+                stairwell_test and
+                treasure_test and
+                ppos.x >= 0 and
+                ppos.y >= 0 and
+                ppos.z >= 0 and
+                ppos.x + size.x < dsize.x and
+                ppos.y + size.y < dsize.y and
+                ppos.z + size.z < dsize.z and
+                size.x < maxsize.x and
+                size.y < maxsize.y and
+                size.z < maxsize.z and
+                any(p in rooms for p in iterate_cube(ppos, ppos+size)) is False):
+                name = newroom
+                fpos = ppos
+                break
+    # If we didn't find a room, fall back to basic. 
+    if name == '':
+        name = 'basic'
+    print 'picked:', name, '@', fpos
+    # Return the room instance and the new offset location. 
+    return new(name, dungeon, fpos), fpos
