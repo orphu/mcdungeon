@@ -240,7 +240,7 @@ if (args.z < 4 and args.z >= 0):
     sys.exit('Too few rooms in Z direction. (%d) Try >= 4.'%(args.z))
 if (args.x < 4 and args.x >= 0):
     sys.exit('Too few rooms in X direction. (%d) Try >= 4.'%(args.x))
-if (args.levels < 1 or args.levels > 18):
+if (args.levels == 0 or args.levels > 18):
     sys.exit('Invalid number of levels. (%d) Try between 1 and 18.'%(args.levels))
 
 if (args.offset is not None):
