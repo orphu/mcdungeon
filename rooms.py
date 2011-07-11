@@ -7,6 +7,7 @@ import floors
 import features
 import ruins
 import cfg
+import loottable
 from utils import *
 import random
 import perlin
@@ -171,7 +172,6 @@ class Basic2x2(Basic):
     size = Vec(2,1,2)
     _is_entrance = True
     _is_stairwell = True
-    _is_treasureroom = True
 
     def placed(self):
         rooms = []
@@ -230,6 +230,79 @@ class Basic2x2(Basic):
         room.parent.halls[pos.x][pos.y][pos.z][0] = 1
         room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         return rooms
+
+class Treasure1(Basic2x2):
+    _name = 'treasure1'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+
+    def render(self):
+        # We start with the basics...
+        Basic2x2.render(self)
+        # Clear out an air space.
+        for p in iterate_cube(self.c1+Vec(1,0,1),
+                              self.c3+Vec(-1,30,-1)):
+            self.parent.setblock(p, materials.Air)
+        # Build a bridge around the edge
+        for p in iterate_four_walls(self.c1+Vec(1,0,1),
+                                    self.c3+Vec(-1,0,-1),0):
+            self.parent.setblock(p, materials.WoodenSlab)
+        # Make some island areas
+        cave = cave_factory.new(22, 22)
+        cave.gen_map()
+        for p in cave.iterate_map(cave_factory.FLOOR):
+            pp = Vec(p[0],0,p[1])+self.c1+Vec(3,1,3)
+            for x in iterate_cube(pp, pp.down(30)):
+                self.parent.setblock(x, materials._floor)
+        # Some tasteful recessed lighting
+        for p in iterate_cube(self.c1+Vec(14,-4,14),
+                              self.c3-Vec(14,4,14)):
+            self.parent.setblock(p, materials.Air)
+            self.parent.setblock(p.up(1), materials.Glowstone)
+        # Central pillar
+        for p in iterate_cylinder(self.c1+Vec(10,2,10),
+                                  self.c3-Vec(10,-7,10)):
+            self.parent.setblock(p, materials.Bedrock)
+        for p in iterate_disc(self.c1+Vec(10,1,10),
+                                  self.c3-Vec(10,-1,10)):
+            self.parent.setblock(p, materials.Air)
+        for p in iterate_ellipse(self.c1+Vec(10,1,10),
+                                  self.c3-Vec(10,-1,10)):
+            self.parent.setblock(p, materials.CobblestoneSlab)
+        center = self.c1+Vec(14,1,12)
+        if (cfg.mvportal != ''):
+            # Obsidian portal frame.
+            for p in iterate_cube(center.trans(-2,1,0), center.trans(1,-3,0)):
+                self.parent.setblock(p, materials.Obsidian)
+            # Portal stuff.
+            for p in iterate_cube(center.trans(-1,0,0), center.trans(0,-2,0)):
+                self.parent.setblock(p, materials.NetherPortal)
+            # Signs.
+            self.parent.setblock(center.trans(1,-1,-1),
+                                        materials.WallSign)
+            self.parent.blocks[center.trans(1,-1,-1)].data = 3
+            self.parent.setblock(center.trans(-2,-1,1),
+                                        materials.WallSign)
+            self.parent.blocks[center.trans(-2,-1,1)].data = 2
+            # Create the tile entities for the signs.
+            self.parent.addsign(center.trans(1,-1,-1),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       cfg.mvportal,
+                                       '<== Exit')
+            self.parent.addsign(center.trans(-2,-1,1),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       cfg.mvportal,
+                                       '<== Exit')
+        # Treasure!
+        self.parent.setblock(center.trans(0,0,3),
+                                    materials.Chest)
+        self.parent.addchest(center.trans(0,0,3),
+                                    loottable._maxtier)
+
+
 
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
@@ -1125,13 +1198,17 @@ def pickRoom (dungeon, dsize, pos,
               maxsize=Vec(10,18,10),
               entrance=False,
               treasure=False,
-              stairwell=False):
+              stairwell=False,
+              room_list = None):
     '''Returns a pointer to a room instance given the current room set. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
     fall back to Basic. Restrictions on size, entrance, treasure, and stairwell
     can be specified.'''
     rooms = dungeon.rooms
-    room_list = weighted_shuffle(cfg.master_rooms)
+    if (room_list == None):
+        room_list = weighted_shuffle(cfg.master_rooms)
+    else:
+        room_list = weighted_shuffle(room_list)
     name = ''
     fpos = pos
     #print 'finding room @:', fpos

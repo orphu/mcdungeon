@@ -502,17 +502,13 @@ class Dungeon (object):
                     pos.z = self.zsize-1
                 exit_pos = pos
                 # Pick a treasure capable room
-                room, pos = rooms.pickRoom(self, dsize, pos, treasure=True)
+                room, pos = rooms.pickRoom(self, dsize, pos, treasure=True,
+                                           room_list = [('treasure1',1)])
                 ps = self.setroom(pos, room)
-                # This is temporary...
-                if (cfg.mvportal is not ''):
-                    feature = features.new('multiverseportal', room)
-                    feature.target = cfg.mvportal
-                else:
-                    feature = features.new('treasureroom', room)
+                feature = features.new('blank', room)
                 room.features.append(feature)
-                feature.placed()
-                # End temp
+                floor = floors.new('blank', room)
+                room.floors.append(floor)
                 # Place all these cells into a USED set for connection later.
                 root1 = ds.find(pos)
                 for p in ps:
