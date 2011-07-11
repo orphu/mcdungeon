@@ -263,7 +263,7 @@ class Treasure1(Basic2x2):
         # Central pillar
         for p in iterate_cylinder(self.c1+Vec(10,2,10),
                                   self.c3-Vec(10,-7,10)):
-            self.parent.setblock(p, materials.Bedrock)
+            self.parent.setblock(p, materials._subfloor)
         for p in iterate_disc(self.c1+Vec(10,1,10),
                                   self.c3-Vec(10,-1,10)):
             self.parent.setblock(p, materials.Air)
