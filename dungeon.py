@@ -227,6 +227,7 @@ class Dungeon (object):
         # Now we have to weed out the areas that are not deep enough
         print 'Depth check...'
         print 'Minimum depth:', min_depth, 'blocks'
+        print 'Maximum depth: 109 blocks'
         for chunk in positions:
             spin(chunk)
             # Fill in any missing depth info for this area
@@ -237,7 +238,7 @@ class Dungeon (object):
                 if (p not in self.depths):
                     self.depths[p] = findChunkDepth(p, world)
                 depth = min(depth, self.depths[p])
-            if (depth >= min_depth):
+            if (depth >= min_depth and depth < 110):
                 maxd = max(maxd, positions[chunk])
                 depth_positions[chunk] = Vec(
                     chunk.x*self.room_size,
