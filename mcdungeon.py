@@ -273,12 +273,20 @@ if (args.number is not 1):
         args.seed = None
 
 
-# Attempt to open the world.
+# Attempt to open the world. Look in cwd first, then try to search the user's
+# save directory. 
 try:
+    print "Trying to open:", args.world
     world = mclevel.fromFile(args.world)
 except:
-    print "Failed to open world:",args.world
-    sys.exit(1)
+    saveFileDir = mclevel.saveFileDir
+    args.world = os.path.join(saveFileDir, args.world)
+    print "Trying to open:", args.world
+    try:
+        world = mclevel.fromFile(args.world)
+    except:
+        print "Failed to open world:",args.world
+        sys.exit(1)
 print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
 #dumpEnts(world)

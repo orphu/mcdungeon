@@ -1,8 +1,11 @@
 v0.3.0 - ??/??/????
+   * Will now search the current directory and then the user's save directory for
+     world files. You no longer have to type out the full path if the world is in
+     the standard minecraft save directory. (All OSes)
 
    * Tweaks, tweaks, and more tweaks. 
 
-   * The minimum dungeon size is now 4x4x1. This is to accomodate large tile types
+   * The minimum dungeon size is now 4x4x1. This is to accommodate large tile types
      and treasure rooms. 
 
    * New room type Basicx2x2: Large 2x2 tile version of Basic. 
