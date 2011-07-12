@@ -238,11 +238,14 @@ class Treasure1(Basic2x2):
     _is_treasureroom = True
 
     def render(self):
+        pit_depth = self.parent.position.y - self.parent.levels * \
+            self.parent.room_height
+        print 'Pit depth:', pit_depth
         # We start with the basics...
         Basic2x2.render(self)
         # Clear out an air space.
         for p in iterate_cube(self.c1+Vec(1,0,1),
-                              self.c3+Vec(-1,30,-1)):
+                              self.c3+Vec(-1,pit_depth,-1)):
             self.parent.setblock(p, materials.Air)
         # Build a bridge around the edge
         for p in iterate_four_walls(self.c1+Vec(1,0,1),
@@ -253,7 +256,7 @@ class Treasure1(Basic2x2):
         cave.gen_map()
         for p in cave.iterate_map(cave_factory.FLOOR):
             pp = Vec(p[0],0,p[1])+self.c1+Vec(3,1,3)
-            for x in iterate_cube(pp, pp.down(30)):
+            for x in iterate_cube(pp, pp.down(pit_depth)):
                 self.parent.setblock(x, materials._floor)
         # Some tasteful recessed lighting
         for p in iterate_cube(self.c1+Vec(14,-4,14),
@@ -262,7 +265,7 @@ class Treasure1(Basic2x2):
             self.parent.setblock(p.up(1), materials.Glowstone)
         # Central pillar
         for p in iterate_cylinder(self.c1+Vec(10,2,10),
-                                  self.c3-Vec(10,-7,10)):
+                                  self.c3-Vec(10,-pit_depth,10)):
             self.parent.setblock(p, materials._subfloor)
         for p in iterate_disc(self.c1+Vec(10,1,10),
                                   self.c3-Vec(10,-1,10)):
@@ -1211,7 +1214,7 @@ def pickRoom (dungeon, dsize, pos,
         room_list = weighted_shuffle(room_list)
     name = ''
     fpos = pos
-    #print 'finding room @:', fpos
+    # print 'finding room @:', fpos
     # Cycle through the weithed shuffled list of room names.
     while (len(room_list) and name == ''):
         newroom = room_list.pop()
@@ -1235,10 +1238,10 @@ def pickRoom (dungeon, dsize, pos,
             stairwell_test = _rooms[newroom]._is_stairwell
         else:
             stairwell_test = True
-        #print 'trying:', newroom, '(', 'E:', entrance_test,\
-        #                               'S:', stairwell_test,\
-        #                               'T:', treasure_test,\
-        #                               ')'
+        # print 'trying:', newroom, '(', 'E:', entrance_test,\
+        #                                'S:', stairwell_test,\
+        #                                'T:', treasure_test,\
+        #                                ')'
         # Generate a list of horizontal offsets to test, and test them in a
         # random order.
         of = []
@@ -1248,7 +1251,7 @@ def pickRoom (dungeon, dsize, pos,
         random.shuffle(of)
         for o in of:
             ppos = pos + o
-            #print ' ppos:',ppos
+            # print ' ppos:',ppos
             if (entrance_test and
                 stairwell_test and
                 treasure_test and
@@ -1268,6 +1271,6 @@ def pickRoom (dungeon, dsize, pos,
     # If we didn't find a room, fall back to basic. 
     if name == '':
         name = 'basic'
-    #print 'picked:', name, '@', fpos
+    # print 'picked:', name, '@', fpos
     # Return the room instance and the new offset location. 
     return new(name, dungeon, fpos), fpos
