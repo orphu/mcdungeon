@@ -128,7 +128,9 @@ class Basic(Blank):
 
         # Some paramters. 
         self.c1 = self.loc + Vec(2,sy-2,2)
+        self.c2 = self.c1 + Vec(sx-5, 0, 0)
         self.c3 = self.c1 + Vec(sx-5, 0, sz-5)
+        self.c4 = self.c1 + Vec(0, 0, sz-5)
 
         self.hallLength = [3,3,3,3]
         self.hallSize = [[2,sx-2],
@@ -201,11 +203,6 @@ class Basic2x2(Basic):
                          [2,sz-2]]
         room.parent.halls[pos.x][pos.y][pos.z][2] = 1
         room.parent.halls[pos.x][pos.y][pos.z][3] = 1
-        #room.canvas = (
-        #    Vec(4   ,sy-2, 4),
-        #    Vec(sx-5,sy-2, 4),
-        #    Vec(sx-5,sy-2, sz-5),
-        #    Vec(4   ,sy-2, sz-5))
 
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
@@ -237,6 +234,21 @@ class Treasure1(Basic2x2):
     _is_stairwell = False
     _is_treasureroom = True
 
+    def placed(self):
+        rooms = Basic2x2.placed(self)
+        # Narrow the hall connections a little to make room for the skeleton
+        # balconies.
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        for room in rooms:
+            r = self.parent.rooms[room]
+            r.hallSize = [[6,sx-6],
+                             [6,sx-6],
+                             [6,sz-6],
+                             [6,sz-6]]
+        return rooms
+
     def render(self):
         pit_depth = self.parent.position.y - self.parent.levels * \
             self.parent.room_height
@@ -247,6 +259,10 @@ class Treasure1(Basic2x2):
         for p in iterate_cube(self.c1+Vec(1,0,1),
                               self.c3+Vec(-1,pit_depth,-1)):
             self.parent.setblock(p, materials.Air)
+        # Lava!
+        for p in iterate_cube(self.c1.down(pit_depth+1),
+                              self.c3.down(pit_depth+1)):
+            self.parent.setblock(p, materials.Lava)
         # Build a bridge around the edge
         for p in iterate_four_walls(self.c1+Vec(1,0,1),
                                     self.c3+Vec(-1,0,-1),0):
@@ -304,7 +320,25 @@ class Treasure1(Basic2x2):
                                     materials.Chest)
         self.parent.addchest(center.trans(0,0,3),
                                     loottable._maxtier)
-
+        # Oh fuck! Skeletons!
+        for x in (self.c1+Vec(1,0,1), self.c2+Vec(-1,0,1),
+                  self.c3+Vec(-1,0,-1), self.c4+Vec(1,0,-1)):
+            b1 = x-Vec(3,0,3)
+            b2 = x+Vec(3,0,3)
+            for p in iterate_tube(b1, b2, 1):
+                if (p in self.parent.blocks and (
+                    self.parent.blocks[p].material == materials.Air or
+                    self.parent.blocks[p].material == materials.WoodenSlab or
+                    self.parent.blocks[p].material == materials.Fence)):
+                    self.parent.setblock(p, materials.Fence)
+            for p in iterate_disc(b1, b2):
+                if (p in self.parent.blocks and (
+                    self.parent.blocks[p].material == materials.Air or
+                    self.parent.blocks[p].material == materials.WoodenSlab or
+                    self.parent.blocks[p].material == materials.Fence)):
+                    self.parent.setblock(p, materials._floor)
+            self.parent.addspawner(x.up(1), 'Skeleton')
+            self.parent.setblock(x.up(1), materials.Spawner)
 
 
 class SandstoneCavern(Blank):
