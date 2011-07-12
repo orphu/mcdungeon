@@ -222,7 +222,8 @@ def drawHall (hall):
                 hall.parent.parent.portcullises[port].size = 1
             # Make this a web instead
             if (randint(1,100) <= cfg.portcullis_web):
-                hall.parent.parent.portcullises[port].material = materials.Web
+                hall.parent.parent.portcullises[port].material = \
+                    materials.Cobweb
                 hall.parent.parent.portcullises[port].size = 3
             # place the actual portcullis positions
             for x in xrange(hall.size-2):

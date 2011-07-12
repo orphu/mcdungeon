@@ -1,4 +1,9 @@
 v0.3.0 - ??/??/????
+
+   * Added Spruce Sapling, Birch Sapling, Spruce Leaves, Birch Leaves, Powered
+     Rail, Detector Rail, Sticky Piston, Piston, Trapdoor, Map, and Shears to
+     items.txt. Renamed "Web" to "Cobweb"
+
    * Will now search the current directory and then the user's save directory for
      world files. You no longer have to type out the full path if the world is in
      the standard minecraft save directory. (All OSes)
@@ -10,15 +15,16 @@ v0.3.0 - ??/??/????
 
    * New room type Basicx2x2: Large 2x2 tile version of Basic. 
 
-   * New room type Cavern: Creates randomly sized cavern shaped rooms. These are
-     large, and will be a random shape and size.
+   * New room type Cavern and CavernLarge: Creates randomly sized cavern
+     shaped rooms. These are large, and will be a random shape and size.
 
-   * New room type SandstoneCavern: Like caverns, but made of sandstone and sand
-     floors.
+   * New room type SandstoneCavern SandstoneCavernLarge: Like caverns, but
+     made of sandstone and sand floors.
 
-   * New room type NaturalCavern: The wall of this cavern will be the naturally
-     occurring blocks in the surrounding area. These may link up with natural caves
-     surrounding the dungeon (unless hard mode is used).
+   * New room type NaturalCavern and NaturalCavernLarge: The wall of this
+     cavern will be the naturally occurring blocks in the surrounding area.
+     These may link up with natural caves surrounding the dungeon (unless
+     hard mode is used).
 
    * More updates to pymclevel handle grass and additional oddball compression
      of chunks.
