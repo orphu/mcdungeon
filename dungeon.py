@@ -463,7 +463,11 @@ class Dungeon (object):
             else:
                 #Any other start cell on a lower level is a stairwell
                 stairwells.append(Vec(x,y,z))
-                room, pos = rooms.pickRoom(self, dsize, level_start, stairwell=True)
+                maxsize = Vec(10,18,10)
+                if y == self.levels-1:
+                    maxsize = Vec(1,1,1)
+                room, pos = rooms.pickRoom(self, dsize, level_start,
+                                           stairwell=True, maxsize=maxsize)
                 ps = self.setroom(pos, room)
                 eroom = self.rooms[level_start]
                 feature = features.new('stairwell', eroom)
@@ -1172,7 +1176,7 @@ class Dungeon (object):
                 continue
             # Translate block coords to world coords
             x = block.loc.x + self.position.x
-            y = self.position.y - block.loc.y
+            y = self.position.y - block.loc.y - 1
             z = self.position.z - block.loc.z + 15
             # Due to bad planning, sometimes we try to draw outside the bounds
             if (y < 0 or y > 127):
@@ -1222,7 +1226,7 @@ class Dungeon (object):
             num -= 1
             # Calculate world coords.
             x = ent['x'].value + self.position.x
-            y = self.position.y - ent['y'].value
+            y = self.position.y - ent['y'].value - 1
             z = self.position.z - ent['z'].value + 15
             # Move this tile ent to the world coords.
             ent['x'].value = x
