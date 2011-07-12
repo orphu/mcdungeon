@@ -428,12 +428,16 @@ class Dungeon (object):
             # The first cell contains an entrance. This is a tower if we are on
             # level 1, otherwise it's a stairwell. 
             if (y == 0):
+                maxsize = Vec(10,18,10)
+                if (y == self.levels-1):
+                    maxsize = Vec(1,1,1)
                 # Pick an entrance capable room, place it, find the room that
                 # contains the actual entrance (for multi-tile rooms) and place
                 # the entrance feature there. Record the entrance feature for
                 # later use.
                 entrance_pos = level_start
-                room, pos = rooms.pickRoom(self, dsize, level_start, entrance=True)
+                room, pos = rooms.pickRoom(self, dsize, level_start,
+                                           entrance=True, maxsize=maxsize)
                 ps = self.setroom(pos, room)
                 eroom = self.rooms[entrance_pos]
                 feature = features.new('entrance', eroom)
@@ -464,7 +468,7 @@ class Dungeon (object):
                 #Any other start cell on a lower level is a stairwell
                 stairwells.append(Vec(x,y,z))
                 maxsize = Vec(10,18,10)
-                if y == self.levels-1:
+                if (y == self.levels-1):
                     maxsize = Vec(1,1,1)
                 room, pos = rooms.pickRoom(self, dsize, level_start,
                                            stairwell=True, maxsize=maxsize)
@@ -500,9 +504,9 @@ class Dungeon (object):
                 # Try to find a location as far away form the level_start as
                 # possible.
                 pos = Vec(0,y,0)
-                if (level_start.x <= self.xsize/2):
+                if (level_start.x < self.xsize/2):
                     pos.x = self.xsize-1
-                if (level_start.z <= self.zsize/2):
+                if (level_start.z < self.zsize/2):
                     pos.z = self.zsize-1
                 exit_pos = pos
                 # Pick a treasure capable room

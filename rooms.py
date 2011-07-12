@@ -252,7 +252,6 @@ class Treasure1(Basic2x2):
     def render(self):
         pit_depth = self.parent.position.y - self.parent.levels * \
             self.parent.room_height
-        print 'Pit depth:', pit_depth
         # We start with the basics...
         Basic2x2.render(self)
         # Clear out an air space.
