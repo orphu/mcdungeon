@@ -1176,7 +1176,7 @@ class Dungeon (object):
                 continue
             # Translate block coords to world coords
             x = block.loc.x + self.position.x
-            y = self.position.y - block.loc.y - 1
+            y = self.position.y - block.loc.y
             z = self.position.z - block.loc.z + 15
             # Due to bad planning, sometimes we try to draw outside the bounds
             if (y < 0 or y > 127):
@@ -1226,7 +1226,7 @@ class Dungeon (object):
             num -= 1
             # Calculate world coords.
             x = ent['x'].value + self.position.x
-            y = self.position.y - ent['y'].value - 1
+            y = self.position.y - ent['y'].value
             z = self.position.z - ent['z'].value + 15
             # Move this tile ent to the world coords.
             ent['x'].value = x
