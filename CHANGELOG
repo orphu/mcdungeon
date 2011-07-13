@@ -26,8 +26,8 @@ v0.3.0 - ??/??/????
      These may link up with natural caves surrounding the dungeon (unless
      hard mode is used).
 
-   * More updates to pymclevel handle grass and additional oddball compression
-     of chunks.
+   * More updates to pymclevel handle tall grass and additional oddball
+     compression of chunks.
 
    * Rooms can be larger than one chunk. They can also be irregularly shaped. 
 
