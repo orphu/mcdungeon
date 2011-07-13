@@ -27,7 +27,7 @@ class Block(object):
         self.hide = False
 
 class MazeCell(object):
-    states = enum('BLANK', 'USED', 'CONNECTED')
+    states = enum('BLANK', 'USED', 'CONNECTED', 'RESTRICTED')
     def __init__(self, loc):
         self.loc = loc
         self.depth = 0
@@ -85,8 +85,10 @@ class Dungeon (object):
                         line += ( u'X')
                     elif self.maze[p].state == MazeCell.states.CONNECTED:
                         line += ( u' ')
-                    else:
+                    elif self.maze[p].state == MazeCell.states.USED:
                         line += ( u'U')
+                    else:
+                        line += ( u'R')
                     if self.halls[x][y][z][2] == 1:
                         line += ( u'\u2560')
                     else:
@@ -519,13 +521,15 @@ class Dungeon (object):
                 floor = floors.new('blank', room)
                 room.floors.append(floor)
                 # Place all these cells into a USED set for connection later.
+                # These have a depth of zero, since we don't want to count them
+                # in the depth calculation.
                 root1 = ds.find(pos)
                 for p in ps:
                     root2 = ds.find(p)
                     if root1 != root2:
                         ds.union(root1, root2)
-                    self.maze[p].state = state.USED
-                    self.maze[p].depth = maxdepth
+                    self.maze[p].state = state.RESTRICTED
+                    self.maze[p].depth = 0
             while 1:
                 #ds.dump()
                 self.printmaze(y, cursor=Vec(x,y,z))
@@ -547,7 +551,8 @@ class Dungeon (object):
                         nz >= 0 and
                         nx < self.xsize and
                         nz < self.zsize and
-                        self.maze[Vec(nx,y,nz)].state != state.CONNECTED):
+                        (self.maze[Vec(nx,y,nz)].state == state.BLANK or
+                         self.maze[Vec(nx,y,nz)].state == state.USED)):
                         # For blank cells, we generate a new room
                         if self.maze[Vec(nx,y,nz)].state == state.BLANK:
                             room, pos = rooms.pickRoom(self, dsize, Vec(nx,y,nz))
@@ -599,7 +604,11 @@ class Dungeon (object):
                     for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
                         # Cell was connected, keep looking.
-                        if (self.maze[Vec(p.x,y,p.z)].state == state.CONNECTED):
+                        if (self.maze[Vec(p.x,y,p.z)].state ==
+                            state.CONNECTED
+                            or
+                            self.maze[Vec(p.x,y,p.z)].state ==
+                            state.RESTRICTED):
                             continue
                         # Cell is disconnected. Let's try to connect it to a
                         # neighbor. First, catalog which directions have a
@@ -704,6 +713,23 @@ class Dungeon (object):
                             z = p.z
                     break
 
+        # Connect the treasure room. Find the deepest cell that has a neighbor
+        # with a depth of zero and connect it. 
+        depth = 0
+        point = Vec(0,0,0)
+        opoint = Vec(0,0,0)
+        dr = 'N'
+        for p in iterate_plane(Vec(0,y,0), Vec(self.xsize-1,y,self.zsize-1)):
+            if (self.maze[Vec(p.x,y,p.z)].depth > depth):
+                for d,v in dirs.items():
+                    if (p+v in self.maze and self.maze[p+v].depth == 0):
+                        point = p
+                        opoint = p+v
+                        depth = self.maze[Vec(p.x,y,p.z)].depth
+                        dr = d
+        self.halls[point.x][y][point.z][sides[dr]] = 1
+        self.halls[opoint.x][y][opoint.z][osides[dr]] = 1
+
         print 'Entrance:', entrance_pos
         print 'Exit:', exit_pos
 
@@ -727,7 +753,7 @@ class Dungeon (object):
                                    nextpos = pos+pos.d(d)
                                    nextd = (d+2)%4
                                    # Get valid offsets for this room
-                                   # and the ajoining room.
+                                   # and the adjoining room.
                                    # First test the current room.
                                    result1 = self.rooms[pos].testHall(
                                        d,
