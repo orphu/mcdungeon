@@ -228,6 +228,47 @@ class Basic2x2(Basic):
         room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         return rooms
 
+class CellBlock(Basic2x2):
+    _name = 'cellblock'
+    _is_entrance = False
+    _is_stairwell = False
+
+    def setData(self):
+        Basic2x2.setData(self)
+        self.features.append(features.new('blank', self))
+        self.floors.append(floors.new('blank', self))
+
+    def render(self):
+        # We start with the basics...
+        Basic2x2.render(self)
+        #for p in iterate_cube(self.c1+Vec(1,0,1),
+        #                      self.c3-Vec(1,0,1)):
+        #    self.parent.setblock(p, materials.StoneSlab)
+        # Build some cells
+        s = self.c1+Vec(2,-1,2)
+        for p in iterate_cube(Vec(0,0,0), Vec(3,0,3)):
+            if p in ([Vec(1,0,1), Vec(1,0,2),
+                      Vec(2,0,1), Vec(2,0,2)]):
+                continue
+            ss = s+p*6
+            if p.x > 1:
+                ss = ss + Vec(1,0,0)
+            if p.z > 1:
+                ss = ss + Vec(0,0,1)
+            for pp in iterate_four_walls(ss, ss+Vec(4,0,4), 2):
+                self.parent.setblock(pp, materials._wall)
+                doffset = Vec(4,0,2)
+                if p.x > 1:
+                    doffset = Vec(0,0,2)
+                self.parent.setblock(ss+doffset,
+                                     materials.IronDoor, 7)
+                self.parent.setblock(ss+doffset.up(1),
+                                     materials.IronDoor, 15)
+                self.parent.setblock(ss+doffset.up(2),
+                                     materials._ceiling)
+                #for x in iterate_cube(ss.down(1), ss+Vec(4,1,4)):
+                #    self.parent.setblock(x, materials._floor)
+
 class Treasure1(Basic2x2):
     _name = 'treasure1'
     _is_entrance = False
