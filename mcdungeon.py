@@ -40,6 +40,10 @@ parent_parser.add_argument('--html',
                     help='Output html versions of the dungeon. This \
                     produces one file per level of the form \
                     BASENAME-(level number).html')
+parent_parser.add_argument('--debug',
+                    action='store_true',
+                    dest='debug',
+                    help='Provide additional debug info')
 parent_parser.add_argument('--force',
                     action='store_true',
                     dest='force',
@@ -319,7 +323,7 @@ while args.number is not 0:
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
         pos.z = pos.z &~15
-        dungeon = Dungeon(x, z, levels, depths)
+        dungeon = Dungeon(x, z, levels, depths, args)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         if (args.bury is False):
             dungeon.position = pos
@@ -339,7 +343,7 @@ while args.number is not 0:
     else:
         print "Searching for a suitable location..."
         while (located is False):
-            dungeon = Dungeon(x, z, levels, depths)
+            dungeon = Dungeon(x, z, levels, depths, args)
             print 'Dungeon size: %d x %d x %d' % (z, x, levels)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):

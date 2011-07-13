@@ -34,7 +34,7 @@ class MazeCell(object):
         self.state = 0
 
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels, depths):
+    def __init__(self, xsize, zsize, levels, depths, args):
         self.rooms = {}
         self.depths = depths
         self.blocks = {}
@@ -58,9 +58,9 @@ class Dungeon (object):
         self.room_size = 16
         self.room_height = 6
         self.position = Vec(0,0,0)
+        self.args = args
 
     def printmaze(self, y, cursor=None):
-        return
         for x in xrange(self.xsize):
             line = u''
             for z in xrange(self.zsize):
@@ -532,7 +532,8 @@ class Dungeon (object):
                     self.maze[p].depth = 0
             while 1:
                 #ds.dump()
-                self.printmaze(y, cursor=Vec(x,y,z))
+                if self.args.debug == True:
+                    self.printmaze(y, cursor=Vec(x,y,z))
                 # Walk the maze.
                 # Shuffle the directions.
                 random.shuffle(dkeys)
