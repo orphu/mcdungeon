@@ -26,6 +26,8 @@ v0.3.0 - ??/??/????
      These may link up with natural caves surrounding the dungeon (unless
      hard mode is used).
 
+   * New room type: CellBlock
+
    * More updates to pymclevel handle tall grass and additional oddball
      compression of chunks.
 
