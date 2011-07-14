@@ -25,6 +25,7 @@ class Block(object):
         self.material = None
         self.data = 0
         self.hide = False
+        self.lock = False
 
 class MazeCell(object):
     states = enum('BLANK', 'USED', 'CONNECTED', 'RESTRICTED')
@@ -111,7 +112,7 @@ class Dungeon (object):
         raw_input('continue...')
 
 
-    def setblock(self, loc, material, data=0, hide=False):
+    def setblock(self, loc, material, data=0, hide=False, lock=False):
         # If material is None, remove this block
         if material == None:
             if loc in self.blocks:
@@ -121,6 +122,10 @@ class Dungeon (object):
         # Build a block if we need to 
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
+
+        # If the existing block is locked, abort
+        if self.blocks[loc].lock == True:
+            return
 
         # Setup the material
         self.blocks[loc].material = material
@@ -133,6 +138,9 @@ class Dungeon (object):
 
         # Hide this from the map generator if requested
         self.blocks[loc].hide = hide
+
+        # Lock it
+        self.blocks[loc].lock = lock
 
     def delblock(self, loc):
         if loc in self.blocks:
