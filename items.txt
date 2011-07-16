@@ -116,7 +116,7 @@
 91,Jack-O-Lantern,0,64
 92,Cake Block,0,64
 93,Redstone Repeater Off,0,64
-94,Restone Repeater On,0,64
+94,Redstone Repeater On,0,64
 95,Locked Chest,0,64
 96,Trapdoor,0,64
 256,Iron Shovel,0,1
