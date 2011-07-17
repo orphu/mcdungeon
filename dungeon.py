@@ -333,6 +333,18 @@ class Dungeon (object):
         root_tag['EntityId'] = nbt.TAG_String(entity)
         root_tag['Delay'] = nbt.TAG_Short(0)
         self.tile_ents[loc] = root_tag
+
+
+    def addnoteblock(self, loc, clicks=0):
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('Music')
+        root_tag['x'] = nbt.TAG_Int(loc.x)
+        root_tag['y'] = nbt.TAG_Int(loc.y)
+        root_tag['z'] = nbt.TAG_Int(loc.z)
+        root_tag['note'] = nbt.TAG_Byte(clicks)
+        self.tile_ents[loc] = root_tag
+
+
     def addchest(self, loc, tier=-1):
         if (tier < 0):
             level = loc.y/self.room_height
@@ -359,6 +371,8 @@ class Dungeon (object):
             item_tag['Damage'] = nbt.TAG_Short(i.damage)
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
+
+
     def addtrap(self, loc):
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Trap')
