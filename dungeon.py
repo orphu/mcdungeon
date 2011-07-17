@@ -124,7 +124,8 @@ class Dungeon (object):
             self.blocks[loc] = Block(loc)
 
         # If the existing block is locked, abort
-        if self.blocks[loc].lock == True:
+        # Unless we are requesting a locked block
+        if self.blocks[loc].lock == True and lock == False:
             return
 
         # Setup the material
@@ -1104,8 +1105,8 @@ class Dungeon (object):
             for x in xrange(self.xsize*self.room_size):
                 f.write('<tr>')
                 for z in xrange(self.zsize*self.room_size):
-                    y = layer 
-                    while (y < layer + self.room_height - 1 and
+                    y = layer
+                    while (y < layer + self.room_height and
                            Vec(x,y,z) in self.blocks and
                             (self.blocks[Vec(x,y,z)].hide == True or
                              self.blocks[Vec(x,y,z)].material ==
