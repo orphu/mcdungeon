@@ -237,7 +237,7 @@ class CellBlock(Basic2x2):
     def setData(self):
         Basic2x2.setData(self)
         self.features.append(features.new('blank', self))
-        self.floors.append(floors.new('blank', self))
+        self.floors.append(floors.new('brokendoubleslab', self))
         self.combo = random.randint(1,62)
 
     def placed(self):
@@ -388,16 +388,16 @@ class CellBlock(Basic2x2):
         for p in [Vec(6,0,5), Vec(6,0,9), Vec(12,0,5), Vec(12,1,6)]:
             q = self.c1+p
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.down(1), materials.Bedrock, lock=True)
+            self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c2+Vec(-p.x, p.y, p.z)
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.down(1), materials.Bedrock, lock=True)
+            self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c3+Vec(-p.x, p.y, -p.z)
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.down(1), materials.Bedrock, lock=True)
+            self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c4+Vec(p.x, p.y, -p.z)
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.down(1), materials.Bedrock, lock=True)
+            self.parent.setblock(q.down(1), materials._ceiling, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,10),
                              materials.RedStoneRepeaterOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,17),
@@ -454,7 +454,7 @@ class CellBlock(Basic2x2):
                              materials.RedStoneWire, 0, lock=True)
         for z, p in [(18,13),(16,12),(14,9),(12,3),(10,2),(8,10),(4,14),(2,18)]:
             self.parent.setblock(self.c1+Vec(0,2,z),
-                                 materials.Dirt, lock=True)
+                                 materials.Dirt, lock=True, hide=True)
             self.parent.setblock(self.c1+Vec(0,1,z),
                                  materials.NoteBlock, lock=True)
             self.parent.addnoteblock(self.c1+Vec(0,1,z), p)
