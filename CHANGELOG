@@ -1,5 +1,7 @@
 v0.3.0 - ??/??/????
 
+   * Added new piston-based traps.
+
    * Added Spruce Sapling, Birch Sapling, Spruce Leaves, Birch Leaves, Powered
      Rail, Detector Rail, Sticky Piston, Piston, Trapdoor, Map, and Shears to
      items.txt. Renamed "Web" to "Cobweb"

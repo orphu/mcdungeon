@@ -397,6 +397,9 @@ while args.number is not 0:
         print "Rendering features..."
         dungeon.renderfeatures()
 
+        print "Rendering hall traps..."
+        dungeon.renderhallpistons()
+
         print "Rendering ruins..."
         dungeon.renderruins()
 
