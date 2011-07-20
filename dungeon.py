@@ -43,6 +43,7 @@ class Dungeon (object):
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
+        self.signs = []
         self.entrance = None
         self.xsize = xsize
         self.zsize = zsize

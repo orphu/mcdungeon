@@ -160,6 +160,44 @@ class Entrance(Blank):
                              b3.trans(0,r-1,0),
                              r,
                              self.parent.parent)
+        # Signs
+        locs = [
+            (Vec(-1,-2, 0),4),
+            (Vec(-1,-1, 0),4),
+            (Vec(-1,-2, 5),4),
+            (Vec(-1,-1, 5),4),
+            (Vec( 0,-2,-1),3),
+            (Vec( 0,-1,-1),3),
+            (Vec( 0,-2, 6),2),
+            (Vec( 0,-1, 6),2),
+            (Vec( 5,-2,-1),3),
+            (Vec( 5,-1,-1),3),
+            (Vec( 5,-2, 6),2),
+            (Vec( 5,-1, 6),2),
+            (Vec( 6,-2, 0),5),
+            (Vec( 6,-1, 0),5),
+            (Vec( 6,-2, 5),5),
+            (Vec( 6,-1, 5),5)
+               ]
+        random.shuffle(locs)
+        signs = self.parent.parent.signs
+        random.shuffle(signs)
+        while (len(locs) >0 and len(signs) >0):
+            loc = locs.pop()
+            sign = signs.pop()
+            self.parent.parent.setblock(wstart+loc[0],
+                                        materials.WallSign, loc[1])
+            self.parent.parent.addsign(wstart+loc[0],
+                                       sign['s1'],
+                                       sign['s2'],
+                                       sign['s3'],
+                                       sign['s4'])
+            #print 'Sign:', wstart+loc[0], loc[1]
+            #print sign['s1']
+            #print sign['s2']
+            #print sign['s3']
+            #print sign['s4']
+
         # Sandbar island
         if (self.inwater is False):
             return
@@ -173,7 +211,6 @@ class Entrance(Blank):
                 if (p not in self.parent.parent.blocks):
                     self.parent.parent.setblock(p, materials._sandbar)
             d += 1
-
 
 class Stairwell(Blank):
     _name = 'stairwell'

@@ -258,6 +258,8 @@ class CellBlock(Basic2x2):
         Basic2x2.render(self)
         # Build some cells. They have doors.
         s = self.c1+Vec(2,-1,2)
+        chest_rate = 80
+        spawner_rate = 80
         for p in iterate_cube(Vec(0,0,0), Vec(3,0,3)):
             if p in ([Vec(1,0,1), Vec(1,0,2),
                       Vec(2,0,1), Vec(2,0,2)]):
@@ -280,6 +282,22 @@ class CellBlock(Basic2x2):
                                      materials.IronDoor, ddata+4+8)
                 self.parent.setblock(ss+doffset.up(2),
                                      materials._ceiling)
+            # Extra chests for solving the combo
+            if (random.randint(1,100) <= chest_rate):
+                chest_rate /= 2
+                cp = ss+doffset+Vec(-3,0,0)
+                if p.x > 1:
+                    cp = ss+doffset+Vec(3,0,0)
+                self.parent.setblock(cp, materials.Chest)
+                self.parent.addchest(cp)
+            elif (random.randint(1,100) <= spawner_rate):
+                spawner_rate /= 2
+                cp = ss+doffset+Vec(-3,0,0)
+                if p.x > 1:
+                    cp = ss+doffset+Vec(3,0,0)
+                self.parent.setblock(cp, materials.Spawner)
+                self.parent.addspawner(cp)
+
         # A central dais with a slab step around it. 
         # Hollow out the area under for circuits. 
         for p in iterate_cube(self.c1+Vec(10,-1,10),
@@ -351,8 +369,17 @@ class CellBlock(Basic2x2):
                                      materials.RedStoneWire, charge, lock=True)
                 bit += 2
         self.parent.setblock(self.c1+Vec(7,-2,12), materials.WallSign, 5)
-        self.parent.addsign(self.c1+Vec(7,-2,12), 'Cell block: '+str(self.combo),
-                            '', ctext1+'  ', ctext2)
+        self.parent.addsign(self.c1+Vec(7,-2,12),
+                            '--==+==--',
+                            'Cell Block',
+                            str(self.combo),
+                            '--==+==--')
+        self.parent.signs.append({
+            's1': 'Level '+str(self.pos.y+1),
+            's2': '',
+            's3': ctext1+'  ',
+            's4': ctext2
+                            })
         #print 'Cell block: '+str(self.combo)+'\n',ctext1+'\n',' '+ctext2+'\n'
         # Inner bus
         for p in iterate_four_walls(self.c1+Vec(9, 1,9),
