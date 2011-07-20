@@ -1,29 +1,34 @@
 MCDungeon
 
 MCDungeon will create a procedurally generated dungeon in a preexisting
-minecraft map. It is not yet feature complete, but can already generate
+Minecraft map. It is not yet feature complete, but can already generate
 dungeons with quite a bit of variety. It is written in Python and
 makes use of code from Paul Hodge's minetown project and David Rio
 Vierra's pymclevel. This was inspired by BeeTLe BeTHLeHeM's MCMapper
 project which, sadly, is no more.
+
+For detailed information and documentation try the wiki:
+
+http://mcdungeon.wikkii.com/
 
 Thanks to the following for their interest, inspiration, and great ideas! 
 (in no particular order)
 
 BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
 Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
-SuddenLee, Silre, NuclearDemon, bking1138, BarthVader and koredozo.
+SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
+and compgurusteve.
 
 CURRENT FEATURES:
 
    * Automatically finds a good location on a map based on range, size, and
      depth parameters. 
 
-   * Can generate N number of dungeons in a map, or try to fill the
+   * Can generate multiple of dungeons in a map, or try to fill the
      map with as many dungeons as possible.
 
    * Generates room layouts based on a random weighted selection
-     of rooms. Rooms are filled with ranomd hallways, floors, room
+     of rooms. Rooms are filled with random hallways, floors, room
      features, and ruins on the surface, all of which are configurable.
 
    * The density and placement of doors, portcullises, and torches are 
@@ -49,7 +54,7 @@ CURRENT FEATURES:
      chests, but not always. Mob types are configurable. The density of
      spawners is configurable. Some 'non-standard' mobs are available. ;)
 
-   * Random placement of secret traps.
+   * Random placement of secret traps and puzzles.
 
    * Output floor maps to a terminal with color on ANSI systems.
 
@@ -58,7 +63,6 @@ CURRENT FEATURES:
 TODO:
 
    * More room, hall, floor, feature, and ruin types.
-   * Multi-tile room sizes.
    * More traps!
    * Harder hard mode!
    * More stuff as Minecraft evolves!
@@ -66,15 +70,16 @@ TODO:
 OPTIONS:
 
 $ mcdungeon.py -h
+
 usage: mcdungeon.py [-h] [-v] [-c CFGFILE] [--write] [--skip-relight]
-                    [-t FLOOR] [--html BASENAME] [--force] [-s SEED]
+                    [-t FLOOR] [--html BASENAME] [--debug] [--force] [-s SEED]
                     [-o X Y Z] [-b] [-e Z X] [-n NUM] [-i]
                     SAVEDIR Z X LEVELS
 
 positional arguments:
   SAVEDIR               Target world (path to save directory)
   Z                     Number of rooms West -> East. Use -1 for random, or
-                        provide a range. (ie: 3-7)
+                        provide a range. (ie: 4-7)
   X                     Number of rooms North -> South. Use -1 for random, or
                         provide a range.
   LEVELS                Number of levels. Enter a positive value, or provide a
@@ -92,6 +97,7 @@ optional arguments:
   --html BASENAME       Output html versions of the dungeon. This produces one
                         file per level of the form BASENAME-(level
                         number).html
+  --debug               Provide additional debug info
   --force               Force overwriting of html output files
   -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
   -o X Y Z, --offset X Y Z
@@ -114,10 +120,10 @@ but are required. Basically a "dry run."
 
 ./mcdungeon.py Dungeon 5 4 3 --term 1
 
-Generate five random dungeons between the sizes of 3x3x5 and 6x6x8 and 
+Generate five random dungeons between the sizes of 4x4x5 and 6x6x8 and 
 save them to the world.
 
-./mcdungeon.py Dungeon 3-6 3-6 5-8 -n 5 --write
+./mcdungeon.py Dungeon 4-6 4-6 5-8 -n 5 --write
 
 Run in interactive mode, prompting for the config file, world, dungeon size,
 and number of dungeons.
