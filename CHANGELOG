@@ -1,4 +1,4 @@
-v0.3.0 - ??/??/????
+v0.3.0 - 07/20/2011
 
    * New documentation wiki: http://mcdungeon.wikkii.com/
 
@@ -35,7 +35,7 @@ v0.3.0 - ??/??/????
 
    * New room type: CellBlock
 
-   * Added new piston-based traps.
+   * Added new piston-based traps. (See hall_piston_traps in the config)
  
    * New standard config: caverns
 
