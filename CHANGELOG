@@ -1,6 +1,6 @@
-v0.3.1 - ??/??/????
+v0.3.1 - 07/24/2011
 
-   * Added resetting_hall_pistons. Defaults to true.
+   * New cfg option: resetting_hall_pistons. Defaults to true.
 
 v0.3.0 - 07/20/2011
 
