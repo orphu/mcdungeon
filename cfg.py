@@ -32,7 +32,8 @@ arrow_trap_defects = '1'
 skeleton_balconies = '25'
 hard_mode = 'False'
 torches_position = 3
-hall_piston_traps = 8
+hall_piston_traps = 75
+resetting_hall_pistons = 'True'
 
 master_halls = []
 master_rooms = []
@@ -66,7 +67,7 @@ def Load(filename = 'default.cfg'):
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
-    maximize_distance, hall_piston_traps
+    maximize_distance, hall_piston_traps, resetting_hall_pistons
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -143,6 +144,8 @@ def Load(filename = 'default.cfg'):
                                  arrow_trap_defects))
     hall_piston_traps = int(get('dungeon', 'hall_piston_traps',
                                 hall_piston_traps))
+    resetting_hall_pistons = str2bool(get('dungeon', 'resetting_hall_pistons',
+                                resetting_hall_pistons))
     skeleton_balconies = int(get('dungeon', 'skeleton_balconies',
                                  skeleton_balconies))
     sand_traps = int(get('dungeon', 'sand_traps', sand_traps))
