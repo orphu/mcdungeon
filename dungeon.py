@@ -3,9 +3,10 @@
 import sys
 import os
 import platform
+import operator
 from random import *
-import perlin
 
+import perlin
 import cfg
 import items
 import loottable
@@ -15,6 +16,7 @@ import halls
 import floors
 import features
 import ruins
+import pmeter
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import mclevel, nbt
@@ -35,9 +37,9 @@ class MazeCell(object):
         self.state = 0
 
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels, depths, args):
+    def __init__(self, xsize, zsize, levels, good_chunks, args):
         self.rooms = {}
-        self.depths = depths
+        self.good_chunks = good_chunks
         self.blocks = {}
         self.tile_ents = {}
         self.torches = {}
@@ -156,134 +158,58 @@ class Dungeon (object):
 
     def findlocation(self, world, dungeon_locations):
         positions = {}
-        bounds = world.bounds
-        scx = world.playerSpawnPosition()[0]>>4
-        scz = world.playerSpawnPosition()[2]>>4
-        spawn_chunk = Vec(scx, 0, scz)
-        print 'World bounds: (%d, %d) to (%d, %d)' % (bounds.getMinx(),
-                                                      bounds.getMinz(),
-                                                      bounds.getMaxx(),
-                                                      bounds.getMaxz())
-        print 'World chunks: (%d, %d) to (%d, %d)' % (bounds.getMincx(),
-                                                      bounds.getMincz(),
-                                                      bounds.getMaxcx(),
-                                                      bounds.getMaxcz())
-        print 'Spawn point: (%d, %d, %d)'%(world.playerSpawnPosition()[0],
-                                           world.playerSpawnPosition()[1],
-                                           world.playerSpawnPosition()[2])
-        print 'Spawn chunk: (%d, %d)'%(scx, scz)
-        print 'Minimum distance from spawn:', cfg.min_dist, 'chunks'
-        print 'Maximum distance from spawn:', cfg.max_dist, 'chunks'
-        # List of blocks to ignore when checking depth
-        ignore = (0,6,8,9,10,11,17,18,37,38,39,40,44,50,51,55,
-                  59,63,64,65,66,68,70,71,72,75,76,
-                  77,81,83,85,86,90,91,92,93,94)
-        print 'Bounds and chunk check...'
-        for chunk in bounds.chunkPositions:
-            # Does this chunk even exist?
-            if (world.containsChunk(chunk[0], chunk[1]) == False):
-                continue
-            # First some basic distance from spawn checks...
-            spin()
-            chunk_box = Box(Vec(chunk[0], 0, chunk[1]-self.zsize+1),
-                            self.xsize,
-                            16,
-                            self.zsize)
-            dist_max = max(
-                (spawn_chunk-chunk_box.loc).mag2d(),
-                (spawn_chunk-(chunk_box.loc+Vec(self.xsize-1,0,0))).mag2d(),
-                ((chunk_box.loc+Vec(0,0,self.zsize-1))-spawn_chunk).mag2d(),
-                (spawn_chunk-(chunk_box.loc+
-                 Vec(self.xsize-1,0,self.zsize-1))).mag2d()
-            )
-            dist_min = (spawn_chunk-Vec(clamp(spawn_chunk.x,
-                                             chunk_box.loc.x,
-                                             chunk_box.loc.x+self.xsize-1),
-                                       0,
-                                       clamp(spawn_chunk.z,
-                                             chunk_box.loc.z,
-                                             chunk_box.loc.z+self.zsize-1))).mag2d()
-            # Don't overlap with spawn...
-            if (chunk_box.containsPoint(spawn_chunk) == True):
-                continue
-            # Not too far away...
-            if (dist_max > cfg.max_dist):
-                continue
-            # Not too close...
-            if (dist_min < cfg.min_dist):
-                continue
-            # Looks good so far
-            positions[Vec(chunk[0], 0, chunk[1])] = 1
-        print 'Found',len(positions),'possible locations.'
-        return self.bury(world, positions, dungeon_locations)
+        sorted_p = []
+        print 'Filtering for depth...'
+        for key, value in self.good_chunks.iteritems():
+            if value >= (self.levels+1)*self.room_height:
+                positions[key] = value
 
-    def bury(self, world, positions, dungeon_locations):
-        # Filter for the maximum distance.
-        maxd = 1
-        if (cfg.maximize_distance == True and
-            len(dungeon_locations) > 0):
+        if (cfg.maximize_distance == True and len(dungeon_locations) > 0):
             print 'Marking distances...'
-            for chunk in positions:
-                spin()
+            for key in positions.keys():
                 d = 2^64
+                chunk = Vec(key[0], 0, key[1])
                 for dungeon in dungeon_locations:
                     d = min(d, (dungeon - chunk).mag2d())
-                positions[chunk] = d
-        depth_positions = {}
-        final_positions = {}
-        min_depth = (self.levels+1)*self.room_height
+                positions[key] = d
+
+            sorted_p = sorted(positions.iteritems(),
+                          reverse=True,
+                          key=operator.itemgetter(1))
+        else:
+            sorted_p = positions.items()
+            random.shuffle(sorted_p)
+
+        print 'Searching...'
+        all_chunks = set(positions.keys())
+        for p, d in sorted_p:
+            d_chunks = set()
+            for x in xrange(self.xsize):
+                for z in xrange(self.zsize):
+                    d_chunks.add((p[0]+x, p[1]-z))
+            if d_chunks.issubset(all_chunks):
+                self.position = Vec(p[0]*self.room_size,
+                                    0,
+                                    p[1]*self.room_size)
+                self.worldmap(world)
+                return self.bury(world)
+        return False
+
+    def worldmap(self, world):
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
         spawn_chunk = Vec(scx, 0, scz)
-        # Now we have to weed out the areas that are not deep enough
-        print 'Depth check...'
-        print 'Minimum depth:', min_depth, 'blocks'
-        print 'Maximum depth: 109 blocks'
-        for chunk in positions:
-            spin(chunk)
-            # Fill in any missing depth info for this area
-            depth = 128
-            for p in iterate_cube(chunk, chunk+Vec(self.xsize-1,
-                                                   0,
-                                                   1-self.zsize)):
-                if (p not in self.depths):
-                    self.depths[p] = findChunkDepth(p, world)
-                depth = min(depth, self.depths[p])
-            if (depth >= min_depth and depth < 110):
-                maxd = max(maxd, positions[chunk])
-                depth_positions[chunk] = Vec(
-                    chunk.x*self.room_size,
-                    depth,
-                    chunk.z*self.room_size)
-        print 'Found',len(depth_positions),'possible locations.'
-        # Filter out all but the furthest positions
-        print 'Distance check...'
-        for chunk, pos in depth_positions.iteritems():
-            if (positions[chunk] >= maxd):
-                final_positions[chunk] = depth_positions[chunk]
-        # The final list. Make a choice!
-        print 'Found',len(final_positions),'possible locations.'
-        try:
-            self.position = random.choice(final_positions.values()) + Vec(0,
-                                                                          -1,
-                                                                          0)
-        except:
-            return False
-        print 'Final location: (%d, %d, %d)'% (self.position.x,
-                                               self.position.y,
-                                               self.position.z)
-
         # Draw a nice little map of the dungeon location
         map_min_x = bounds.getMaxcx()
         map_max_x = bounds.getMincx()
         map_min_z = bounds.getMaxcz()
         map_max_z = bounds.getMincz()
-        for p in final_positions:
-            map_min_x = min(map_min_x, p.x)
-            map_max_x = max(map_max_x, p.x+self.xsize-1)
-            map_min_z = min(map_min_z, p.z-self.zsize+1)
-            map_max_z = max(map_max_z, p.z)
+        for p in self.good_chunks:
+            map_min_x = min(map_min_x, p[0])
+            map_max_x = max(map_max_x, p[0]+self.xsize-1)
+            map_min_z = min(map_min_z, p[1]-self.zsize+1)
+            map_max_z = max(map_max_z, p[1])
 
         # Include spawn
         map_min_x = min(map_min_x, spawn_chunk.x)
@@ -303,12 +229,50 @@ class Dungeon (object):
                     sys.stdout.write('X')
                 elif (d_box.containsPoint(Vec(x,64,z))):
                     sys.stdout.write('#')
-                elif (Vec(x,0,z) in final_positions):
+                elif ((x,z) in self.good_chunks.keys()):
                     sys.stdout.write('+')
                 else:
                     sys.stdout.write('`')
             print
+
+
+    def bury(self, world):
+        min_depth = (self.levels+1)*self.room_height
+        print 'Burying dungeon...'
+        print 'Minimum depth:', min_depth, 'blocks'
+
+        d_chunks = set()
+        p = (self.position.x/self.room_size,
+             self.position.z/self.room_size)
+        for x in xrange(self.xsize):
+            for z in xrange(self.zsize):
+                d_chunks.add((p[0]+x, p[1]-z))
+
+        depth = 128
+        for chunk in d_chunks:
+            if (chunk not in self.good_chunks):
+                d1 = findChunkDepth(Vec(chunk[0], 0, chunk[1]), world)
+                self.good_chunks[chunk] = d1
+            else:
+                d1 = self.good_chunks[chunk]
+
+            if (d1 < min_depth):
+                print 'Selected area is too shallow to bury dungeon.'
+                return False
+            elif (d1 >= 100):
+                print 'Selected area is too high to hold dungeon.'
+                return False
+
+            depth = min(depth, d1)
+
+        self.position = Vec(self.position.x,
+                            depth,
+                            self.position.z)
+        print 'Final location: (%d, %d, %d)'% (self.position.x,
+                                               self.position.y,
+                                               self.position.z)
         return True
+
 
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
@@ -1295,40 +1259,62 @@ class Dungeon (object):
     def renderrooms(self):
         '''Call render() on all rooms to populate the block buffer'''
         count = len(self.rooms)
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(count)
         for pos in self.rooms:
-            self.rooms[pos].render()
+            self.pm.update_left(count)
             count -= 1
-            if (count%10 == 0):
-                spin(count)
+            self.rooms[pos].render()
+        self.pm.set_complete()
 
     def renderhalls(self):
         ''' Call render() on all halls'''
+        count = len(self.rooms)*4
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(count)
         for pos in self.rooms:
+            self.pm.update_left(count)
+            count -= 4
             for x in xrange(0,4):
                 if (self.rooms[pos].halls[x]):
                     self.rooms[pos].halls[x].render()
-                    spin()
+        self.pm.set_complete()
 
     def renderfloors(self):
         ''' Call render() on all floors'''
+        count = len(self.rooms)
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(count)
         for pos in self.rooms:
+            self.pm.update_left(count)
+            count -= 1
             for x in self.rooms[pos].floors:
                 x.render()
-                spin()
+        self.pm.set_complete()
 
     def renderfeatures(self):
         ''' Call render() on all features'''
+        count = len(self.rooms)
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(count)
         for pos in self.rooms:
+            self.pm.update_left(count)
+            count -= 1
             for x in self.rooms[pos].features:
                 x.render()
-                spin()
+        self.pm.set_complete()
 
     def renderruins(self):
         ''' Call render() on all ruins'''
+        count = len(self.rooms)
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(count)
         for pos in self.rooms:
+            self.pm.update_left(count)
+            count -= 1
             for x in self.rooms[pos].ruins:
                 x.render()
-                spin()
+        self.pm.set_complete()
 
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
@@ -1498,28 +1484,31 @@ class Dungeon (object):
         if (cfg.hard_mode is True):
             print 'Filling in caves (hard mode)...'
             num = (self.zsize+10) * (self.xsize+10)
+            pm = pmeter.ProgressMeter()
+            pm.init(num)
             for z in xrange((self.position.z>>4)-self.zsize-5,
                             (self.position.z>>4)+5):
                 for x in xrange((self.position.x>>4)-5,
                                 (self.position.x>>4)+self.xsize+5):
-                    spin(num)
+                    pm.update_left(num)
                     num -= 1
-                    if (world.containsChunk(x, z)):
+                    if ((x,z) in self.good_chunks):
                         p = Vec(x,0,z)
                         chunk = world.getChunk(x, z)
-                        if (p not in self.depths):
-                            self.depths[p] = findChunkDepth(p, world)
-                        miny = self.depths[p]
+                        miny = self.good_chunks[(x,z)]
                         air = ( chunk.Blocks[:,:,0:miny] == 0)
                         chunk.Blocks[air] = materials._floor.val
                         changed_chunks.add(chunk)
+                        del(self.good_chunks[(x,z)])
+            pm.set_complete()
         # Blocks
         print 'Writing block buffer...'
+        pm = pmeter.ProgressMeter()
+        pm.init(num_blocks)
         for block in self.blocks.values():
             # Progress
+            pm.update_left(num_blocks)
             num_blocks -= 1
-            if (num_blocks % 10000 == 0):
-                spin(num_blocks/10000)
             # Mysteriously, this block contains no material.
             if block.material is None:
                 continue
@@ -1566,7 +1555,9 @@ class Dungeon (object):
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
             # Make sure we don't overwrite this chunk in the future. 
-            self.depths[Vec(chunk_x, 0, chunk_z)] = 0
+            if ((chunk_x, chunk_z) in self.good_chunks):
+                del(self.good_chunks[(chunk_x, chunk_z)])
+        pm.set_complete()
         # Copy over tile entities
         print 'Creating tile entities...'
         num = len(self.tile_ents)

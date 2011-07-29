@@ -467,6 +467,25 @@ def findChunkDepth(p, world):
             depth = min(y, depth)
     return depth
 
+def findChunkDepths(p, world):
+    try:
+        chunk = world.getChunk(p.x, p.z)
+    except:
+        return 0
+    min_depth = 128
+    max_depth = 0
+    # list of IDs that are solid. (for our purposes anyway)
+    solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82)
+    for x in xrange(16):
+        for z in xrange(16):
+            y = chunk.HeightMap[z, x]-1
+            while (y > 0 and
+                   chunk.Blocks[x, z, y] not in solids):
+                y = y - 1
+            min_depth = min(y, min_depth)
+            max_depth = max(y, max_depth)
+    return (min_depth, max_depth)
+
 def enum(*sequential, **named):
     '''Defines an object that can be used as an enum. Example:
         > Numbers = enum('ZERO', 'ONE', 'TWO')

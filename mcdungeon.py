@@ -5,9 +5,13 @@ import os
 import argparse
 import logging
 import re
-from pymclevel import mclevel, nbt
+import time
+from numpy import *
 
-__version__ = '0.3.1'
+from pymclevel import mclevel, nbt
+import pmeter
+
+__version__ = '0.3.2-dev'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -226,6 +230,9 @@ if (result):
         sys.exit('Minimum levels must be equal or greater than 1.')
     if (max_levels > 18):
         sys.exit('Maximum levels must be equal or less than 18.')
+else:
+    min_levels = int(args.levels)
+    max_levels = int(args.levels)
 
 try:
     args.z = int(args.z)
@@ -293,15 +300,73 @@ except:
         sys.exit(1)
 print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
-#dumpEnts(world)
-#sys.exit()
-
 print "MCDungeon",__version__,"startup complete. "
 
-depths = {}
 dungeons = []
 dungeon_positions = {}
 total_rooms = 0
+good_chunks = {}
+
+if (cfg.offset is None or cfg.offset is ''):
+    chunk_stats = [
+                   ['Near Chunks', 0],
+                   [' Far Chunks', 0],
+                   ['High Chunks', 0],
+                   [' Low Chunks', 0],
+                   [' Structures', 0],
+                   ['Good Chunks', 0]
+                ]
+    print 'Analyzing terrain...'
+    pm = pmeter.ProgressMeter()
+    pm.init(world.chunkCount)
+    cc = 0
+    for cx, cz in world.allChunks:
+        cc += 1
+        pm.update(cc)
+        sx = world.playerSpawnPosition()[0]>>4
+        sz = world.playerSpawnPosition()[2]>>4
+        # Far chunk
+        if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
+            chunk_stats[1][1] += 1
+            continue
+        # Near chunk
+        if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
+            chunk_stats[0][1] += 1
+            continue
+        # Structures
+        chunk = world.getChunk(cx, cz)
+        mats = (
+            materials.Torch.val,
+            materials.Glass.val,
+            materials.RedStoneTorchOn.val,
+            materials.RedStoneTorchOff.val,
+            materials.Glowstone.val,
+            materials.NetherPortal.val
+            )
+        t = False
+        i = 0
+        while (i < len(mats) and t == False):
+            x = (chunk.Blocks[:] == mats[i])
+            t = x.any()
+            i += 1
+        if t == True:
+            chunk_stats[4][1] += 1
+            continue
+        # Depths
+        min_depth, max_depth = findChunkDepths(Vec(cx,0,cz), world)
+        if max_depth > 100:
+            chunk_stats[2][1] += 1
+            continue
+        if min_depth < (min_levels+1)*6:
+            chunk_stats[3][1] += 1
+            continue
+        # Good chunks
+        chunk_stats[5][1] += 1
+        good_chunks[(cx, cz)] = min_depth
+    pm.set_complete()
+
+    for stat in chunk_stats:
+        print '   %s: %d'%(stat[0], stat[1])
 
 while args.number is not 0:
 
@@ -323,27 +388,23 @@ while args.number is not 0:
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
         pos.z = pos.z &~15
-        dungeon = Dungeon(x, z, levels, depths, args)
+        dungeon = Dungeon(x, z, levels, good_chunks, args)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         if (args.bury is False):
             dungeon.position = pos
             print "location set to", dungeon.position
             located = True
         else:
-            located = dungeon.bury(world,
-                                   {Vec(pos.x>>4,
-                                        0,
-                                        pos.z>>4): True},
-                                  dungeon_positions)
+            located = dungeon.bury(world)
             if (located == False):
                 print 'Unable to bury a dungeon of requested depth at', pos
-                print 'Try fewer levels, or a smaller size.'
+                print 'Try fewer levels, or a smaller size, or another location.'
                 sys.exit(1)
 
     else:
         print "Searching for a suitable location..."
         while (located is False):
-            dungeon = Dungeon(x, z, levels, depths, args)
+            dungeon = Dungeon(x, z, levels, good_chunks, args)
             print 'Dungeon size: %d x %d x %d' % (z, x, levels)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):

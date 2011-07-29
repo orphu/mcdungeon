@@ -22,11 +22,7 @@ class Blank(object):
         #print 'ruin chunk:', self.chunk
 
     def placed (self, world):
-        c = self.chunk
-        cd = self.parent.parent.depths
-        if (c not in cd):
-            cd[c] = findChunkDepth(c, world)
-        self.depth = cd[c]
+        self.depth = self.parent.parent.good_chunks[self.chunk.x, self.chunk.z]
         vtrans = max(self.parent.parent.position.y-1, self.depth) - \
                 self.parent.parent.position.y
         #print 'ruin depth:', self.parent.parent.position.y, self.depth, -vtrans
