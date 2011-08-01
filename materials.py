@@ -1,3 +1,5 @@
+import sys
+
 from copy import *
 import platform
 
@@ -25,6 +27,14 @@ NOBLOCK = '%s`%s' % (DGREY, ENDC)
 
 if (platform.system() == 'Windows'):
     NOBLOCK = '`'
+
+def valByName(name):
+    '''Return a material block value given a name string.'''
+    for oname, obj in sys.modules[__name__].__dict__.items():
+        if type(obj) == Material:
+            if (obj.name.lower() == name):
+                return obj.val
+    return -1
 
 class Material(object):
     name = 'Air'
