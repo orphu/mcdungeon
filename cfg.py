@@ -41,6 +41,7 @@ master_features = []
 master_floors = []
 master_ruins = [('blank',1)]
 master_mobs = []
+structure_values = []
 
 parser = ConfigParser.SafeConfigParser()
 
@@ -67,7 +68,8 @@ def Load(filename = 'default.cfg'):
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
-    maximize_distance, hall_piston_traps, resetting_hall_pistons
+    maximize_distance, hall_piston_traps, resetting_hall_pistons, \
+    structure_values
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -80,9 +82,9 @@ def Load(filename = 'default.cfg'):
     print 'Reading config from', filename, '...'
     try:
         parser.readfp(open(filename))
-    except:
-        print "Failed to read config file:", filename
-        sys.exit(1)
+    except Exception, e:
+        print "Failed to read config file!"
+        sys.exit(e.message)
 
     # Load master tables from .cfg.
     master_halls = parser.items('halls')
@@ -177,3 +179,13 @@ def Load(filename = 'default.cfg'):
             if (val.name == subfloor):
                 materials._subfloor = copy(val)
 
+    # Load structure list
+    s = [x.strip() for x in str(get('dungeon', 'structures', '')).split(',')]
+    s = [x.lower() for x in s]
+    if (len(s) > 0 and s[0] is not ''):
+        for a in s:
+            v = materials.valByName(a)
+            if (v >= 0):
+                structure_values.append(v)
+            else:
+                sys.exit('Unable to find structure material: '+str(a))

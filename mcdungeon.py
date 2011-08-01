@@ -334,14 +334,7 @@ if (cfg.offset is None or cfg.offset is ''):
             continue
         # Structures
         chunk = world.getChunk(cx, cz)
-        mats = (
-            materials.Torch.val,
-            materials.Glass.val,
-            materials.RedStoneTorchOn.val,
-            materials.RedStoneTorchOff.val,
-            materials.Glowstone.val,
-            materials.NetherPortal.val
-            )
+        mats = cfg.structure_values
         t = False
         i = 0
         while (i < len(mats) and t == False):
