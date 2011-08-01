@@ -38,6 +38,7 @@ class MazeCell(object):
 
 class Dungeon (object):
     def __init__(self, xsize, zsize, levels, good_chunks, args):
+        self.pm = pmeter.ProgressMeter()
         self.rooms = {}
         self.good_chunks = good_chunks
         self.blocks = {}
@@ -159,13 +160,13 @@ class Dungeon (object):
     def findlocation(self, world, dungeon_locations):
         positions = {}
         sorted_p = []
-        print 'Filtering for depth...'
+        if self.args.debug: print 'Filtering for depth...'
         for key, value in self.good_chunks.iteritems():
             if value >= (self.levels+1)*self.room_height:
                 positions[key] = value
 
         if (cfg.maximize_distance == True and len(dungeon_locations) > 0):
-            print 'Marking distances...'
+            if self.args.debug: print 'Marking distances...'
             for key in positions.keys():
                 d = 2^64
                 chunk = Vec(key[0], 0, key[1])
@@ -180,7 +181,7 @@ class Dungeon (object):
             sorted_p = positions.items()
             random.shuffle(sorted_p)
 
-        print 'Searching...'
+        if self.args.debug: print 'Selecting a location...'
         all_chunks = set(positions.keys())
         for p, d in sorted_p:
             d_chunks = set()
@@ -191,7 +192,7 @@ class Dungeon (object):
                 self.position = Vec(p[0]*self.room_size,
                                     0,
                                     p[1]*self.room_size)
-                self.worldmap(world)
+                if self.args.debug: self.worldmap(world)
                 return self.bury(world)
         return False
 
@@ -236,10 +237,9 @@ class Dungeon (object):
             print
 
 
-    def bury(self, world):
+    def bury(self, world, manual=False):
+        if self.args.debug: print 'Burying dungeon...'
         min_depth = (self.levels+1)*self.room_height
-        print 'Burying dungeon...'
-        print 'Minimum depth:', min_depth, 'blocks'
 
         d_chunks = set()
         p = (self.position.x/self.room_size,
@@ -256,21 +256,20 @@ class Dungeon (object):
             else:
                 d1 = self.good_chunks[chunk]
 
-            if (d1 < min_depth):
-                print 'Selected area is too shallow to bury dungeon.'
-                return False
-            elif (d1 >= 100):
-                print 'Selected area is too high to hold dungeon.'
-                return False
+            if manual == False:
+                if (d1 < min_depth):
+                    print 'Selected area is too shallow to bury dungeon.'
+                    return False
+                elif (d1 >= 100):
+                    print 'Selected area is too high to hold dungeon.'
+                    return False
 
             depth = min(depth, d1)
 
-        self.position = Vec(self.position.x,
-                            depth,
-                            self.position.z)
-        print 'Final location: (%d, %d, %d)'% (self.position.x,
-                                               self.position.y,
-                                               self.position.z)
+        if manual == False:
+            self.position = Vec(self.position.x,
+                                depth,
+                                self.position.z)
         return True
 
 
@@ -719,8 +718,9 @@ class Dungeon (object):
         self.halls[point.x][y][point.z][sides[dr]] = 1
         self.halls[opoint.x][y][opoint.z][osides[dr]] = 1
 
-        print 'Entrance:', entrance_pos
-        print 'Exit:', exit_pos
+        if self.args.debug:
+            print 'Entrance:', entrance_pos
+            print 'Exit:', exit_pos
 
 
     def genhalls(self):
@@ -1259,8 +1259,7 @@ class Dungeon (object):
     def renderrooms(self):
         '''Call render() on all rooms to populate the block buffer'''
         count = len(self.rooms)
-        self.pm = pmeter.ProgressMeter()
-        self.pm.init(count)
+        self.pm.init(count, label='Rendering rooms:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 1
@@ -1270,8 +1269,7 @@ class Dungeon (object):
     def renderhalls(self):
         ''' Call render() on all halls'''
         count = len(self.rooms)*4
-        self.pm = pmeter.ProgressMeter()
-        self.pm.init(count)
+        self.pm.init(count, label='Rendering halls:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 4
@@ -1283,8 +1281,7 @@ class Dungeon (object):
     def renderfloors(self):
         ''' Call render() on all floors'''
         count = len(self.rooms)
-        self.pm = pmeter.ProgressMeter()
-        self.pm.init(count)
+        self.pm.init(count,label='Rendering floors:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 1
@@ -1295,8 +1292,7 @@ class Dungeon (object):
     def renderfeatures(self):
         ''' Call render() on all features'''
         count = len(self.rooms)
-        self.pm = pmeter.ProgressMeter()
-        self.pm.init(count)
+        self.pm.init(count, label='Rendering features:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 1
@@ -1307,8 +1303,7 @@ class Dungeon (object):
     def renderruins(self):
         ''' Call render() on all ruins'''
         count = len(self.rooms)
-        self.pm = pmeter.ProgressMeter()
-        self.pm.init(count)
+        self.pm.init(count, label='Rendering ruins:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 1
@@ -1430,13 +1425,14 @@ class Dungeon (object):
 
 
     def setentrance(self, world):
+        if self.args.debug: print 'Extending entrance to the surface...'
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
             self.position.y - self.entrance.parent.loc.y,
             self.position.z - self.entrance.parent.loc.z + 15)
-        print '   World coord:',wcoord
+        if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         newheight = baseheight
-        print '   Base height:',baseheight
+        if self.args.debug: print '   Base height:',baseheight
         # List of blocks to ignore.
         # Leaves, trees, flowers, etc.
         ignore = (0,6,17,18,37,38,39,40,44,50,51,55,
@@ -1451,7 +1447,7 @@ class Dungeon (object):
                 if (world.containsChunk(chunk_x, chunk_z)):
                     chunk = world.getChunk(chunk_x, chunk_z)
                 else:
-                    print 'Entrance in nonexistent chunk!',
+                    print 'WARN: Entrance in nonexistent chunk!',
                     print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
                     continue
                 # Heightmap is a good starting place, but I need to look
@@ -1465,9 +1461,10 @@ class Dungeon (object):
                 #chunk.Blocks[xInChunk, zInChunk, y] = 1
                 newheight = max(y, newheight)
                 # Check for water here?
-        print "   New height:",newheight
-        if (self.entrance.inwater == True):
-            print "   Entrance is in water."
+        if self.args.debug: 
+            print "   New height:",newheight
+            if (self.entrance.inwater == True):
+                print "   Entrance is in water."
         if (newheight - baseheight > 0):
             self.entrance.height += newheight - baseheight
         self.entrance.u = int(cfg.tower*self.entrance.u)
@@ -1482,10 +1479,9 @@ class Dungeon (object):
         pn = perlin.SimplexNoise(256)
         # Hard mode
         if (cfg.hard_mode is True):
-            print 'Filling in caves (hard mode)...'
             num = (self.zsize+10) * (self.xsize+10)
             pm = pmeter.ProgressMeter()
-            pm.init(num)
+            pm.init(num, label='Filling in caves:')
             for z in xrange((self.position.z>>4)-self.zsize-5,
                             (self.position.z>>4)+5):
                 for x in xrange((self.position.x>>4)-5,
@@ -1502,9 +1498,8 @@ class Dungeon (object):
                         del(self.good_chunks[(x,z)])
             pm.set_complete()
         # Blocks
-        print 'Writing block buffer...'
         pm = pmeter.ProgressMeter()
-        pm.init(num_blocks)
+        pm.init(num_blocks, label='Writing block buffer:')
         for block in self.blocks.values():
             # Progress
             pm.update_left(num_blocks)

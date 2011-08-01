@@ -50,7 +50,7 @@ class ETA(object):
             return
 
         eta = (float(self.wanted_size) - float(cursize)) / float(speed)
-        self.eta = 'ETA: '+format_sec(eta)
+        self.eta = format_sec(eta+1)+' ETA'
 
     def getstatus(self):
         return self.eta
@@ -58,7 +58,7 @@ class ETA(object):
 
 class ProgressMeter(object):
 
-    def __init__(self, steps=50, min_update_delta=0.12, outstream=sys.stdout):
+    def __init__(self, steps=58, min_update_delta=0.20, outstream=sys.stdout):
         self.wantsteps = steps
         self.prev_message = ''
         self.last_update_time = -100
@@ -79,8 +79,10 @@ class ProgressMeter(object):
     def init(self, size, label='', cursize=0):
         self.size = size
         self.label = label
-        self.steps = self.wantsteps
+        self.steps = self.wantsteps - len(label)
         self.needrefresh = 1
+        self.prev_message = ''
+        self.start_time = tfunc()
 
         self.eta_calculator = ETA(size)
         self.update(cursize)
@@ -90,7 +92,7 @@ class ProgressMeter(object):
     def set_complete(self):
         self.needrefresh = 1
         self.update(self.size)
-        print 
+        print
 
     def _rawupdate(self, cursize):
         self.eta_calculator.update(cursize)
@@ -106,10 +108,11 @@ class ProgressMeter(object):
         else:
             eta = self.eta_calculator.getstatus()
 
-        message = '%s[%s>%s] %s' % (percent_str,
-                                       self.done_char*donesteps,
-                                       self.left_char*stepsleft,
-                                       eta)
+        message = '%s %s[%s>%s] %s' % (self.label,
+                                      percent_str,
+                                      self.done_char*donesteps,
+                                      self.left_char*stepsleft,
+                                      eta)
         self.outstream.write('\b'*len(self.prev_message) + message)
         self.outstream.flush()
         self.prev_message = message

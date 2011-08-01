@@ -316,9 +316,8 @@ if (cfg.offset is None or cfg.offset is ''):
                    [' Structures', 0],
                    ['Good Chunks', 0]
                 ]
-    print 'Analyzing terrain...'
     pm = pmeter.ProgressMeter()
-    pm.init(world.chunkCount)
+    pm.init(world.chunkCount, label='Analyzing terrain:')
     cc = 0
     for cx, cz in world.allChunks:
         cc += 1
@@ -392,7 +391,7 @@ while args.number is not 0:
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         if (args.bury is False):
             dungeon.position = pos
-            print "location set to", dungeon.position
+            located = dungeon.bury(world, manual=True)
             located = True
         else:
             located = dungeon.bury(world)
@@ -400,12 +399,12 @@ while args.number is not 0:
                 print 'Unable to bury a dungeon of requested depth at', pos
                 print 'Try fewer levels, or a smaller size, or another location.'
                 sys.exit(1)
+        print "Location set to: ", dungeon.position
 
     else:
         print "Searching for a suitable location..."
         while (located is False):
             dungeon = Dungeon(x, z, levels, good_chunks, args)
-            print 'Dungeon size: %d x %d x %d' % (z, x, levels)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):
                 adjusted = False
@@ -423,6 +422,9 @@ while args.number is not 0:
                 if (adjusted is False):
                     print 'Unable to place any more dungeons.'
                     break
+            else:
+                print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+                print "Location: ", dungeon.position
     if (located is True):
         if (args.seed is not None):
             seed(args.seed)
@@ -443,25 +445,19 @@ while args.number is not 0:
         print "Generating ruins..."
         dungeon.genruins(world)
 
-        print "Extending the entrance to the surface..."
         dungeon.setentrance(world)
 
-        print "Rendering rooms..."
         dungeon.renderrooms()
 
-        print "Rendering halls..."
         dungeon.renderhalls()
 
-        print "Rendering floors..."
         dungeon.renderfloors()
 
-        print "Rendering features..."
         dungeon.renderfeatures()
 
         print "Rendering hall traps..."
         dungeon.renderhallpistons()
 
-        print "Rendering ruins..."
         dungeon.renderruins()
 
         print "Placing doors..."
@@ -480,7 +476,6 @@ while args.number is not 0:
         dungeon.placespawners()
 
         # Write the changes to the world.
-        print "Writing blocks..."
         dungeon.applychanges(world)
 
         # Output an html version.
