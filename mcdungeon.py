@@ -11,7 +11,7 @@ from numpy import *
 from pymclevel import mclevel, nbt
 import pmeter
 
-__version__ = '0.3.2-dev'
+__version__ = '0.3.2'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -275,7 +275,7 @@ if (args.number is not 1):
         cfg.offset = None
     if (args.entrance is not None):
         print 'WARN: Entrance option is ignored when generating multiple dungeons.'
-        cfg.entrance = None
+        args.entrance = None
     if  (args.html is not None):
         print 'WARN: HTML option is ignored when generating multiple dungeons.'
         args.html = None
@@ -467,6 +467,23 @@ while args.number is not 0:
 
         print "Placing spawners..."
         dungeon.placespawners()
+
+        # Signature
+        flags = 'H:'
+        if cfg.hard_mode:
+            flags += '1'
+        else:
+            flags += '0'
+        flags += ';E:%d,%d'%(args.entrance[0], args.entrance[1])
+        dungeon.setblock(Vec(0,0,0), materials.WallSign, 4)
+        dungeon.addsign(Vec(0,0,0),
+                        '[MCD]'+__version__,
+                        str(int(time.time())),
+                        '%d,%d,%d'%(dungeon.zsize,
+                                    dungeon.xsize,
+                                    dungeon.levels),
+                        flags)
+        dungeon.setblock(Vec(1,0,0), materials.Stone)
 
         # Write the changes to the world.
         dungeon.applychanges(world)

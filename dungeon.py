@@ -402,6 +402,7 @@ class Dungeon (object):
         else:
             x = random.randint(0, self.xsize-1)
             z = random.randint(0, self.zsize-1)
+            self.args.entrance = (x, z)
 
         # A maximum depth value. No one room can be this deep on a single
         # level. 
@@ -1428,7 +1429,7 @@ class Dungeon (object):
         if self.args.debug: print 'Extending entrance to the surface...'
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
             self.position.y - self.entrance.parent.loc.y,
-            self.position.z - self.entrance.parent.loc.z + 15)
+            self.position.z - self.entrance.parent.loc.z)
         if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         newheight = baseheight
@@ -1510,7 +1511,7 @@ class Dungeon (object):
             # Translate block coords to world coords
             x = block.loc.x + self.position.x
             y = self.position.y - block.loc.y
-            z = self.position.z - block.loc.z + 15
+            z = self.position.z - block.loc.z
             # Due to bad planning, sometimes we try to draw outside the bounds
             if (y < 0 or y > 127):
                 print 'WARN: Block outside height bounds. y =', y
@@ -1562,7 +1563,7 @@ class Dungeon (object):
             # Calculate world coords.
             x = ent['x'].value + self.position.x
             y = self.position.y - ent['y'].value
-            z = self.position.z - ent['z'].value + 15
+            z = self.position.z - ent['z'].value
             # Move this tile ent to the world coords.
             ent['x'].value = x
             ent['y'].value = y
