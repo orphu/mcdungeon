@@ -382,8 +382,8 @@ while args.number is not 0:
         pos.z = pos.z &~15
         dungeon = Dungeon(x, z, levels, good_chunks, args)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+        dungeon.position = pos
         if (args.bury is False):
-            dungeon.position = pos
             located = dungeon.bury(world, manual=True)
             located = True
         else:
