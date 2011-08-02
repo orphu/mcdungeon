@@ -192,7 +192,7 @@ class Dungeon (object):
                 self.position = Vec(p[0]*self.room_size,
                                     0,
                                     p[1]*self.room_size)
-                if self.args.debug: self.worldmap(world)
+                self.worldmap(world)
                 return self.bury(world)
         return False
 
@@ -225,15 +225,15 @@ class Dungeon (object):
         for x in xrange(map_min_x-1, map_max_x+2):
             for z in xrange(map_max_z+1, map_min_z-2, -1):
                 if (Vec(x,0,z) == spawn_chunk):
-                    sys.stdout.write('S')
+                    sys.stdout.write('SS')
                 elif (Vec(x,0,z) == Vec(sx, 0, sz)):
-                    sys.stdout.write('X')
+                    sys.stdout.write('XX')
                 elif (d_box.containsPoint(Vec(x,64,z))):
-                    sys.stdout.write('#')
+                    sys.stdout.write('##')
                 elif ((x,z) in self.good_chunks.keys()):
-                    sys.stdout.write('+')
+                    sys.stdout.write('++')
                 else:
-                    sys.stdout.write('`')
+                    sys.stdout.write('``')
             print
 
 
