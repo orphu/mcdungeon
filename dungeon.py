@@ -48,6 +48,7 @@ class Dungeon (object):
         self.portcullises = {}
         self.signs = []
         self.entrance = None
+        self.entrance_pos = Vec(0,0,0)
         self.xsize = xsize
         self.zsize = zsize
         self.levels = levels
@@ -191,8 +192,9 @@ class Dungeon (object):
             if d_chunks.issubset(all_chunks):
                 self.position = Vec(p[0]*self.room_size,
                                     0,
-                                    p[1]*self.room_size)
-                self.worldmap(world)
+                                    p[1]*self.room_size+15)
+                if (self.args.debug or len(self.good_chunks) < 1000):
+                    self.worldmap(world)
                 return self.bury(world)
         return False
 
@@ -402,7 +404,6 @@ class Dungeon (object):
         else:
             x = random.randint(0, self.xsize-1)
             z = random.randint(0, self.zsize-1)
-            self.args.entrance = (x, z)
 
         # A maximum depth value. No one room can be this deep on a single
         # level. 
@@ -719,6 +720,7 @@ class Dungeon (object):
         self.halls[point.x][y][point.z][sides[dr]] = 1
         self.halls[opoint.x][y][opoint.z][osides[dr]] = 1
 
+        self.entrance_pos = entrance_pos
         if self.args.debug:
             print 'Entrance:', entrance_pos
             print 'Exit:', exit_pos
@@ -1462,6 +1464,7 @@ class Dungeon (object):
                 #chunk.Blocks[xInChunk, zInChunk, y] = 1
                 newheight = max(y, newheight)
                 # Check for water here?
+                chunk.unload()
         if self.args.debug: 
             print "   New height:",newheight
             if (self.entrance.inwater == True):
@@ -1551,7 +1554,8 @@ class Dungeon (object):
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
             # Make sure we don't overwrite this chunk in the future. 
-            if ((chunk_x, chunk_z) in self.good_chunks):
+            if ((chunk_x, chunk_z) in self.good_chunks and
+                 mat != materials._sandbar):
                 del(self.good_chunks[(chunk_x, chunk_z)])
         pm.set_complete()
         # Copy over tile entities
@@ -1580,7 +1584,7 @@ class Dungeon (object):
                 print 'Whoops! Tile entity in nonexistent chunk!',
                 print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
                 continue
-            # copy rhe ent to the chunk
+            # copy the ent to the chunk
             chunk.TileEntities.append(ent)
             #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
             changed_chunks.add(chunk)

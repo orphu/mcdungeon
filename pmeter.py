@@ -44,7 +44,7 @@ class ETA(object):
             return
 
         delta_time = self.points[-1][0] - self.points[0][0]
-        delta_work = cursize
+        delta_work = self.points[-1][1] - self.points[0][1]
         speed = float(delta_work) / float(delta_time)
         if speed == 0.0:
             return

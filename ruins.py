@@ -17,7 +17,7 @@ class Blank(object):
         self.parent = parent
         self.pos = parent.pos
         cx = (parent.parent.position.x + parent.loc.x) >>4
-        cz = (parent.parent.position.z - parent.loc.z + 1) >>4
+        cz = (parent.parent.position.z - parent.loc.z) >>4
         self.chunk = Vec(cx,0,cz)
         #print 'ruin chunk:', self.chunk
 

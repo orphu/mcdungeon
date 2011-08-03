@@ -11,112 +11,225 @@ from numpy import *
 from pymclevel import mclevel, nbt
 import pmeter
 
+# Version info
 __version__ = '0.3.2'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
-parent_parser = argparse.ArgumentParser(add_help=False,
+# Argument parsers
+parser = argparse.ArgumentParser(
     description='Generate a tile-based dungeon in a Minecraft map.')
-parent_parser.add_argument('-v', '--version',
+parser.add_argument('-v', '--version',
                            action='version', version=_vstring,
                            help='Print version and exit')
-parent_parser.add_argument('-c', '--config',
-                    dest='config',
-                    metavar='CFGFILE',
-                    default='default.cfg',
-                    help='Alternate config file. Default: default.cfg')
-parent_parser.add_argument('--write',
-                    action='store_true',
-                    dest='write' ,
-                    help='Write the dungeon to disk')
-parent_parser.add_argument('--skip-relight',
+subparsers = parser.add_subparsers(
+                                   description='See "COMMAND --help" for \
+                                   additional help.',
+                                   title='Available commands')
+
+# Interactive subcommand parser
+parser_inter= subparsers.add_parser('interactive',
+                                    help='Interactive mode.')
+parser_inter.set_defaults(command='interactive')
+parser_inter.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
                     help='Skip relighting the level')
-parent_parser.add_argument('-t','--term',
+parser_inter.add_argument('-t','--term',
                     type=int,dest='term',
                     metavar='FLOOR',
                     help='Print a text version of a given floor to the \
                     terminal')
-parent_parser.add_argument('--html',
+parser_inter.add_argument('--html',
                     dest='html',
                     metavar='BASENAME',
                     help='Output html versions of the dungeon. This \
                     produces one file per level of the form \
                     BASENAME-(level number).html')
-parent_parser.add_argument('--debug',
+parser_inter.add_argument('--debug',
                     action='store_true',
                     dest='debug',
                     help='Provide additional debug info')
-parent_parser.add_argument('--force',
+parser_inter.add_argument('--force',
                     action='store_true',
                     dest='force',
                     help='Force overwriting of html output files')
-parent_parser.add_argument('-s', '--seed',
+parser_inter.add_argument('-s', '--seed',
                     dest='seed',
                     metavar='SEED',
                     help='Provide a seed for this dungeon. This can be \
                     anything')
-parent_parser.add_argument('-o', '--offset',
+parser_inter.add_argument('-o', '--offset',
                     dest='offset',
                     nargs=3,
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset in blocks')
-parent_parser.add_argument('-b', '--bury',
+parser_inter.add_argument('-b', '--bury',
                     action='store_true',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
-parent_parser.add_argument('-e', '--entrance',
+parser_inter.add_argument('-e', '--entrance',
                     dest='entrance',
                     nargs=2,
                     type=int,
                     metavar=('Z', 'X'),
                     help='Provide an offset for the entrance in chunks')
-parent_parser.add_argument('-n','--number',
+
+# Add subcommand parser 
+parser_add = subparsers.add_parser('add', help='Add a new dungeon.')
+parser_add.set_defaults(command='add')
+parser_add.add_argument('-c', '--config',
+                    dest='config',
+                    metavar='CFGFILE',
+                    default='default.cfg',
+                    help='Alternate config file. Default: default.cfg')
+parser_add.add_argument('--write',
+                    action='store_true',
+                    dest='write' ,
+                    help='Write the dungeon to disk')
+parser_add.add_argument('--skip-relight',
+                    action='store_true',
+                    dest='skiprelight',
+                    help='Skip relighting the level')
+parser_add.add_argument('-t','--term',
+                    type=int,dest='term',
+                    metavar='FLOOR',
+                    help='Print a text version of a given floor to the \
+                    terminal')
+parser_add.add_argument('--html',
+                    dest='html',
+                    metavar='BASENAME',
+                    help='Output html versions of the dungeon. This \
+                    produces one file per level of the form \
+                    BASENAME-(level number).html')
+parser_add.add_argument('--debug',
+                    action='store_true',
+                    dest='debug',
+                    help='Provide additional debug info')
+parser_add.add_argument('--force',
+                    action='store_true',
+                    dest='force',
+                    help='Force overwriting of html output files')
+parser_add.add_argument('-s', '--seed',
+                    dest='seed',
+                    metavar='SEED',
+                    help='Provide a seed for this dungeon. This can be \
+                    anything')
+parser_add.add_argument('-o', '--offset',
+                    dest='offset',
+                    nargs=3,
+                    type=int,
+                    metavar=('X', 'Y', 'Z'),
+                    help='Provide a location offset in blocks')
+parser_add.add_argument('-b', '--bury',
+                    action='store_true',
+                    dest='bury',
+                    help='Attempt to calculate Y when using --offset')
+parser_add.add_argument('-e', '--entrance',
+                    dest='entrance',
+                    nargs=2,
+                    type=int,
+                    metavar=('Z', 'X'),
+                    help='Provide an offset for the entrance in chunks')
+parser_add.add_argument('-n','--number',
                     type=int,dest='number',
                     metavar='NUM',
                     default=1,
                     help='Number of dungeons to generate. -1 will create as \
                     many as possible given X, Z, and LEVEL settings.')
-
-i_parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
-i_parser.add_argument('-i', '--interactive',
-                    action='store_true',
-                    dest='interactive' ,
-                    help='Start in interactive mode. Prompt for SAVEDIR, Z, X, \
-                    CFGFILE, and LEVELS.')
-
-
-noi_parser = argparse.ArgumentParser(parents=[i_parser])
-noi_parser.add_argument('world',
+parser_add.add_argument('world',
                     metavar='SAVEDIR',
                     help='Target world (path to save directory)')
-noi_parser.add_argument('z',
+parser_add.add_argument('z',
                     metavar='Z',
                     help='Number of rooms West -> East. Use -1 for random, or \
                         provide a range. (ie: 4-7)')
-noi_parser.add_argument('x',
+parser_add.add_argument('x',
                     metavar='X',
                     help='Number of rooms North -> South. Use -1 for random, \
                         or provide a range.')
-noi_parser.add_argument('levels',
+parser_add.add_argument('levels',
                     metavar='LEVELS',
-                    help='Number of levels. Enter a positive value, or provide a \
-                        range.')
+                    help='Number of levels. Enter a positive value, or \
+                        provide a range.')
 
-iargs = i_parser.parse_known_args()
-if (iargs[0].interactive == False):
-    args = noi_parser.parse_args()
-else:
-    args = iargs[0]
+# List subcommand parser
+parser_list= subparsers.add_parser('list',
+                                    help='List known dungeons in a map.')
+parser_list.set_defaults(command='list')
+parser_list.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
+
+# Delete subcommand parser
+parser_del= subparsers.add_parser('delete',
+                                    help='Delete a dungeon from a map.')
+parser_del.set_defaults(command='delete')
+parser_del.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
+#parser_del.add_argument('x',
+#                    metavar='X',
+#                    help='X position of the dungeon to delete.')
+#parser_del.add_argument('z',
+#                    metavar='Z',
+#                    help='Z position.')
+
+# Parse the args
+args = parser.parse_args()
 
 import cfg
 import loottable
 from dungeon import *
 from utils import *
 
-if (args.interactive == True):
+def listDungeons(world):
+    dungeons = []
+    output = ''
+    output += "Known dungeons on this map:\n"
+    output += '+-----------+--------------------------+---------+--------+-------------+\n'
+    output += '| %9s | %24s | %7s | %6s | %11s |\n' % (
+        'Position',
+        'Date Generated',
+        'Size',
+        'Levels',
+        'Options'
+    )
+    output += '+-----------+--------------------------+---------+--------+-------------+\n'
+    pm = pmeter.ProgressMeter()
+    count = world.chunkCount
+    pm.init(count, label='Scanning world:')
+    for i, cPos in enumerate(world.allChunks):
+        count -= 1
+        pm.update_left(count)
+        chunk = world.getChunk(*cPos)
+        for tileEntity in chunk.TileEntities:
+            if (tileEntity["id"].value == "Sign" and
+                tileEntity["Text1"].value.startswith('[MCD]')):
+                (xsize, zsize, levels) = tileEntity["Text3"].value.split(',')
+                dungeons.append((int(tileEntity["x"].value)/16,
+                                 int(tileEntity["z"].value)/16,
+                                 int(zsize),
+                                 int(xsize)))
+                output += '| %9s | %24s | %7s | %6d | %11s |\n' % (
+                 '%s %s'%(int(tileEntity["x"].value),int(tileEntity["z"].value)),
+                 time.ctime(int(tileEntity["Text2"].value)),
+                 '%sx%s'%(xsize, zsize),
+                 int(levels),
+                 tileEntity["Text4"].value
+                )
+        chunk.unload()
+    pm.set_complete()
+    output += '+-----------+--------------------------+---------+--------+-------------+\n'
+    if len(dungeons) > 0:
+        print output
+    else:
+        print 'No dungeons found!'
+    return dungeons
+
+# Interactive mode
+if (args.command == 'interactive'):
     print 'Starting interactive mode!'
 
     configDir = os.path.join(sys.path[0], 'configs')
@@ -184,8 +297,50 @@ if (args.interactive == True):
     #    args.html = world
     #    args.force = True
     args.write = True
-else:
+elif(args.command == 'add'):
     cfg.Load(args.config)
+
+# Attempt to open the world. Look in cwd first, then try to search the user's
+# save directory. 
+try:
+    print "Trying to open:", args.world
+    world = mclevel.fromFile(args.world)
+except:
+    saveFileDir = mclevel.saveFileDir
+    args.world = os.path.join(saveFileDir, args.world)
+    print "Trying to open:", args.world
+    try:
+        world = mclevel.fromFile(args.world)
+    except:
+        print "Failed to open world:",args.world
+        sys.exit(1)
+print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
+
+# List mode
+if (args.command == 'list'):
+    dungeons = listDungeons(world)
+    sys.exit()
+
+# Delete mode
+if (args.command == 'delete'):
+    dungeons = listDungeons(world)
+    if len(dungeons) == 0:
+        sys.exit()
+    print 'Deleting all dungeons!'
+    chunks = []
+    for d in dungeons:
+        p = (d[0], d[1])
+        for x in xrange(int(d[2])):
+            for z in xrange(int(d[3])):
+                chunks.append((p[0]+x, p[1]-z))
+    for c in chunks:
+        if world.containsChunk(c[0],c[1]):
+            world.deleteChunk(c[0],c[1])
+    print "Saving..."
+    world.saveInPlace()
+    sys.exit()
+
+# Everything below is add mode
 
 # Load lewts
 loottable.Load()
@@ -284,22 +439,6 @@ if (args.number is not 1):
         args.seed = None
 
 
-# Attempt to open the world. Look in cwd first, then try to search the user's
-# save directory. 
-try:
-    print "Trying to open:", args.world
-    world = mclevel.fromFile(args.world)
-except:
-    saveFileDir = mclevel.saveFileDir
-    args.world = os.path.join(saveFileDir, args.world)
-    print "Trying to open:", args.world
-    try:
-        world = mclevel.fromFile(args.world)
-    except:
-        print "Failed to open world:",args.world
-        sys.exit(1)
-print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
-
 print "MCDungeon",__version__,"startup complete. "
 
 dungeons = []
@@ -343,7 +482,9 @@ if (cfg.offset is None or cfg.offset is ''):
             i += 1
         if t == True:
             chunk_stats[4][1] += 1
+            chunk.unload()
             continue
+        chunk.unload()
         # Depths
         min_depth, max_depth = findChunkDepths(Vec(cx,0,cz), world)
         if max_depth > 100:
@@ -356,6 +497,17 @@ if (cfg.offset is None or cfg.offset is ''):
         chunk_stats[5][1] += 1
         good_chunks[(cx, cz)] = min_depth
     pm.set_complete()
+
+    # Find old dungeons
+    old_dungeons = listDungeons(world)
+    for d in old_dungeons:
+        p = (d[0], d[1])
+        for x in xrange(int(d[2])):
+            for z in xrange(int(d[3])):
+                if (p[0]+x,p[1]-z) in good_chunks:
+                    del(good_chunks[(p[0]+x,p[1]-z)])
+                    chunk_stats[4][1] += 1
+                    chunk_stats[5][1] -= 1
 
     for stat in chunk_stats:
         print '   %s: %d'%(stat[0], stat[1])
@@ -379,7 +531,7 @@ while args.number is not 0:
     if (cfg.offset is not None and cfg.offset is not ''):
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
-        pos.z = pos.z &~15
+        pos.z = (pos.z &~15)+15
         dungeon = Dungeon(x, z, levels, good_chunks, args)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         dungeon.position = pos
@@ -474,7 +626,7 @@ while args.number is not 0:
             flags += '1'
         else:
             flags += '0'
-        flags += ';E:%d,%d'%(args.entrance[0], args.entrance[1])
+        flags += ';E:%d,%d'%(dungeon.entrance_pos.x, dungeon.entrance_pos.z)
         dungeon.setblock(Vec(0,0,0), materials.WallSign, 4)
         dungeon.addsign(Vec(0,0,0),
                         '[MCD]'+__version__,
