@@ -169,12 +169,19 @@ parser_del.set_defaults(command='delete')
 parser_del.add_argument('world',
                     metavar='SAVEDIR',
                     help='Target world (path to save directory)')
-#parser_del.add_argument('x',
-#                    metavar='X',
-#                    help='X position of the dungeon to delete.')
-#parser_del.add_argument('z',
-#                    metavar='Z',
-#                    help='Z position.')
+parser_del.add_argument('-d, --dungeon',
+                    metavar=('X', 'Z'),
+                    nargs=2,
+                    action='append',
+                    dest='dungeons',
+                    type=int,
+                    help='The X Z coordinates of a dungeon to delete. \
+                        NOTE: These will be rounded to the nearest chunk. \
+                        Multiple -d flags can be specified.')
+parser_del.add_argument('-a', '--all',
+                    dest='all',
+                    action='store_true',
+                    help='Delete all known dungeons. Overrides -d.')
 
 # Parse the args
 args = parser.parse_args()
@@ -208,8 +215,8 @@ def listDungeons(world):
             if (tileEntity["id"].value == "Sign" and
                 tileEntity["Text1"].value.startswith('[MCD]')):
                 (xsize, zsize, levels) = tileEntity["Text3"].value.split(',')
-                dungeons.append((int(tileEntity["x"].value)/16,
-                                 int(tileEntity["z"].value)/16,
+                dungeons.append((int(tileEntity["x"].value),
+                                 int(tileEntity["z"].value),
                                  int(zsize),
                                  int(xsize)))
                 output += '| %9s | %24s | %7s | %6d | %11s |\n' % (
@@ -318,24 +325,58 @@ print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
 
 # List mode
 if (args.command == 'list'):
+    # List the known dungeons and exit
     dungeons = listDungeons(world)
     sys.exit()
 
 # Delete mode
 if (args.command == 'delete'):
+    # Check to make sure the user specified what they want to do.
+    if args.dungeons == None and args.all == False:
+        print 'You must specify either --all or at least one -d option when '+\
+                'deleting dungeons.'
+        sys.exit(1)
+    # Get a list of known dungeons and their size.
     dungeons = listDungeons(world)
+    # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
-    print 'Deleting all dungeons!'
-    chunks = []
+    # A list of existing dungeon positions for convenience. 
+    existing = set()
     for d in dungeons:
-        p = (d[0], d[1])
-        for x in xrange(int(d[2])):
-            for z in xrange(int(d[3])):
+        existing.add((d[0], d[1]))
+    # Populate a list of dungeons to delete.
+    # If --all was specified, populate the delete list will all known dungeons.
+    # Otherwise just validate the -d options. 
+    to_delete = []
+    if args.all == True:
+        for d in dungeons:
+            to_delete.append((d[0], d[1]))
+    else:
+        for d in args.dungeons:
+            if (d[0], d[1]) not in existing:
+                sys.exit('Unable to locate dungeon at %s.'%(str(d)))
+            to_delete.append(d)
+    # Build a list of chunks to delete from the dungeon info.
+    chunks = []
+    for d in to_delete:
+        p = (d[0]/16, d[1]/16)
+        print 'Deleting dungeon at %d %d...'%(d[0], d[1])
+        xsize = 0
+        zsize = 0
+        for e in dungeons:
+            if e[0] == d[0] and e[1] == d[1]:
+                xsize = e[2]
+                zsize = e[3]
+                break
+        for x in xrange(xsize):
+            for z in xrange(zsize):
                 chunks.append((p[0]+x, p[1]-z))
+    # Delete the chunks
     for c in chunks:
         if world.containsChunk(c[0],c[1]):
             world.deleteChunk(c[0],c[1])
+    # Save the world.
     print "Saving..."
     world.saveInPlace()
     sys.exit()
@@ -501,7 +542,7 @@ if (cfg.offset is None or cfg.offset is ''):
     # Find old dungeons
     old_dungeons = listDungeons(world)
     for d in old_dungeons:
-        p = (d[0], d[1])
+        p = (d[0]/16, d[1]/16)
         for x in xrange(int(d[2])):
             for z in xrange(int(d[3])):
                 if (p[0]+x,p[1]-z) in good_chunks:
