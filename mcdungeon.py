@@ -191,6 +191,25 @@ import loottable
 from dungeon import *
 from utils import *
 
+def loadWorld(world_name):
+    # Attempt to open the world. Look in cwd first, then try to search the
+    # user's save directory. 
+    world = None
+    try:
+        print "Trying to open:", world_name
+        world = mclevel.fromFile(world_name)
+    except:
+        saveFileDir = mclevel.saveFileDir
+        world_name = os.path.join(saveFileDir, world_name)
+        print "Trying to open:", world_name
+        try:
+            world = mclevel.fromFile(world_name)
+        except:
+            print "Failed to open world:",world_name
+            sys.exit(1)
+    print 'Loaded world: %s (%d chunks)' % (world_name, world.chunkCount)
+    return world
+
 def listDungeons(world):
     dungeons = []
     output = ''
@@ -235,30 +254,14 @@ def listDungeons(world):
         print 'No dungeons found!'
     return dungeons
 
+world = None
+dungeons = None
+
 # Interactive mode
 if (args.command == 'interactive'):
     print 'Starting interactive mode!'
 
-    configDir = os.path.join(sys.path[0], 'configs')
-    if (os.path.isdir(configDir) == False):
-        configDir = 'configs'
-    if (os.path.isdir(configDir) == False):
-        sys.exit('\nI cannot find your configs directory! Aborting!')
-    print '\nConfigurations in your configs directory:\n'
-    for file in os.listdir(configDir):
-        file_path = os.path.join(configDir, file)
-        file = file.replace('.cfg', '')
-        if (os.path.isfile(file_path) and
-           file_path.endswith('.cfg')):
-            print '   ',file
-    print '\nEnter the name of the configuration you wish to use.'
-    config = raw_input('(leave blank for default): ')
-    if (config == ''):
-        config = 'default'
-    #args.config = str(os.path.join(configDir, config))+'.cfg'
-    args.config = str(config)+'.cfg'
-    cfg.Load(args.config)
-
+    # Pick a map
     saveFileDir = mclevel.saveFileDir
     print '\nYour save directory is:\n', saveFileDir
     if (os.path.isdir(saveFileDir) == False):
@@ -268,60 +271,108 @@ if (args.command == 'interactive'):
         file_path = os.path.join(saveFileDir, file)
         if os.path.isdir(file_path):
             print '   ',file
-    world = raw_input('\nEnter the name of the world you wish to modify: ')
-    args.world = os.path.join(saveFileDir, world)
+    w = raw_input('\nEnter the name of the world you wish to modify: ')
+    args.world = os.path.join(saveFileDir, w)
 
-    m = cfg.max_dist - cfg.min_dist
-    print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
-    print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-    print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
-    args.z = raw_input('Z size: ')
+    # Pick a mode
+    print '\nChoose an action:\n-----------------\n'
+    print '\t[a] Add new dungeon(s) to the map.'
+    print '\t[l] List dungeons already in this map.'
+    print '\t[d] Delete dungeons from this map.'
+    command = raw_input('\nEnter choice or q to quit: ')
 
-    print '\nEnter the size of the dungeon(s) from North to South. (X size)'
-    print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-    print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
-    args.x = raw_input('X size: ')
+    if command == 'a':
+        args.command = 'add'
+        # Pick a config
+        configDir = os.path.join(sys.path[0], 'configs')
+        if (os.path.isdir(configDir) == False):
+            configDir = 'configs'
+        if (os.path.isdir(configDir) == False):
+            sys.exit('\nI cannot find your configs directory! Aborting!')
+        print '\nConfigurations in your configs directory:\n'
+        for file in os.listdir(configDir):
+            file_path = os.path.join(configDir, file)
+            file = file.replace('.cfg', '')
+            if (os.path.isfile(file_path) and
+               file_path.endswith('.cfg')):
+                print '   ',file
+        print '\nEnter the name of the configuration you wish to use.'
+        config = raw_input('(leave blank for default): ')
+        if (config == ''):
+            config = 'default'
+        #args.config = str(os.path.join(configDir, config))+'.cfg'
+        args.config = str(config)+'.cfg'
+        cfg.Load(args.config)
 
-    print '\nEnter a number of levels.'
-    print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
-    print 'Enter -1 to pick random values between 1 and 8.'
-    args.levels = raw_input('Levels: ')
+        m = cfg.max_dist - cfg.min_dist
+        print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
+        print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
+        print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
+        args.z = raw_input('Z size: ')
 
-    print '\nEnter the maximum number of dungeons to add.'
-    print 'Depending on the characteristics of your world, and size of your'
-    print 'dungeons, the actual number placed may be less.'
-    print 'Enter -1 to add as many dungeons as possible.'
-    args.number = raw_input('Number of dungeons (leave blank for 1): ')
-    if (args.number == ''):
-        args.number = 1
-    try:
-        args.number  = int(args.number)
-    except ValueError:
-        sys.exit('You must enter an integer.')
+        print '\nEnter the size of the dungeon(s) from North to South. (X size)'
+        print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
+        print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
+        args.x = raw_input('X size: ')
 
-    #html = raw_input('\nWould you like to create an HTML map? (y/n): ')
-    #if (html.lower() == 'y'):
-    #    args.html = world
-    #    args.force = True
-    args.write = True
+        print '\nEnter a number of levels.'
+        print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
+        print 'Enter -1 to pick random values between 1 and 8.'
+        args.levels = raw_input('Levels: ')
+
+        print '\nEnter the maximum number of dungeons to add.'
+        print 'Depending on the characteristics of your world, and size of your'
+        print 'dungeons, the actual number placed may be less.'
+        print 'Enter -1 to add as many dungeons as possible.'
+        args.number = raw_input('Number of dungeons (leave blank for 1): ')
+        if (args.number == ''):
+            args.number = 1
+        try:
+            args.number  = int(args.number)
+        except ValueError:
+            sys.exit('You must enter an integer.')
+
+        #html = raw_input('\nWould you like to create an HTML map? (y/n): ')
+        #if (html.lower() == 'y'):
+        #    args.html = world
+        #    args.force = True
+        args.write = True
+    elif command == 'l':
+        args.command = 'list'
+    elif command == 'd':
+        args.command = 'delete'
+        args.dungeons = None
+        args.all = False
+        world = loadWorld(args.world)
+        dungeons = listDungeons(world)
+        if len(dungeons) == 0:
+            sys.exit()
+        print 'Choose dungeon(s) to delete:\n----------------------------\n'
+        print '\t[a] Delete ALL dungeons from this map.'
+        for i in xrange(len(dungeons)):
+            print '\t[%d] Dungeon at %d %d.'%(i+1,
+                                              dungeons[i][0],
+                                              dungeons[i][1])
+        while (args.all == False and args.dungeons == None):
+            d = raw_input('\nEnter choice, or q to quit: ')
+            if d == 'a':
+                args.all = True
+            elif d.isdigit() and int(d) > 0 and int(d) <= len(dungeons):
+                d = int(d)
+                args.dungeons = [[dungeons[d-1][0], dungeons[d-1][1]]]
+            elif d == 'q':
+                print 'Quitting...'
+                sys.exit()
+            else:
+                print '"%s" is not a valid choice!'%d
+    else:
+        print 'Quitting...'
+        sys.exit()
 elif(args.command == 'add'):
     cfg.Load(args.config)
 
-# Attempt to open the world. Look in cwd first, then try to search the user's
-# save directory. 
-try:
-    print "Trying to open:", args.world
-    world = mclevel.fromFile(args.world)
-except:
-    saveFileDir = mclevel.saveFileDir
-    args.world = os.path.join(saveFileDir, args.world)
-    print "Trying to open:", args.world
-    try:
-        world = mclevel.fromFile(args.world)
-    except:
-        print "Failed to open world:",args.world
-        sys.exit(1)
-print 'Loaded world: %s (%d chunks)' % (args.world, world.chunkCount)
+if world == None:
+    world = loadWorld(args.world)
 
 # List mode
 if (args.command == 'list'):
@@ -337,7 +388,8 @@ if (args.command == 'delete'):
                 'deleting dungeons.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
-    dungeons = listDungeons(world)
+    if dungeons == None:
+        dungeons = listDungeons(world)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
