@@ -1,3 +1,3 @@
 @echo off
-mcdungeon --interactive
+mcdungeon interactive
 pause
