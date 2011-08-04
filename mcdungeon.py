@@ -77,8 +77,23 @@ parser_inter.add_argument('-e', '--entrance',
                     help='Provide an offset for the entrance in chunks')
 
 # Add subcommand parser 
-parser_add = subparsers.add_parser('add', help='Add a new dungeon.')
+parser_add = subparsers.add_parser('add', help='Add new dungeons.')
 parser_add.set_defaults(command='add')
+parser_add.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
+parser_add.add_argument('z',
+                    metavar='Z',
+                    help='Number of rooms West -> East. Use -1 for random, or \
+                        provide a range. (ie: 4-7)')
+parser_add.add_argument('x',
+                    metavar='X',
+                    help='Number of rooms North -> South. Use -1 for random, \
+                        or provide a range.')
+parser_add.add_argument('levels',
+                    metavar='LEVELS',
+                    help='Number of levels. Enter a positive value, or \
+                        provide a range.')
 parser_add.add_argument('-c', '--config',
                     dest='config',
                     metavar='CFGFILE',
@@ -138,21 +153,6 @@ parser_add.add_argument('-n','--number',
                     default=1,
                     help='Number of dungeons to generate. -1 will create as \
                     many as possible given X, Z, and LEVEL settings.')
-parser_add.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
-parser_add.add_argument('z',
-                    metavar='Z',
-                    help='Number of rooms West -> East. Use -1 for random, or \
-                        provide a range. (ie: 4-7)')
-parser_add.add_argument('x',
-                    metavar='X',
-                    help='Number of rooms North -> South. Use -1 for random, \
-                        or provide a range.')
-parser_add.add_argument('levels',
-                    metavar='LEVELS',
-                    help='Number of levels. Enter a positive value, or \
-                        provide a range.')
 
 # List subcommand parser
 parser_list= subparsers.add_parser('list',
@@ -164,12 +164,12 @@ parser_list.add_argument('world',
 
 # Delete subcommand parser
 parser_del= subparsers.add_parser('delete',
-                                    help='Delete a dungeon from a map.')
+                                    help='Delete dungeons from a map.')
 parser_del.set_defaults(command='delete')
 parser_del.add_argument('world',
                     metavar='SAVEDIR',
                     help='Target world (path to save directory)')
-parser_del.add_argument('-d, --dungeon',
+parser_del.add_argument('-d', '--dungeon',
                     metavar=('X', 'Z'),
                     nargs=2,
                     action='append',
@@ -355,7 +355,7 @@ if (args.command == 'delete'):
     else:
         for d in args.dungeons:
             if (d[0], d[1]) not in existing:
-                sys.exit('Unable to locate dungeon at %s.'%(str(d)))
+                sys.exit('Unable to locate dungeon at %d %d.'%(d[0], d[1]))
             to_delete.append(d)
     # Build a list of chunks to delete from the dungeon info.
     chunks = []
