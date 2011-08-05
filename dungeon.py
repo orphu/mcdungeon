@@ -193,8 +193,7 @@ class Dungeon (object):
                 self.position = Vec(p[0]*self.room_size,
                                     0,
                                     p[1]*self.room_size+15)
-                if (self.args.debug or len(self.good_chunks) < 1000):
-                    self.worldmap(world)
+                self.worldmap(world)
                 return self.bury(world)
         return False
 
@@ -219,6 +218,9 @@ class Dungeon (object):
         map_max_x = max(map_max_x, spawn_chunk.x)
         map_min_z = min(map_min_z, spawn_chunk.z)
         map_max_z = max(map_max_z, spawn_chunk.z)
+
+        if map_max_z-map_min_z >= 40:
+            return
 
         sx = self.position.x/self.room_size
         sz = self.position.z/self.room_size
@@ -793,9 +795,12 @@ class Dungeon (object):
     def genruins(self, world):
         for pos in self.rooms:
             if (pos.y == 0 and
-                pos != self.entrance.parent.pos and
                 len(self.rooms[pos].ruins) == 0):
-                ruin = ruins.new(weighted_choice(cfg.master_ruins),
+                if pos == self.entrance.parent.pos:
+                    ruin = ruins.new(weighted_choice(cfg.master_entrances),
+                                 self.rooms[pos])
+                else:
+                    ruin = ruins.new(weighted_choice(cfg.master_ruins),
                                  self.rooms[pos])
                 self.rooms[pos].ruins.append(ruin)
                 ruin.placed(world)
@@ -1434,25 +1439,20 @@ class Dungeon (object):
             self.position.z - self.entrance.parent.loc.z)
         if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
-        newheight = baseheight
+        #newheight = baseheight
+        low_height = 127
+        high_height = baseheight
         if self.args.debug: print '   Base height:',baseheight
         # List of blocks to ignore.
         # Leaves, trees, flowers, etc.
-        ignore = (0,6,17,18,37,38,39,40,44,50,51,55,
+        ignore = (0,6,17,18,31,37,38,39,40,44,50,51,55,
                   59,63,64,65,66,68,70,71,72,75,76,
                   77,81,83,85,86,90,91,92,93,94)
+        chunk = world.getChunk(wcoord.x>>4, wcoord.z>>4)
         for x in xrange(wcoord.x+4, wcoord.x+12):
             for z in xrange(wcoord.z-11, wcoord.z-3):
-                chunk_z = z>>4
-                chunk_x = x>>4
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
-                if (world.containsChunk(chunk_x, chunk_z)):
-                    chunk = world.getChunk(chunk_x, chunk_z)
-                else:
-                    print 'WARN: Entrance in nonexistent chunk!',
-                    print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
-                    continue
                 # Heightmap is a good starting place, but I need to look
                 # down through foliage.
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
@@ -1461,20 +1461,24 @@ class Dungeon (object):
                 if (chunk.Blocks[xInChunk, zInChunk, y] == 9 or
                     chunk.Blocks[xInChunk, zInChunk, y] == 79):
                     self.entrance.inwater = True
-                #chunk.Blocks[xInChunk, zInChunk, y] = 1
-                newheight = max(y, newheight)
-                # Check for water here?
-                chunk.unload()
-        if self.args.debug: 
-            print "   New height:",newheight
+                high_height = max(y, high_height)
+                low_height = min(y, low_height)
+        chunk.unload()
+        if self.args.debug:
+            print "    Low height:",low_height
+            print "   High height:",high_height
             if (self.entrance.inwater == True):
                 print "   Entrance is in water."
-        if (newheight - baseheight > 0):
-            self.entrance.height += newheight - baseheight
+        if (low_height - baseheight > 0):
+            self.entrance.height += low_height - baseheight
+            self.entrance.low_height += low_height - baseheight
+        if (high_height - baseheight > 0):
+            self.entrance.high_height += high_height - baseheight
         self.entrance.u = int(cfg.tower*self.entrance.u)
         # Check the upper bounds of the tower
-        if (newheight + self.entrance.u >= 128):
-            self.entrance.u = 124 - newheight
+        if (high_height + self.entrance.u >= 128):
+            self.entrance.u = 124 - high_height
+
 
     def applychanges(self, world):
         '''Write the block buffer to the specified world'''

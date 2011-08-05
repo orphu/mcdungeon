@@ -28,6 +28,88 @@ class Entrance(Blank):
     def placed (self):
         # Default height of the doors into the entrance.
         self.height = self.parent.parent.room_height
+        self.high_height = self.parent.parent.room_height
+        self.low_height = self.parent.parent.room_height
+        # Height of the tower above entry.
+        self.u = self.parent.parent.room_height*2
+        self.inwater = False
+
+    def render (self):
+        start = self.parent.loc.trans(6,self.parent.parent.room_height-3,6)
+        wstart = start.trans(-1,0,-1)
+        # Clear air space
+        for p in iterate_cube(wstart,
+                              wstart.trans(5,-self.height,5)):
+            self.parent.parent.setblock(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(wstart,
+                                    wstart.trans(5,0,5),
+                                    self.height-1):
+            self.parent.parent.setblock(p, materials._wall)
+        # Lower level openings
+        # W side
+        for p in iterate_cube(wstart.trans(1,0,0), wstart.trans(4,-3,0)):
+            self.parent.parent.setblock(p, materials.Air)
+        # E side
+        for p in iterate_cube(wstart.trans(1,0,5), wstart.trans(4,-3,5)):
+            self.parent.parent.setblock(p, materials.Air)
+        # N side
+        for p in iterate_cube(wstart.trans(0,0,1), wstart.trans(0,-3,4)):
+            self.parent.parent.setblock(p, materials.Air)
+        # S side
+        for p in iterate_cube(wstart.trans(5,0,1), wstart.trans(5,-3,4)):
+            self.parent.parent.setblock(p, materials.Air)
+        # Draw the staircase
+        for p in iterate_spiral(Vec(0,0,0),
+                                Vec(4,0,4),
+                                self.height*2):
+            mat = materials.StoneSlab
+            if ((p.y%2) == 1):
+                mat = materials.DoubleSlab
+            self.parent.parent.setblock(start.trans(p.x,
+                                                    floor(float(p.y)/2.0),
+                                                    p.z),
+                                        mat)
+        # Signs
+        locs = [
+            (Vec(-1,-2, 0),4),
+            (Vec(-1,-1, 0),4),
+            (Vec(-1,-2, 5),4),
+            (Vec(-1,-1, 5),4),
+            (Vec( 0,-2,-1),3),
+            (Vec( 0,-1,-1),3),
+            (Vec( 0,-2, 6),2),
+            (Vec( 0,-1, 6),2),
+            (Vec( 5,-2,-1),3),
+            (Vec( 5,-1,-1),3),
+            (Vec( 5,-2, 6),2),
+            (Vec( 5,-1, 6),2),
+            (Vec( 6,-2, 0),5),
+            (Vec( 6,-1, 0),5),
+            (Vec( 6,-2, 5),5),
+            (Vec( 6,-1, 5),5)
+               ]
+        random.shuffle(locs)
+        signs = self.parent.parent.signs
+        random.shuffle(signs)
+        while (len(locs) >0 and len(signs) >0):
+            loc = locs.pop()
+            sign = signs.pop()
+            self.parent.parent.setblock(wstart+loc[0],
+                                        materials.WallSign, loc[1])
+            self.parent.parent.addsign(wstart+loc[0],
+                                       sign['s1'],
+                                       sign['s2'],
+                                       sign['s3'],
+                                       sign['s4'])
+
+
+class Entrance_old(Blank):
+    _name = 'entrance_old'
+
+    def placed (self):
+        # Default height of the doors into the entrance.
+        self.height = self.parent.parent.room_height
         # Height of the tower above entry.
         self.u = self.parent.parent.room_height*2
         self.inwater = False

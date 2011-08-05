@@ -267,7 +267,7 @@ def iterate_spiral(p1, p2, height):
     p = p1
     box = Box(p1.trans(0,-height,0), p2.x-p1.x, height, p2.z-p1.z)
     step = Vec(1,-1,0)
-    for y in xrange(height):
+    for y in xrange(int(height)):
         yield p
         if (box.containsPoint(p+step) is False):
             if (step == Vec(1,-1,0)):
