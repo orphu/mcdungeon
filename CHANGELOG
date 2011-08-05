@@ -11,13 +11,13 @@ v0.4.0 - ??/??/????
    * New entrance types: Square tower (ruined), ... (more)
 
    * Dungeon info is now saved with the map, allowing the tool to detect
-     dungeons generated in previous runs of the tool.
+     dungeons generated in previous runs.
 
    * New subcommand: add - adds new dungeons to the world.
 
-   * New subcommand: list - lists dungeons in the current world.
+   * New subcommand: list - lists dungeons in the world.
 
-   * New subcommand: delete - Deletes old dungeons from the map. Chunks
+   * New subcommand: delete - Deletes old dungeons from the world. Chunks
      containing dungeons are deleted and allowed to regenerate back to 
      their natural state. 
 
