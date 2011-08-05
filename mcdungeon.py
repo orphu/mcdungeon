@@ -210,7 +210,7 @@ def loadWorld(world_name):
     print 'Loaded world: %s (%d chunks)' % (world_name, world.chunkCount)
     return world
 
-def listDungeons(world):
+def listDungeons(world, expand_hard_mode=False):
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
@@ -234,10 +234,15 @@ def listDungeons(world):
             if (tileEntity["id"].value == "Sign" and
                 tileEntity["Text1"].value.startswith('[MCD]')):
                 (xsize, zsize, levels) = tileEntity["Text3"].value.split(',')
-                dungeons.append((int(tileEntity["x"].value),
-                                 int(tileEntity["z"].value),
-                                 int(zsize),
-                                 int(xsize)))
+                offset = 0
+                if (expand_hard_mode == True and
+                    tileEntity["Text4"].value.find('H:1') >= 0):
+                    offset = 5
+                dungeons.append((int(tileEntity["x"].value)-offset,
+                                 int(tileEntity["z"].value)+offset,
+                                 int(zsize)+offset,
+                                 int(xsize)+offset,
+                                 tileEntity["Text4"].value))
                 output += '| %9s | %24s | %7s | %6d | %11s |\n' % (
                  '%s %s'%(int(tileEntity["x"].value),int(tileEntity["z"].value)),
                  time.ctime(int(tileEntity["Text2"].value)),
@@ -269,7 +274,8 @@ if (args.command == 'interactive'):
     print '\nWorlds in your save directory:\n'
     for file in os.listdir(saveFileDir):
         file_path = os.path.join(saveFileDir, file)
-        if os.path.isdir(file_path):
+        if (os.path.isdir(file_path) and
+            os.path.isfile(file_path+'/level.dat')):
             print '   ',file
     w = raw_input('\nEnter the name of the world you wish to modify: ')
     args.world = os.path.join(saveFileDir, w)
@@ -378,6 +384,7 @@ if world == None:
 if (args.command == 'list'):
     # List the known dungeons and exit
     dungeons = listDungeons(world)
+    #print dungeons
     sys.exit()
 
 # Delete mode
@@ -412,7 +419,7 @@ if (args.command == 'delete'):
     # Build a list of chunks to delete from the dungeon info.
     chunks = []
     for d in to_delete:
-        p = (d[0]/16, d[1]/16)
+        p = [d[0]/16, d[1]/16]
         print 'Deleting dungeon at %d %d...'%(d[0], d[1])
         xsize = 0
         zsize = 0
@@ -420,6 +427,11 @@ if (args.command == 'delete'):
             if e[0] == d[0] and e[1] == d[1]:
                 xsize = e[2]
                 zsize = e[3]
+                #if e[4].find('H:1') >= 0:
+                #    p[0] -= 5
+                #    p[1] += 5
+                #    xsize += 5
+                #    zsize += 5
                 break
         for x in xrange(xsize):
             for z in xrange(zsize):
