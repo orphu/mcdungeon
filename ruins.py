@@ -192,7 +192,7 @@ class CircularTower(Blank):
         c3 = c1 + Vec(self.parent.parent.room_size-7,
                       0,
                       self.parent.parent.room_size-7)
-        height = self.parent.parent.room_height*2
+        height = int(self.parent.parent.room_height*1.5)
         #print 'ruin:', c1, c3, height
         for p in self.wallsf(c1, c3, height):
             self.parent.parent.setblock(p, materials._wall)
