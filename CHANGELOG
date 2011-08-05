@@ -1,3 +1,28 @@
+v0.4.0 - ??/??/????
+
+   * Optimizations to the location search algorithm. Major performance 
+     improvements when placing multiple dungeons. 
+
+   * Configurable structure detection. Chunks marked with player structures
+     will no longer be eligible for dungeon placement.
+
+   * Chunks that are too high will be excluded from searches. 
+
+   * New entrance types: Square tower (ruined), ... (more)
+
+   * Dungeon info is now saved with the map, allowing the tool to detect
+     dungeons generated in previous runs of the tool.
+
+   * New subcommand: add - adds new dungeons to the world.
+
+   * New subcommand: list - lists dungeons in the current world.
+
+   * New subcommand: delete - Deletes old dungeons from the map. Chunks
+     containing dungeons are deleted and allowed to regenerate back to 
+     their natural state. 
+
+   * Interactive mode supports add, list, and delete. 
+
 v0.3.1 - 07/24/2011
 
    * New cfg option: resetting_hall_pistons. Defaults to true. 
