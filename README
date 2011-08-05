@@ -22,7 +22,11 @@ and compgurusteve.
 CURRENT FEATURES:
 
    * Automatically finds a good location on a map based on range, size, and
-     depth parameters. 
+     depth parameters. Can detect player structures and try not to overwrite
+     them. 
+
+   * Dungeons can be removed from a map later and the landscape allowed to
+     regenerate. 
 
    * Can generate multiple of dungeons in a map, or try to fill the
      map with as many dungeons as possible.
@@ -38,9 +42,9 @@ CURRENT FEATURES:
    * A "hard mode" that will attempt to fill in nearby natural caves in an 
      attempt to concentrate random monster spawns inside the dungeon. 
 
-   * Places stairwells between levels, and a tower entrance with a
-     spiraling staircase. The tower height is configurable so it can be seen
-     for many chunks. 
+   * Places stairwells between levels, and a random entrance with a
+     spiraling staircase. Some entrances have a configurable height so it 
+     can be seen for many chunks. 
 
    * Optionally places a MultiVerse (Craftbukkit plugin) portal at
      the bottom of the dungeon to teleport players out to the world of
