@@ -38,8 +38,161 @@ class Blank(object):
         pass
 
 
+class RoundTowerEntrance(Blank):
+    _name = 'roundtowerentrance'
+    _ruin = False
+
+    def render (self):
+        # The room floor Y location
+        room_floor = self.parent.loc.y+self.parent.parent.room_height-3
+        # The height of one room
+        rheight = self.parent.parent.room_height
+        # Entrance Level
+        elev = room_floor - self.parent.parent.entrance.low_height
+        # Ground level
+        glev = room_floor - self.parent.parent.entrance.high_height
+        # Chest level
+        clev = glev - rheight
+        # Battlement level
+        blev = glev  - rheight * 2 * cfg.tower
+        maxlev = 127 - self.parent.parent.position.y
+        if -blev >= maxlev:
+            blev = -maxlev+2
+
+        # corner of the inner shaft
+        start = Vec(self.parent.loc.x+6,
+                    glev,
+                    self.parent.loc.z+6)
+        # Corner of the inner wall
+        wstart = start.trans(-1,0,-1)
+        # B Level is the upper battlements level
+        b1 = Vec(wstart.x-1, blev, wstart.z-1)
+        b2 = b1.trans(7,0,0)
+        b3 = b1.trans(7,0,7)
+        b4 = b1.trans(0,0,7)
+        # C level is the chest level
+        c1 = Vec(wstart.x-4, clev, wstart.z-4)
+        c2 = c1.trans(13,0,0)
+        c3 = c1.trans(13,0,13)
+        c4 = c1.trans(0,0,13)
+        # lower tower from ground up to chest level. 
+        #    The floor
+        for p in iterate_cylinder(Vec(c1.x, glev, c1.z),Vec(c3.x, elev+1, c3.z)):
+            self.parent.parent.setblock(p, materials._wall)
+        #    The ceiling
+        for p in iterate_cylinder(Vec(c1.x, clev+1, c1.z),Vec(c3.x, clev+1, c3.z)):
+            self.parent.parent.setblock(p, materials._wall)
+        #    Outer wall and airspace
+        for p in iterate_cylinder(c1.down(2),Vec(c3.x, glev, c3.z)):
+            self.parent.parent.setblock(p, materials.Air)
+        for p in iterate_tube(Vec(c1.x,elev,c1.z),
+                              Vec(c3.x,elev,c3.z),
+                              abs(elev-clev)):
+            self.parent.parent.setblock(p, materials._wall)
+        #    Battlements
+        for p in iterate_cube(Vec(0,0,0), Vec(5,0,5)):
+            if (((p.x+p.z)&1) == 1):
+                self.parent.parent.setblock(c1+p, materials.Air)
+                self.parent.parent.setblock(c2.trans(-p.x,p.y,p.z),
+                                            materials.Air)
+                self.parent.parent.setblock(c3.trans(-p.x,p.y,-p.z),
+                                            materials.Air)
+                self.parent.parent.setblock(c4.trans(p.x,p.y,-p.z),
+                                            materials.Air)
+        # Upper tower from chest level to battlement
+        for p in iterate_cylinder(b1,Vec(b3.x, clev, b3.z)):
+            self.parent.parent.setblock(p, materials._wall)
+        for p in iterate_cube(Vec(0,0,0), Vec(4,0,4)):
+            if (((p.x+p.z)&1) == 1):
+                self.parent.parent.setblock(b1+p, materials.Air)
+                self.parent.parent.setblock(b2.trans(-p.x,p.y,p.z),
+                                            materials.Air)
+                self.parent.parent.setblock(b3.trans(-p.x,p.y,-p.z),
+                                            materials.Air)
+                self.parent.parent.setblock(b4.trans(p.x,p.y,-p.z),
+                                            materials.Air)
+        # Chest level openings
+        # W/E
+        for p in iterate_cube(Vec(b1.x+3,clev,b1.z),
+                              Vec(b1.x+4,clev-2,b1.z+7)):
+                self.parent.parent.setblock(p, materials.Air)
+        # N/S 
+        for p in iterate_cube(Vec(b1.x,clev,b1.z+3),
+                              Vec(b1.x+7,clev-2,b1.z+4)):
+                self.parent.parent.setblock(p, materials.Air)
+        # Ground level openings
+        # W side
+        for p in iterate_cube(wstart.trans(2,0,0), wstart.trans(3,-2,-4)):
+                self.parent.parent.setblock(p, materials.Air)
+        # E side
+        for p in iterate_cube(wstart.trans(2,0,5), wstart.trans(3,-2,9)):
+                self.parent.parent.setblock(p, materials.Air)
+        # N side
+        for p in iterate_cube(wstart.trans(0,0,2), wstart.trans(-4,-2,3)):
+                self.parent.parent.setblock(p, materials.Air)
+        # S side
+        for p in iterate_cube(wstart.trans(5,0,2), wstart.trans(9,-2,3)):
+                self.parent.parent.setblock(p, materials.Air)
+        # Clear air space inside the stairwell shaft
+        for p in iterate_cube(Vec(wstart.x+1, elev+1, wstart.z+1),
+                              Vec(wstart.x+4, blev-2, wstart.z+4)):
+            self.parent.parent.setblock(p, materials.Air)
+        # Internal columns
+        for p in iterate_cube(Vec(b1.x+1, elev, b1.z+1),
+                              Vec(b1.x+1, clev, b1.z+1)):
+            self.parent.parent.setblock(p, materials.DoubleSlab)
+        for p in iterate_cube(Vec(b2.x-1, elev, b2.z+1),
+                              Vec(b2.x-1, clev, b2.z+1)):
+            self.parent.parent.setblock(p, materials.DoubleSlab)
+        for p in iterate_cube(Vec(b3.x-1, elev, b3.z-1),
+                              Vec(b3.x-1, clev, b3.z-1)):
+            self.parent.parent.setblock(p, materials.DoubleSlab)
+        for p in iterate_cube(Vec(b4.x+1, elev, b4.z-1),
+                              Vec(b4.x+1, clev, b4.z-1)):
+            self.parent.parent.setblock(p, materials.DoubleSlab)
+        # (re)draw the staircase
+        mat1 = materials.WoodenSlab
+        mat2 = materials.WoodPlanks
+        if random.randint(1,100) <= 50:
+            mat1 = materials.StoneSlab
+            mat2 = materials.DoubleSlab
+        for p in iterate_spiral(Vec(start.x,room_floor+4,start.z),
+                                Vec(start.x+4,room_floor+4,start.z+4),
+                                (room_floor-blev)*2):
+            mat = mat1
+            if ((p.y%2) == 0):
+                mat = mat2
+            self.parent.parent.setblock(Vec(p.x,
+                                        p.y/2,
+                                        p.z), mat)
+        # Supply chest
+        pos = Vec(b1.x, clev, b1.z-1)
+        self.parent.parent.setblock(pos, materials.Chest)
+        self.parent.parent.addchest(pos, 0)
+
+        # Ruin
+        if self._ruin == True:
+            ruinBlocks(b1.trans(0,rheight-1,0),
+                       b3.trans(0,rheight-1,0),
+                       rheight,
+                       self.parent.parent)
+        # Sandbar island
+        if (self.parent.parent.entrance.inwater is False):
+            return
+        d = 2
+        s1 = Vec(wstart.x-3, glev+1, wstart.z-3)
+        s3 = Vec(wstart.x+8, glev+1, wstart.z+8)
+        for y in xrange(rheight):
+            for p in iterate_disc(s1.trans(-d,y,-d),
+                                  s3.trans(d,y,d)):
+                if (p not in self.parent.parent.blocks):
+                    self.parent.parent.setblock(p, materials._sandbar)
+            d += 1
+
+
 class SquareTowerEntrance(Blank):
     _name = 'squaretowerentrance'
+    _ruin = False
 
     def render (self):
         # The room floor Y location
@@ -167,6 +320,12 @@ class SquareTowerEntrance(Blank):
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
 
+        # Ruin
+        if self._ruin == True:
+            ruinBlocks(b1.trans(0,rheight-1,0),
+                       b3.trans(0,rheight-1,0),
+                       rheight,
+                       self.parent.parent)
         # Sandbar island
         if (self.parent.parent.entrance.inwater is False):
             return
@@ -180,6 +339,13 @@ class SquareTowerEntrance(Blank):
                     self.parent.parent.setblock(p, materials._sandbar)
             d += 1
 
+class RuinedSquareTowerEntrance(SquareTowerEntrance):
+    _name = 'ruinedsquaretowerentrance'
+    _ruin = True
+
+class RuinedRoundTowerEntrance(RoundTowerEntrance):
+    _name = 'ruinedroundtowerentrance'
+    _ruin = True
 
 class CircularTower(Blank):
     _name = 'circulartower'
@@ -267,9 +433,10 @@ class Arches(Blank):
                     ruinBlocks(c1, c3, height, self.parent.parent)
 
 
-def ruinBlocks (p1, p2, height, dungeon):
+def ruinBlocks (p1, p2, height, dungeon, override=False):
     pn = perlin.SimplexNoise(256)
-    if (cfg.ruin_ruins == False):
+    if (override == True or
+        cfg.ruin_ruins == False):
         return
     for x in xrange(p1.x, p2.x+1):
         for z in xrange(p1.z, p2.z+1):
