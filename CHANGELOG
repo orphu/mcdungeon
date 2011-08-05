@@ -8,7 +8,11 @@ v0.4.0 - ??/??/????
 
    * Chunks that are too high will be excluded from searches. 
 
-   * New entrance types: Square tower (ruined), ... (more)
+   * New entrance types: Square tower (and ruined), round tower (and ruined),
+     (more...).
+
+   * Entrance stairwells will sometimes be wood, sometimes be slabs for a bit
+     more variety.
 
    * Dungeon info is now saved with the map, allowing the tool to detect
      dungeons generated in previous runs.
