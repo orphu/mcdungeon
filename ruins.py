@@ -15,14 +15,14 @@ class Blank(object):
 
     def __init__ (self, parent):
         self.parent = parent
-        self.pos = parent.pos
+        self.pos = copy(parent.pos)
         cx = (parent.parent.position.x + parent.loc.x) >>4
         cz = (parent.parent.position.z - parent.loc.z) >>4
         self.chunk = Vec(cx,0,cz)
         #print 'ruin chunk:', self.chunk
 
     def placed (self, world):
-        self.depth = self.parent.parent.good_chunks[self.chunk.x, self.chunk.z]
+        self.depth = self.parent.parent.good_chunks[(self.chunk.x, self.chunk.z)]
         self.vtrans = max(self.parent.parent.position.y-1, self.depth) - \
                 self.parent.parent.position.y
         #print 'ruin depth:', self.parent.parent.position.y, self.depth, -vtrans
@@ -36,6 +36,292 @@ class Blank(object):
 
     def render (self):
         pass
+
+class Ziggurat(Blank):
+    _name = 'ziggurat'
+
+    def setData(self):
+        # The Zigguarat will be 4x4 chunks.
+        # Figure out if we have to move West or North to fit.
+        xsize = self.parent.parent.xsize
+        zsize = self.parent.parent.zsize
+        self.spos = copy(self.pos)
+        while self.spos.x > xsize-4:
+            self.spos.x -= 1
+        while self.spos.z > zsize-4:
+            self.spos.z -= 1
+        # Now go through and override the ruins on any chunks we cover
+        # to be blank. 
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+3, 0, self.spos.z+3)):
+            if p == self.pos:
+                continue
+            blank = new('blank', self.parent.parent.rooms[p])
+            self.parent.parent.rooms[p].ruins = [blank]
+        # Find the low point in this region
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+3, 0, self.spos.z+3)):
+            cx = (self.parent.parent.position.x>>4) + p.x
+            cz = (self.parent.parent.position.z>>4) - p.z
+            self.depth = min(self.depth,
+                             self.parent.parent.good_chunks[(cx, cz)])
+        self.depth = max(self.depth, 62, self.parent.parent.position.y)
+        self.vtrans = self.depth - self.parent.parent.position.y + 1
+        self.loc = Vec(self.spos.x * self.parent.parent.room_size,
+                       -self.vtrans,
+                       self.spos.z * self.parent.parent.room_size)
+        # Figure out how high the entrances should be.
+        # min is 2, max is 24. 
+        cx = self.parent.parent.position.x>>4
+        cz = self.parent.parent.position.z>>4
+        world = self.parent.parent.world
+        # N side
+        (low1, high1) = findChunkDepths(Vec(cx, 0, cz-1), world)
+        (low2, high2) = findChunkDepths(Vec(cx, 0, cz-2), world)
+        self.ent_n = min(24, max(1, high1-self.depth, high2-self.depth)+1)
+        # S side
+        (low1, high1) = findChunkDepths(Vec(cx+3, 0, cz-1), world)
+        (low2, high2) = findChunkDepths(Vec(cx+3, 0, cz-2), world)
+        self.ent_s = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+        # E side
+        (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz-3), world)
+        (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz-3), world)
+        self.ent_e = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+        # W side
+        (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz), world)
+        (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz), world)
+        self.ent_w = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+
+    def render (self):
+        c1 = self.loc
+        c3 = c1 + Vec(self.parent.parent.room_size*4-1,
+                      0,
+                      self.parent.parent.room_size*4-1)
+        # corner of the inner shaft
+        start = Vec(self.parent.loc.x+5,
+                    c1.y,
+                    self.parent.loc.z+5)
+        # Walls and airspace of the pyramid
+        for y in xrange(29):
+            for p in iterate_cube(c1.trans(y+1,-y,y+1),
+                                        c3.trans(-y-1,-y,-y-1)):
+                self.parent.parent.setblock(p, materials.Air)
+            for p in iterate_four_walls(c1.trans(y,-y,y),
+                                        c3.trans(-y,-y,-y), 0):
+                self.parent.parent.setblock(p, materials.Cobblestone)
+        # Floor. From pyramid base to just above ceiling. 
+        #for p in iterate_cube(c1,
+        #                      Vec(c3.x, -1, c3.z)):
+        #    self.parent.parent.setblock(p, materials._wall)
+        for p in iterate_four_walls(c1,
+                                    c3, c1.y):
+            self.parent.parent.setblock(p, materials._wall)
+        # Cover the floor with sand
+        pn = perlin.SimplexNoise(256)
+        for p in iterate_cube(c1, c3):
+            d = ((Vec2f(p.x, p.z) - Vec2f(c1.x+32, c1.z+32)).mag()) / 64
+            n = (pn.noise3(p.x / 4.0, p.y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            if (n >= d+.20):
+                self.parent.parent.setblock(p, materials.Sand)
+            elif (n >= d+.10):
+                self.parent.parent.setblock(p, materials.Sandstone)
+            elif (n >= d):
+                self.parent.parent.setblock(p, materials.Gravel)
+            else:
+                self.parent.parent.setblock(p, materials.Cobblestone)
+        # Build internal ruins. 
+        for p in iterate_cube(Vec(0, 0, 0), Vec(3, 0, 3)):
+            wfunc = iterate_four_walls
+            if random.randint(1,100) <= 50:
+                wfunc = iterate_tube
+            pp1 = c1.trans(p.x*16+1, 0, p.z*16+1)
+            pp2 = pp1.trans(13, 0, 13)
+            height = 5
+            for j in wfunc(pp1, pp2, 0):
+                depth = (pn.noise3(j.x / 4.0,
+                                   0,
+                                   j.z / 4.0) + 1.0) / 2.0 * height
+                for x in iterate_cube(j, j.up(depth)):
+                    if (x in self.parent.parent.blocks and
+                        self.parent.parent.blocks[x].material == materials.Air):
+                        self.parent.parent.setblock(x, materials.Sandstone)
+
+        # Clean up the stairwell shaft. Clear the air, make a half step around
+        # it, extend the walls, and redraw the stairs. 
+        for p in iterate_cube(start, start.trans(5,-c1.y-1,5)):
+            self.parent.parent.setblock(p, materials.Air)
+        for p in iterate_four_walls(Vec(start.x, -1, start.z),
+                                    Vec(start.x+5, -1, start.z+5),-c1.y-2):
+            self.parent.parent.setblock(p, materials._wall)
+        for p in iterate_four_walls(start, start.trans(5,0,5),0):
+            self.parent.parent.setblock(p, materials.StoneSlab)
+        mat1 = materials.WoodenSlab
+        mat2 = materials.WoodPlanks
+        if random.randint(1,100) <= 0:
+            mat1 = materials.StoneSlab
+            mat2 = materials.DoubleSlab
+        for p in iterate_spiral(Vec(start.x+1,7,start.z+1),
+                                Vec(start.x+5,7,start.z+5),
+                                (abs(c1.y)+3)*2):
+            mat = mat1
+            if ((p.y%2) == 0):
+                mat = mat2
+            self.parent.parent.setblock(Vec(p.x,
+                                        0+int(p.y/2),
+                                        p.z), mat)
+        # Entrances.
+        # Draw stairs up the sides.
+        for y in xrange(29):
+            # North Side
+            # caps on either side
+            self.parent.parent.setblock(c1.trans(y,-y-1,29),
+                                        materials.SandstoneSlab)
+            self.parent.parent.setblock(c1.trans(y,-y-1,34),
+                                        materials.SandstoneSlab)
+            # draw different stuff depending on the height
+            # Go ahead and draw exterior stairs at every level.
+            # (we'll overwrite some below)
+            for p in iterate_cube(c1.trans(y, -y, 30),
+                                  c1.trans(y, -y, 33)):
+                self.parent.parent.setblock(p,
+                                            materials.StoneStairs, 0)
+                self.parent.parent.setblock(p.trans(1,0,0),
+                                            materials._wall, 0)
+            # Above floor, but below entry level, 
+            # draw the interior stairs and airspace.
+            if (y > 0 and y <= self.ent_n):
+                for p in iterate_cube(c1.trans(y, -y, 28),
+                                      c1.trans(y, -y, 35)):
+                    for x in xrange(2,6):
+                        self.parent.parent.setblock(p.trans(x,0,0),
+                                                    materials.Air, 0)
+                    self.parent.parent.setblock(p.trans(6,0,0),
+                                                materials.StoneStairs, 0)
+                    self.parent.parent.setblock(p.trans(7,0,0),
+                                                materials._wall, 0)
+            # At entry level, draw a platform floor. 
+            if (self.ent_n == y):
+                for p in iterate_cube(c1.trans(y+1, -y, 30),
+                                      c1.trans(y+8, -y, 33)):
+                    self.parent.parent.setblock(p, materials.Stone)
+            # Above the entry platform, draw some walls
+            if (y > self.ent_n and y < self.ent_n+4):
+                p = c1.trans(y, -y, 30)
+                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(1,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(0,0,2), materials.Air)
+                self.parent.parent.setblock(p.trans(1,0,2), materials.Air)
+                self.parent.parent.setblock(p.trans(0,0,3), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,0,3), materials.Cobblestone)
+            # Add a ceiling for the entryway.
+            if (y ==  self.ent_n+4):
+                p = c1.trans(y-3, -y, 30)
+                self.parent.parent.setblock(p.trans(1,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                p = c1.trans(y-3, -y, 33)
+                self.parent.parent.setblock(p.trans(1,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                for p in iterate_cube(c1.trans(y-3, -y, 30),
+                                      c1.trans(y+1, -y, 33)):
+                    self.parent.parent.setblock(p, materials.Cobblestone)
+
+
+            # South Side
+            self.parent.parent.setblock(c1.trans(63-y,-y-1,29),
+                                        materials.SandstoneSlab)
+            self.parent.parent.setblock(c1.trans(63-y,-y-1,34),
+                                        materials.SandstoneSlab)
+            for p in iterate_cube(c1.trans(63-y, -y, 30),
+                                  c1.trans(63-y, -y, 33)):
+                self.parent.parent.setblock(p,
+                                            materials.StoneStairs, 1)
+                self.parent.parent.setblock(p.trans(-1,0,0),
+                                            materials._wall, 0)
+            if (y > 0 and y <= self.ent_n):
+                for p in iterate_cube(c1.trans(63-y, -y, 28),
+                                      c1.trans(63-y, -y, 35)):
+                    for x in xrange(2,6):
+                        self.parent.parent.setblock(p.trans(-x,0,0),
+                                                    materials.Air, 0)
+                    self.parent.parent.setblock(p.trans(-6,0,0),
+                                                materials.StoneStairs, 1)
+                    self.parent.parent.setblock(p.trans(-7,0,0),
+                                                materials._wall, 0)
+            if (self.ent_n == y):
+                for p in iterate_cube(c1.trans(63-y-1, -y, 30),
+                                      c1.trans(63-y-8, -y, 33)):
+                    self.parent.parent.setblock(p, materials.Stone)
+            if (y > self.ent_n and y < self.ent_n+4):
+                p = c1.trans(63-y, -y, 30)
+                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(-1,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(-1,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(0,0,2), materials.Air)
+                self.parent.parent.setblock(p.trans(-1,0,2), materials.Air)
+                self.parent.parent.setblock(p.trans(0,0,3), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(-1,0,3), materials.Cobblestone)
+            if (y ==  self.ent_n+4):
+                p = c1.trans(63-y+3, -y, 30)
+                self.parent.parent.setblock(p.trans(-1,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                p = c1.trans(63-y+3, -y, 33)
+                self.parent.parent.setblock(p.trans(-1,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                for p in iterate_cube(c1.trans(63-y+3, -y, 30),
+                                      c1.trans(63-y-1, -y, 33)):
+                    self.parent.parent.setblock(p, materials.Cobblestone)
+
+            # West Side
+            self.parent.parent.setblock(c1.trans(29,-y-1,y),
+                                        materials.SandstoneSlab)
+            self.parent.parent.setblock(c1.trans(34,-y-1,y),
+                                        materials.SandstoneSlab)
+            for p in iterate_cube(c1.trans(30, -y, y),
+                                  c1.trans(33, -y, y)):
+                self.parent.parent.setblock(p, materials.StoneStairs, 3)
+                self.parent.parent.setblock(p.trans(0,0,1), materials._wall, 0)
+
+            # East Side
+            self.parent.parent.setblock(c1.trans(29,-y-1,63-y),
+                                        materials.SandstoneSlab)
+            self.parent.parent.setblock(c1.trans(34,-y-1,63-y),
+                                        materials.SandstoneSlab)
+            for p in iterate_cube(c1.trans(30, -y, 63-y),
+                                  c1.trans(33, -y, 63-y)):
+                self.parent.parent.setblock(p,
+                                            materials.StoneStairs, 2)
+                self.parent.parent.setblock(p.trans(0,0,-1),
+                                            materials._wall, 0)
+
+        # Topper
+        # Supports
+        self.parent.parent.setblock(c1.trans(29, -29, 29), materials.Sandstone)
+        self.parent.parent.setblock(c1.trans(29, -30, 29), materials.Sandstone)
+        self.parent.parent.setblock(c1.trans(34, -29, 29), materials.Sandstone)
+        self.parent.parent.setblock(c1.trans(34, -30, 29), materials.Sandstone)
+        self.parent.parent.setblock(c1.trans(29, -29, 34), materials.Sandstone)
+        self.parent.parent.setblock(c1.trans(29, -30, 34), materials.Sandstone)
+        self.parent.parent.setblock(c3.trans(-29, -29,-29), materials.Sandstone)
+        self.parent.parent.setblock(c3.trans(-29, -30,-29), materials.Sandstone)
+        # Roof
+        for p in iterate_cube(c1.trans(28, -31, 28),c3.trans(-28, -31, -28)):
+            self.parent.parent.setblock(p, materials.SandstoneSlab)
+        for p in iterate_cube(c1.trans(29, -28, 29),c3.trans(-29, -28, -29)):
+            self.parent.parent.setblock(p, materials.Stone)
+        for p in iterate_cube(c1.trans(32, -31, 32),c3.trans(-32, -28, -32)):
+            self.parent.parent.setblock(p, materials.Air)
+        # Supply chest
+        p = c1.trans(30, -29, 30)
+        self.parent.parent.setblock(p, materials.Chest)
+        self.parent.parent.addchest(p, 0)
+
 
 
 class RoundTowerEntrance(Blank):
