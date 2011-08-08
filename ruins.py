@@ -37,11 +37,11 @@ class Blank(object):
     def render (self):
         pass
 
-class Ziggurat(Blank):
-    _name = 'ziggurat'
+class StepPyramid(Blank):
+    _name = 'steppyramid'
 
     def setData(self):
-        # The Zigguarat will be 4x4 chunks.
+        # The StepPyramid will be 4x4 chunks.
         # Figure out if we have to move West or North to fit.
         xsize = self.parent.parent.xsize
         zsize = self.parent.parent.zsize
@@ -71,26 +71,26 @@ class Ziggurat(Blank):
                        -self.vtrans,
                        self.spos.z * self.parent.parent.room_size)
         # Figure out how high the entrances should be.
-        # min is 2, max is 24. 
+        # min is 2, max is 22. 
         cx = self.parent.parent.position.x>>4
         cz = self.parent.parent.position.z>>4
         world = self.parent.parent.world
         # N side
         (low1, high1) = findChunkDepths(Vec(cx, 0, cz-1), world)
         (low2, high2) = findChunkDepths(Vec(cx, 0, cz-2), world)
-        self.ent_n = min(24, max(1, high1-self.depth, high2-self.depth)+1)
+        self.ent_n = min(22, max(1, high1-self.depth, high2-self.depth)+1)
         # S side
         (low1, high1) = findChunkDepths(Vec(cx+3, 0, cz-1), world)
         (low2, high2) = findChunkDepths(Vec(cx+3, 0, cz-2), world)
-        self.ent_s = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+        self.ent_s = min(22,max(1, high1-self.depth, high2-self.depth)+1)
         # E side
         (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz-3), world)
         (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz-3), world)
-        self.ent_e = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+        self.ent_e = min(22,max(1, high1-self.depth, high2-self.depth)+1)
         # W side
         (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz), world)
         (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz), world)
-        self.ent_w = min(24,max(1, high1-self.depth, high2-self.depth)+1)
+        self.ent_w = min(22,max(1, high1-self.depth, high2-self.depth)+1)
 
     def render (self):
         c1 = self.loc
