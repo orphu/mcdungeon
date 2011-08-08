@@ -37,7 +37,8 @@ class MazeCell(object):
         self.state = 0
 
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels, good_chunks, args):
+    def __init__(self, xsize, zsize, levels, good_chunks, args, world):
+        self.world = world
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
         self.good_chunks = good_chunks

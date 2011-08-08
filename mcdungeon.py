@@ -637,7 +637,7 @@ while args.number is not 0:
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
         pos.z = (pos.z &~15)+15
-        dungeon = Dungeon(x, z, levels, good_chunks, args)
+        dungeon = Dungeon(x, z, levels, good_chunks, args, world)
         print 'Dungeon size: %d x %d x %d' % (z, x, levels)
         dungeon.position = pos
         if (args.bury is False):
@@ -654,7 +654,7 @@ while args.number is not 0:
     else:
         print "Searching for a suitable location..."
         while (located is False):
-            dungeon = Dungeon(x, z, levels, good_chunks, args)
+            dungeon = Dungeon(x, z, levels, good_chunks, args, world)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):
                 adjusted = False
