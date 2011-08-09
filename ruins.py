@@ -186,7 +186,7 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 0)
                 self.parent.parent.setblock(p.trans(1,0,0),
-                                            materials._wall, 0)
+                                            materials.Cobblestone, 0)
             # Above floor, but below entry level, 
             # draw the interior stairs and airspace.
             if (y > 0 and y <= self.ent_n):
@@ -198,7 +198,7 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(6,0,0),
                                                 materials.StoneStairs, 0)
                     self.parent.parent.setblock(p.trans(7,0,0),
-                                                materials._wall, 0)
+                                                materials.Cobblestone, 0)
             # At entry level, draw a platform floor. 
             if (self.ent_n == y):
                 for p in iterate_cube(c1.trans(y+1, -y, 30),
@@ -240,8 +240,8 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 1)
                 self.parent.parent.setblock(p.trans(-1,0,0),
-                                            materials._wall, 0)
-            if (y > 0 and y <= self.ent_n):
+                                            materials.Cobblestone, 0)
+            if (y > 0 and y <= self.ent_s):
                 for p in iterate_cube(c1.trans(63-y, -y, 28),
                                       c1.trans(63-y, -y, 35)):
                     for x in xrange(2,6):
@@ -250,12 +250,12 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(-6,0,0),
                                                 materials.StoneStairs, 1)
                     self.parent.parent.setblock(p.trans(-7,0,0),
-                                                materials._wall, 0)
-            if (self.ent_n == y):
+                                                materials.Cobblestone, 0)
+            if (self.ent_s == y):
                 for p in iterate_cube(c1.trans(63-y-1, -y, 30),
                                       c1.trans(63-y-8, -y, 33)):
                     self.parent.parent.setblock(p, materials.Stone)
-            if (y > self.ent_n and y < self.ent_n+4):
+            if (y > self.ent_s and y < self.ent_s+4):
                 p = c1.trans(63-y, -y, 30)
                 self.parent.parent.setblock(p, materials.Cobblestone)
                 self.parent.parent.setblock(p.trans(-1,0,0), materials.Cobblestone)
@@ -265,7 +265,7 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p.trans(-1,0,2), materials.Air)
                 self.parent.parent.setblock(p.trans(0,0,3), materials.Cobblestone)
                 self.parent.parent.setblock(p.trans(-1,0,3), materials.Cobblestone)
-            if (y ==  self.ent_n+4):
+            if (y ==  self.ent_s+4):
                 p = c1.trans(63-y+3, -y, 30)
                 self.parent.parent.setblock(p.trans(-1,1,0), materials.Cobblestone)
                 self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
@@ -286,7 +286,44 @@ class StepPyramid(Blank):
             for p in iterate_cube(c1.trans(30, -y, y),
                                   c1.trans(33, -y, y)):
                 self.parent.parent.setblock(p, materials.StoneStairs, 3)
-                self.parent.parent.setblock(p.trans(0,0,1), materials._wall, 0)
+                self.parent.parent.setblock(p.trans(0,0,1),
+                                            materials.Cobblestone, 0)
+            if (y > 0 and y <= self.ent_w):
+                for p in iterate_cube(c1.trans(28, -y, y),
+                                      c1.trans(35, -y, y)):
+                    for x in xrange(2,6):
+                        self.parent.parent.setblock(p.trans(0,0,x),
+                                                    materials.Air, 0)
+                    self.parent.parent.setblock(p.trans(0,0,6),
+                                                materials.StoneStairs, 3)
+                    self.parent.parent.setblock(p.trans(0,0,7),
+                                                materials.Cobblestone, 0)
+            if (self.ent_w == y):
+                for p in iterate_cube(c1.trans(30, -y, y+1),
+                                      c1.trans(33, -y, y+8)):
+                    self.parent.parent.setblock(p, materials.Stone)
+            if (y > self.ent_w and y < self.ent_w+4):
+                p = c1.trans(30, -y, y)
+                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,0,0), materials.Air)
+                self.parent.parent.setblock(p.trans(1,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(2,0,0), materials.Air)
+                self.parent.parent.setblock(p.trans(2,0,1), materials.Air)
+                self.parent.parent.setblock(p.trans(3,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(3,0,1), materials.Cobblestone)
+            if (y ==  self.ent_w+4):
+                p = c1.trans(30, -y, y-3)
+                self.parent.parent.setblock(p.trans(0,1,1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                p = c1.trans(33, -y, y-3)
+                self.parent.parent.setblock(p.trans(0,1,1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                for p in iterate_cube(c1.trans(30, -y, y-3),
+                                      c1.trans(33, -y, y+1)):
+                    self.parent.parent.setblock(p, materials.Cobblestone)
 
             # East Side
             self.parent.parent.setblock(c1.trans(29,-y-1,63-y),
@@ -298,7 +335,43 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 2)
                 self.parent.parent.setblock(p.trans(0,0,-1),
-                                            materials._wall, 0)
+                                            materials.Cobblestone, 0)
+            if (y > 0 and y <= self.ent_e):
+                for p in iterate_cube(c1.trans(28, -y, 63-y),
+                                      c1.trans(35, -y, 63-y)):
+                    for x in xrange(2,6):
+                        self.parent.parent.setblock(p.trans(0,0,-x),
+                                                    materials.Air, 0)
+                    self.parent.parent.setblock(p.trans(0,0,-6),
+                                                materials.StoneStairs, 2)
+                    self.parent.parent.setblock(p.trans(0,0,-7),
+                                                materials.Cobblestone, 0)
+            if (self.ent_e == y):
+                for p in iterate_cube(c1.trans(30, -y, 63-y-1),
+                                      c1.trans(33, -y, 63-y-8)):
+                    self.parent.parent.setblock(p, materials.Stone)
+            if (y > self.ent_e and y < self.ent_e+4):
+                p = c1.trans(30, -y, 63-y)
+                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,-1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,0,0), materials.Air)
+                self.parent.parent.setblock(p.trans(1,0,-1), materials.Air)
+                self.parent.parent.setblock(p.trans(2,0,0), materials.Air)
+                self.parent.parent.setblock(p.trans(2,0,-1), materials.Air)
+                self.parent.parent.setblock(p.trans(3,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(3,0,-1), materials.Cobblestone)
+            if (y ==  self.ent_e+4):
+                p = c1.trans(30, -y, 63-y+3)
+                self.parent.parent.setblock(p.trans(0,1,-1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                p = c1.trans(33, -y, 63-y+3)
+                self.parent.parent.setblock(p.trans(0,1,-1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                for p in iterate_cube(c1.trans(30, -y, 63-y+3),
+                                      c1.trans(33, -y, 63-y-1)):
+                    self.parent.parent.setblock(p, materials.Cobblestone)
 
         # Topper
         # Supports
