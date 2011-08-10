@@ -27,6 +27,9 @@ v0.4.0 - ??/??/????
 
    * Interactive mode supports add, list, and delete. 
 
+   * Added --dir option for interactive mode. Use this to override the
+    default path to your minecraft save directory.
+
 v0.3.1 - 07/24/2011
 
    * New cfg option: resetting_hall_pistons. Defaults to true. 

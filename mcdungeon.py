@@ -75,6 +75,10 @@ parser_inter.add_argument('-e', '--entrance',
                     type=int,
                     metavar=('Z', 'X'),
                     help='Provide an offset for the entrance in chunks')
+parser_inter.add_argument('--dir',
+                          dest='dir',
+                          metavar='SAVEDIR',
+                          help='Override the default map directory.')
 
 # Add subcommand parser 
 parser_add = subparsers.add_parser('add', help='Add new dungeons.')
@@ -268,6 +272,8 @@ if (args.command == 'interactive'):
 
     # Pick a map
     saveFileDir = mclevel.saveFileDir
+    if args.dir is not None:
+        saveFileDir = args.dir
     print '\nYour save directory is:\n', saveFileDir
     if (os.path.isdir(saveFileDir) == False):
         sys.exit('\nI cannot find your save directory! Aborting!')
