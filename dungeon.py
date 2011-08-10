@@ -1590,22 +1590,8 @@ class Dungeon (object):
             ent['x'].value = x
             ent['y'].value = y
             ent['z'].value = z
-            # Load the chunk.
-            chunk_z = z>>4
-            chunk_x = x>>4
-            xInChunk = x & 0xf
-            zInChunk = z & 0xf
-            # get the chunk
-            if (world.containsChunk(chunk_x, chunk_z)):
-                chunk = world.getChunk(chunk_x, chunk_z)
-            else:
-                print 'Whoops! Tile entity in nonexistent chunk!',
-                print 'crd: (%d, %d) chk: (%d, %d)'%(x, z, chunk_x, chunk_z)
-                continue
-            # copy the ent to the chunk
-            chunk.TileEntities.append(ent)
-            #print 'Copied entity:',ent['id'].value, ent['x'].value, ent['y'].value, ent['z'].value
-            changed_chunks.add(chunk)
+            # Place the ent!
+            world.addTileEntity(ent)
         # Mark changed chunks so pymclevel knows to recompress/relight them.
         print 'Marking dirty chunks...'
         num = len(changed_chunks)
