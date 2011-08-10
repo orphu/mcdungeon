@@ -427,11 +427,12 @@ if (args.command == 'delete'):
             if e[0] == d[0] and e[1] == d[1]:
                 xsize = e[2]
                 zsize = e[3]
-                #if e[4].find('H:1') >= 0:
-                #    p[0] -= 5
-                #    p[1] += 5
-                #    xsize += 5
-                #    zsize += 5
+                # Hard mode. Delete all chunks.
+                if e[4].find('H:1') >= 0:
+                    p[0] -= 5
+                    p[1] += 5
+                    xsize += 10
+                    zsize += 10
                 break
         for x in xrange(xsize):
             for z in xrange(zsize):
@@ -604,8 +605,9 @@ if (cfg.offset is None or cfg.offset is ''):
     pm.set_complete()
 
     # Find old dungeons
-    old_dungeons = listDungeons(world)
+    old_dungeons = listDungeons(world, expand_hard_mode=True)
     for d in old_dungeons:
+        if args.debug: print 'old dungeon:', d
         p = (d[0]/16, d[1]/16)
         for x in xrange(int(d[2])):
             for z in xrange(int(d[3])):
@@ -775,9 +777,10 @@ while args.number is not 0:
 
 if (len(dungeons) == 0):
     print 'No dungeons were generated!'
-    print 'You may have requested too deep or too large a dungeon, or'
-    print 'your allowed spawn region is too small.'
-    print 'Check your settings in the config file.'
+    print 'You may have requested too deep or too large a dungeon, or your '
+    print 'allowed spawn region is too small. If using hard mode, remember '
+    print 'to add 10 chunks in each direction to the size of your dungeon.'
+    print 'Check min_dist, max_dist, and hard_mode settings in your config.'
     sys.exit(1)
 
 # Relight

@@ -185,15 +185,24 @@ class Dungeon (object):
 
         if self.args.debug: print 'Selecting a location...'
         all_chunks = set(positions.keys())
+        # Offset is hard mode. Expand the size of the dungeon if hard_mode is
+        # set. When recording the position, we'll center the dungeon in this
+        # area.
+        offset = 0
+        if cfg.hard_mode == True:
+            offset = 10
         for p, d in sorted_p:
+            if self.args.debug: print 'Checking: ', p
             d_chunks = set()
-            for x in xrange(self.xsize):
-                for z in xrange(self.zsize):
+            for x in xrange(self.xsize+offset):
+                for z in xrange(self.zsize+offset):
                     d_chunks.add((p[0]+x, p[1]-z))
             if d_chunks.issubset(all_chunks):
-                self.position = Vec(p[0]*self.room_size,
+                if self.args.debug: print 'Found: ', p
+                self.position = Vec((p[0]+(offset/2))*self.room_size,
                                     0,
-                                    p[1]*self.room_size+15)
+                                    (p[1]-(offset/2))*self.room_size+15)
+                if self.args.debug: print 'Final: ', self.position
                 self.worldmap(world)
                 return self.bury(world)
         return False
@@ -225,12 +234,15 @@ class Dungeon (object):
 
         sx = self.position.x/self.room_size
         sz = self.position.z/self.room_size
+        if self.args.debug: print 'spos:', Vec(sx, 0, sz)
         d_box = Box(Vec(sx, 0, sz-self.zsize+1), self.xsize, 128, self.zsize)
 
         for x in xrange(map_min_x-1, map_max_x+2):
             for z in xrange(map_max_z+1, map_min_z-2, -1):
                 if (Vec(x,0,z) == spawn_chunk):
                     sys.stdout.write('SS')
+                elif (x == 0 and z == 0):
+                    sys.stdout.write('00')
                 elif (Vec(x,0,z) == Vec(sx, 0, sz)):
                     sys.stdout.write('XX')
                 elif (d_box.containsPoint(Vec(x,64,z))):
@@ -1491,8 +1503,8 @@ class Dungeon (object):
             num = (self.zsize+10) * (self.xsize+10)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Filling in caves:')
-            for z in xrange((self.position.z>>4)-self.zsize-5,
-                            (self.position.z>>4)+5):
+            for z in xrange((self.position.z>>4)-self.zsize-4,
+                            (self.position.z>>4)+6):
                 for x in xrange((self.position.x>>4)-5,
                                 (self.position.x>>4)+self.xsize+5):
                     pm.update_left(num)
@@ -1502,6 +1514,7 @@ class Dungeon (object):
                         chunk = world.getChunk(x, z)
                         miny = self.good_chunks[(x,z)]
                         air = ( chunk.Blocks[:,:,0:miny] == 0)
+                        #air = ( chunk.Blocks[1:14,1:14,0:127] == 0)
                         chunk.Blocks[air] = materials._floor.val
                         changed_chunks.add(chunk)
                         del(self.good_chunks[(x,z)])
