@@ -2,6 +2,7 @@ import random
 import math
 import re
 import sys
+import numpy
 from copy import *
 from itertools import *
 from pymclevel import mclevel, nbt
@@ -498,3 +499,10 @@ def enum(*sequential, **named):
         1'''
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
+
+def distribute(blocks, ymin, ymax, chance, material):
+    '''Ditributes a material throughthe strata of a given array'''
+    view = blocks[:,:,ymin:ymax]
+    for i,v in numpy.ndenumerate(view):
+        if random.uniform(0.0, 100.0) <= chance:
+            view[i] = material.val
