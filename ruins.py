@@ -223,12 +223,19 @@ class StepPyramid(Blank):
             else:
                 self.parent.parent.setblock(p, materials.Cobblestone)
         # Build internal ruins. 
+        cchance =80
         for p in iterate_cube(Vec(0, 0, 0), Vec(3, 0, 3)):
             wfunc = iterate_four_walls
             if random.randint(1,100) <= 50:
                 wfunc = iterate_tube
             pp1 = c1.trans(p.x*16+1, 0, p.z*16+1)
             pp2 = pp1.trans(13, 0, 13)
+            # place a chest here
+            if random.randint(1,100) <= cchance:
+                cchance /= 5
+                cp = pp1.trans(3,-1,3)
+                self.parent.parent.setblock(cp, materials.Chest)
+                self.parent.parent.addchest(cp, 0)
             height = 5
             for j in wfunc(pp1, pp2, 0):
                 depth = (pn.noise3(j.x / 4.0,
