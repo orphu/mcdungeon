@@ -342,9 +342,10 @@ if (args.command == 'interactive'):
 
     # Pick a mode
     print '\nChoose an action:\n-----------------\n'
-    print '\t[a] Add new dungeon(s) to the map.'
+    print '\t[a] Add new dungeon(s) to this map.'
     print '\t[l] List dungeons already in this map.'
     print '\t[d] Delete dungeons from this map.'
+    print '\t[r] Regenerate a dungeon in this map.'
     command = raw_input('\nEnter choice or q to quit: ')
 
     if command == 'a':
@@ -403,6 +404,49 @@ if (args.command == 'interactive'):
         #    args.html = world
         #    args.force = True
         args.write = True
+    elif command == 'r':
+        args.command = 'regenerate'
+        # Pick a config
+        configDir = os.path.join(sys.path[0], 'configs')
+        if (os.path.isdir(configDir) == False):
+            configDir = 'configs'
+        if (os.path.isdir(configDir) == False):
+            sys.exit('\nI cannot find your configs directory! Aborting!')
+        print '\nConfigurations in your configs directory:\n'
+        for file in os.listdir(configDir):
+            file_path = os.path.join(configDir, file)
+            file = file.replace('.cfg', '')
+            if (os.path.isfile(file_path) and
+               file_path.endswith('.cfg')):
+                print '   ',file
+        print '\nEnter the name of the configuration you wish to use.'
+        config = raw_input('(leave blank for default): ')
+        if (config == ''):
+            config = 'default'
+        args.config = str(config)+'.cfg'
+        cfg.Load(args.config)
+
+        args.dungeon = None
+        world = loadWorld(args.world)
+        dungeons = listDungeons(world)
+        if len(dungeons) == 0:
+            sys.exit()
+        print 'Choose a dungeon to regenerate:\n-------------------------------\n'
+        for i in xrange(len(dungeons)):
+            print '\t[%d] Dungeon at %d %d.'%(i+1,
+                                              dungeons[i][0],
+                                              dungeons[i][1])
+        while (args.dungeon == None):
+            d = raw_input('\nEnter choice, or q to quit: ')
+            if d.isdigit() and int(d) > 0 and int(d) <= len(dungeons):
+                d = int(d)
+                args.dungeon = [dungeons[d-1][0], dungeons[d-1][1]]
+            elif d == 'q':
+                print 'Quitting...'
+                sys.exit()
+            else:
+                print '"%s" is not a valid choice!'%d
+
     elif command == 'l':
         args.command = 'list'
     elif command == 'd':

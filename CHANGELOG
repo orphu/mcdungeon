@@ -24,7 +24,7 @@ v0.4.0 - ??/??/????
    * New subcommand: delete - Deletes old dungeons from the world. Chunks
      containing dungeons are deleted and allowed to regenerate back to 
      their natural state. (you need to load the map into Minecraft for the
-     chunks to be regnerated)
+     chunks to be regenerated)
 
    * New subcommand: regenerate - Regenerates dungeons in place. (with a few
      caveats) Dungeons will have a new maze layout, new rooms, restocked
@@ -42,12 +42,12 @@ v0.4.0 - ??/??/????
        this is because the area underground is refilled with stone and ores,
        blocking off any natural caves that may have connected. 
 
-     - You cannot use hard mode on regnerated dungeons. 
+     - You cannot use hard mode on regenerated dungeons. 
 
-   * Interactive mode supports add, list, and delete. 
+   * Interactive mode supports add, list, delete, and regenerate.
 
    * Added --dir option for interactive mode. Use this to override the
-    default path to your minecraft save directory.
+    default path to your Minecraft save directory.
 
 v0.3.1 - 07/24/2011
 
