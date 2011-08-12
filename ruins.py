@@ -148,6 +148,7 @@ class StepPyramid(Blank):
 
         # Clean up the stairwell shaft. Clear the air, make a half step around
         # it, extend the walls, and redraw the stairs. 
+        self.parent.parent.entrance.height = abs(-c1.y-2)+2
         for p in iterate_cube(start, start.trans(5,-c1.y-1,5)):
             self.parent.parent.setblock(p, materials.Air)
         for p in iterate_four_walls(Vec(start.x, -1, start.z),
@@ -510,6 +511,7 @@ class RoundTowerEntrance(Blank):
                               Vec(b4.x+1, clev, b4.z-1)):
             self.parent.parent.setblock(p, materials.DoubleSlab)
         # (re)draw the staircase
+        self.parent.parent.entrance.height = abs(room_floor-elev-1)
         mat1 = materials.WoodenSlab
         mat2 = materials.WoodPlanks
         if random.randint(1,100) <= 50:
@@ -660,6 +662,7 @@ class SquareTowerEntrance(Blank):
         for p in iterate_cube(wstart.trans(5,0,2), wstart.trans(6,-3,3)):
                 self.parent.parent.setblock(p, materials.Air)
         # (re)draw the staircase
+        self.parent.parent.entrance.height = abs(room_floor-elev-1)
         mat1 = materials.WoodenSlab
         mat2 = materials.WoodPlanks
         if random.randint(1,100) <= 50:

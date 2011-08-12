@@ -1519,6 +1519,61 @@ class Dungeon (object):
                         changed_chunks.add(chunk)
                         del(self.good_chunks[(x,z)])
             pm.set_complete()
+        # Regeneration
+        if self.args.command == 'regenerate':
+            num = (self.zsize) * (self.xsize)
+            pm = pmeter.ProgressMeter()
+            pm.init(num, label='Regenerating resources/chests:')
+            for z in xrange((self.position.z>>4)-self.zsize+1,
+                             (self.position.z>>4)+1):
+                for x in xrange(self.position.x>>4,
+                                 (self.position.x>>4)+self.xsize):
+                    pm.update_left(num)
+                    num -= 1
+                    p = Vec(x,0,z)
+                    chunk = world.getChunk(x, z)
+                    # Repopulate any above ground chests
+                    for tileEntity in chunk.TileEntities:
+                        if (tileEntity["id"].value == "Chest"):
+                            p = Vec(0,0,0)
+                            for name, tag in tileEntity.items():
+                                if (name == 'x'):
+                                    p.x = int(tag.value) - self.position.x
+                                if (name == 'y'):
+                                    p.y = self.position.y - int(tag.value)
+                                if (name == 'z'):
+                                    p.z = self.position.z - int(tag.value)
+                            if p.y < 0:
+                                self.addchest(p, 0)
+                    # Empty the tile entities from this chunk
+                    chunk.TileEntities.value[:] = []
+                    # Fake some ores. First fill with Stone (id=1) and then pick
+                    # some random ones based on known ore distributions to fill
+                    # in ores.
+                    # Stone
+                    chunk.Blocks[:,:,0:self.position.y] = materials.Stone.val
+                    # Coal. 1% between 5 and 60
+                    distribute(chunk, 5, min(self.position.y, 60),
+                               1, materials.CoalOre)
+                    ## Iron. .6% between 5 and 55
+                    distribute(chunk, 5, min(self.position.y, 55),
+                               .6, materials.IronOre)
+                    ## Redstone. .8% between 5 and 20
+                    distribute(chunk, 5, min(self.position.y, 20),
+                               .8, materials.RedStoneOre)
+                    ## Gold. .1% between 5 and 35
+                    distribute(chunk, 5, min(self.position.y, 35),
+                               .1, materials.GoldOre)
+                    ## Lapis. .1% between 5 and 35
+                    distribute(chunk, 5, min(self.position.y, 35),
+                               .1, materials.LapisOre)
+                    ## Diamond. .1% between 5 and 20
+                    distribute(chunk, 5, min(self.position.y, 20),
+                               .1, materials.DiamondOre)
+                    ## Bedrock. 60% between 0 and 4
+                    distribute(chunk, 0, min(self.position.y, 4),
+                               60, materials.Bedrock)
+            pm.set_complete()
         # Blocks
         pm = pmeter.ProgressMeter()
         pm.init(num_blocks, label='Writing block buffer:')

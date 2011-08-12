@@ -44,7 +44,7 @@ class Entrance(Blank):
         # Walls
         for p in iterate_four_walls(wstart,
                                     wstart.trans(5,0,5),
-                                    self.height-1):
+                                    self.height):
             self.parent.parent.setblock(p, materials._wall)
         # Lower level openings
         # W side
@@ -62,7 +62,7 @@ class Entrance(Blank):
         # Draw the staircase
         for p in iterate_spiral(Vec(0,0,0),
                                 Vec(4,0,4),
-                                self.height*2):
+                                self.height*2+2):
             mat = materials.StoneSlab
             if ((p.y%2) == 1):
                 mat = materials.DoubleSlab

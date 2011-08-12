@@ -187,6 +187,56 @@ parser_del.add_argument('-a', '--all',
                     action='store_true',
                     help='Delete all known dungeons. Overrides -d.')
 
+# Regnerate subcommand parser
+parser_regen= subparsers.add_parser('regenerate',
+                                    help='Regenerate dungeons in a map.')
+parser_regen.set_defaults(command='regenerate')
+parser_regen.add_argument('world',
+                    metavar='SAVEDIR',
+                    help='Target world (path to save directory)')
+parser_regen.add_argument('-d', '--dungeon',
+                    metavar=('X', 'Z'),
+                    nargs=2,
+                    required=True,
+                    dest='dungeon',
+                    type=int,
+                    help='The X Z coordinates of a dungeon to regenerate. \
+                        NOTE: These will be rounded to the nearest chunk. \
+                        Only one dungeon at a time can be specified.')
+parser_regen.add_argument('-c', '--config',
+                    dest='config',
+                    metavar='CFGFILE',
+                    default='default.cfg',
+                    help='Alternate config file. Default: default.cfg')
+parser_regen.add_argument('--debug',
+                    action='store_true',
+                    dest='debug',
+                    help='Provide additional debug info')
+parser_regen.add_argument('--html',
+                    dest='html',
+                    metavar='BASENAME',
+                    help='Output html versions of the dungeon. This \
+                    produces one file per level of the form \
+                    BASENAME-(level number).html')
+parser_regen.add_argument('--force',
+                    action='store_true',
+                    dest='force',
+                    help='Force overwriting of html output files')
+parser_regen.add_argument('-t','--term',
+                    type=int,dest='term',
+                    metavar='FLOOR',
+                    help='Print a text version of a given floor to the \
+                    terminal')
+parser_regen.add_argument('--skip-relight',
+                    action='store_true',
+                    dest='skiprelight',
+                    help='Skip relighting the level')
+#parser_regen.add_argument('-a', '--all',
+#                    dest='all',
+#                    action='store_true',
+#                    help='Regenerate all known dungeons. Overrides -d.')
+
+
 # Parse the args
 args = parser.parse_args()
 
@@ -218,15 +268,15 @@ def listDungeons(world, expand_hard_mode=False):
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
-    output += '+-----------+--------------------------+---------+--------+-------------+\n'
-    output += '| %9s | %24s | %7s | %6s | %11s |\n' % (
+    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
+    output += '| %9s | %24s | %7s | %6s | %17s |\n' % (
         'Position',
         'Date Generated',
         'Size',
         'Levels',
         'Options'
     )
-    output += '+-----------+--------------------------+---------+--------+-------------+\n'
+    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     pm = pmeter.ProgressMeter()
     count = world.chunkCount
     pm.init(count, label='Scanning world:')
@@ -246,8 +296,12 @@ def listDungeons(world, expand_hard_mode=False):
                                  int(tileEntity["z"].value)+offset,
                                  int(zsize)+offset,
                                  int(xsize)+offset,
-                                 tileEntity["Text4"].value))
-                output += '| %9s | %24s | %7s | %6d | %11s |\n' % (
+                                 tileEntity["Text4"].value,
+                                 int(levels),
+                                 int(tileEntity["x"].value),
+                                 int(tileEntity["y"].value),
+                                 int(tileEntity["z"].value)))
+                output += '| %9s | %24s | %7s | %6d | %17s |\n' % (
                  '%s %s'%(int(tileEntity["x"].value),int(tileEntity["z"].value)),
                  time.ctime(int(tileEntity["Text2"].value)),
                  '%sx%s'%(xsize, zsize),
@@ -256,7 +310,7 @@ def listDungeons(world, expand_hard_mode=False):
                 )
         chunk.unload()
     pm.set_complete()
-    output += '+-----------+--------------------------+---------+--------+-------------+\n'
+    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     if len(dungeons) > 0:
         print output
     else:
@@ -380,7 +434,7 @@ if (args.command == 'interactive'):
     else:
         print 'Quitting...'
         sys.exit()
-elif(args.command == 'add'):
+elif(args.command == 'add' or args.command == 'regenerate'):
     cfg.Load(args.config)
 
 if world == None:
@@ -452,7 +506,59 @@ if (args.command == 'delete'):
     world.saveInPlace()
     sys.exit()
 
-# Everything below is add mode
+# Regenerate mode
+if (args.command == 'regenerate'):
+    # Get a list of known dungeons and their size.
+    if dungeons == None:
+        dungeons = listDungeons(world)
+    # No dungeons. Exit.
+    if len(dungeons) == 0:
+        sys.exit()
+    # A list of existing dungeon positions for convenience.
+    info = None
+    # Find our dungeon
+    d = args.dungeon
+    for e in dungeons:
+        if (d[0] == e[0] and d[1] == e[1]):
+            info = e
+    if info == None:
+        sys.exit('Unable to locate dungeon at %d %d.'%(d[0], d[1]))
+    # Build out our parameters
+    # Just build one dungeon
+    args.number = 1
+    # No seed
+    args.seed = None
+    # size and levels
+    args.x = str(info[2])
+    args.z = str(info[3])
+    args.levels = str(info[5])
+    # Location
+    cfg.offset = '%d %d %d'%(info[6], info[7], info[8])
+    args.offset = None
+    # Don't bury
+    args.bury = False
+    # Let's not bother with hard mode
+    # override it from the config
+    cfg.hard_mode = False
+    # Entrance offset
+    m = re.search('E:(\d+),(\d+)', info[4])
+    args.entrance = [int(m.group(1)), int(m.group(2))]
+    # Entrance height
+    m = re.search('T:(..)', info[4])
+    args.entrance_height = int(m.group(1), 16)
+    # Write flag
+    args.write = True
+    #print 'offset:', cfg.offset
+    #print 'size:', args.z, args.x, args.levels
+    #print 'bury:', args.bury
+    #print 'hard mode:', cfg.hard_mode
+    #print 'entrance:', args.entrance
+    # From here, we just go through the add process with the exception that we
+    # do not generate ruins.
+    print 'Regenerating dungeon at', cfg.offset, '...'
+
+
+# Everything below is add/regen mode
 
 # Load lewts
 loottable.Load()
@@ -700,10 +806,13 @@ while args.number is not 0:
         print "Generating features..."
         dungeon.genfeatures()
 
-        print "Generating ruins..."
-        dungeon.genruins(world)
+        if args.command != 'regenerate':
+            print "Generating ruins..."
+            dungeon.genruins(world)
+            dungeon.setentrance(world)
+        else:
+            dungeon.entrance.height = args.entrance_height
 
-        dungeon.setentrance(world)
 
         dungeon.renderrooms()
 
@@ -739,7 +848,8 @@ while args.number is not 0:
             flags += '1'
         else:
             flags += '0'
-        flags += ';E:%d,%d'%(dungeon.entrance_pos.x, dungeon.entrance_pos.z)
+        flags += ';E:%d,%d'%(dungeon.entrance_pos.z, dungeon.entrance_pos.x)
+        flags += ';T:%.2x'%dungeon.entrance.height
         dungeon.setblock(Vec(0,0,0), materials.WallSign, 4)
         dungeon.addsign(Vec(0,0,0),
                         '[MCD]'+__version__,
