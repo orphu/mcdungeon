@@ -500,9 +500,11 @@ def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
 
-def distribute(blocks, ymin, ymax, chance, material):
+def distribute(chunk, ymin, ymax, chance, material):
     '''Ditributes a material throughthe strata of a given array'''
-    view = blocks[:,:,ymin:ymax]
+    view = chunk.Blocks[:,:,ymin:ymax]
+    viewd = chunk.Data[:,:,ymin:ymax]
     for i,v in numpy.ndenumerate(view):
         if random.uniform(0.0, 100.0) <= chance:
             view[i] = material.val
+            viewd[i] = 0
