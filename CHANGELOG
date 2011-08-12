@@ -9,7 +9,7 @@ v0.4.0 - ??/??/????
    * Chunks that are too high will be excluded from searches. 
 
    * New entrance types: Square tower (and ruined), round tower (and ruined),
-     step pyramid, (more)...
+     step pyramid, and evil runestones.
 
    * Entrance stairwells will sometimes be wood, sometimes be slabs for a bit
      more variety.

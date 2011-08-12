@@ -37,6 +37,99 @@ class Blank(object):
     def render (self):
         pass
 
+class EvilRunestones(Blank):
+    _name = 'evilrunestones'
+
+    def render(self):
+        # For most of this one, we render directly to the chunk structure.
+        # This works out better in the end.
+        size = self.parent.parent.room_size
+        height = int(self.parent.parent.room_height*cfg.tower)
+        p = self.loc
+        # This chunk
+        cx = (self.parent.parent.position.x + self.parent.loc.x) >>4
+        cz = (self.parent.parent.position.z - self.parent.loc.z) >>4
+        chunk = self.parent.parent.world.getChunk(cx,cz)
+        # dungeon y
+        dy = self.parent.parent.position.y
+        # Noise function
+        pn = perlin.SimplexNoise(256)
+        # Replacement setblock function. 
+        def sb(p, mat, chunk=chunk):
+            chunk.Blocks[p.x,p.z,p.y] = mat.val
+            chunk.Data[p.x,p.z,p.y] = mat.data
+
+        # list of IDs that are solid. (for our purposes anyway)
+        solids = ( 1, 2, 3, 4, 7, 8, 9, 12, 13, 24, 48, 60, 82)
+        # Height of the runestones
+        runes = {}
+        for x in xrange(16):
+            for z in xrange(16):
+                runes[x, z] = random.randint(height/2, height)
+        # Iterate over the chunk
+        for x in xrange(16):
+            for z in xrange(16):
+                # find the height at this block
+                y = chunk.HeightMap[z, x]
+                while (y > 0 and
+                       chunk.Blocks[x, z, y] not in solids):
+                    y = y - 1
+                q = Vec(x, y, z)
+                # create a chest
+                if (x == 2 and z == 2):
+                    cp = Vec(cx*16+x-self.parent.parent.position.x,
+                              self.parent.parent.position.y - y - 1,
+                              self.parent.parent.position.z-cz*16-z)
+                    self.parent.parent.setblock(cp, materials.Chest)
+                    self.parent.parent.addchest(cp, 0)
+                    for r in iterate_cube(q.down(2), q.trans(0,height,0)):
+                        sb(r, materials.Air)
+                    continue
+                # If we are above the entrance, clear the air and continue
+                if (x >= 6 and x <= 9 and
+                    z >= 6 and z <= 9):
+                    for r in iterate_cube(Vec(q.x, dy, q.z),
+                                          q.trans(0,height,0)):
+                        sb(r, materials.Air)
+                    continue
+                # Draw some creeping Netherrack and SoulSand. 
+                # Clear the air above
+                for r in iterate_cube(q.down(1), q.trans(0,height,0)):
+                    if chunk.Blocks[r.x,r.z,r.y] != materials.Obsidian.val:
+                        sb(r, materials.Air)
+                d = ((Vec2f(q.x, q.z) - Vec2f(7, 7)).mag()) / 16
+                n = (pn.noise3(q.x / 4.0, 0, q.z / 4.0) + 1.0) / 2.0
+                if (n >= d+.20):
+                    sb(q, materials.Netherrack)
+                    # Netherrack might be on fire!
+                    if random.randint(1,100) <= 5:
+                        sb(q.down(1), materials.Fire)
+                elif (n > d):
+                    sb(q, materials.SoulSand)
+                # We are on an edge. Draw a runestone.
+                # N/S edges
+                if ((x == 0 or x == 15) and
+                    z >= 3 and z <= 9 and
+                    z%3 == 0):
+                    h = runes[x, z]
+                    for r in iterate_cube(q, q.trans(0,h,0)):
+                        sb(r, materials.Obsidian)
+                    for r in iterate_cube(q.trans(0,h,0), q.trans(0,h,3)):
+                        sb(r, materials.Obsidian)
+                    for r in iterate_cube(q.trans(0,0,3), q.trans(0,h,3)):
+                        sb(r, materials.Obsidian)
+                # E/W edges
+                if ((z == 0 or z == 15) and
+                    x >= 3 and x <= 9 and
+                    x%3 == 0):
+                    h = runes[x, z]
+                    for r in iterate_cube(q, q.trans(0,h,0)):
+                        sb(r, materials.Obsidian)
+                    for r in iterate_cube(q.trans(0,h,0), q.trans(3,h,0)):
+                        sb(r, materials.Obsidian)
+                    for r in iterate_cube(q.trans(3,0,0), q.trans(3,h,0)):
+                        sb(r, materials.Obsidian)
+
 class StepPyramid(Blank):
     _name = 'steppyramid'
 
