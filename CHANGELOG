@@ -23,7 +23,26 @@ v0.4.0 - ??/??/????
 
    * New subcommand: delete - Deletes old dungeons from the world. Chunks
      containing dungeons are deleted and allowed to regenerate back to 
-     their natural state. 
+     their natural state. (you need to load the map into Minecraft for the
+     chunks to be regnerated)
+
+   * New subcommand: regenerate - Regenerates dungeons in place. (with a few
+     caveats) Dungeons will have a new maze layout, new rooms, restocked
+     chests and spawners, and can even use a different config file. 
+
+     - Surface structures will never be regenerated. This includes ruins and
+       entrances. Any damage done to these structures by players or mobs will
+       not be repaired. 
+
+     - Any chests at the surface within the area of the dungeon (even ones
+       not placed by MCDungeon! Be careful!) will be refreshed with tier
+       zero loot
+
+     - Regenerated dungeons will never link up with any natural caverns.
+       this is because the area underground is refilled with stone and ores,
+       blocking off any natural caves that may have connected. 
+
+     - You cannot use hard mode on regnerated dungeons. 
 
    * Interactive mode supports add, list, and delete. 
 
