@@ -17,7 +17,7 @@ Thanks to the following for their interest, inspiration, and great ideas!
 BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
 Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
 SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
-and compgurusteve.
+janxious, and compgurusteve.
 
 CURRENT FEATURES:
 
@@ -27,6 +27,9 @@ CURRENT FEATURES:
 
    * Dungeons can be removed from a map later and the landscape allowed to
      regenerate. 
+
+   * Dungeons can be regenerated in place with a new layout, mobs, and 
+     treasure.
 
    * Can generate multiple of dungeons in a map, or try to fill the
      map with as many dungeons as possible.
@@ -39,12 +42,12 @@ CURRENT FEATURES:
      configurable. Option to place fewer torches as levels go down. Less 
      light == more danger!
 
-   * A "hard mode" that will attempt to fill in nearby natural caves in an 
-     attempt to concentrate random monster spawns inside the dungeon. 
+   * A "hard mode" that will fill in nearby natural caves in an attempt to
+     concentrate random monster spawns inside the dungeon. 
 
    * Places stairwells between levels, and a random entrance with a
      spiraling staircase. Some entrances have a configurable height so it 
-     can be seen for many chunks. 
+     can be seen from far away.
 
    * Optionally places a MultiVerse (Craftbukkit plugin) portal at
      the bottom of the dungeon to teleport players out to the world of
@@ -71,48 +74,17 @@ TODO:
    * Harder hard mode!
    * More stuff as Minecraft evolves!
 
-OPTIONS:
+QUICK START:
 
-$ mcdungeon.py -h
+Go to the wiki! http://mcdungeon.wikkii.com/wiki/Quick_Start
 
-usage: mcdungeon.py [-h] [-v] [-c CFGFILE] [--write] [--skip-relight]
-                    [-t FLOOR] [--html BASENAME] [--debug] [--force] [-s SEED]
-                    [-o X Y Z] [-b] [-e Z X] [-n NUM] [-i]
-                    SAVEDIR Z X LEVELS
+List available subcommands and options:
 
-positional arguments:
-  SAVEDIR               Target world (path to save directory)
-  Z                     Number of rooms West -> East. Use -1 for random, or
-                        provide a range. (ie: 4-7)
-  X                     Number of rooms North -> South. Use -1 for random, or
-                        provide a range.
-  LEVELS                Number of levels. Enter a positive value, or provide a
-                        range.
+./mcdungeon.py --help
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -v, --version         Print version and exit
-  -c CFGFILE, --config CFGFILE
-                        Alternate config file. Default: default.cfg
-  --write               Write the dungeon to disk
-  --skip-relight        Skip relighting the level
-  -t FLOOR, --term FLOOR
-                        Print a text version of a given floor to the terminal
-  --html BASENAME       Output html versions of the dungeon. This produces one
-                        file per level of the form BASENAME-(level
-                        number).html
-  --debug               Provide additional debug info
-  --force               Force overwriting of html output files
-  -s SEED, --seed SEED  Provide a seed for this dungeon. This can be anything
-  -o X Y Z, --offset X Y Z
-                        Provide a location offset in blocks
-  -b, --bury            Attempt to calculate Y when using --offset
-  -e Z X, --entrance Z X
-                        Provide an offset for the entrance in chunks
-  -n NUM, --number NUM  Number of dungeons to generate. -1 will create as many
-                        as possible given X, Z, and LEVEL settings.
-  -i, --interactive     Start in interactive mode. Prompt for SAVEDIR, Z, X,
-                        CFGFILE, and LEVELS.
+Help on a specific subcommand:
+
+./mcdungeon.py <subcommand> --help
 
 EXAMPLES:
 
@@ -122,14 +94,14 @@ and display the results in a terminal window. (In color on ANSI
 terminals only. Sorry Windows) The world files will not be modified,
 but are required. Basically a "dry run."
 
-./mcdungeon.py Dungeon 5 4 3 --term 1
+./mcdungeon.py add Dungeon 5 4 3 --term 1
 
 Generate five random dungeons between the sizes of 4x4x5 and 6x6x8 and 
 save them to the world.
 
-./mcdungeon.py Dungeon 4-6 4-6 5-8 -n 5 --write
+./mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
 
-Run in interactive mode, prompting for the config file, world, dungeon size,
-and number of dungeons.
+Run in interactive mode. From here you can add, list, delete or regenerate
+dungeons.
 
-./mcdungeon -i
+./mcdungeon interactive
