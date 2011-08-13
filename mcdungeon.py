@@ -332,11 +332,15 @@ if (args.command == 'interactive'):
     if (os.path.isdir(saveFileDir) == False):
         sys.exit('\nI cannot find your save directory! Aborting!')
     print '\nWorlds in your save directory:\n'
+    count = 0
     for file in os.listdir(saveFileDir):
         file_path = os.path.join(saveFileDir, file)
         if (os.path.isdir(file_path) and
             os.path.isfile(file_path+'/level.dat')):
             print '   ',file
+            count += 1
+    if count == 0:
+        sys.exit('There do not appear to be any worlds in your save direcory. Aborting!')
     w = raw_input('\nEnter the name of the world you wish to modify: ')
     args.world = os.path.join(saveFileDir, w)
 
