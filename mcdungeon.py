@@ -651,7 +651,7 @@ if (result):
         sys.exit('Minimum levels must be equal or greater than 1.')
     if (max_levels > 18):
         sys.exit('Maximum levels must be equal or less than 18.')
-else:
+elif int(args.levels) > 0:
     min_levels = int(args.levels)
     max_levels = int(args.levels)
 
@@ -706,6 +706,18 @@ if (args.number is not 1):
 
 
 print "MCDungeon",__version__,"startup complete. "
+
+if args.debug == True:
+    print 'Z:', args.z
+    print '   ', min_z
+    print '   ', max_z
+    print 'X:', args.x
+    print '   ', min_x
+    print '   ', max_x
+    print 'L:', args.levels
+    print '   ', min_levels
+    print '   ', max_levels
+
 
 dungeons = []
 dungeon_positions = {}
