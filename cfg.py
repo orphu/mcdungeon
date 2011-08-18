@@ -40,7 +40,8 @@ master_rooms = []
 master_features = []
 master_floors = []
 master_ruins = [('blank',1)]
-master_entrances = [('SquareTowerEntrance',1)]
+master_entrances = [('squaretowerentrance',1)]
+master_treasure = [('pitwitharchers',1)]
 master_mobs = []
 structure_values = []
 
@@ -70,7 +71,7 @@ def Load(filename = 'default.cfg'):
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
-    structure_values, master_entrances
+    structure_values, master_entrances, master_treasure
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -101,6 +102,10 @@ def Load(filename = 'default.cfg'):
         master_entrances = parser.items('entrances')
     except:
         print 'WARNING: No entrances section found in config. Using default.'
+    try:
+        master_treasure = parser.items('treasure rooms')
+    except:
+        print 'WARNING: No treasure rooms section found in config. Using default.'
 
     # Fix the mob names...
     for mob in temp_mobs:
