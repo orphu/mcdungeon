@@ -19,6 +19,16 @@ cave.print_map()
 
 del(cave)
 
+print '16x16 tile with (room type)'
+cave = cave_factory.new(16, 16)
+# North
+cave.add_exit((1,0), (14,0))
+# Cave!
+cave.gen_map(mode='room')
+cave.print_map()
+
+del(cave)
+
 print '32x32 tile with two exits to the East, and one to the South:'
 cave = cave_factory.new(32, 32)
 # East

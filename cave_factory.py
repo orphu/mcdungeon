@@ -68,22 +68,37 @@ class new:
             pt1 = (pt1[0] + cmp(pt2[0], pt1[0]),
                    pt1[1] + cmp(pt2[1], pt1[1]))
 
+    def purge_exits(self):
+        self.__exits = []
+        for c in xrange(0,self.__width):
+            for r in xrange(0,self.__length):
+                if (c == 0 or c == self.__width-1 or
+                    r == 0 or r == self.__length-1):
+                    self.__map[r][c] == WALL
+
     def grow_map(self):
         self.__generation(1, 2, -1)
 
     def reduce_map(self):
         self.__generation(1, 7, -1)
 
-    def gen_map(self):
-        #Repeat 4: W?(p) = R1(p) ? 5 || R2(p) ? 2
-        #Repeat 3: W?(p) = R1(p) ? 5
-        # We do the above, with a cave join pass right before the final
-        # iteration. This helps smooth out any sharp edges after the join
-        # pass.
-        self.__generation(4, 5, 2)
-        self.__generation(2, 5, -1)
-        self.__join_rooms()
-        self.__generation(1, 5, -1)
+    def gen_map(self, mode='default'):
+        if mode == 'room':
+            # One large cavern room
+            self.__generation(4, 5, -1)
+            self.__join_rooms()
+            self.__generation(1, 5, -1)
+        else:
+            # Windey passages. 
+            #Repeat 4: W?(p) = R1(p) ? 5 || R2(p) ? 2
+            #Repeat 3: W?(p) = R1(p) ? 5
+            # We do the above, with a cave join pass right before the final
+            # iteration. This helps smooth out any sharp edges after the join
+            # pass.
+            self.__generation(4, 5, 2)
+            self.__generation(2, 5, -1)
+            self.__join_rooms()
+            self.__generation(1, 5, -1)
 
     def __generation(self, count, r1_cutoff, r2_cutoff):
         while (count > 0):
