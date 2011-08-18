@@ -910,7 +910,7 @@ while args.number is not 0:
             flags += '0'
         flags += ';E:%d,%d'%(dungeon.entrance_pos.z, dungeon.entrance_pos.x)
         flags += ';T:%.2x'%dungeon.entrance.height
-        dungeon.setblock(Vec(0,0,0), materials.WallSign, 4)
+        dungeon.setblock(Vec(0,0,0), materials.WallSign, 4, hide=True)
         dungeon.addsign(Vec(0,0,0),
                         '[MCD]'+__version__,
                         str(int(time.time())),
@@ -918,7 +918,7 @@ while args.number is not 0:
                                     dungeon.xsize,
                                     dungeon.levels),
                         flags)
-        dungeon.setblock(Vec(1,0,0), materials.Stone)
+        dungeon.setblock(Vec(1,0,0), materials.Stone, hide=True)
 
         # Write the changes to the world.
         dungeon.applychanges(world)
