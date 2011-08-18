@@ -518,22 +518,24 @@ class Dungeon (object):
                 exit_pos = pos
                 # Pick a treasure capable room
                 room, pos = rooms.pickRoom(self, dsize, pos, treasure=True,
-                                           room_list = [('treasure1',1)])
+                                           room_list = cfg.master_treasure,
+                                           default='pitwitharchers')
                 ps = self.setroom(pos, room)
                 feature = features.new('blank', room)
                 room.features.append(feature)
                 floor = floors.new('blank', room)
                 room.floors.append(floor)
-                # Place all these cells into a USED set for connection later.
-                # These have a depth of zero, since we don't want to count them
-                # in the depth calculation.
+                # Place all these cells into a RESTRICTED set for connection
+                # later. These have a depth of zero, since we don't want to
+                # count them in the depth calculation.
                 root1 = ds.find(pos)
                 for p in ps:
                     root2 = ds.find(p)
                     if root1 != root2:
                         ds.union(root1, root2)
                     self.maze[p].state = state.RESTRICTED
-                    self.maze[p].depth = 0
+                    if self.maze[p].depth >= 0:
+                        self.maze[p].depth = 0
             while 1:
                 #ds.dump()
                 if self.args.debug == True:
@@ -679,16 +681,20 @@ class Dungeon (object):
                     for p in iterate_plane(Vec(0,y,0),
                                            Vec(self.xsize-1,y,self.zsize-1)):
                         for d in dirs.keys():
-                            if (self.halls[p.x][y][p.z][sides[d]] is not 1 and
-                                random.randint(1,100) <= cfg.loops):
-                                nx = p.x + dirs[d].x
-                                nz = p.z + dirs[d].z
-                                if (nx >= 0 and
-                                    nz >= 0 and
-                                    nx < self.xsize and
-                                    nz < self.zsize):
+                            nx = p.x + dirs[d].x
+                            nz = p.z + dirs[d].z
+                            if (nx >= 0 and
+                                nz >= 0 and
+                                nx < self.xsize and
+                                nz < self.zsize):
+                                if (self.halls[p.x][y][p.z][sides[d]] is not 1 and
+                                    self.halls[nx][y][nz][osides[d]] is not 1 and
+                                    random.randint(1,100) <= cfg.loops):
                                     self.halls[p.x][y][p.z][sides[d]] = 1
                                     self.halls[nx][y][nz][osides[d]] = 1
+                    if self.args.debug == True:
+                        print 'Post loops:'
+                        self.printmaze(y, cursor=Vec(x,y,z))
                     # Rebuild the depth tree.
                     # The first room on this level has a depth of 1
                     self.maze[level_start].depth = 1
@@ -734,6 +740,9 @@ class Dungeon (object):
                         dr = d
         self.halls[point.x][y][point.z][sides[dr]] = 1
         self.halls[opoint.x][y][opoint.z][osides[dr]] = 1
+        if self.args.debug == True:
+            print 'Post treasure:'
+            self.printmaze(y, cursor=Vec(x,y,z))
 
         self.entrance_pos = entrance_pos
         if self.args.debug:
