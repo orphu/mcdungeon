@@ -488,8 +488,179 @@ class CellBlock(Basic2x2):
             self.parent.setblock(self.c1+Vec(0,0,z),
                                  materials.Air, lock=True)
 
-class Treasure1(Basic2x2):
-    _name = 'treasure1'
+class SpiderLair(Basic):
+    _name = 'spiderlair'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1,1,2)
+    _max_size = Vec(1,1,2)
+    size = Vec(1,1,2)
+
+    def placed(self):
+        self.canvas = (
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # This room contains no halls, but is connected to the East  
+        # West, South, East, North
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [0,0,0,0]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        self.parent.halls[pos.x][pos.y][pos.z] = [1,1,1,1]
+        # This room cannot connect. Make the depth < 0
+        self.parent.maze[pos].depth = -1
+
+        # Place one room to the East
+        # This room can have halls N, E, or S and is connected to the West
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,1,1,1]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        return rooms
+
+    def render(self):
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        height = sy - 2
+        outer_cave = cave_factory.new(sx, sz)
+        inner_cave = cave_factory.new(sx, sz)
+
+        # Add halls
+        inner_room = self.parent.rooms[self.pos]
+        outer_room = self.parent.rooms[self.pos + Vec(0,0,1)]
+        # South side
+        if (outer_room.halls[1].size > 0):
+            outer_cave.add_exit((outer_room.halls[1].offset, sx-1),
+                          (outer_room.halls[1].offset+outer_room.halls[1].size, sx-1))
+        # East side
+        if (outer_room.halls[2].size > 0):
+            outer_cave.add_exit((sz-1, outer_room.halls[2].offset),
+                          (sz-1, outer_room.halls[2].offset+outer_room.halls[2].size))
+        # North side
+        if (outer_room.halls[3].size > 0):
+            outer_cave.add_exit((outer_room.halls[3].offset, 0),
+                          (outer_room.halls[3].offset+outer_room.halls[3].size, 0))
+        # Center
+        inner_cave.add_exit((15,1), (15,15))
+        outer_cave.add_exit((0,0),  (0,15))
+
+        # Carve caves
+        outer_cave.gen_map()
+        inner_cave.gen_map(mode='room')
+
+        # Air space, Floor, and Ceiling
+        q = self.loc+Vec(0,4,15)
+        for p in outer_cave.iterate_map(cave_factory.FLOOR):
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],-2,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],-1,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],0,p[1]), materials._floor)
+            self.parent.setblock(q+Vec(p[0],-height,p[1]),
+                                 materials._ceiling, 0, True)
+        q = self.loc+Vec(0,4,0)
+        for p in inner_cave.iterate_map(cave_factory.FLOOR):
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],-2,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],-1,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],0,p[1]), materials._floor)
+            self.parent.setblock(q+Vec(p[0],-height,p[1]),
+                                 materials._ceiling, 0, True)
+        # Walls
+        q = self.loc+Vec(0,4,15)
+        for p in outer_cave.iterate_walls():
+            self.parent.setblock(q+Vec(p[0],-4,p[1]), materials._wall,
+                                0, True)
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials._wall)
+            self.parent.setblock(q+Vec(p[0],-2,p[1]), materials._wall)
+            self.parent.setblock(q+Vec(p[0],-1,p[1]), materials._wall)
+        outer_cave.grow_map()
+        for p in outer_cave.iterate_walls():
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials._wall,
+                                0, True)
+        q = self.loc+Vec(0,4,0)
+        for p in inner_cave.iterate_walls():
+            self.parent.setblock(q+Vec(p[0],-4,p[1]), materials._wall,
+                                0, True)
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials._wall)
+            self.parent.setblock(q+Vec(p[0],-2,p[1]), materials._wall)
+            self.parent.setblock(q+Vec(p[0],-1,p[1]), materials._wall)
+        inner_cave.grow_map()
+        for p in inner_cave.iterate_walls():
+            self.parent.setblock(q+Vec(p[0],-3,p[1]), materials._wall,
+                                0, True)
+        # Spider pit
+        pit_blocks = []
+        inner_cave.purge_exits()
+        inner_cave.add_exit((15,5), (15,11))
+        inner_cave.grow_map()
+        pit_depth = self.parent.position.y - self.parent.levels * \
+            self.parent.room_height
+        q = self.loc+Vec(0,4,0)
+        for p in inner_cave.iterate_map(cave_factory.FLOOR):
+            for x in xrange(pit_depth+1):
+                self.parent.setblock(q+Vec(p[0],x,p[1]), materials.Air)
+            self.parent.setblock(q+Vec(p[0],0,p[1]), materials.Cobweb)
+            pit_blocks.append(q+Vec(p[0],0,p[1]))
+            self.parent.setblock(q+Vec(p[0],pit_depth+1,p[1]), materials.Lava)
+        # Chest
+        c = random.choice(pit_blocks)
+        pit_blocks.remove(c)
+        self.parent.setblock(c, materials.Chest)
+        self.parent.addchest(c, loottable._maxtier)
+        # Spider spawners
+        # In the future, maybe spiders will walk on web
+        #for x in xrange(3):
+        #    s = random.choice(pit_blocks)
+        #    pit_blocks.remove(s)
+        #    self.parent.setblock(s, materials.Spawner)
+        #    self.parent.addspawner(s, 'Spider')
+        # Spiders in teh walls!
+        count = 0
+        while count < 3:
+            p = self.loc+Vec(random.randint(0,15),3,random.randint(0,32))
+            if p not in self.parent.blocks:
+                self.parent.setblock(p, materials.Spawner)
+                self.parent.addspawner(p, 'Spider')
+                count += 1
+
+        # Cobwebs
+        webs = {}
+        for p in iterate_cube(self.loc.down(1), self.loc.trans(15,3,31)):
+            count = 0
+            perc = 90 - (p.y - self.loc.down(1).y) * (70/3) 
+            if (p not in self.parent.blocks or
+                self.parent.blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in self.parent.blocks and
+                    self.parent.blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            self.parent.setblock(p, materials.Cobweb)
+
+
+class PitWithArchers(Basic2x2):
+    _name = 'pitwitharchers'
     _is_entrance = False
     _is_stairwell = False
     _is_treasureroom = True
@@ -1495,7 +1666,8 @@ def pickRoom (dungeon, dsize, pos,
               entrance=False,
               treasure=False,
               stairwell=False,
-              room_list = None):
+              room_list = None,
+              default = 'basic'):
     '''Returns a pointer to a room instance given the current room set. Rooms
     will be chosen from a weighted list based on cfg.master_rooms, with a
     fall back to Basic. Restrictions on size, entrance, treasure, and stairwell
@@ -1563,7 +1735,7 @@ def pickRoom (dungeon, dsize, pos,
                 break
     # If we didn't find a room, fall back to basic. 
     if name == '':
-        name = 'basic'
+        name = default
     # print 'picked:', name, '@', fpos
     # Return the room instance and the new offset location. 
     return new(name, dungeon, fpos), fpos
