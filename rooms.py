@@ -631,10 +631,13 @@ class SpiderLair(Basic):
         #    self.parent.addspawner(s, 'Spider')
         # Spiders in teh walls!
         count = 0
-        while count < 3:
+        while count < 5:
             p = self.loc+Vec(random.randint(0,15),3,random.randint(0,32))
             if p not in self.parent.blocks:
                 self.parent.setblock(p, materials.Spawner)
+                self.parent.setblock(p.up(1), materials.Air)
+                self.parent.setblock(p.up(2), materials.Air)
+                self.parent.setblock(p.up(3), materials.Air)
                 self.parent.addspawner(p, 'Spider')
                 count += 1
 
@@ -642,7 +645,7 @@ class SpiderLair(Basic):
         webs = {}
         for p in iterate_cube(self.loc.down(1), self.loc.trans(15,3,31)):
             count = 0
-            perc = 90 - (p.y - self.loc.down(1).y) * (70/3) 
+            perc = 90 - (p.y - self.loc.down(1).y) * (70/3)
             if (p not in self.parent.blocks or
                 self.parent.blocks[p].material != materials.Air):
                 continue
