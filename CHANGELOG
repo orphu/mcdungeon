@@ -1,5 +1,9 @@
 v0.4.1 - ??/??/????
 
+   * New treasure room: Spider Lair
+
+   * Added customizable treasure rooms.
+
    * Bugfix: Passing -1 for number of levels caused a crash.
 
 v0.4.0 - 08/13/2011
