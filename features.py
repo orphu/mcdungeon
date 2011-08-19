@@ -471,6 +471,50 @@ class Columns(Blank):
                 self.parent.parent.setblock(self.parent.loc+p, mat[0])
                 self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
 
+
+class Dais(Blank):
+    _name = 'dais'
+
+    def render (self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+        center = self.parent.canvasCenter()
+        size = random.randint(4,
+                                min(self.parent.canvasWidth(),
+                                    self.parent.canvasLength()) - 4)
+        torches = (random.random() < .5)
+        platform = random.choice([materials.WoodPlanks,
+                                  materials.Cobblestone,
+                                  materials.Stone,
+                                  materials.Sandstone])
+        steps = random.choice([materials.WoodenSlab,
+                               materials.CobblestoneSlab,
+                               materials.StoneSlab,
+                               materials.SandstoneSlab])
+        pfunc = iterate_cube
+        sfunc = iterate_four_walls
+        if (random.random() < .5):
+            pfunc = iterate_disc
+            sfunc = iterate_tube
+
+        p0 = Vec(center.x - size/2 + 1,
+                 self.parent.canvasHeight(),
+                 center.z - size/2 + 1) + self.parent.loc
+        p1 = p0.trans(size-1, 0, size-1)
+
+        if torches:
+            for p in (Vec(p0.x+1,p0.y-1,p0.z+1), Vec(p1.x-1,p0.y-1,p1.z-1),
+                      Vec(p0.x+1,p0.y-1,p1.z-1), Vec(p1.x-1,p0.y-1,p0.z+1)):
+                self.parent.parent.setblock(p, materials.Fence)
+                self.parent.parent.setblock(p.up(1), materials.Fence)
+                self.parent.parent.setblock(p.up(2), materials.Torch)
+        for p in pfunc(p0, p1):
+            self.parent.parent.setblock(p.up(1), platform)
+        for p in sfunc(p0, p1, 0):
+            if self.parent.parent.blocks[p.up(2)].material != materials.Fence:
+                self.parent.parent.setblock(p.up(1), steps)
+
+
 class Pool(Blank):
     _name = 'pool'
 
