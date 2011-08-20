@@ -1,8 +1,12 @@
-v0.4.1 - ??/??/????
+v0.5.0 - ??/??/????
 
-   * New treasure room: Spider Lair
+   * New room feature: Arcane
+
+   * New room feature: Dais
 
    * Added customizable treasure rooms.
+
+   * New treasure room: Spider Lair
 
    * Bugfix: Passing -1 for number of levels caused a crash.
 
