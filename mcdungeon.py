@@ -12,7 +12,7 @@ from pymclevel import mclevel, nbt
 import pmeter
 
 # Version info
-__version__ = '0.4.1'
+__version__ = '0.5.0'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
