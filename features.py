@@ -472,6 +472,33 @@ class Columns(Blank):
                 self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
 
 
+class Arcane(Blank):
+    _name = 'arcane'
+
+    def render (self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+        center = self.parent.canvasCenter()
+        c = self.parent.loc + Vec(center.x,
+                                  self.parent.canvasHeight()-1,
+                                  center.z)
+        dun = self.parent.parent
+        def sb(p, mat):
+            if (dun.blocks[p].material == materials.Air and
+                dun.blocks[p.down(1)].material != materials.Farmland and
+                dun.blocks[p.down(1)].material != materials.SoulSand and
+                dun.blocks[p.down(1)].material != materials.Water and
+                dun.blocks[p.down(1)].material != materials.StillWater):
+                dun.setblock(p, mat)
+
+        for p in iterate_cube(c.north(4), c.south(4)):
+            sb(p, materials.RedStoneWire)
+        for p in iterate_cube(c.east(4), c.west(4)):
+            sb(p, materials.RedStoneWire)
+        for p in iterate_four_walls(c.trans(-2,0,-2), c.trans(2,0,2),0):
+            sb(p, materials.RedStoneWire)
+
+
 class Dais(Blank):
     _name = 'dais'
 
