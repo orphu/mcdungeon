@@ -576,6 +576,56 @@ class Dais(Blank):
             if self.parent.parent.blocks[p.up(2)].material != materials.Fence:
                 self.parent.parent.setblock(p.up(1), steps)
 
+class Forge(Blank):
+    _name = 'forge'
+
+    def render(self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+
+        sb = self.parent.parent.setblock
+
+        mats = [
+            materials.Air,          # 0
+            materials.Furnace,      # 1
+            materials.DoubleSlab,   # 2
+            materials.Water,        # 3
+            materials.BrickBlock,   # 4
+            materials.StoneSlab,    # 5
+            materials.Lava,         # 6
+            materials.Chest,        # 7
+            materials.CraftingTable# 8
+        ]
+
+        template = [
+            [7,2,5,2,2,1],
+            [2,3,4,6,6,2],
+            [2,3,4,6,6,2],
+            [8,2,5,2,2,1]
+        ]
+
+        o = self.parent.loc.trans(6, 3, 5)
+
+        for x in xrange(4):
+            for z in xrange(6):
+                p = o.trans(x,0,z)
+                sb(p, mats[template[x][z]])
+
+        sb (o.trans(0,-2,3), materials.StoneStairs, 0)
+        sb (o.trans(0,-2,4), materials.StoneStairs, 0)
+        sb (o.trans(3,-2,3), materials.StoneStairs, 1)
+        sb (o.trans(3,-2,4), materials.StoneStairs, 1)
+        sb (o.trans(1,-2,5), materials.StoneStairs, 2)
+        sb (o.trans(2,-2,5), materials.StoneStairs, 2)
+        sb (o.trans(1,-2,2), materials.StoneStairs, 3)
+        sb (o.trans(2,-2,2), materials.StoneStairs, 3)
+
+        sb (o.trans(0,0,3), materials.StoneStairs, 0)
+        sb (o.trans(0,0,4), materials.StoneStairs, 0)
+        sb (o.trans(3,0,3), materials.StoneStairs, 1)
+        sb (o.trans(3,0,4), materials.StoneStairs, 1)
+        sb (o.trans(1,0,5), materials.StoneStairs, 2)
+        sb (o.trans(2,0,5), materials.StoneStairs, 2)
 
 class Pool(Blank):
     _name = 'pool'
