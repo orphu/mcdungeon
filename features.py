@@ -478,19 +478,54 @@ class Arcane(Blank):
     def render (self):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
-        center = self.parent.canvasCenter()
-        c = self.parent.loc + Vec(center.x,
-                                  self.parent.canvasHeight()-1,
-                                  center.z)
+
+        # Custom block placer. Don't place stuff where things already exist,
+        # also check for things we aren't alowed to place stuff on.
         dun = self.parent.parent
         def sb(p, mat):
-            if (dun.blocks[p].material == materials.Air and
+            if (p in dun.blocks and
+                dun.blocks[p].material == materials.Air and
                 dun.blocks[p.down(1)].material != materials.Farmland and
                 dun.blocks[p.down(1)].material != materials.SoulSand and
                 dun.blocks[p.down(1)].material != materials.Water and
                 dun.blocks[p.down(1)].material != materials.StillWater):
                 dun.setblock(p, mat)
+        mode = random.choice(['one','boxes', 'conc'])
 
+        if mode == 'boxes':
+            center = self.parent.canvasCenter()
+            o = self.parent.loc + Vec(center.x,
+                                      self.parent.canvasHeight()-1,
+                                      center.z)
+            o = o+Vec(-self.parent.canvasWidth()/2,
+                      0,
+                      -self.parent.canvasLength()/2)
+            for x in xrange(self.parent.canvasWidth()/3+1):
+                for z in xrange(self.parent.canvasLength()/3+1):
+                    if random.random() < 0.5:
+                        q = Vec(o.x+x*3, o.y, o.z+z*3)
+                        sb(q, materials.RedStoneWire)
+                        sb(q.trans(1,0,0), materials.RedStoneWire)
+                        sb(q.trans(0,0,1), materials.RedStoneWire)
+                        sb(q.trans(1,0,1), materials.RedStoneWire)
+            return
+
+        if mode == 'conc':
+            center = self.parent.canvasCenter()
+            c = self.parent.loc + Vec(center.x,
+                                      self.parent.canvasHeight()-1,
+                                      center.z)
+            sb(c, materials.RedStoneWire)
+            for p in iterate_ellipse(c.trans(-2,0,-2), c.trans(2,0,2)):
+                sb(p, materials.RedStoneWire)
+            for p in iterate_ellipse(c.trans(-4,0,-4), c.trans(4,0,4)):
+                sb(p, materials.RedStoneWire)
+            return
+
+        center = self.parent.canvasCenter()
+        c = self.parent.loc + Vec(center.x,
+                                  self.parent.canvasHeight()-1,
+                                  center.z)
         for p in iterate_cube(c.north(4), c.south(4)):
             sb(p, materials.RedStoneWire)
         for p in iterate_cube(c.east(4), c.west(4)):
