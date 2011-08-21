@@ -488,6 +488,220 @@ class CellBlock(Basic2x2):
             self.parent.setblock(self.c1+Vec(0,0,z),
                                  materials.Air, lock=True)
 
+class ThroneRoom(Basic):
+    _name = 'throneroom'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1,1,2)
+    _max_size = Vec(1,1,2)
+    size = Vec(1,1,2)
+
+    def placed(self):
+        self.canvas = (
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # This room contains no halls, but is connected to the East  
+        # West, South, East, North
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [1,1,0,1]
+        self.hallSize = [[6,sx-6],
+                         [6,sx-6],
+                         [6,sz-6],
+                         [6,sz-6]]
+        self.parent.halls[pos.x][pos.y][pos.z] = [0,0,1,0]
+
+        # Place one room to the East
+        # This room can have halls N, E, or S and is connected to the West
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,0,0,0]
+        room.hallSize = [[6,sx-6],
+                         [6,sx-6],
+                         [6,sz-6],
+                         [6,sz-6]]
+        room.parent.halls[pos.x][pos.y][pos.z] = [1,1,1,1]
+        # This room cannot connect. Make the depth < 0
+        room.parent.maze[pos].depth = -1
+        return rooms
+
+    def render(self):
+        sx = 16
+        sy = 12
+        sz = 32
+        o = self.loc
+        pos = self.pos
+
+        # alias for setblock
+        sb = self.parent.setblock
+
+        # symmetrical setblock. A lot of this room will be symmetrical. 
+        def ssb (p, mat, data=0):
+            sb(o+p, mat, data)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+p.z), mat, data)
+
+        # Column materials
+        cmat = random.choice([
+            [materials.Sandstone, materials.SandstoneSlab],
+            [materials.Cobblestone, materials.CobblestoneSlab],
+            [materials.Stone, materials.StoneSlab]
+        ])
+
+        # Decoration colors
+        # inner color, trim color
+        dmat = random.choice([
+            [materials.RedWool, materials.YellowWool],
+            [materials.RedWool, materials.LightGrayWool],
+            [materials.BlueWool, materials.YellowWool],
+            [materials.DarkGreenWool, materials.YellowWool],
+            [materials.DarkGreenWool, materials.BlackWool],
+            [materials.PurpleWool, materials.YellowWool],
+            [materials.CyanWool, materials.YellowWool],
+            [materials.LightBlueWool, materials.LightGrayWool]
+        ])
+
+        # Basic room
+        # Air space
+        for p in iterate_cube(o, o+Vec(sx-1,sy-1,sz-1)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o+Vec(sx-1,0,sz-1), -sy+1):
+            sb(p, materials._wall)
+        # Ceiling and floor
+        for p in iterate_cube(o, o+Vec(sx-1,0,sz-1)):
+            sb(p, materials._ceiling)
+            sb(p.down(sy-1), materials._floor)
+
+        # Wooden balcony
+        for p in iterate_cube(Vec(1,4,1), Vec(3,4,9)):
+            ssb(p, materials.WoodPlanks)
+        for p in iterate_cube(Vec(1,4,1), Vec(5,4,3)):
+            ssb(p, materials.WoodPlanks)
+        for p in iterate_cube(Vec(1,4,1), Vec(2,4,8)):
+            ssb(p, materials.WoodenSlab)
+        for p in iterate_cube(Vec(1,4,1), Vec(5,4,2)):
+            ssb(p, materials.WoodenSlab)
+        for p in iterate_cube(Vec(1,3,9), Vec(2,3,9)):
+            ssb(p, materials.Fence)
+        for p in iterate_cube(Vec(4,3,3), Vec(5,3,3)):
+            ssb(p, materials.Fence)
+        for p in iterate_cube(Vec(3,3,3), Vec(3,3,9)):
+            ssb(p, materials.Fence)
+
+        # Entry stairs
+        for x in xrange(6):
+            ssb(Vec(6,5+x,1+x), materials.Cobblestone)
+            ssb(Vec(7,5+x,1+x), materials.Cobblestone)
+            ssb(Vec(6,5+x,2+x), materials.Cobblestone)
+            ssb(Vec(7,5+x,2+x), materials.Cobblestone)
+            ssb(Vec(6,5+x,3+x), materials.StoneStairs, 2)
+            ssb(Vec(7,5+x,3+x), materials.StoneStairs, 2)
+        # Skip this is ther is no door to the West
+        if self.parent.halls[pos.x][pos.y][pos.z][0] == 1:
+            for p in iterate_cube(Vec(6,4,1), Vec(7,4,1)):
+                ssb(p, materials.StoneStairs, 2)
+
+        # Columns
+        for i in xrange(6):
+            j = i*4
+            for p in iterate_cube(Vec(3,0,4+j), Vec(3,11,5+j)):
+                ssb(p, cmat[0])
+            ssb(Vec(4,10,4+j), cmat[1])
+            ssb(Vec(4,10,5+j), cmat[1])
+
+        # Rug
+        for p in iterate_cube(Vec(6,11,9), Vec(6,11,25)):
+            ssb(p, dmat[1])
+        for p in iterate_cube(Vec(7,11,9), Vec(7,11,25)):
+            ssb(p, dmat[0])
+        for x in xrange(20):
+            p = Vec(random.randint(6,9), 11, random.randint(9,25))
+            sb(o+p, materials._floor)
+
+        # Throne
+        # Stairs
+        for x in xrange(3):
+            ssb(Vec(7,10-x,24+x), materials.StoneStairs, 3)
+            ssb(Vec(7,10-x,25+x), materials.Cobblestone)
+            ssb(Vec(7,10-x,26+x), materials.Cobblestone)
+        # Platform
+        for p in iterate_cube(Vec(6,8,27), Vec(7,10,27)):
+            ssb(p, materials.Bedrock)
+        for p in iterate_cube(Vec(5,8,28), Vec(7,10,29)):
+            ssb(p, materials.Bedrock)
+        # Lava bucket
+        ssb(Vec(6,10,30), materials.Cobblestone)
+        ssb(Vec(6,9,30), materials.Cobblestone)
+        ssb(Vec(7,11,30), materials.Lava)
+        # The throne
+        ssb(Vec(7,7,29), materials.WoodPlanks)
+        ssb(Vec(7,6,29), materials.WoodPlanks)
+        sb(o+Vec(7,7,28), materials.WoodenStairs, 1)
+        sb(o+Vec(8,7,28), materials.WoodenStairs, 0)
+        sb(o+Vec(6,6,29), materials.RedStoneTorchOn, 2)
+        sb(o+Vec(9,6,29), materials.RedStoneTorchOn, 1)
+        ssb(Vec(7,5,29), materials.Fence)
+        ssb(Vec(7,4,29), materials.RedStoneTorchOn, 5)
+
+        # Back wall
+        wall = random.choice(
+            [
+               [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+
+               [[0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,0,2,2,0,0,3,2,2,3,0,0,2,2,0,0],
+                [0,0,0,0,0,0,3,2,2,3,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+            ]
+        )
+        w = random.choice([materials.BlackWool,
+                           materials.RedWool])
+        for y in xrange(10):
+            for x in xrange(16):
+                if wall[y][x] == 1:
+                    sb(o+Vec(x,y+1,31), w)
+                elif wall[y][x] == 2:
+                    sb(o+Vec(x,y+1,31), dmat[0])
+                elif wall[y][x] == 3:
+                    sb(o+Vec(x,y+1,31), dmat[1])
+        # Chest. Maxtier plus a level zero.
+        sb(o+Vec(7,7,30), materials.Chest)
+        self.parent.addchest(o+Vec(7,7,30), loottable._maxtier)
+        sb(o+Vec(8,7,30), materials.Chest)
+        self.parent.addchest(o+Vec(8,7,30), 0)
+
+        # Spawners
+        for i in xrange(7):
+            j = i*4
+            if (random.random() < 0.5):
+                sb(o+Vec(0,10,4+j), materials.Spawner)
+                self.parent.addspawner(o+Vec(0,10,4+j))
+            if (random.random() < 0.5):
+                sb(o+Vec(15,10,4+j), materials.Spawner)
+                self.parent.addspawner(o+Vec(15,10,4+j))
+
 class SpiderLair(Basic):
     _name = 'spiderlair'
     _is_entrance = False
