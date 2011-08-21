@@ -113,6 +113,7 @@ WoodPlanks = Material('Wooden Plank', '=',RED)
 WoodenDoor = Material('Wooden Door Block', 'D',RED)
 WoodenPressurePlate = Material('Wooden Pressure Plate' ,'O',RED)
 WoodenSlab = Material('Wooden Slab', 'd',RED)
+WoodenStairs = Material('Wooden Stairs', 'L',RED)
 Wool = Material('Wool', 'W',GREY)
 
 # Wools
