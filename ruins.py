@@ -208,7 +208,7 @@ class StepPyramid(Blank):
         #    self.parent.parent.setblock(p, materials._wall)
         for p in iterate_four_walls(c1,
                                     c3, c1.y):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, materials._wall, hide=True)
         # Cover the floor with sand
         pn = perlin.SimplexNoise(256)
         for p in iterate_cube(c1, c3):
@@ -823,7 +823,7 @@ class CircularTower(Blank):
         height = int(self.parent.parent.room_height*1.5)
         #print 'ruin:', c1, c3, height
         for p in self.wallsf(c1, c3, height):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, materials._wall, hide=True)
         ruinBlocks(c1, c3, height, self.parent.parent)
 
 
@@ -848,9 +848,9 @@ class Arches(Blank):
                 # columns
                 for p in iterate_cube(c1, c1.trans(0,-height,0)):
                     sb(p, materials._wall)
-                    sb(p.trans(7,0,0), mat)
-                    sb(p.trans(7,0,7), mat)
-                    sb(p.trans(0,0,7), mat)
+                    sb(p.trans(7,0,0), mat, hide=True)
+                    sb(p.trans(7,0,7), mat, hide=True)
+                    sb(p.trans(0,0,7), mat, hide=True)
                 # First level
                 p = c1.trans(0,-height+2,0)
                 sb(p.trans(1,0,0), mat)
