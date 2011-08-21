@@ -701,6 +701,32 @@ class ThroneRoom(Basic):
             if (random.random() < 0.5):
                 sb(o+Vec(15,10,4+j), materials.Spawner)
                 self.parent.addspawner(o+Vec(15,10,4+j))
+        # Ropes
+        for p in iterate_cube(o.trans(5,1,5), o.trans(10,1,30)):
+            if random.random() < 0.07:
+                for q in iterate_cube(p, p.down(random.randint(0,2))):
+                    sb(q, materials.Fence)
+
+        # Cobwebs
+        webs = {}
+        for p in iterate_cube(o.down(1), o.trans(15,4,31)):
+            count = 0
+            perc = 90 - (p.y - self.loc.down(1).y) * (70/3)
+            if (p not in self.parent.blocks or
+                self.parent.blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in self.parent.blocks and
+                    self.parent.blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            self.parent.setblock(p, materials.Cobweb)
+
 
 class SpiderLair(Basic):
     _name = 'spiderlair'
