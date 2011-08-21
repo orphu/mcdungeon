@@ -84,7 +84,7 @@
 58,Crafting Table,0,64
 59,Crops,0,64
 60,Farmland,0,64
-61,Furnace,0,64
+61,Furnace,2,64
 62,Burning Furnace,0,64
 63,Sign Post,0,64
 64,Wooden Door Block,0,64
