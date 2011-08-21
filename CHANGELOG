@@ -6,7 +6,9 @@ v0.5.0 - ??/??/????
 
    * Added customizable treasure rooms.
 
-   * New treasure room: Spider Lair
+   * New treasure room: SpiderLair
+
+   * New treasure room: ThroneRoom
 
    * Bugfix: Passing -1 for number of levels caused a crash.
 
