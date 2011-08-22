@@ -109,6 +109,8 @@ class Blank(object):
             return True
         return False
 
+class CBlank(Blank):
+    _name = 'cblank'
 
 class Basic(Blank):
     _name = 'basic'
@@ -1127,7 +1129,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         # place three more blank rooms to hold the hallways
         # This is the Southern room
         pos = self.pos + Vec(1,0,0)
-        room = new('blank', self.parent, pos)
+        room = new('cblank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [1,1,0,0]
         room.hallSize = [[2,sx-2],
@@ -1139,7 +1141,7 @@ class SandstoneCavernLarge(SandstoneCavern):
 
         # Eastern room.
         pos = self.pos + Vec(0,0,1)
-        room = new('blank', self.parent, pos)
+        room = new('cblank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,0,1,1]
         room.hallSize = [[2,sx-2],
@@ -1150,7 +1152,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         room.parent.halls[pos.x][pos.y][pos.z][1] = 1
         # South East room.
         pos = self.pos + Vec(1,0,1)
-        room = new('blank', self.parent, pos)
+        room = new('cblank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,1,1,0]
         room.hallSize = [[2,sx-2],
