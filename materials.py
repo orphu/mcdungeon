@@ -54,6 +54,7 @@ class Material(object):
 
 Air = Material('Air', ' ',BLACK)
 Bedrock = Material('Bedrock', '#', DGREY)
+Bookshelf = Material('Bookshelf', '#', RED)
 BrickBlock = Material('Brick Block', '#', RED)
 Cactus = Material('Cactus', "*", BGREEN)
 Chest = Material('Chest', 'C',BPURPLE)
