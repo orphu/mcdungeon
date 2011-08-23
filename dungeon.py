@@ -1483,7 +1483,7 @@ class Dungeon (object):
                 continue
             if room.features[0]._name == 'stairwell':
                 continue
-            if p.y < self.levels-2:
+            if p.y < self.levels-1:
                 droom = self.rooms[p.down(1)]
                 if droom.features[0]._name == 'stairwell':
                     continue
