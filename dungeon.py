@@ -1081,7 +1081,7 @@ class Dungeon (object):
         hallkeys = halls.keys()
         random.shuffle(hallkeys)
 
-        # Now, go through all the keys and pick whoch traps to place.
+        # Now, go through all the keys and pick which traps to place.
         # To qualify, halls must be 1 or 2 blocks wide, at least 8 blocks
         # long. Single halls can be at any offset (just build on the inside
         # edge). Double halls must be between offset 3 and 9. 
@@ -1107,6 +1107,8 @@ class Dungeon (object):
                 if (size >= 1 and
                     size <= 2 and
                     length >= 8 and
+                    room1.features[0]._name != 'secretroom' and
+                    room2.features[0]._name != 'secretroom' and
                     random.randint(1,100) <= cfg.hall_piston_traps):
                     if (size == 1):
                         pos = room1.loc + Vec(offset,
@@ -1161,6 +1163,8 @@ class Dungeon (object):
                 if (size >= 1 and
                     size <= 2 and
                     length >= 8 and
+                    room1.features[0]._name != 'secretroom' and
+                    room2.features[0]._name != 'secretroom' and
                     random.randint(1,100) <= cfg.hall_piston_traps):
                     if (size == 1):
                         pos = room1.loc + Vec(
@@ -1452,6 +1456,89 @@ class Dungeon (object):
             f.write('</table>')
             f.write(footer)
             f.close()
+
+    def findsecretrooms(self):
+        # Secret rooms must satisfy the following...
+        # 1. The room cannot be and entrance, stairwell, or above a stairwell
+        # 2. Must be a 1x1x1 room. 
+        # 3. Must not be a blank room.
+        # 4. Must have exactly one hallway.
+        # 5. Must not connect to a corridor.
+        # 6. ... That's it. 
+        #
+        # If found, the room will have it's feature overridden with SecretRoom
+        # the hallway will be reduced to 1 and move away from the edge if 
+        # required. 
+
+        # hall positions to grid direction
+        dirs = {3: Vec(-1,0,0),
+                1: Vec(1,0,0),
+                2: Vec(0,0,1),
+                0: Vec(0,0,-1)}
+
+        # Find them
+        for p in self.rooms:
+            room = self.rooms[p]
+            if room.features[0]._name == 'entrance':
+                continue
+            if room.features[0]._name == 'stairwell':
+                continue
+            if p.y < self.levels-2:
+                droom = self.rooms[p.down(1)]
+                if droom.features[0]._name == 'stairwell':
+                    continue
+            if room.size != Vec(1,1,1):
+                continue
+            if (room._name == 'blank' or
+                room._name == 'cblank' or
+                room._name == 'circularpit' or
+                room._name == 'pitmid' or
+                room._name == 'circularpitbottom' or
+                room._name == 'pitbottom' 
+               ):
+                continue
+            hallsum = 0
+            d = 0
+            for x in xrange(4):
+                if room.halls[x]._name != 'blank':
+                    d = x
+                    hallsum += 1
+            if hallsum != 1:
+                continue
+            room2 = self.rooms[p+dirs[d]]
+            if (room2._name == 'corridor' or
+                room2._name == 'cblank' or
+                room2._name == 'sandstonecavern' or
+                room2._name == 'sandstonecavernlarge' or
+                room2._name == 'cavern' or
+                room2._name == 'cavernlarge' or
+                room2._name == 'naturalcavern' or
+                room2._name == 'naturalcavernlarge' 
+               ):
+                continue
+            print cfg.secret_rooms
+            if random.randint(1,100) > cfg.secret_rooms:
+                continue
+
+            # Override this room's feature
+            room.features = []
+            room.features.append(features.new('secretroom', room))
+            # overrise this room's hallway
+            offset = room.halls[d].offset
+            if offset < 4:
+                offset = 4
+            if offset > 9:
+                offset = 9
+            room.halls[d] = halls.new('single', room, d, offset)
+            room.hallLength[d] = 3
+            # override the other room's hallway
+            od = (d+2)%4
+            offset = room2.halls[od].offset
+            if offset < 4:
+                offset = 4
+            if offset > 9:
+                offset = 9
+            room2.halls[od] = halls.new('single', room2, od, offset)
 
 
     def setentrance(self, world):

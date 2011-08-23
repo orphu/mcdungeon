@@ -576,6 +576,295 @@ class Dais(Blank):
             if self.parent.parent.blocks[p.up(2)].material != materials.Fence:
                 self.parent.parent.setblock(p.up(1), steps)
 
+
+class SecretRoom(Blank):
+    _name = 'secretroom'
+
+    def render(self):
+        o = self.parent.loc.trans(2,0,2)
+        sb = self.parent.parent.setblock
+
+        # Reform the room.
+        # Air space
+        for p in iterate_cube(o.trans(1,1,1), o.trans(10,3,10)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o.trans(11,0,11),-4):
+            sb(p, materials._wall)
+        # Ceiling
+        for p in iterate_cube(o, o.trans(11,0,11)):
+            sb(p, materials._ceiling)
+        # Floor
+        for p in iterate_cube(o.trans(0,4,0), o.trans(11,4,11)):
+            sb(p, materials._floor)
+        # Book cases
+        for p in iterate_four_walls(o.trans(1,1,1), o.trans(10,1,10),-2):
+            sb(p, materials.Bookshelf)
+        for p in (Vec(1,1,3), Vec(1,1,8),
+                  Vec(3,1,1), Vec(3,1,10),
+                  Vec(8,1,1), Vec(8,1,10),
+                  Vec(10,1,3), Vec(10,1,8)):
+            for q in iterate_cube(o+p, o+p.down(2)):
+                sb(q, materials.Air)
+        # Torches
+        for p in (Vec(2,3,2), Vec(2,3,9),
+                  Vec(9,3,2), Vec(9,3,9)):
+            sb(o+p, materials.Fence)
+            sb(o+p.up(1), materials.Torch, 5)
+
+        # Desk
+        mats = [
+            materials.Air,          # 0
+            materials.WoodPlanks,   # 1
+            materials.Chest,        # 2
+            materials.CraftingTable,# 3
+            materials.WallSign,     # 4
+            materials.WoodenStairs  # 5
+        ]
+        template = [
+            [2,1,1,3],
+            [0,4,5,4]
+        ]
+        oo = o.trans(5,3,4)
+        for x in xrange(2):
+            for z in xrange(4):
+                p = oo.trans(x,0,z)
+                sb(p, mats[template[x][z]])
+        self.parent.parent.blocks[o+Vec(6,3,5)].data = 3
+        self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
+        self.parent.parent.blocks[o+Vec(6,3,7)].data = 2
+        sb(o.trans(5,2,5), materials.Torch)
+        self.parent.parent.addchest(oo)
+
+        # Hallway
+        # Find the direction, room, and connecting room.
+        # room = this room
+        # d = direction out of this room
+        # offset = offset of the hallways
+        # oroom = connecting room
+        # od = direction out of the connecting room
+        # length = legth of the opposite hall
+
+        # hall positions to grid direction
+        dirs = {3: Vec(-1,0,0),
+                1: Vec(1,0,0),
+                2: Vec(0,0,1),
+                0: Vec(0,0,-1)}
+
+        room = self.parent
+        d = 0
+        for x in xrange(4):
+            if room.halls[x]._name != 'blank':
+                d = x
+        offset = room.halls[d].offset
+        oroom = self.parent.parent.rooms[room.pos+dirs[d]]
+        od = (d+2)%4
+        length = oroom.hallLength[od]-2
+
+        # Figure our out deltas. There are 8 possibilities based on direction
+        # and offset. Offset will basically mirror across width. 
+        # dw = delta width
+        # dl = delta length
+        # spos = start pos for the mechanism
+
+        # d = 0 (West)
+        if d == 0:
+            dw = Vec(1,0,0)
+            dl = Vec(0,0,-1)
+            spos = o.trans(offset,0,0)
+        # d = 1 (South)
+        elif d == 1:
+            dw = Vec(0,0,1)
+            dl = Vec(1,0,0)
+            spos = o.trans(11,0,offset)
+        # d = 2 (East)
+        elif d == 2:
+            dw = Vec(1,0,0)
+            dl = Vec(0,0,1)
+            spos = o.trans(offset,0,11)
+        # d = 3 (North)
+        else:
+            dw = Vec(0,0,1)
+            dl = Vec(-1,0,0)
+            spos = o.trans(0,0,offset)
+        if offset >= 7:
+            dw = dw*-1
+            if (d == 0 or d == 2):
+                spos = spos.trans(-2,0,0)
+            elif (d == 1 or d == 3):
+                spos = spos.trans(0,0,-2)
+
+        # Position the start block for the mechanism
+        spos = spos + dl*length - dw
+
+        if self.parent.parent.args.debug:
+            print
+            print 'room:', room.pos
+            print 'dir:', d
+            print 'offset:', offset
+            print 'dl:', dl
+            print 'dw:', dw
+            print
+
+        mats = [
+            [materials.Air,0],          # 0 (ignore these)
+            [materials.Air,0],          # 1
+            [materials.Bookshelf,0],    # 2
+            [materials.Stone,0],        # 3
+            [materials._wall,0],        # 4
+            [materials.RedStoneWire,0], # 5
+            [materials.StickyPiston,2], # 6 - toggle piston
+            [materials.RedStoneTorchOn,2],# 7
+            [materials._ceiling, 0],    # 8
+            [materials.StickyPiston, 4],# 9 - pusher piston
+            [materials.RedStoneRepeaterOff, 3],# 10 - piston repeater
+            [materials.RedStoneRepeaterOff, 7],# 11 - toggle repeater
+            [materials.Torch, 0]        # 12
+        ]
+        template = [
+           [[ 8, 8, 8, 8, 8],
+            [ 8, 8, 8, 8, 8],
+            [ 8, 8, 8, 8, 8],
+            [ 8, 8, 8, 8, 8],
+            [ 8, 8, 8, 8, 8]],
+           [[ 1, 1, 1,12, 4],
+            [ 2, 4, 4, 4, 4],
+            [ 2, 1, 1, 1, 4],
+            [ 2, 1, 1, 1, 4],
+            [ 2, 1, 1, 1, 4]],
+           [[ 1, 7, 1 ,1, 4],
+            [ 2, 4, 6, 1, 4],
+            [ 2,11, 9, 9, 4],
+            [ 2, 5,10,10, 4],
+            [ 2, 5, 5, 5, 4]],
+           [[ 1, 1, 1, 1, 4],
+            [ 2, 4, 6, 1, 4],
+            [ 2, 3, 9, 9, 4],
+            [ 2, 3, 3, 3, 4],
+            [ 2, 3, 3, 3, 4]],
+        ]
+        bdata = 4
+
+        # Data adjustments for directions. There are 8, but the defaults are
+        # for East, low offset. 
+
+        # West
+        if d == 0:
+            bdata = 3
+            if offset >= 7:
+                mats[6][1] = 3
+                mats[7][1] = 1
+                mats[9][1] = 5
+                mats[10][1] = 1
+                mats[11][1] = 5
+            else:
+                mats[6][1] = 3
+
+        # South
+        if d == 1:
+            bdata = 1
+            if offset >= 7:
+                mats[6][1] = 5
+                mats[7][1] = 4
+                mats[9][1] = 2
+                mats[10][1] = 0
+                mats[11][1] = 4
+            else:
+                mats[6][1] = 5
+                mats[7][1] = 3
+                mats[9][1] = 3
+                mats[10][1] = 2
+                mats[11][1] = 6
+
+        # East, flipped
+        if (d == 2 and offset >= 7):
+            # flip the pusher piston
+            mats[7][1] = 1
+            mats[9][1] = 5
+            mats[10][1] = 1
+            mats[11][1] = 5
+
+        # North
+        if d == 3:
+            bdata = 2
+            if offset >= 7:
+                mats[6][1] = 4
+                mats[7][1] = 4
+                mats[9][1] = 2
+                mats[10][1] = 0
+                mats[11][1] = 4
+            else:
+                mats[6][1] = 4
+                mats[7][1] = 3
+                mats[9][1] = 3
+                mats[10][1] = 2
+                mats[11][1] = 6
+
+        # Draw the mechanism
+        for y in xrange(4):
+            for w in xrange(5):
+                for l in xrange(5):
+                    p = spos+dl*l+dw*w+Vec(0,1,0)*y
+                    sb(p, mats[template[y][w][l]][0],
+                          mats[template[y][w][l]][1])
+
+        # The button.
+        p = spos+dl*3+dw*4+Vec(0,1,0)*2
+        blocks = self.parent.parent.blocks
+        while blocks[p+dl].material != materials.Air:
+            sb(p.up(1), materials.Air)
+            sb(p, materials.RedStoneWire)
+            sb(p.down(1), materials.Stone)
+            p = p + dl
+        sb(p+dl, materials.StoneButton, bdata)
+
+        # Clear out extra space inside the room
+        p = spos.down(1)
+        for q in iterate_cube(p, p-dl*2+Vec(0,2,0)):
+            sb(q, materials.Air)
+
+        # Clear out any doors or extra torches in this room
+        for p in iterate_cube(o, o.trans(11,4,11)):
+            if p in self.parent.parent.doors:
+                del(self.parent.parent.doors[p])
+            if p in self.parent.parent.torches:
+                del(self.parent.parent.torches[p])
+
+        # Clear doors and torches from the entry way
+        p = spos+dl*4
+        for q in iterate_cube(p.trans(-1,0,-1), p.trans(1,4,1)):
+            if q in self.parent.parent.doors:
+                del(self.parent.parent.doors[q])
+            if q in self.parent.parent.torches:
+                del(self.parent.parent.torches[q])
+
+        # Kill the canvas to prevent spawners and chests from appearing
+        self.parent.canvas = (
+            Vec(0,0,0),
+            Vec(0,0,0),
+            Vec(0,0,0))
+
+        # Cobwebs
+        webs = {}
+        for p in iterate_cube(o, o.trans(11,3,11)):
+            count = 0
+            perc = 80 - (p.y - o.y) * (70/5)
+            if (p not in blocks or
+                blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in blocks and
+                    blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            sb(p, materials.Cobweb)
+
+
 class Forge(Blank):
     _name = 'forge'
 
@@ -594,7 +883,7 @@ class Forge(Blank):
             materials.StoneSlab,    # 5
             materials.Lava,         # 6
             materials.Chest,        # 7
-            materials.CraftingTable# 8
+            materials.CraftingTable # 8
         ]
 
         template = [

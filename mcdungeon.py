@@ -873,6 +873,8 @@ while args.number is not 0:
         else:
             dungeon.entrance.height = args.entrance_height
 
+        print "Finding secret rooms..."
+        dungeon.findsecretrooms()
 
         dungeon.renderrooms()
 

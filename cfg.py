@@ -34,6 +34,7 @@ hard_mode = 'False'
 torches_position = 3
 hall_piston_traps = 75
 resetting_hall_pistons = 'True'
+secret_rooms = '75'
 
 master_halls = []
 master_rooms = []
@@ -71,7 +72,7 @@ def Load(filename = 'default.cfg'):
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
-    structure_values, master_entrances, master_treasure
+    structure_values, master_entrances, master_treasure, secret_rooms
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -164,6 +165,7 @@ def Load(filename = 'default.cfg'):
     loops = int(get('dungeon', 'loops', loops))
 
     hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))
+    secret_rooms = int(get('dungeon', 'secret_rooms', secret_rooms))
 
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be >= 1.0. Check the cfg file.')

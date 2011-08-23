@@ -1,5 +1,9 @@
 v0.5.0 - ??/??/????
 
+   * Secret rooms!
+
+   * New cfg option: secret_rooms controls how often secret rooms show up.
+
    * New room feature: Arcane
 
    * New room feature: Dais
