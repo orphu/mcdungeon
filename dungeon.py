@@ -1516,7 +1516,6 @@ class Dungeon (object):
                 room2._name == 'naturalcavernlarge' 
                ):
                 continue
-            print cfg.secret_rooms
             if random.randint(1,100) > cfg.secret_rooms:
                 continue
 
