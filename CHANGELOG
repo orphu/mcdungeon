@@ -1,3 +1,8 @@
+v0.5.1 - 08/24/2011
+
+   * Fixed bug where secret rooms could cut off stairwells on the second to
+     last level.
+
 v0.5.0 - 08/22/2011
 
    * Secret rooms!
