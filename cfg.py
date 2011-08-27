@@ -20,6 +20,7 @@ portcullis_web = '5'
 torches_top = '50'
 torches_bottom = '50'
 wall = 'Cobblestone'
+secret_door = 'Cobblestone'
 floor = 'Stone'
 ceiling = 'Cobblestone'
 subfloor = 'Bedrock'
@@ -72,7 +73,8 @@ def Load(filename = 'default.cfg'):
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
-    structure_values, master_entrances, master_treasure, secret_rooms
+    structure_values, master_entrances, master_treasure, secret_rooms, \
+    secret_door
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -143,6 +145,7 @@ def Load(filename = 'default.cfg'):
     ceiling = get('dungeon', 'ceiling', ceiling).lower()
     floor = get('dungeon', 'floor', floor).lower()
     subfloor = get('dungeon', 'subfloor', subfloor).lower()
+    secret_door = get('dungeon', 'secret_door', secret_door).lower()
 
     mvportal = get('dungeon', 'mvportal', mvportal)
 
@@ -190,6 +193,8 @@ def Load(filename = 'default.cfg'):
                 materials._floor = copy(val)
             if (val.name == subfloor):
                 materials._subfloor = copy(val)
+            if (val.name == secret_door):
+                materials._secret_door = copy(val)
 
     # Load structure list
     s = [x.strip() for x in str(get('dungeon', 'structures', '')).split(',')]

@@ -138,6 +138,7 @@ RedWool = Material('Red Wool', 'W', RED)
 BlackWool = Material('Black Wool', 'W', DGREY)
 
 _wall = copy(Cobblestone)
+_secret_door = copy(Cobblestone)
 _ceiling = copy(Cobblestone)
 _floor = copy(Stone)
 _subfloor = copy(Bedrock)

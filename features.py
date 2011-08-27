@@ -719,7 +719,8 @@ class SecretRoom(Blank):
             [materials.StickyPiston, 4],# 9 - pusher piston
             [materials.RedStoneRepeaterOff, 3],# 10 - piston repeater
             [materials.RedStoneRepeaterOff, 7],# 11 - toggle repeater
-            [materials.Torch, 0]        # 12
+            [materials.Torch, 0],       # 12
+            [materials._secret_door, 0] # 13
         ]
         template = [
            [[ 8, 8, 8, 8, 8],
@@ -732,12 +733,12 @@ class SecretRoom(Blank):
             [ 2, 1, 1, 1, 4],
             [ 2, 1, 1, 1, 4],
             [ 2, 1, 1, 1, 4]],
-           [[ 1, 7, 1 ,1, 4],
+           [[ 1, 7, 1 ,1,13],
             [ 2, 4, 6, 1, 4],
             [ 2,11, 9, 9, 4],
             [ 2, 5,10,10, 4],
             [ 2, 5, 5, 5, 4]],
-           [[ 1, 1, 1, 1, 4],
+           [[ 1, 1, 1, 1,13],
             [ 2, 4, 6, 1, 4],
             [ 2, 3, 9, 9, 4],
             [ 2, 3, 3, 3, 4],
