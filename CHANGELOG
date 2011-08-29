@@ -1,7 +1,12 @@
 v0.5.2 - ??/??/????
 
    * New cfg option: secret_door sets the material to use for the moving parts
-     of secret doors.
+     of secret doors. Handy if you want to set walls to be something immovable,
+     like bedrock. 
+
+   * Two new murals for ThroneRoom.
+
+   * Fixed arrow traps sometimes breaking secret room halls. 
 
 v0.5.1 - 08/24/2011
 
