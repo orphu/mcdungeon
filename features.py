@@ -720,7 +720,9 @@ class SecretRoom(Blank):
             [materials.RedStoneRepeaterOff, 3],# 10 - piston repeater
             [materials.RedStoneRepeaterOff, 7],# 11 - toggle repeater
             [materials.Torch, 0],       # 12
-            [materials._secret_door, 0] # 13
+            [materials._secret_door, 0],# 13
+            [materials._floor, 0],      # 14
+            [materials._subfloor, 0]    # 15
         ]
         template = [
            [[ 8, 8, 8, 8, 8],
@@ -743,6 +745,16 @@ class SecretRoom(Blank):
             [ 2, 3, 9, 9, 4],
             [ 2, 3, 3, 3, 4],
             [ 2, 3, 3, 3, 4]],
+           [[14,14,14,14,14],
+            [14,14,14,14,14],
+            [14,14,14,14,14],
+            [14,14,14,14,14],
+            [14,14,14,14,14]],
+           [[15,15,15,15,15],
+            [15,15,15,15,15],
+            [15,15,15,15,15],
+            [15,15,15,15,15],
+            [15,15,15,15,15]],
         ]
         bdata = 4
 
@@ -802,7 +814,7 @@ class SecretRoom(Blank):
                 mats[11][1] = 6
 
         # Draw the mechanism
-        for y in xrange(4):
+        for y in xrange(6):
             for w in xrange(5):
                 for l in xrange(5):
                     p = spos+dl*l+dw*w+Vec(0,1,0)*y
