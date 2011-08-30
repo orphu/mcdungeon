@@ -1429,7 +1429,7 @@ class Dungeon (object):
                 f.write('<tr>')
                 for z in xrange(self.zsize*self.room_size):
                     y = layer
-                    while (y < layer + 2*self.room_height-1 and
+                    while (y < layer + self.room_height-1 and
                            Vec(x,y,z) in self.blocks and
                             (self.blocks[Vec(x,y,z)].hide == True or
                              self.blocks[Vec(x,y,z)].material ==
