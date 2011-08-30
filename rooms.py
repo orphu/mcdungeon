@@ -1042,6 +1042,160 @@ class PitWithArchers(Basic2x2):
             self.parent.setblock(x.up(1), materials.Spawner)
 
 
+class Arena(Basic2x2):
+    _name = 'arena'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+
+    def placed(self):
+        rooms = Basic2x2.placed(self)
+        # Narrow the hall connections a little to make room for the skeleton
+        # balconies.
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        for room in rooms:
+            r = self.parent.rooms[room]
+            for h in xrange(4):
+                if r.hallLength[h] > 0:
+                    r.hallLength[h] = 1
+            r.hallSize = [[1,sx-1],
+                             [6,sx-6],
+                             [1,sz-1],
+                             [6,sz-6]]
+        return rooms
+
+    def render(self):
+        sx = 32
+        sy = 12
+        sz = 32
+        o = self.loc
+        pos = self.pos
+
+        # alias for setblock
+        sb = self.parent.setblock
+
+        # symmetrical setblock. A lot of this room will be symmetrical. 
+        def ssb (p, mat, data=0, hide=False):
+            sb(o+p, mat, data, hide)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+p.z), mat, data, hide)
+            sb(Vec(o.x+p.x, o.y+p.y, o.z+sz-1-p.z), mat, data, hide)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+sz-1-p.z), mat, data, hide)
+
+        # Decoration colors
+        # inner color, trim color
+        dmat = random.choice([
+            [materials.RedWool, materials.YellowWool],
+            [materials.RedWool, materials.LightGrayWool],
+            [materials.BlueWool, materials.YellowWool],
+            [materials.DarkGreenWool, materials.YellowWool],
+            [materials.DarkGreenWool, materials.BlackWool],
+            [materials.PurpleWool, materials.YellowWool],
+            [materials.CyanWool, materials.YellowWool],
+            [materials.LightBlueWool, materials.LightGrayWool]
+        ])
+
+        # Basic room
+        # Air space
+        for p in iterate_cube(o, o+Vec(sx-1,sy-1,sz-1)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o+Vec(sx-1,0,sz-1), -sy+1):
+            sb(p, materials._wall)
+        # Ceiling and floor
+        for p in iterate_cube(o, o+Vec(sx-1,0,sz-1)):
+            sb(p, materials._ceiling, hide=True)
+            sb(p.down(sy-1), materials._floor)
+            sb(p.down(sy-2), materials._floor)
+            sb(p.down(sy-3), materials._floor)
+        ssb(Vec(15,0,15), materials.Glowstone, hide=True)
+
+        # Spawners
+        ssb(Vec(1,sy-4,1), materials.Spawner)
+        ssb(Vec(1,sy-5,1), materials.StoneSlab)
+        ssb(Vec(1,sy-6,1), materials.Fence)
+        for p in iterate_cube(Vec(2,sy-4,1), Vec(3,sy-5,2)):
+            ssb(p, materials.Fence)
+        for p in iterate_cube(Vec(1,sy-4,2), Vec(2,sy-5,3)):
+            ssb(p, materials.Fence)
+        self.parent.addspawner(o+Vec(1,sy-4,1))
+        self.parent.addspawner(o+Vec(sx-2,sy-4,1))
+        self.parent.addspawner(o+Vec(1,sy-4,sz-2))
+        self.parent.addspawner(o+Vec(sx-2,sy-4,sz-2))
+
+        # Wooden balcony
+        for p in iterate_cube(Vec(1,4,1), Vec(3,4,9)):
+            ssb(p, materials.WoodPlanks)
+        for p in iterate_cube(Vec(1,4,1), Vec(14,4,3)):
+            ssb(p, materials.WoodPlanks)
+        for p in iterate_cube(Vec(1,4,1), Vec(2,4,8)):
+            ssb(p, materials.WoodenSlab)
+        for p in iterate_cube(Vec(1,4,1), Vec(15,4,2)):
+            ssb(p, materials.WoodenSlab)
+        for p in iterate_cube(Vec(1,3,9), Vec(2,3,9)):
+            ssb(p, materials.Fence)
+        for p in iterate_cube(Vec(4,3,3), Vec(14,3,3)):
+            ssb(p, materials.Fence)
+        for p in iterate_cube(Vec(3,3,3), Vec(3,3,9)):
+            ssb(p, materials.Fence)
+        ssb(Vec(15,4,3), materials.WoodenSlab)
+        ssb(Vec(15,4,4), materials.WoodenSlab)
+        ssb(Vec(15,4,5), materials.WoodenSlab)
+
+        # Stairs
+        for y in xrange(5, sy-3):
+            p = Vec(25-2*y, y, 4)
+            for q in iterate_cube(p, p.trans(-1,0,1)):
+                ssb(q, materials.WoodPlanks)
+            for q in iterate_cube(p.trans(-2,0,0), p.trans(-2,0,1)):
+                ssb(q, materials.WoodenSlab)
+
+        # Banners
+        for p in iterate_cube(Vec(0,0,15), Vec(0,sy-5,15)):
+            ssb(p, dmat[0])
+        for p in iterate_cube(Vec(0,0,14), Vec(0,sy-7,14)):
+            ssb(p, dmat[1])
+
+        # Center arena
+        for p in iterate_cylinder(Vec(4,sy-3,4), Vec(sx-5,sy-3,sz-5)):
+            sb(o+p, materials.StoneSlab)
+        for p in iterate_cylinder(Vec(5,sy-4,5), Vec(sx-6,sy-3,sz-6)):
+            sb(o+p, materials.Air)
+        for p in iterate_cylinder(Vec(7,sy-2,7), Vec(sx-8,sy-2,sz-8)):
+            sb(o+p, materials.StoneSlab)
+        for p in iterate_cylinder(Vec(8,sy-3,8), Vec(sx-9,sy-2,sz-9)):
+            sb(o+p, materials.Air)
+        for p in iterate_cylinder(Vec(9,sy-1,9), Vec(sx-10,sy-1,sz-10)):
+            sb(o+p, materials.StoneSlab)
+
+        # Pit
+        depth = self.parent.position.y - (self.parent.levels-1) * \
+            self.parent.room_height
+        for p in iterate_cylinder(Vec(10,sy-2,10), Vec(sx-11,depth,sz-11)):
+            sb(o+p, materials.Air)
+        for p in iterate_cube(Vec(10,depth,10), Vec(sx-11,depth,sz-11)):
+            sb(o+p, materials.Lava)
+
+        pn = perlin.SimplexNoise(256)
+        for p in iterate_cylinder(Vec(10,sy,10), Vec(sx-11,sy,sz-11)):
+            n = pn.noise3(p.x/4.0, p.y/4.0, p.z/4.0)
+            if (n > 0):
+                sb(o+p, materials.Sand)
+            else:
+                sb(o+p, materials.Sandstone)
+
+        # Treasure and more spawners
+        sb(o+Vec(15,sy-1,15), materials.Chest)
+        self.parent.addchest(o+Vec(15,sy-1,15), loottable._maxtier)
+        sb(o+Vec(16,sy-1,16), materials.Chest)
+        self.parent.addchest(o+Vec(16,sy-1,16))
+        sb(o+Vec(15,sy-1,16), materials.Spawner)
+        self.parent.addspawner(o+Vec(15,sy-1,16), 'Ghast')
+        sb(o+Vec(16,sy-1,15), materials.Spawner)
+        self.parent.addspawner(o+Vec(16,sy-1,15), 'Ghast')
+
+
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
     _walls = materials.Sandstone
