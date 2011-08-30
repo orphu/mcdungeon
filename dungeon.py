@@ -333,6 +333,7 @@ class Dungeon (object):
                 tierf = (float(level) /
                          float(self.levels-1) *
                          float(loottable._maxtier-2))+1.5
+                tierf = min(loottable._maxtier-1, tierf)
             else:
                 tierf = loottable._maxtier-1
             tier = max(1, int(tierf))
@@ -1428,7 +1429,7 @@ class Dungeon (object):
                 f.write('<tr>')
                 for z in xrange(self.zsize*self.room_size):
                     y = layer
-                    while (y < layer + self.room_height-1 and
+                    while (y < layer + 2*self.room_height-1 and
                            Vec(x,y,z) in self.blocks and
                             (self.blocks[Vec(x,y,z)].hide == True or
                              self.blocks[Vec(x,y,z)].material ==
