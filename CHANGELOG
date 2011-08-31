@@ -1,4 +1,4 @@
-v0.5.2 - ??/??/????
+v0.5.2 - 08/30/2011
 
    * New cfg option: secret_door sets the material to use for the moving parts
      of secret doors. Handy if you want to set walls to be something immovable,
