@@ -735,6 +735,22 @@ class ThroneRoom(Basic):
                 for q in iterate_cube(p, p.down(random.randint(0,2))):
                     sb(q, materials.Fence)
 
+        # Portal
+        if (cfg.mvportal != ''):
+            # Obsidian portal frame.
+            for p in iterate_cube(Vec(6,7,1), Vec(9,11,1)):
+                sb(o+p, materials.Obsidian)
+            # Portal stuff.
+            for p in iterate_cube(Vec(7,8,1), Vec(8,10,1)):
+                sb(o+p, materials.NetherPortal)
+            # Sign.
+            sb(o+Vec(6,9,2), materials.WallSign, 2)
+            self.parent.addsign(o+Vec(6,9,2),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       cfg.mvportal,
+                                       '<== Exit')
+
         # Cobwebs
         webs = {}
         for p in iterate_cube(o.down(1), o.trans(15,4,31)):
