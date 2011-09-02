@@ -843,6 +843,10 @@ class SpiderLair(Basic):
         inner_cave.add_exit((15,1), (15,15))
         outer_cave.add_exit((0,0),  (0,15))
 
+        # Portal
+        if (cfg.mvportal != ''):
+            inner_cave.add_exit((0,1), (0,4))
+
         # Carve caves
         outer_cave.gen_map()
         inner_cave.gen_map(mode='room')
@@ -924,6 +928,24 @@ class SpiderLair(Basic):
                 self.parent.setblock(p.up(3), materials.Air)
                 self.parent.addspawner(p, 'Spider')
                 count += 1
+
+        # Portal
+        if (cfg.mvportal != ''):
+            o = self.loc
+            sb = self.parent.setblock
+            # Obsidian portal frame.
+            for p in iterate_cube(Vec(1,0,0), Vec(4,4,0)):
+                sb(o+p, materials.Obsidian)
+            # Portal stuff.
+            for p in iterate_cube(Vec(2,1,0), Vec(3,3,0)):
+                sb(o+p, materials.NetherPortal)
+            # Sign.
+            sb(o+Vec(1,2,1), materials.WallSign, 2)
+            self.parent.addsign(o+Vec(1,2,1),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       cfg.mvportal,
+                                       '<== Exit')
 
         # Cobwebs
         webs = {}
