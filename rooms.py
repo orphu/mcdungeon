@@ -1195,6 +1195,21 @@ class Arena(Basic2x2):
         sb(o+Vec(16,sy-1,15), materials.Spawner)
         self.parent.addspawner(o+Vec(16,sy-1,15), 'Ghast')
 
+        # Portal
+        if (cfg.mvportal != ''):
+            # Obsidian portal frame.
+            for p in iterate_cube(Vec(1,sy-7,14), Vec(1,sy-3,17)):
+                sb(p, materials.Obsidian)
+            # Portal stuff.
+            for p in iterate_cube(Vec(1,sy-6,15), Vec(1,sy-4,16)):
+                sb(p, materials.NetherPortal)
+            # Sign.
+            sb(Vec(2,sy-5,17), materials.WallSign, 5)
+            self.parent.addsign(o+Vec(2,sy-5,17),
+                                       '<== Exit',
+                                       '[MultiVerse]',
+                                       cfg.mvportal,
+                                       '<== Exit')
 
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
