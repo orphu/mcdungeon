@@ -1,3 +1,8 @@
+v0.5.3 - ??/??/???
+
+   * SpiderLair, ThroneRoom, and Arena now generate portals when mvportal is
+     configured. 
+
 v0.5.2 - 08/30/2011
 
    * New cfg option: secret_door sets the material to use for the moving parts
