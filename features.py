@@ -364,15 +364,13 @@ class MultiVersePortal(Blank):
             self.parent.parent.blocks[center.trans(-2,-1,1)].data = 2
             # Create the tile entities for the signs.
             self.parent.parent.addsign(center.trans(1,-1,-1),
-                                       '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        self.target,
-                                       '<== Exit')
+                                       '','')
             self.parent.parent.addsign(center.trans(-2,-1,1),
-                                       '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        self.target,
-                                       '<== Exit')
+                                       '', '')
             # Treasure!
             self.parent.parent.setblock(center.trans(-2,0,-3),
                                         materials.Chest)

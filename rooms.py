@@ -746,10 +746,9 @@ class ThroneRoom(Basic):
             # Sign.
             sb(o+Vec(6,9,2), materials.WallSign, 2)
             self.parent.addsign(o+Vec(6,9,2),
-                                       '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        cfg.mvportal,
-                                       '<== Exit')
+                                       '','')
 
         # Cobwebs
         webs = {}
@@ -942,10 +941,9 @@ class SpiderLair(Basic):
             # Sign.
             sb(o+Vec(1,2,1), materials.WallSign, 2)
             self.parent.addsign(o+Vec(1,2,1),
-                                       '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        cfg.mvportal,
-                                       '<== Exit')
+                                       '', '')
 
         # Cobwebs
         webs = {}
@@ -1040,20 +1038,11 @@ class PitWithArchers(Basic2x2):
             self.parent.setblock(center.trans(1,-1,-1),
                                         materials.WallSign)
             self.parent.blocks[center.trans(1,-1,-1)].data = 3
-            self.parent.setblock(center.trans(-2,-1,1),
-                                        materials.WallSign)
-            self.parent.blocks[center.trans(-2,-1,1)].data = 2
             # Create the tile entities for the signs.
             self.parent.addsign(center.trans(1,-1,-1),
-                                       '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        cfg.mvportal,
-                                       '<== Exit')
-            self.parent.addsign(center.trans(-2,-1,1),
-                                       '<== Exit',
-                                       '[MultiVerse]',
-                                       cfg.mvportal,
-                                       '<== Exit')
+                                       '', '')
         # Treasure!
         self.parent.setblock(center.trans(0,0,3),
                                     materials.Chest)
@@ -1245,7 +1234,7 @@ class Arena(Basic2x2):
             sb(Vec(2,sy-5,17), materials.WallSign, 5)
             self.parent.addsign(o+Vec(2,sy-5,17),
                                        '<== Exit',
-                                       '[MultiVerse]',
+                                       '[multiverse]',
                                        cfg.mvportal,
                                        '<== Exit')
 

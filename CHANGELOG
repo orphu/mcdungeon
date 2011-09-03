@@ -1,5 +1,7 @@
 v0.5.3 - ??/??/???
 
+   * MultiVerse signs work differently and are (hopefully) compatible with MV 2.
+
    * SpiderLair, ThroneRoom, and Arena now generate portals when mvportal is
      configured. 
 
