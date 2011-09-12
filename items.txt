@@ -120,6 +120,19 @@
 94,Redstone Repeater On,0,64
 95,Locked Chest,0,64
 96,Trapdoor,0,64
+97,Silverfish Stone,0,64
+98,Stone Brick,0,64
+98,Mossy Stone Brick,1,64
+98,Cracked Stone Brick,2,64
+101,Iron Bars,0,64
+102,Glass Pane,0,64
+103,Melon,0,64
+104,Pumpkin Stem,0,64
+105,Melon Stem,0,64
+106,Vines,0,64
+107,Fence Gate,0,64
+108,Brick Stairs,0,64
+109,Stone Brick Stairs,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
