@@ -175,7 +175,7 @@
 294,Gold Hoe,0,1
 295,Seeds,0,64
 296,Wheat,0,64
-297,Bread,0,1
+297,Bread,0,64
 298,Leather Helmet,0,1
 299,Leather Chestplate,0,1
 300,Leather Leggings,0,1
@@ -197,8 +197,8 @@
 316,Gold Leggings,0,1
 317,Gold Boots,0,1
 318,Flint,0,64
-319,Raw Porkchop,0,1
-320,Cooked Porkchop,0,1
+319,Raw Porkchop,0,64
+320,Cooked Porkchop,0,64
 321,Paintings,0,64
 322,Golden Apple,0,1
 323,Sign,0,1
@@ -227,8 +227,8 @@
 346,Fishing Rod,0,1
 347,Clock,0,1
 348,Glowstone Dust,0,64
-349,Raw Fish,0,1
-350,Cooked Fish,0,1
+349,Raw Fish,0,64
+350,Cooked Fish,0,64
 351,Ink Sac,0,64
 351,Rose Red,1,64
 351,Cactus Green,2,64
@@ -258,5 +258,14 @@
 358,Map3,3,0
 358,Map4,4,0
 359,Shears,0,0
+360,Melon (Slice),0,64
+361,Pumpkin Seeds,0,64
+362,Melon Seeds,0,64
+363,Raw Beef,0,64
+364,Steak,0,64
+365,Raw Chicken,0,64
+366,Cooked Chicken,0,64
+367,Rotten Flesh,0,64
+368,Ender Pearl,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
