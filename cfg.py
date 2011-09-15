@@ -184,7 +184,7 @@ def Load(filename = 'default.cfg'):
 
     # Set the wall, ceiling, and floor materials
     for name, val in materials.__dict__.items():
-        if type(val) == materials.Material:
+        if (isinstance(val, materials.Material) == True):
             if (val.name == wall):
                 materials._wall = copy(val)
             if (val.name == ceiling):
