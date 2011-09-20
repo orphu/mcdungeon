@@ -2,8 +2,10 @@ import sys
 
 from copy import *
 import platform
+import random
 
 import items
+import perlin
 
 BLACK  = '\033[0;30m'
 DGREY  = '\033[1;30m'
@@ -37,6 +39,7 @@ def valByName(name):
     return -1
 
 class Material(object):
+    _meta = False
     name = 'Air'
     val = 0
     data = 0
@@ -52,6 +55,17 @@ class Material(object):
         self.val = items.byName(self.name).value
         self.data = items.byName(self.name).data
 
+class MetaMaterial(Material):
+    _meta = True
+    name = 'Air'
+    val = 0
+    data = 0
+    def __init__(self):
+        return
+    def update(self, x,y,z, maxx, maxy, maxz):
+        return
+
+
 Air = Material('Air', ' ',BLACK)
 Bedrock = Material('Bedrock', '#', DGREY)
 Bookshelf = Material('Bookshelf', '#', RED)
@@ -61,6 +75,7 @@ Chest = Material('Chest', 'C',BPURPLE)
 CoalOre = Material('Coal Ore', 'o',DGREY)
 Cobblestone = Material('Cobblestone', '%',DGREY)
 CobblestoneSlab = Material('Cobblestone Slab', '%',GREY)
+CrackedStoneBrick = Material('Cracked Stone Brick' ,'P',GREY)
 CraftingTable = Material('Crafting Table', 'C', YELLOW)
 DiamondOre = Material('Diamond Ore', 'o',WHITE)
 Dirt = Material('Dirt', '*',YELLOW)
@@ -82,6 +97,7 @@ LapisBlock = Material('Lapis Lazuli Block', 'L',BBLUE)
 LapisOre = Material('Lapis Lazuli Ore', 'o',BBLUE)
 Lava = Material('Lava', 'L',BRED)
 MossStone = Material('Moss Stone', '%',GREEN)
+MossyStoneBrick = Material('Mossy Stone Brick' ,'B',GREEN)
 Netherrack = Material('Netherrack', '%',BPURPLE)
 NetherPortal = Material('Portal', '@',BPURPLE)
 NoteBlock = Material('Note Block', 'N',CYAN)
@@ -103,6 +119,7 @@ Spawner = Material('Monster Spawner', 'S',DGREY)
 StickyPiston = Material('Sticky Piston', "P", GREEN)
 StillWater = Material('StillWater','~',BBLUE)
 Stone = Material('Stone' ,'#',GREY)
+StoneBrick = Material('Stone Brick' ,'B',GREY)
 StoneButton = Material('Stone Button' ,'.',GREY)
 StonePressurePlate = Material('Stone Pressure Plate' ,'O',GREY)
 StoneSlab = Material('Stone Slab', 'd',WHITE)
@@ -137,6 +154,51 @@ DarkGreenWool = Material('Dark Green Wool', 'W', GREEN)
 RedWool = Material('Red Wool', 'W', RED)
 BlackWool = Material('Black Wool', 'W', DGREY)
 
+# Meta materials
+class meta_class_mossycobble(MetaMaterial):
+    name = 'meta_mossycobble'
+    val = Cobblestone.val
+    data = Cobblestone.data
+    c = Cobblestone.c
+    def update(self, x, y, z):
+        pn = perlin.SimplexNoise(256)
+        if pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
+            self.val = MossStone.val
+            self.data = MossStone.data
+            self.c = MossStone.c
+        else:
+            self.val = Cobblestone.val
+            self.data = Cobblestone.data
+            self.c = Cobblestone.c
+
+meta_mossycobble = meta_class_mossycobble()
+
+class meta_class_stonedungeon(MetaMaterial):
+    name = 'meta_stonedungeon'
+    val = StoneBrick.val
+    data = StoneBrick.data
+    c = StoneBrick.c
+    def update(self, x, y, z, maxx, maxy, maxz):
+        if random.randint(1,100) < 5:
+            self.val = CrackedStoneBrick.val
+            self.data = CrackedStoneBrick.data
+            self.c = CrackedStoneBrick.c
+            return
+
+        pn = perlin.SimplexNoise(256)
+        n = pn.noise3(x / 100.0, y / 100.0, z / 100.0)
+        mossband = .1
+        if (n > -mossband and n < mossband):
+            self.val = MossyStoneBrick.val
+            self.data = MossyStoneBrick.data
+            self.c = MossyStoneBrick.c
+        else:
+            self.val = StoneBrick.val
+            self.data = StoneBrick.data
+            self.c = StoneBrick.c
+
+meta_stonedungeon = meta_class_stonedungeon()
+
 _wall = copy(Cobblestone)
 _secret_door = copy(Cobblestone)
 _ceiling = copy(Cobblestone)
@@ -144,3 +206,4 @@ _floor = copy(Stone)
 _subfloor = copy(Bedrock)
 _sandbar = copy(Sand)
 _natural = copy(Air)
+
