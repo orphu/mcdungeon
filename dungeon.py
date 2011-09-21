@@ -1713,6 +1713,18 @@ class Dungeon (object):
                 continue
             if (mat == materials._natural):
                 continue
+            if (cfg.silverfish > 0 and
+                (mat.val == 1 or mat.val == 4 or mat.val == 97) and
+                random.randint(1,100) < cfg.silverfish):
+                if (mat.val == 4):
+                    mat.val = 97
+                    dat = 1
+                elif (mat.val == 1):
+                    mat.val = 97
+                    dat = 0
+                elif (mat.val == 98 and dat == 0):
+                    mat.val = 97
+                    dat = 2
             # Write the block.
             chunk.Blocks[xInChunk, zInChunk, y] = mat.val
             chunk.Data[xInChunk, zInChunk, y] = dat
