@@ -67,6 +67,8 @@
 44,Stone Slab,0,64
 44,Sandstone Slab,1,64
 44,Wooden Slab,2,64
+44,Brick Slab,3,64
+44,Stone Brick Slab,4,64
 44,Cobblestone Slab,3,64
 45,Brick Block,0,64
 46,TNT,0,64
@@ -121,6 +123,8 @@
 95,Locked Chest,0,64
 96,Trapdoor,0,64
 97,Silverfish Stone,0,64
+97,Silverfish Cobblestone,1,64
+97,Silverfish Stone Brick,2,64
 98,Stone Brick,0,64
 98,Mossy Stone Brick,1,64
 98,Cracked Stone Brick,2,64
