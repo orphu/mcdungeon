@@ -1,5 +1,23 @@
 v0.6.0 - ??/??/???
 
+   * New cfg option: silverfish replaces stone, cobblestone, and stone brick
+     blocks with silverfish look-alikes. 
+
+   * Reworked many things to incorporate new 1.8 blocks. 
+
+   * Updates to pymclevel fix lighting errors for 1.8 blocks. (vines, chests,
+     etc)
+
+   * New meta materials can be used for wall, floors, etc:
+
+     * meta_mossycobble: Cobblestone with veins of moss. (like pre 0.6.0 cobble)
+
+     * meta_mossystonebrick: Stone bricks with random cracks and veins of moss.
+
+     * meta_stonedungeon: Changes as you go deeper. Starts as something like
+                          mossy stone bricks and turns to cobble and mossy
+                          cobble as levels get deeper.
+
    * Added blocks: Silverfish Stone, Stone Brick, Mossy Stone Brick,
      Cracked Stone Brick, Iron Bars, Glass Pane, Melon, Pumpkin Stem,
      Melon Stem, Vines, Fence Gate, Brick Stairs, Stone Brick Stairs
