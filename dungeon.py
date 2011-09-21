@@ -1363,12 +1363,11 @@ class Dungeon (object):
                 if (Vec(x,y,z) in self.blocks and
                     self.blocks[Vec(x,y,z)].hide == False):
                     mat = self.blocks[Vec(x,y,z)].material
-                    # 3D perlin moss!
-                    if (mat.name == 'cobblestone'):
-                        if ((pn.noise3(x / 4.0, y / 4.0, z / 4.0) + 1.0) / 2.0 < 0.5):
-                            mat = materials.MossStone
-                        else:
-                            mat = materials.Cobblestone
+                    if (mat._meta == True):
+                        mat.update(x,y,z,
+                                   self.xsize*self.room_size,
+                                   self.levels*self.room_height,
+                                   self.zsize*self.room_size)
                     sys.stdout.write(mat.c)
                 else:
                     sys.stdout.write(materials.NOBLOCK)
@@ -1440,15 +1439,12 @@ class Dungeon (object):
                     if (Vec(x,y,z) in self.blocks and
                         self.blocks[Vec(x,y,z)].hide == False):
                         mat = self.blocks[Vec(x,y,z)].material
-                        # 3D perlin moss!
-                        if (mat.name == 'cobblestone'):
-                            if ((pn.noise3(x / 4.0,
-                                         y / 4.0,
-                                         z / 4.0,
-                                         ) + 1.0) / 2.0 < 0.5):
-                                mat = materials.MossStone
-                            else:
-                                mat = materials.Cobblestone
+                        if (mat._meta == True):
+                            mat.update(x,y,z,
+                                       self.xsize*self.room_size,
+                                       self.levels*self.room_height,
+                                       self.zsize*self.room_size)
+                            self.blocks[Vec(x,y,z)].data = mat.data
                         f.write('<td><img src=d/%d-%d.png>' %
                                 (mat.val,
                                  self.blocks[Vec(x,y,z)].data))
@@ -1702,14 +1698,14 @@ class Dungeon (object):
                     print 'crd: (%d, %d) chk: (%d, %d) mat: %s' % \
                         (x, z, chunk_x, chunk_z, block.material.name)
                 continue
-            # 3D perlin moss!
             mat = block.material
             dat = block.data
-            if (mat.name == 'cobblestone'):
-                if ((pn.noise3(x / 4.0, y / 4.0, z / 4.0) + 1.0) / 2.0 < 0.5):
-                    mat = materials.MossStone
-                else:
-                    mat = materials.Cobblestone
+            if (mat._meta == True):
+                mat.update(block.loc.x,block.loc.y,block.loc.z,
+                           self.xsize*self.room_size,
+                           self.levels*self.room_height,
+                           self.zsize*self.room_size)
+                dat = mat.data
             if (mat == materials._sandbar and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and

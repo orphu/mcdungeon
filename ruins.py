@@ -201,14 +201,11 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p, materials.Air)
             for p in iterate_four_walls(c1.trans(y,-y,y),
                                         c3.trans(-y,-y,-y), 0):
-                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
         # Floor. From pyramid base to just above ceiling. 
-        #for p in iterate_cube(c1,
-        #                      Vec(c3.x, -1, c3.z)):
-        #    self.parent.parent.setblock(p, materials._wall)
         for p in iterate_four_walls(c1,
                                     c3, c1.y):
-            self.parent.parent.setblock(p, materials._wall, hide=True)
+            self.parent.parent.setblock(p, materials.meta_mossystonebrick, hide=True)
         # Cover the floor with sand
         pn = perlin.SimplexNoise(256)
         for p in iterate_cube(c1, c3):
@@ -221,7 +218,7 @@ class StepPyramid(Blank):
             elif (n >= d):
                 self.parent.parent.setblock(p, materials.Gravel)
             else:
-                self.parent.parent.setblock(p, materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
         # Build internal ruins. 
         cchance =80
         for p in iterate_cube(Vec(0, 0, 0), Vec(3, 0, 3)):
@@ -287,7 +284,7 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 0)
                 self.parent.parent.setblock(p.trans(1,0,0),
-                                            materials.Cobblestone, 0)
+                                            materials.meta_mossycobble, 0)
             # Above floor, but below entry level, 
             # draw the interior stairs and airspace.
             if (y > 0 and y <= self.ent_n):
@@ -299,7 +296,7 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(6,0,0),
                                                 materials.StoneStairs, 0)
                     self.parent.parent.setblock(p.trans(7,0,0),
-                                                materials.Cobblestone, 0)
+                                                materials.meta_mossycobble, 0)
             # At entry level, draw a platform floor. 
             if (self.ent_n == y):
                 for p in iterate_cube(c1.trans(y+1, -y, 30),
@@ -308,27 +305,27 @@ class StepPyramid(Blank):
             # Above the entry platform, draw some walls
             if (y > self.ent_n and y < self.ent_n+4):
                 p = c1.trans(y, -y, 30)
-                self.parent.parent.setblock(p, materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(1,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(1,0,0), materials.meta_mossycobble)
                 self.parent.parent.setblock(p.trans(0,0,1), materials.Air)
                 self.parent.parent.setblock(p.trans(1,0,1), materials.Air)
                 self.parent.parent.setblock(p.trans(0,0,2), materials.Air)
                 self.parent.parent.setblock(p.trans(1,0,2), materials.Air)
-                self.parent.parent.setblock(p.trans(0,0,3), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(1,0,3), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,3), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(1,0,3), materials.meta_mossycobble)
             # Add a ceiling for the entryway.
             if (y ==  self.ent_n+4):
                 p = c1.trans(y-3, -y, 30)
-                self.parent.parent.setblock(p.trans(1,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 p = c1.trans(y-3, -y, 33)
-                self.parent.parent.setblock(p.trans(1,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(1,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 for p in iterate_cube(c1.trans(y-3, -y, 30),
                                       c1.trans(y+1, -y, 33)):
-                    self.parent.parent.setblock(p, materials.Cobblestone)
+                    self.parent.parent.setblock(p, materials.meta_mossycobble)
 
 
             # South Side
@@ -341,7 +338,7 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 1)
                 self.parent.parent.setblock(p.trans(-1,0,0),
-                                            materials.Cobblestone, 0)
+                                            materials.meta_mossycobble, 0)
             if (y > 0 and y <= self.ent_s):
                 for p in iterate_cube(c1.trans(63-y, -y, 28),
                                       c1.trans(63-y, -y, 35)):
@@ -351,33 +348,33 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(-6,0,0),
                                                 materials.StoneStairs, 1)
                     self.parent.parent.setblock(p.trans(-7,0,0),
-                                                materials.Cobblestone, 0)
+                                                materials.meta_mossycobble, 0)
             if (self.ent_s == y):
                 for p in iterate_cube(c1.trans(63-y-1, -y, 30),
                                       c1.trans(63-y-8, -y, 33)):
                     self.parent.parent.setblock(p, materials.Stone)
             if (y > self.ent_s and y < self.ent_s+4):
                 p = c1.trans(63-y, -y, 30)
-                self.parent.parent.setblock(p, materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(-1,0,0), materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(-1,0,0), materials.meta_mossycobble)
                 self.parent.parent.setblock(p.trans(0,0,1), materials.Air)
                 self.parent.parent.setblock(p.trans(-1,0,1), materials.Air)
                 self.parent.parent.setblock(p.trans(0,0,2), materials.Air)
                 self.parent.parent.setblock(p.trans(-1,0,2), materials.Air)
-                self.parent.parent.setblock(p.trans(0,0,3), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(-1,0,3), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,0,3), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(-1,0,3), materials.meta_mossycobble)
             if (y ==  self.ent_s+4):
                 p = c1.trans(63-y+3, -y, 30)
-                self.parent.parent.setblock(p.trans(-1,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(-1,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 p = c1.trans(63-y+3, -y, 33)
-                self.parent.parent.setblock(p.trans(-1,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(-1,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 for p in iterate_cube(c1.trans(63-y+3, -y, 30),
                                       c1.trans(63-y-1, -y, 33)):
-                    self.parent.parent.setblock(p, materials.Cobblestone)
+                    self.parent.parent.setblock(p, materials.meta_mossycobble)
 
             # West Side
             self.parent.parent.setblock(c1.trans(29,-y-1,y),
@@ -388,7 +385,7 @@ class StepPyramid(Blank):
                                   c1.trans(33, -y, y)):
                 self.parent.parent.setblock(p, materials.StoneStairs, 3)
                 self.parent.parent.setblock(p.trans(0,0,1),
-                                            materials.Cobblestone, 0)
+                                            materials.meta_mossycobble, 0)
             if (y > 0 and y <= self.ent_w):
                 for p in iterate_cube(c1.trans(28, -y, y),
                                       c1.trans(35, -y, y)):
@@ -398,33 +395,33 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(0,0,6),
                                                 materials.StoneStairs, 3)
                     self.parent.parent.setblock(p.trans(0,0,7),
-                                                materials.Cobblestone, 0)
+                                                materials.meta_mossycobble, 0)
             if (self.ent_w == y):
                 for p in iterate_cube(c1.trans(30, -y, y+1),
                                       c1.trans(33, -y, y+8)):
                     self.parent.parent.setblock(p, materials.Stone)
             if (y > self.ent_w and y < self.ent_w+4):
                 p = c1.trans(30, -y, y)
-                self.parent.parent.setblock(p, materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,0,1), materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,0,1), materials.meta_mossycobble)
                 self.parent.parent.setblock(p.trans(1,0,0), materials.Air)
                 self.parent.parent.setblock(p.trans(1,0,1), materials.Air)
                 self.parent.parent.setblock(p.trans(2,0,0), materials.Air)
                 self.parent.parent.setblock(p.trans(2,0,1), materials.Air)
-                self.parent.parent.setblock(p.trans(3,0,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(3,0,1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(3,0,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(3,0,1), materials.meta_mossycobble)
             if (y ==  self.ent_w+4):
                 p = c1.trans(30, -y, y-3)
-                self.parent.parent.setblock(p.trans(0,1,1), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,1), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 p = c1.trans(33, -y, y-3)
-                self.parent.parent.setblock(p.trans(0,1,1), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,1), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 for p in iterate_cube(c1.trans(30, -y, y-3),
                                       c1.trans(33, -y, y+1)):
-                    self.parent.parent.setblock(p, materials.Cobblestone)
+                    self.parent.parent.setblock(p, materials.meta_mossycobble)
 
             # East Side
             self.parent.parent.setblock(c1.trans(29,-y-1,63-y),
@@ -436,7 +433,7 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p,
                                             materials.StoneStairs, 2)
                 self.parent.parent.setblock(p.trans(0,0,-1),
-                                            materials.Cobblestone, 0)
+                                            materials.meta_mossycobble, 0)
             if (y > 0 and y <= self.ent_e):
                 for p in iterate_cube(c1.trans(28, -y, 63-y),
                                       c1.trans(35, -y, 63-y)):
@@ -446,33 +443,33 @@ class StepPyramid(Blank):
                     self.parent.parent.setblock(p.trans(0,0,-6),
                                                 materials.StoneStairs, 2)
                     self.parent.parent.setblock(p.trans(0,0,-7),
-                                                materials.Cobblestone, 0)
+                                                materials.meta_mossycobble, 0)
             if (self.ent_e == y):
                 for p in iterate_cube(c1.trans(30, -y, 63-y-1),
                                       c1.trans(33, -y, 63-y-8)):
                     self.parent.parent.setblock(p, materials.Stone)
             if (y > self.ent_e and y < self.ent_e+4):
                 p = c1.trans(30, -y, 63-y)
-                self.parent.parent.setblock(p, materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,0,-1), materials.Cobblestone)
+                self.parent.parent.setblock(p, materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,0,-1), materials.meta_mossycobble)
                 self.parent.parent.setblock(p.trans(1,0,0), materials.Air)
                 self.parent.parent.setblock(p.trans(1,0,-1), materials.Air)
                 self.parent.parent.setblock(p.trans(2,0,0), materials.Air)
                 self.parent.parent.setblock(p.trans(2,0,-1), materials.Air)
-                self.parent.parent.setblock(p.trans(3,0,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(3,0,-1), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(3,0,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(3,0,-1), materials.meta_mossycobble)
             if (y ==  self.ent_e+4):
                 p = c1.trans(30, -y, 63-y+3)
-                self.parent.parent.setblock(p.trans(0,1,-1), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,-1), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 p = c1.trans(33, -y, 63-y+3)
-                self.parent.parent.setblock(p.trans(0,1,-1), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,1,0), materials.Cobblestone)
-                self.parent.parent.setblock(p.trans(0,2,0), materials.Cobblestone)
+                self.parent.parent.setblock(p.trans(0,1,-1), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,1,0), materials.meta_mossycobble)
+                self.parent.parent.setblock(p.trans(0,2,0), materials.meta_mossycobble)
                 for p in iterate_cube(c1.trans(30, -y, 63-y+3),
                                       c1.trans(33, -y, 63-y-1)):
-                    self.parent.parent.setblock(p, materials.Cobblestone)
+                    self.parent.parent.setblock(p, materials.meta_mossycobble)
 
         # Topper
         # Supports
@@ -501,6 +498,7 @@ class StepPyramid(Blank):
 class RoundTowerEntrance(Blank):
     _name = 'roundtowerentrance'
     _ruin = False
+    _mat = materials.meta_mossycobble
 
     def render (self):
         # The room floor Y location
@@ -538,17 +536,17 @@ class RoundTowerEntrance(Blank):
         # lower tower from ground up to chest level. 
         #    The floor
         for p in iterate_cylinder(Vec(c1.x, glev, c1.z),Vec(c3.x, elev+1, c3.z)):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    The ceiling
         for p in iterate_cylinder(Vec(c1.x, clev+1, c1.z),Vec(c3.x, clev+1, c3.z)):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    Outer wall and airspace
         for p in iterate_cylinder(c1.down(2),Vec(c3.x, glev, c3.z)):
             self.parent.parent.setblock(p, materials.Air)
         for p in iterate_tube(Vec(c1.x,elev,c1.z),
                               Vec(c3.x,elev,c3.z),
                               abs(elev-clev)):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    Battlements
         for p in iterate_cube(Vec(0,0,0), Vec(5,0,5)):
             if (((p.x+p.z)&1) == 1):
@@ -561,7 +559,7 @@ class RoundTowerEntrance(Blank):
                                             materials.Air)
         # Upper tower from chest level to battlement
         for p in iterate_cylinder(b1,Vec(b3.x, clev, b3.z)):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         for p in iterate_cube(Vec(0,0,0), Vec(4,0,4)):
             if (((p.x+p.z)&1) == 1):
                 self.parent.parent.setblock(b1+p, materials.Air)
@@ -654,6 +652,7 @@ class RoundTowerEntrance(Blank):
 class SquareTowerEntrance(Blank):
     _name = 'squaretowerentrance'
     _ruin = False
+    _mat = materials.meta_mossycobble
 
     def render (self):
         # The room floor Y location
@@ -691,22 +690,22 @@ class SquareTowerEntrance(Blank):
         # Chest level battlements
         #    This is the solid outer wall right under the battlements
         for p in iterate_cube(c1,c3):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    The "floor" This extends to the ground to make the base thicker. 
         for p in iterate_cube(c1.trans(1,1,1),Vec(c3.x-1,
                                                   elev,
                                                   c3.z-1)):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    Place the battlement blocks on the wall
         for p in iterate_cube(Vec(0,-1,0), Vec(4,-1,4)):
             if (((p.x+p.z)&1) == 0):
-                self.parent.parent.setblock(c1+p, materials._wall)
+                self.parent.parent.setblock(c1+p, self._mat)
                 self.parent.parent.setblock(c2.trans(-p.x,p.y,p.z),
-                                            materials._wall)
+                                            self._mat)
                 self.parent.parent.setblock(c3.trans(-p.x,p.y,-p.z),
-                                            materials._wall)
+                                            self._mat)
                 self.parent.parent.setblock(c4.trans(p.x,p.y,-p.z),
-                                            materials._wall)
+                                            self._mat)
         #     Carve out a walkway
         for p in iterate_cube(c1.trans(1,0,1),
                               c3.trans(-1,-10,-1)):
@@ -714,17 +713,17 @@ class SquareTowerEntrance(Blank):
         # Battlements (top of the tower)
         #    This is the solid outer wall right under the battlements
         for p in iterate_cube(b1,b3):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         #    Place the battlement blocks on the wall
         for p in iterate_cube(Vec(0,-1,0), Vec(2,-1,2)):
             if (((p.x+p.z)&1) == 0):
-                self.parent.parent.setblock(b1+p, materials._wall)
+                self.parent.parent.setblock(b1+p, self._mat)
                 self.parent.parent.setblock(b2.trans(-p.x,p.y,p.z),
-                                            materials._wall)
+                                            self._mat)
                 self.parent.parent.setblock(b3.trans(-p.x,p.y,-p.z),
-                                            materials._wall)
+                                            self._mat)
                 self.parent.parent.setblock(b4.trans(p.x,p.y,-p.z),
-                                            materials._wall)
+                                            self._mat)
         # Clear air space inside the tower
         for p in iterate_cube(Vec(wstart.x, elev, wstart.z),
                               Vec(wstart.x+5, blev-2, wstart.z+5)):
@@ -733,7 +732,7 @@ class SquareTowerEntrance(Blank):
         for p in iterate_four_walls(Vec(wstart.x, elev, wstart.z),
                                     Vec(wstart.x+5, elev, wstart.z+5),
                                     elev-blev-1):
-            self.parent.parent.setblock(p, materials._wall)
+            self.parent.parent.setblock(p, self._mat)
         # Chest level openings
         # W side
         for p in iterate_cube(c1.trans(3,0,2), c1.trans(6,-3,2)):
@@ -801,13 +800,35 @@ class SquareTowerEntrance(Blank):
                     self.parent.parent.setblock(p, materials._sandbar)
             d += 1
 
+class SquareTowerEntranceStoneBrick(SquareTowerEntrance):
+    _name = 'squaretowerentrancestonebrick'
+    _ruin = False
+    _mat = materials.meta_mossystonebrick
+
 class RuinedSquareTowerEntrance(SquareTowerEntrance):
     _name = 'ruinedsquaretowerentrance'
     _ruin = True
+    _mat = materials.meta_mossycobble
+
+class RuinedSquareTowerEntranceStoneBrick(SquareTowerEntrance):
+    _name = 'ruinedsquaretowerentrancestonebrick'
+    _ruin = True
+    _mat = materials.meta_mossystonebrick
+
+class RoundTowerEntranceStoneBrick(RoundTowerEntrance):
+    _name = 'roundtowerentrancestonebrick'
+    _ruin = False
+    _mat = materials.meta_mossystonebrick
 
 class RuinedRoundTowerEntrance(RoundTowerEntrance):
     _name = 'ruinedroundtowerentrance'
     _ruin = True
+    _mat = materials.meta_mossycobble
+
+class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
+    _name = 'ruinedroundtowerentrancestonebrick'
+    _ruin = True
+    _mat = materials.meta_mossystonebrick
 
 class CircularTower(Blank):
     _name = 'circulartower'
@@ -823,7 +844,7 @@ class CircularTower(Blank):
         height = int(self.parent.parent.room_height*1.5)
         #print 'ruin:', c1, c3, height
         for p in self.wallsf(c1, c3, height):
-            self.parent.parent.setblock(p, materials._wall, hide=True)
+            self.parent.parent.setblock(p, materials.meta_mossystonebrick, hide=True)
         ruinBlocks(c1, c3, height, self.parent.parent)
 
 
@@ -840,14 +861,14 @@ class Arches(Blank):
     def render(self):
         height = self.parent.parent.room_height*2
         sb = self.parent.parent.setblock
-        mat = materials._wall
+        mat = materials.meta_mossystonebrick
         for xo in xrange(2):
             for zo in xrange(2):
                 c1 = self.loc + Vec(8*xo, 0, 8*zo)
                 c3 = c1 + Vec(7, 0, 7)
                 # columns
                 for p in iterate_cube(c1, c1.trans(0,-height,0)):
-                    sb(p, materials._wall)
+                    sb(p,              mat, hide=True)
                     sb(p.trans(7,0,0), mat, hide=True)
                     sb(p.trans(7,0,7), mat, hide=True)
                     sb(p.trans(0,0,7), mat, hide=True)
@@ -886,7 +907,7 @@ class Arches(Blank):
                     if (cfg.ruin_ruins == False or
                         random.randint(1,100) <= 50):
                         if (random.randint(1,100) <= 25):
-                            sb(p, materials.StoneSlab)
+                            sb(p, materials.StoneBrickSlab)
                         else:
                             sb(p, materials.CobblestoneSlab)
 
@@ -906,7 +927,6 @@ def ruinBlocks (p1, p2, height, dungeon, override=False):
             for p in iterate_cube(Vec(x, p1.y-depth, z),
                                   Vec(x, p1.y-height, z)):
                 dungeon.delblock(p)
-                #dungeon.setblock(p, materials.TNT)
 
 # Catalog the ruins we know about. 
 _ruins = {}

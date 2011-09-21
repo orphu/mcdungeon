@@ -120,6 +120,7 @@ StickyPiston = Material('Sticky Piston', "P", GREEN)
 StillWater = Material('StillWater','~',BBLUE)
 Stone = Material('Stone' ,'#',GREY)
 StoneBrick = Material('Stone Brick' ,'B',GREY)
+StoneBrickSlab = Material('Stone Brick Slab' ,'b',GREY)
 StoneButton = Material('Stone Button' ,'.',GREY)
 StonePressurePlate = Material('Stone Pressure Plate' ,'O',GREY)
 StoneSlab = Material('Stone Slab', 'd',WHITE)
@@ -154,15 +155,16 @@ DarkGreenWool = Material('Dark Green Wool', 'W', GREEN)
 RedWool = Material('Red Wool', 'W', RED)
 BlackWool = Material('Black Wool', 'W', DGREY)
 
+
 # Meta materials
 class meta_class_mossycobble(MetaMaterial):
     name = 'meta_mossycobble'
     val = Cobblestone.val
     data = Cobblestone.data
     c = Cobblestone.c
-    def update(self, x, y, z):
-        pn = perlin.SimplexNoise(256)
-        if pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
+    pn = perlin.SimplexNoise(256)
+    def update(self, x, y, z, maxx, maxy, maxz):
+        if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
             self.val = MossStone.val
             self.data = MossStone.data
             self.c = MossStone.c
@@ -171,24 +173,21 @@ class meta_class_mossycobble(MetaMaterial):
             self.data = Cobblestone.data
             self.c = Cobblestone.c
 
-meta_mossycobble = meta_class_mossycobble()
 
-class meta_class_stonedungeon(MetaMaterial):
-    name = 'meta_stonedungeon'
+class meta_class_mossystonebrick(MetaMaterial):
+    name = 'meta_mossystonebrick'
     val = StoneBrick.val
     data = StoneBrick.data
     c = StoneBrick.c
+    pn = perlin.SimplexNoise(256)
     def update(self, x, y, z, maxx, maxy, maxz):
-        if random.randint(1,100) < 5:
+        if random.randint(1,100) < 7:
             self.val = CrackedStoneBrick.val
             self.data = CrackedStoneBrick.data
             self.c = CrackedStoneBrick.c
             return
 
-        pn = perlin.SimplexNoise(256)
-        n = pn.noise3(x / 100.0, y / 100.0, z / 100.0)
-        mossband = .1
-        if (n > -mossband and n < mossband):
+        if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
             self.val = MossyStoneBrick.val
             self.data = MossyStoneBrick.data
             self.c = MossyStoneBrick.c
@@ -197,6 +196,42 @@ class meta_class_stonedungeon(MetaMaterial):
             self.data = StoneBrick.data
             self.c = StoneBrick.c
 
+
+class meta_class_stonedungeon(MetaMaterial):
+    name = 'meta_stonedungeon'
+    val = StoneBrick.val
+    data = StoneBrick.data
+    c = StoneBrick.c
+    pn = perlin.SimplexNoise(256)
+    def update(self, x, y, z, maxx, maxy, maxz):
+        broken = .1+(float(y)/float(maxy))*.5
+        if random.randint(1,100) < broken*10+5:
+            self.val = CrackedStoneBrick.val
+            self.data = CrackedStoneBrick.data
+            self.c = CrackedStoneBrick.c
+            return
+
+        n = self.pn.noise3(x / 100.0, y / 100.0, z / 100.0)
+        n = n + (float(y)/float(maxy))*2
+        if (n > 2.7):
+            self.val = MossStone.val
+            self.data = MossStone.data
+            self.c = MossStone.c
+        elif (n > 1.5):
+            self.val = Cobblestone.val
+            self.data = Cobblestone.data
+            self.c = Cobblestone.c
+        elif (n > 0.7):
+            self.val = MossyStoneBrick.val
+            self.data = MossyStoneBrick.data
+            self.c = MossyStoneBrick.c
+        else:
+            self.val = StoneBrick.val
+            self.data = StoneBrick.data
+            self.c = StoneBrick.c
+
+meta_mossycobble = meta_class_mossycobble()
+meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
 
 _wall = copy(Cobblestone)
@@ -206,4 +241,3 @@ _floor = copy(Stone)
 _subfloor = copy(Bedrock)
 _sandbar = copy(Sand)
 _natural = copy(Air)
-

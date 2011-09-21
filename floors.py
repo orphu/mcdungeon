@@ -22,7 +22,7 @@ class Cobble(Blank):
             return
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             self.parent.parent.setblock(x+self.parent.loc,
-                                            materials.Cobblestone)
+                                            materials.meta_mossycobble)
         # Ruined
         if (self.ruin is False):
             return

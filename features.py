@@ -310,7 +310,7 @@ class Stairwell(Blank):
                     self.parent.parent.setblock(p,
                                                 materials.StoneStairs)
                     self.parent.parent.setblock(p.trans(0,1,0),
-                                                materials.Cobblestone)
+                                                materials.meta_mossycobble)
 
 class TreasureRoom(Blank):
     _name = 'treasureroom'
@@ -432,7 +432,7 @@ class Columns(Blank):
 
     mats = (
         (materials.Stone,0),  # Stone
-        (materials.Cobblestone,0),  # Cobblestone
+        (materials.meta_mossycobble,0),  # Mossy Cobble
         (materials.Wood,0), # Wood
         (materials.Wood,1), # Redwood
         (materials.Bedrock,0), # Bedrock
@@ -544,7 +544,7 @@ class Dais(Blank):
                                     self.parent.canvasLength()) - 4)
         torches = (random.random() < .5)
         platform = random.choice([materials.WoodPlanks,
-                                  materials.Cobblestone,
+                                  materials.meta_mossycobble,
                                   materials.Stone,
                                   materials.Sandstone])
         steps = random.choice([materials.WoodenSlab,

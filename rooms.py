@@ -552,7 +552,7 @@ class ThroneRoom(Basic):
         # Column materials
         cmat = random.choice([
             [materials.Sandstone, materials.SandstoneSlab],
-            [materials.Cobblestone, materials.CobblestoneSlab],
+            [materials.meta_mossycobble, materials.CobblestoneSlab],
             [materials.Stone, materials.StoneSlab]
         ])
 
@@ -599,10 +599,10 @@ class ThroneRoom(Basic):
 
         # Entry stairs
         for x in xrange(6):
-            ssb(Vec(6,5+x,1+x), materials.Cobblestone)
-            ssb(Vec(7,5+x,1+x), materials.Cobblestone)
-            ssb(Vec(6,5+x,2+x), materials.Cobblestone)
-            ssb(Vec(7,5+x,2+x), materials.Cobblestone)
+            ssb(Vec(6,5+x,1+x), materials.meta_mossycobble)
+            ssb(Vec(7,5+x,1+x), materials.meta_mossycobble)
+            ssb(Vec(6,5+x,2+x), materials.meta_mossycobble)
+            ssb(Vec(7,5+x,2+x), materials.meta_mossycobble)
             ssb(Vec(6,5+x,3+x), materials.StoneStairs, 2)
             ssb(Vec(7,5+x,3+x), materials.StoneStairs, 2)
         # Skip this is ther is no door to the West
@@ -631,16 +631,16 @@ class ThroneRoom(Basic):
         # Stairs
         for x in xrange(3):
             ssb(Vec(7,10-x,24+x), materials.StoneStairs, 3)
-            ssb(Vec(7,10-x,25+x), materials.Cobblestone)
-            ssb(Vec(7,10-x,26+x), materials.Cobblestone)
+            ssb(Vec(7,10-x,25+x), materials.meta_mossycobble)
+            ssb(Vec(7,10-x,26+x), materials.meta_mossycobble)
         # Platform
         for p in iterate_cube(Vec(6,8,27), Vec(7,10,27)):
             ssb(p, materials.Bedrock)
         for p in iterate_cube(Vec(5,8,28), Vec(7,10,29)):
             ssb(p, materials.Bedrock)
         # Lava bucket
-        ssb(Vec(6,10,30), materials.Cobblestone)
-        ssb(Vec(6,9,30), materials.Cobblestone)
+        ssb(Vec(6,10,30), materials.meta_mossycobble)
+        ssb(Vec(6,9,30), materials.meta_mossycobble)
         ssb(Vec(7,11,30), materials.Lava)
         # The throne
         ssb(Vec(7,7,29), materials.WoodPlanks)
@@ -1647,19 +1647,19 @@ class Pit(Blank):
                     if (self.parent.getblock(x.trans(1,0,0)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(1,0,0),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(-1,0,0)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(-1,0,0),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(0,0,1)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,1),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(0,0,-1)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,-1),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                 if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
         # Ceiling
@@ -1894,19 +1894,19 @@ class PitBottom(Blank):
                     if (self.parent.getblock(x.trans(1,0,0)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(1,0,0),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(-1,0,0)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(-1,0,0),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(0,0,1)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,1),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                     if (self.parent.getblock(x.trans(0,0,-1)) is
                         materials.Lava):
                         self.parent.setblock(x.trans(0,0,-1),
-                                             materials.Cobblestone)
+                                             materials.meta_mossycobble)
                 if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
         # Cactus (spike trap)
@@ -2075,7 +2075,7 @@ class Corridor(Blank):
         if (numhalls == 1):
             ores = (
                 # Resource distribution
-                (materials.Cobblestone,150),
+                (materials.meta_mossycobble,150),
                 (materials._wall,150),
                 (materials.CoalOre,90),
                 (materials.IronOre,40),
