@@ -283,7 +283,7 @@ class CellBlock(Basic2x2):
                 self.parent.setblock(ss+doffset.up(1),
                                      materials.IronDoor, ddata+4+8)
                 self.parent.setblock(ss+doffset.up(2),
-                                     materials._ceiling)
+                                     materials._wall)
             # Extra chests for solving the combo
             if (random.randint(1,100) <= chest_rate):
                 chest_rate /= 2
