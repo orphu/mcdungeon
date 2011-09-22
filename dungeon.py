@@ -865,7 +865,7 @@ class Dungeon (object):
                 x = 0
                 for dpos in door.doors:
                     if(dpos in self.blocks and  self.blocks[dpos].material == materials.Air):
-                        self.blocks[dpos].material = materials._ceiling
+                        self.blocks[dpos].material = materials._wall
                         self.blocks[dpos.down(1)].material = door.material
                         self.blocks[dpos.down(1)].data = doordat[door.direction][x] | 8 # Top door
                         self.blocks[dpos.down(2)].material = door.material
