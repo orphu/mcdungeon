@@ -1724,7 +1724,6 @@ class Dungeon (object):
                 elif (val == 1):
                     val = 97
                     dat = 0
-                    print "silverfish!"
                 elif (val == 98 and dat == 0):
                     val = 97
                     dat = 2
