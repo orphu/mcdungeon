@@ -67,9 +67,9 @@
 44,Stone Slab,0,64
 44,Sandstone Slab,1,64
 44,Wooden Slab,2,64
-44,Brick Slab,3,64
-44,Stone Brick Slab,4,64
 44,Cobblestone Slab,3,64
+44,Brick Slab,4,64
+44,Stone Brick Slab,5,64
 45,Brick Block,0,64
 46,TNT,0,64
 47,Bookshelf,0,64
