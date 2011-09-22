@@ -1,5 +1,19 @@
 v0.6.0 - ??/??/???
 
+   * Tweaked loot tables to better fit the 1.8 hunger/healing mechanics.
+
+     * Removed meats (they would spoil in a dungeon)
+
+     * Moved apples around (hey maybe they are magical!)
+
+     * Added more wheat and mushrooms for craftable food. 
+
+     * Less bread.
+
+     * Tier 0 can contain a bowl to help crafting stew.      
+
+     * Added pumpkin and melon seeds, and ender pearls to top level chests.
+
    * New cfg option: silverfish replaces stone, cobblestone, and stone brick
      blocks with silverfish look-alikes. 
 
