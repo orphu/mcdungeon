@@ -7,6 +7,7 @@ import ruins
 import loottable
 import cfg
 from utils import *
+import perlin
 
 
 class Blank(object):
@@ -530,6 +531,55 @@ class Arcane(Blank):
             sb(p, materials.RedStoneWire)
         for p in iterate_four_walls(c.trans(-2,0,-2), c.trans(2,0,2),0):
             sb(p, materials.RedStoneWire)
+
+
+class Mushrooms(Blank):
+    _name = 'mushrooms'
+
+    def render (self):
+        if (self.parent.canvasWidth() < 2 or self.parent.canvasLength() < 2):
+            return
+
+        # Custom block placer. Don't place stuff where things already exist,
+        # also check for things we aren't alowed to place stuff on.
+        # Picks red or brown mushrooms randomly if no material is supplied.
+        dun = self.parent.parent
+        def sb(p, mat=''):
+            if (p in dun.blocks and
+                dun.blocks[p].material == materials.Air and
+                dun.blocks[p.down(1)].material != materials.Farmland and
+                dun.blocks[p.down(1)].material != materials.SoulSand and
+                dun.blocks[p.down(1)].material != materials.Water and
+                dun.blocks[p.down(1)].material != materials.StillWater):
+                if mat == '':
+                    mat = random.choice([materials.RedMushroom,
+                                         materials.BrownMushroom,
+                                         materials.Air])
+                dun.setblock(p, mat)
+
+        mode = random.choice(['perlin', 'fairyring'])
+        if mode == 'perlin':
+            pn = perlin.SimplexNoise(256)
+            r = random.randint(1,1000)
+            for p in iterate_points_inside_flat_poly(*self.parent.canvas):
+                if (pn.noise3(p.x/4.0, r/4.0, p.z/4.0) > .8):
+                    q = p + self.parent.loc
+                    sb(q.trans( 1,-1, 0))
+                    sb(q.trans(-1,-1, 0))
+                    sb(q.trans( 0,-1,-1))
+                    sb(q.trans( 0,-1, 1))
+            return
+
+        if mode == 'fairyring':
+            center = self.parent.canvasCenter()
+            c = self.parent.loc + Vec(center.x,
+                                      self.parent.canvasHeight()-1,
+                                      center.z)
+            radius = random.randint(2,5)
+            for p in iterate_ellipse(c.trans(-radius,0,-radius),
+                                     c.trans(radius,0,radius)):
+                sb(p)
+            return
 
 
 class Dais(Blank):

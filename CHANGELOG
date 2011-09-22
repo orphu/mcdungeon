@@ -1,5 +1,7 @@
 v0.6.0 - ??/??/???
 
+   * New room feature: Mushrooms.
+
    * Tweaked loot tables to better fit the 1.8 hunger/healing mechanics.
 
      * Removed meats (they would spoil in a dungeon)
