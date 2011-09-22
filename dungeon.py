@@ -1713,20 +1713,23 @@ class Dungeon (object):
                 continue
             if (mat == materials._natural):
                 continue
+
+            val = mat.val
             if (cfg.silverfish > 0 and
-                (mat.val == 1 or mat.val == 4 or mat.val == 97) and
+                (val == 1 or val == 4 or val == 97) and
                 random.randint(1,100) < cfg.silverfish):
-                if (mat.val == 4):
-                    mat.val = 97
+                if (val == 4):
+                    val = 97
                     dat = 1
-                elif (mat.val == 1):
-                    mat.val = 97
+                elif (val == 1):
+                    val = 97
                     dat = 0
-                elif (mat.val == 98 and dat == 0):
-                    mat.val = 97
+                    print "silverfish!"
+                elif (val == 98 and dat == 0):
+                    val = 97
                     dat = 2
             # Write the block.
-            chunk.Blocks[xInChunk, zInChunk, y] = mat.val
+            chunk.Blocks[xInChunk, zInChunk, y] = val
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
