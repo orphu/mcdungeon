@@ -226,7 +226,7 @@
 341,SlimeBall,0,64
 342,Storage Minecart,0,1
 343,Powered Minecart,0,1
-344,Egg,0,64
+344,Egg,0,16
 345,Compass,0,1
 346,Fishing Rod,0,1
 347,Clock,0,1
