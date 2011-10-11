@@ -214,7 +214,7 @@
 329,Saddle,0,1
 330,Iron Door,0,1
 331,Redstone Dust,0,64
-332,Snowball,0,64
+332,Snowball,0,16
 333,Boat,0,1
 334,Leather,0,64
 335,Milk Bucket,0,1
