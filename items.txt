@@ -142,7 +142,7 @@
 112,Nether Brick,0,64
 113,Nether Brick Fence,0,64
 114,Nether Brick Stairs,0,64
-115,Nether Wart,0,64
+115,Nether Wart Block,0,64
 116,Enchantment Table,0,64
 117,Brewing Stand,0,64
 118,Cauldron,0,64
@@ -282,6 +282,10 @@
 366,Cooked Chicken,0,64
 367,Rotten Flesh,0,64
 368,Ender Pearl,0,64
+369,Blaze Rod,0,64
+370,Ghast Tear,0,64
+371,Gold Nugget,0,64
+372,Nether Wart,0,64
 374,Glass Bottle,0,64
 375,Spider Eye,0,64
 376,Fermented Spider Eye,0,64
