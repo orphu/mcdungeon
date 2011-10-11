@@ -137,6 +137,17 @@
 107,Fence Gate,0,64
 108,Brick Stairs,0,64
 109,Stone Brick Stairs,0,64
+110,Mycelium,0,64
+111,Lily Pad,0,64
+112,Nether Brick,0,64
+113,Nether Brick Fence,0,64
+114,Nether Brick Stairs,0,64
+115,Nether Wart,0,64
+116,Enchantment Table,0,64
+117,Brewing Stand,0,64
+118,Cauldron,0,64
+119,Air Portal,0,64
+120,Air Portal Frame,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
@@ -271,5 +282,22 @@
 366,Cooked Chicken,0,64
 367,Rotten Flesh,0,64
 368,Ender Pearl,0,64
+374,Glass Bottle,0,64
+375,Spider Eye,0,64
+376,Fermented Spider Eye,0,64
+377,Blaze Powder,0,64
+378,Magma Cream,0,64
+380,Eye of Ender,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
+2256,Music Disc 13,0,1
+2257,Music Disc cat,0,1
+2258,Music Disc blocks,0,1
+2258,Music Disc chirp,0,1
+2259,Music Disc far,0,1
+2260,Music Disc mall,0,1
+2261,Music Disc mellohi,0,1
+2262,Music Disc stal,0,1
+2263,Music Disc strad,0,1
+2264,Music Disc ward,0,1
+2265,Music Disc 11,0,1
