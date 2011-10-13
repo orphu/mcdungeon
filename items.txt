@@ -293,6 +293,7 @@
 378,Magma Cream,0,64
 380,Cauldron,0,64
 381,Eye of Ender,0,64
+382,Glistering Melon,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
