@@ -145,7 +145,7 @@
 115,Nether Wart Block,0,64
 116,Enchantment Table,0,64
 117,Brewing Stand,0,64
-118,Cauldron,0,64
+118,Cauldron Block,0,64
 119,Air Portal,0,64
 120,Air Portal Frame,0,64
 256,Iron Shovel,0,1
@@ -291,7 +291,8 @@
 376,Fermented Spider Eye,0,64
 377,Blaze Powder,0,64
 378,Magma Cream,0,64
-380,Eye of Ender,0,64
+380,Cauldron,0,64
+381,Eye of Ender,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
