@@ -284,7 +284,7 @@ class CellBlock(Basic2x2):
                                      materials.IronDoor, ddata+4+8)
                 self.parent.setblock(ss+doffset.up(2),
                                      materials._wall, hide=True)
-            # Extra chests for solving the combo
+            # Extra chests for solving the combo.
             if (random.randint(1,100) <= chest_rate):
                 chest_rate /= 2
                 cp = ss+doffset+Vec(-3,0,0)
@@ -292,6 +292,7 @@ class CellBlock(Basic2x2):
                     cp = ss+doffset+Vec(3,0,0)
                 self.parent.setblock(cp, materials.Chest)
                 self.parent.addchest(cp)
+            # Extra spawners becuase I'm a bastard.
             elif (random.randint(1,100) <= spawner_rate):
                 spawner_rate /= 2
                 cp = ss+doffset+Vec(-3,0,0)
@@ -339,11 +340,11 @@ class CellBlock(Basic2x2):
                     ctext2 += 'O '
                 self.parent.setblock(p.up(1),
                                      materials.RedStoneWire, 0, lock=True)
-                self.parent.setblock(p.east(1),
+                self.parent.setblock(p.e(1),
                                      torch, 1, lock=True)
-                self.parent.setblock(p.east(2),
+                self.parent.setblock(p.e(2),
                                      repeater, 1, lock=True)
-                self.parent.setblock(p.east(3),
+                self.parent.setblock(p.e(3),
                                      materials.RedStoneWire, charge, lock=True)
                 bit += 2
         # North
@@ -363,11 +364,11 @@ class CellBlock(Basic2x2):
                     ctext1 += 'O '
                 self.parent.setblock(p.up(1),
                                      materials.RedStoneWire, 15, lock=True)
-                self.parent.setblock(p.west(1),
+                self.parent.setblock(p.w(1),
                                      torch, 2, lock=True)
-                self.parent.setblock(p.west(2),
+                self.parent.setblock(p.w(2),
                                      repeater, 3, lock=True)
-                self.parent.setblock(p.west(3),
+                self.parent.setblock(p.w(3),
                                      materials.RedStoneWire, charge, lock=True)
                 bit += 2
         self.parent.setblock(self.c1+Vec(7,-2,12), materials.WallSign, 5)
@@ -391,19 +392,19 @@ class CellBlock(Basic2x2):
                              materials.RedStoneRepeaterOff, 1, lock=True)
         self.parent.setblock(self.c3-Vec(10,-1,18),
                              materials.RedStoneRepeaterOff, 3, lock=True)
-        # North / South Bus
+        # East / West Bus
         for p in iterate_cube(self.c1+Vec(6,1,6), self.c4+Vec(6,1,-6)):
             self.parent.setblock(p, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(p.east(15), materials.RedStoneWire, 15,
+            self.parent.setblock(p.e(15), materials.RedStoneWire, 15,
                                  lock=True)
         for p in iterate_cube(Vec(7,1,7), Vec(12,1,7)):
             q = self.c1+p
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.east(8), materials.RedStoneWire, 15,
+            self.parent.setblock(q.e(8), materials.RedStoneWire, 15,
                                  lock=True)
             q = self.c4+Vec(p.x, p.y, -p.z)
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.east(8), materials.RedStoneWire, 15,
+            self.parent.setblock(q.e(8), materials.RedStoneWire, 15,
                                  lock=True)
         for p in [Vec(6,0,6), Vec(6,0,8), Vec(12,0,6)]:
             q = self.c1+p
@@ -428,13 +429,13 @@ class CellBlock(Basic2x2):
             self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
             self.parent.setblock(q.down(1), materials._ceiling, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,10),
-                             materials.RedStoneRepeaterOn, 2, lock=True)
+                             materials.RedStoneRepeaterOn, 0, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,17),
-                             materials.RedStoneRepeaterOn, 0, lock=True)
-        self.parent.setblock(self.c1+Vec(21,1,10),
                              materials.RedStoneRepeaterOn, 2, lock=True)
-        self.parent.setblock(self.c1+Vec(21,1,17),
+        self.parent.setblock(self.c1+Vec(21,1,10),
                              materials.RedStoneRepeaterOn, 0, lock=True)
+        self.parent.setblock(self.c1+Vec(21,1,17),
+                             materials.RedStoneRepeaterOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(8,1,13),
                              materials.RedStoneRepeaterOn, 3, lock=True)
         self.parent.setblock(self.c1+Vec(19,1,14),
@@ -459,7 +460,7 @@ class CellBlock(Basic2x2):
         self.parent.setblock(self.c1+Vec(5,1,19),
                              materials.RedStoneRepeaterOn, 15, lock=True)
         self.parent.setblock(self.c1+Vec(3,1,19),
-                             materials.RedStoneTorchOn, 2, lock=True)
+                             materials.RedStoneTorchOn, 0, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,19),
                              materials.RedStoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,18),
@@ -470,15 +471,15 @@ class CellBlock(Basic2x2):
         for p in iterate_cube(self.c1+Vec(2,1,17), self.c1+Vec(2,1,9)):
             if (p.z%2 == 1):
                 self.parent.setblock(p,
-                                     materials.RedStoneRepeaterOff, 6, lock=True)
+                                     materials.RedStoneRepeaterOff, 4, lock=True)
                 self.parent.setblock(p+Vec(-1,0,-1),
                                      materials.RedStoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,3),
-                             materials.RedStoneRepeaterOff, 6, lock=True)
+                             materials.RedStoneRepeaterOff, 4, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,2),
                              materials.RedStoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,5),
-                             materials.RedStoneRepeaterOff, 6, lock=True)
+                             materials.RedStoneRepeaterOff, 4, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,4),
                              materials.RedStoneWire, 0, lock=True)
         for z, p in [(18,13),(16,12),(14,9),(12,3),(10,2),(8,10),(4,14),(2,18)]:
@@ -603,12 +604,12 @@ class ThroneRoom(Basic):
             ssb(Vec(7,5+x,1+x), materials.meta_mossycobble)
             ssb(Vec(6,5+x,2+x), materials.meta_mossycobble)
             ssb(Vec(7,5+x,2+x), materials.meta_mossycobble)
-            ssb(Vec(6,5+x,3+x), materials.StoneStairs, 2)
-            ssb(Vec(7,5+x,3+x), materials.StoneStairs, 2)
+            ssb(Vec(6,5+x,3+x), materials.StoneStairs, 3)
+            ssb(Vec(7,5+x,3+x), materials.StoneStairs, 3)
         # Skip this is ther is no door to the West
         if self.parent.halls[pos.x][pos.y][pos.z][0] == 1:
             for p in iterate_cube(Vec(6,4,1), Vec(7,4,1)):
-                ssb(p, materials.StoneStairs, 2)
+                ssb(p, materials.StoneStairs, 3)
 
         # Columns
         for i in xrange(6):
@@ -630,7 +631,7 @@ class ThroneRoom(Basic):
         # Throne
         # Stairs
         for x in xrange(3):
-            ssb(Vec(7,10-x,24+x), materials.StoneStairs, 3)
+            ssb(Vec(7,10-x,24+x), materials.StoneStairs, 2)
             ssb(Vec(7,10-x,25+x), materials.meta_mossycobble)
             ssb(Vec(7,10-x,26+x), materials.meta_mossycobble)
         # Platform
@@ -744,7 +745,7 @@ class ThroneRoom(Basic):
             for p in iterate_cube(Vec(7,8,1), Vec(8,10,1)):
                 sb(o+p, materials.NetherPortal)
             # Sign.
-            sb(o+Vec(6,9,2), materials.WallSign, 2)
+            sb(o+Vec(6,9,2), materials.WallSign, 3)
             self.parent.addsign(o+Vec(6,9,2),
                                        '[multiverse]',
                                        cfg.mvportal,
@@ -939,7 +940,7 @@ class SpiderLair(Basic):
             for p in iterate_cube(Vec(2,1,0), Vec(3,3,0)):
                 sb(o+p, materials.NetherPortal)
             # Sign.
-            sb(o+Vec(1,2,1), materials.WallSign, 2)
+            sb(o+Vec(1,2,1), materials.WallSign, 3)
             self.parent.addsign(o+Vec(1,2,1),
                                        '[multiverse]',
                                        cfg.mvportal,

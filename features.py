@@ -77,14 +77,14 @@ class Entrance(Blank):
             (Vec(-1,-1, 0),4),
             (Vec(-1,-2, 5),4),
             (Vec(-1,-1, 5),4),
-            (Vec( 0,-2,-1),3),
-            (Vec( 0,-1,-1),3),
-            (Vec( 0,-2, 6),2),
-            (Vec( 0,-1, 6),2),
-            (Vec( 5,-2,-1),3),
-            (Vec( 5,-1,-1),3),
-            (Vec( 5,-2, 6),2),
-            (Vec( 5,-1, 6),2),
+            (Vec( 0,-2,-1),2),
+            (Vec( 0,-1,-1),2),
+            (Vec( 0,-2, 6),3),
+            (Vec( 0,-1, 6),3),
+            (Vec( 5,-2,-1),2),
+            (Vec( 5,-1,-1),2),
+            (Vec( 5,-2, 6),3),
+            (Vec( 5,-1, 6),3),
             (Vec( 6,-2, 0),5),
             (Vec( 6,-1, 0),5),
             (Vec( 6,-2, 5),5),
@@ -104,196 +104,6 @@ class Entrance(Blank):
                                        sign['s3'],
                                        sign['s4'])
 
-
-class Entrance_old(Blank):
-    _name = 'entrance_old'
-
-    def placed (self):
-        # Default height of the doors into the entrance.
-        self.height = self.parent.parent.room_height
-        # Height of the tower above entry.
-        self.u = self.parent.parent.room_height*2
-        self.inwater = False
-
-    def render (self):
-        start = self.parent.loc.trans(6,self.parent.parent.room_height-3,6)
-        wstart = start.trans(-1,0,-1)
-        b1 = wstart.trans(-1,-self.height-self.u,-1)
-        b2 = b1.trans(7,0,0)
-        b3 = b1.trans(7,0,7)
-        b4 = b1.trans(0,0,7)
-        c1 = wstart.trans(-2,-self.height-self.parent.parent.room_height,-2)
-        c2 = c1.trans(9,0,0)
-        c3 = c1.trans(9,0,9)
-        c4 = c1.trans(0,0,9)
-        # Battlements (chest level)
-        #    This is the solid outer wall right under the battlements
-        for p in iterate_cube(c1,c3):
-            self.parent.parent.setblock(p, materials._wall)
-        #    The "floor" This extends to the ground to make the base thicker. 
-        for p in iterate_cube(c1.trans(1,1,1),c3.trans(-1,
-                                                       self.height+2,
-                                                       -1)):
-            self.parent.parent.setblock(p, materials._wall)
-        #    Place the battlement blocks on the wall
-        for p in iterate_cube(Vec(0,-1,0), Vec(4,-1,4)):
-            if (((p.x+p.z)&1) == 0):
-                self.parent.parent.setblock(c1+p, materials._wall)
-                self.parent.parent.setblock(c2.trans(-p.x,p.y,p.z),
-                                            materials._wall)
-                self.parent.parent.setblock(c3.trans(-p.x,p.y,-p.z),
-                                            materials._wall)
-                self.parent.parent.setblock(c4.trans(p.x,p.y,-p.z),
-                                            materials._wall)
-        #     Carve out a walkway
-        for p in iterate_cube(c1.trans(1,0,1),
-                              c3.trans(-1,-10,-1)):
-            self.parent.parent.setblock(p, materials.Air)
-        # Battlements (top of the tower)
-        #    This is the solid outer wall right under the battlements
-        for p in iterate_cube(b1,b3):
-            self.parent.parent.setblock(p, materials._wall)
-        #    Place the battlement blocks on the wall
-        for p in iterate_cube(Vec(0,-1,0), Vec(2,-1,2)):
-            if (((p.x+p.z)&1) == 0):
-                self.parent.parent.setblock(b1+p, materials._wall)
-                self.parent.parent.setblock(b2.trans(-p.x,p.y,p.z),
-                                            materials._wall)
-                self.parent.parent.setblock(b3.trans(-p.x,p.y,-p.z),
-                                            materials._wall)
-                self.parent.parent.setblock(b4.trans(p.x,p.y,-p.z),
-                                            materials._wall)
-        # Clear air space inside the tower
-        for p in iterate_cube(wstart,
-                              wstart.trans(5,-self.height-self.u-2,5)):
-            self.parent.parent.setblock(p, materials.Air)
-        # Walls
-        for p in iterate_four_walls(wstart,
-                                    wstart.trans(5,0,5),
-                                    self.u+self.height-1):
-            self.parent.parent.setblock(p, materials._wall)
-        # Chest level openings
-        # W side
-        for p in iterate_cube(c1.trans(3,0,2), c1.trans(6,-3,2)):
-            self.parent.parent.setblock(p, materials.Air)
-        # E side
-        for p in iterate_cube(c1.trans(3,0,7), c1.trans(6,-3,7)):
-            self.parent.parent.setblock(p, materials.Air)
-        # N side
-        for p in iterate_cube(c1.trans(2,0,3), c1.trans(2,-3,6)):
-            self.parent.parent.setblock(p, materials.Air)
-        # S side
-        for p in iterate_cube(c1.trans(7,0,3), c1.trans(7,-3,6)):
-            self.parent.parent.setblock(p, materials.Air)
-        # Lower level openings
-        # W side
-        for p in iterate_cube(wstart.trans(1,0,0), wstart.trans(4,-3,0)):
-            self.parent.parent.setblock(p, materials.Air)
-        # E side
-        for p in iterate_cube(wstart.trans(1,0,5), wstart.trans(4,-3,5)):
-            self.parent.parent.setblock(p, materials.Air)
-        # N side
-        for p in iterate_cube(wstart.trans(0,0,1), wstart.trans(0,-3,4)):
-            self.parent.parent.setblock(p, materials.Air)
-        # S side
-        for p in iterate_cube(wstart.trans(5,0,1), wstart.trans(5,-3,4)):
-            self.parent.parent.setblock(p, materials.Air)
-        # Ground level openings
-        # W side
-        for p in iterate_cube(wstart.trans(2,0,0),
-                              wstart.trans(3,-3,-1)):
-                self.parent.parent.setblock(p.trans(0,-self.height,0),
-                                            materials.Air)
-        # E side
-        for p in iterate_cube(wstart.trans(2,0,5), wstart.trans(3,-3,6)):
-                self.parent.parent.setblock(p.trans(0,-self.height,0),
-                                            materials.Air)
-        # N side
-        for p in iterate_cube(wstart.trans(0,0,2), wstart.trans(-1,-3,3)):
-                self.parent.parent.setblock(p.trans(0,-self.height,0),
-                                            materials.Air)
-        # S side
-        for p in iterate_cube(wstart.trans(5,0,2), wstart.trans(6,-3,3)):
-                self.parent.parent.setblock(p.trans(0,-self.height,0),
-                                            materials.Air)
-        # Draw the staircase
-        for p in iterate_spiral(Vec(0,0,0),
-                                Vec(4,0,4),
-                                (self.u+self.height)*2):
-            mat = materials.StoneSlab
-            dat = 0
-            if ((p.y%2) == 1):
-                mat = materials.DoubleSlab
-                dat = 0
-            self.parent.parent.setblock(start.trans(p.x,
-                                                    floor(float(p.y)/2.0),
-                                                    p.z),
-                                        mat)
-            self.parent.parent.blocks[start.trans(p.x,
-                                                  floor(float(p.y)/2.0),
-                                                  p.z)].data = dat
-        # Supply chest
-        pos = c1.trans(1, 0, 1)
-        self.parent.parent.setblock(pos, materials.Chest)
-        self.parent.parent.addchest(pos, 0)
-        # Ruin
-        if (random.randint(1,100) <= cfg.tower_ruin):
-            r = self.parent.parent.room_height*2
-            ruins.ruinBlocks(b1.trans(0,r-1,0),
-                             b3.trans(0,r-1,0),
-                             r,
-                             self.parent.parent)
-        # Signs
-        locs = [
-            (Vec(-1,-2, 0),4),
-            (Vec(-1,-1, 0),4),
-            (Vec(-1,-2, 5),4),
-            (Vec(-1,-1, 5),4),
-            (Vec( 0,-2,-1),3),
-            (Vec( 0,-1,-1),3),
-            (Vec( 0,-2, 6),2),
-            (Vec( 0,-1, 6),2),
-            (Vec( 5,-2,-1),3),
-            (Vec( 5,-1,-1),3),
-            (Vec( 5,-2, 6),2),
-            (Vec( 5,-1, 6),2),
-            (Vec( 6,-2, 0),5),
-            (Vec( 6,-1, 0),5),
-            (Vec( 6,-2, 5),5),
-            (Vec( 6,-1, 5),5)
-               ]
-        random.shuffle(locs)
-        signs = self.parent.parent.signs
-        random.shuffle(signs)
-        while (len(locs) >0 and len(signs) >0):
-            loc = locs.pop()
-            sign = signs.pop()
-            self.parent.parent.setblock(wstart+loc[0],
-                                        materials.WallSign, loc[1])
-            self.parent.parent.addsign(wstart+loc[0],
-                                       sign['s1'],
-                                       sign['s2'],
-                                       sign['s3'],
-                                       sign['s4'])
-            #print 'Sign:', wstart+loc[0], loc[1]
-            #print sign['s1']
-            #print sign['s2']
-            #print sign['s3']
-            #print sign['s4']
-
-        # Sandbar island
-        if (self.inwater is False):
-            return
-        d = 2
-        s1 = wstart.trans(-3,-self.height,-3)
-        s3 = wstart.trans(8,-self.height,8)
-        for y in xrange(self.parent.parent.room_height +
-                        self.height):
-            for p in iterate_disc(s1.trans(-d,y+1,-d),
-                                  s3.trans(d,y+1,d)):
-                if (p not in self.parent.parent.blocks):
-                    self.parent.parent.setblock(p, materials._sandbar)
-            d += 1
 
 class Stairwell(Blank):
     _name = 'stairwell'
@@ -525,9 +335,9 @@ class Arcane(Blank):
         c = self.parent.loc + Vec(center.x,
                                   self.parent.canvasHeight()-1,
                                   center.z)
-        for p in iterate_cube(c.north(4), c.south(4)):
+        for p in iterate_cube(c.n(4), c.s(4)):
             sb(p, materials.RedStoneWire)
-        for p in iterate_cube(c.east(4), c.west(4)):
+        for p in iterate_cube(c.e(4), c.w(4)):
             sb(p, materials.RedStoneWire)
         for p in iterate_four_walls(c.trans(-2,0,-2), c.trans(2,0,2),0):
             sb(p, materials.RedStoneWire)
@@ -678,9 +488,9 @@ class SecretRoom(Blank):
             for z in xrange(4):
                 p = oo.trans(x,0,z)
                 sb(p, mats[template[x][z]])
-        self.parent.parent.blocks[o+Vec(6,3,5)].data = 3
+        self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
         self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
-        self.parent.parent.blocks[o+Vec(6,3,7)].data = 2
+        self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
         sb(o.trans(5,2,5), materials.Torch)
         self.parent.parent.addchest(oo)
 
@@ -948,10 +758,10 @@ class Forge(Blank):
         ]
 
         template = [
-            [7,2,5,2,2,1],
+            [1,2,5,2,2,7],
             [2,3,4,6,6,2],
             [2,3,4,6,6,2],
-            [8,2,5,2,2,1]
+            [1,2,5,2,2,8]
         ]
 
         o = self.parent.loc.trans(6, 3, 5)
@@ -965,17 +775,17 @@ class Forge(Blank):
         sb (o.trans(0,-2,4), materials.StoneStairs, 0)
         sb (o.trans(3,-2,3), materials.StoneStairs, 1)
         sb (o.trans(3,-2,4), materials.StoneStairs, 1)
-        sb (o.trans(1,-2,5), materials.StoneStairs, 2)
-        sb (o.trans(2,-2,5), materials.StoneStairs, 2)
-        sb (o.trans(1,-2,2), materials.StoneStairs, 3)
-        sb (o.trans(2,-2,2), materials.StoneStairs, 3)
+        sb (o.trans(1,-2,5), materials.StoneStairs, 3)
+        sb (o.trans(2,-2,5), materials.StoneStairs, 3)
+        sb (o.trans(1,-2,2), materials.StoneStairs, 2)
+        sb (o.trans(2,-2,2), materials.StoneStairs, 2)
 
         sb (o.trans(0,0,3), materials.StoneStairs, 0)
         sb (o.trans(0,0,4), materials.StoneStairs, 0)
         sb (o.trans(3,0,3), materials.StoneStairs, 1)
         sb (o.trans(3,0,4), materials.StoneStairs, 1)
-        sb (o.trans(1,0,5), materials.StoneStairs, 2)
-        sb (o.trans(2,0,5), materials.StoneStairs, 2)
+        sb (o.trans(1,0,5), materials.StoneStairs, 3)
+        sb (o.trans(2,0,5), materials.StoneStairs, 3)
 
 class Pool(Blank):
     _name = 'pool'

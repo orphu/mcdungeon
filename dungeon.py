@@ -68,12 +68,12 @@ class Dungeon (object):
         self.args = args
 
     def printmaze(self, y, cursor=None):
-        for x in xrange(self.xsize):
+        for z in xrange(self.zsize):
             line = u''
-            for z in xrange(self.zsize):
+            for x in xrange(self.xsize):
                 p = Vec(x,y,z)
                 if p in self.rooms:
-                    if self.halls[x][y][z][3] == 1:
+                    if self.halls[x][y][z][0] == 1:
                         line += ( u'\u2554\u2569\u2557')
                     else:
                         line += ( u'\u2554\u2550\u2557')
@@ -81,10 +81,10 @@ class Dungeon (object):
                     line += ( u'\u2591\u2591\u2591')
             print line
             line = u''
-            for z in xrange(self.zsize):
+            for x in xrange(self.xsize):
                 p = Vec(x,y,z)
                 if p in self.rooms:
-                    if self.halls[x][y][z][0] == 1:
+                    if self.halls[x][y][z][3] == 1:
                         line += ( u'\u2563')
                     else:
                         line += ( u'\u2551')
@@ -96,7 +96,7 @@ class Dungeon (object):
                         line += ( u'U')
                     else:
                         line += ( u'R')
-                    if self.halls[x][y][z][2] == 1:
+                    if self.halls[x][y][z][1] == 1:
                         line += ( u'\u2560')
                     else:
                         line += ( u'\u2551')
@@ -104,10 +104,10 @@ class Dungeon (object):
                     line += ( u'\u2591\u2591\u2591')
             print line
             line = u''
-            for z in xrange(self.zsize):
+            for x in xrange(self.xsize):
                 p = Vec(x,y,z)
                 if p in self.rooms:
-                    if self.halls[x][y][z][1] == 1:
+                    if self.halls[x][y][z][2] == 1:
                         line += ( u'\u255a\u2566\u255d')
                     else:
                         line += ( u'\u255a\u2550\u255d')
@@ -196,18 +196,19 @@ class Dungeon (object):
             d_chunks = set()
             for x in xrange(self.xsize+offset):
                 for z in xrange(self.zsize+offset):
-                    d_chunks.add((p[0]+x, p[1]-z))
+                    d_chunks.add((p[0]+x, p[1]+z))
             if d_chunks.issubset(all_chunks):
                 if self.args.debug: print 'Found: ', p
                 self.position = Vec((p[0]+(offset/2))*self.room_size,
                                     0,
-                                    (p[1]-(offset/2))*self.room_size+15)
+                                    (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
                 self.worldmap(world)
                 return self.bury(world)
         return False
 
     def worldmap(self, world):
+        rows, columns = os.popen('stty size', 'r').read().split()
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
@@ -220,8 +221,8 @@ class Dungeon (object):
         for p in self.good_chunks:
             map_min_x = min(map_min_x, p[0])
             map_max_x = max(map_max_x, p[0]+self.xsize-1)
-            map_min_z = min(map_min_z, p[1]-self.zsize+1)
-            map_max_z = max(map_max_z, p[1])
+            map_min_z = min(map_min_z, p[1])
+            map_max_z = max(map_max_z, p[1]+self.zsize-1)
 
         # Include spawn
         map_min_x = min(map_min_x, spawn_chunk.x)
@@ -229,16 +230,17 @@ class Dungeon (object):
         map_min_z = min(map_min_z, spawn_chunk.z)
         map_max_z = max(map_max_z, spawn_chunk.z)
 
-        if map_max_z-map_min_z >= 40:
+        if map_max_x-map_min_x >= int(columns)/2:
+            print 'Map too wide for terminal:', map_max_x-map_min_x
             return
 
         sx = self.position.x/self.room_size
         sz = self.position.z/self.room_size
         if self.args.debug: print 'spos:', Vec(sx, 0, sz)
-        d_box = Box(Vec(sx, 0, sz-self.zsize+1), self.xsize, 128, self.zsize)
+        d_box = Box(Vec(sx, 0, sz), self.xsize, 128, self.zsize)
 
-        for x in xrange(map_min_x-1, map_max_x+2):
-            for z in xrange(map_max_z+1, map_min_z-2, -1):
+        for z in xrange(map_min_z-1, map_max_z+2):
+            for x in xrange(map_min_x-1, map_max_x+2):
                 if (Vec(x,0,z) == spawn_chunk):
                     sys.stdout.write('SS')
                 elif (x == 0 and z == 0):
@@ -263,7 +265,7 @@ class Dungeon (object):
              self.position.z/self.room_size)
         for x in xrange(self.xsize):
             for z in xrange(self.zsize):
-                d_chunks.add((p[0]+x, p[1]-z))
+                d_chunks.add((p[0]+x, p[1]+z))
 
         depth = 128
         for chunk in d_chunks:
@@ -385,28 +387,30 @@ class Dungeon (object):
 
     def genrooms(self, args_entrance):
         # Generate the maze used for room and hall placement.
-        # Stairwells contains the lower half of a stairwell. 
+        # stairwells contains the lower half of a stairwell. 
         stairwells = []
         entrance_pos = None
         exit_pos = None
-        # The size of our dungeon
+        # The size of our dungeon. Note this is once less in the depth
+        # dimension, because for most of the dungeon we don't want multilevel
+        # rooms to extend to the last level. 
         dsize = Vec(self.xsize, self.levels-1, self.zsize)
         # Some convenient lookups.
         # dirs holds vectors for moving in a cardinal direction.
-        dirs = {'N': Vec(-1,0,0),
-                'S': Vec(1,0,0),
-                'E': Vec(0,0,1),
-                'W': Vec(0,0,-1)}
+        dirs = {'N': Vec(0,0,-1),
+                'E': Vec(1,0,0),
+                'S': Vec(0,0,1),
+                'W': Vec(-1,0,0)}
         # sides maps a dir to a room side for hall placement.
-        sides = {'N': 3,
-                 'S': 1,
-                 'E': 2,
-                 'W': 0}
+        sides = {'N': 0,
+                 'E': 1,
+                 'S': 2,
+                 'W': 3}
         # opposite sides for setting the matching hall in the adjacent room. 
-        osides = {'N': 1,
-                  'S': 3,
-                  'E': 0,
-                  'W': 2}
+        osides = {'N': 2,
+                  'E': 3,
+                  'S': 0,
+                  'W': 1}
         # dkeys holds our valid directions.
         dkeys = dirs.keys()
         # Our maze state flags
@@ -415,20 +419,22 @@ class Dungeon (object):
         # Start in a random location on level 1, unless the -e
         # options was used. 
         if (args_entrance is not None):
-            x = args_entrance[1]
-            z = args_entrance[0]
+            x = args_entrance[0]
+            z = args_entrance[1]
         else:
             x = random.randint(0, self.xsize-1)
             z = random.randint(0, self.zsize-1)
 
-        # A maximum depth value. No one room can be this deep on a single
-        # level. 
+        # A maximum "depth" value. (depth being distance from the level
+        # entrance) No one room can be this deep on a single # level. 
         maxdepth = self.xsize * self.zsize * self.levels + 1
-        # a disjoint set in which to keep our room sets. 
+        # A disjoint set in which to keep our room sets. 
         ds = DisjointSet()
         # Generate a maze for each level. 
         for y in xrange(self.levels):
-            # If we are on the last level, allow rooms on this level.
+            # If we are on the last level, allow rooms on this level. Normally
+            # we don't allow rooms to extend to the last level to prevent multi
+            # level rooms from crossing the treasure chamber. 
             if (y == self.levels-1):
                 dsize = dsize.down(1)
             # The level starts here.
@@ -436,6 +442,8 @@ class Dungeon (object):
             # The first cell contains an entrance. This is a tower if we are on
             # level 1, otherwise it's a stairwell. 
             if (y == 0):
+                # For all levels except the last level, rooms can be as big as
+                # they want. For the last level it has to be 1x1x1.
                 maxsize = Vec(10,18,10)
                 if (y == self.levels-1):
                     maxsize = Vec(1,1,1)
@@ -452,9 +460,12 @@ class Dungeon (object):
                 eroom.features.append(feature)
                 feature.placed()
                 self.entrance = feature
-                # Mark cell as connected or used. Cells not on this level are
-                # placed in a set per level for later connections on lower
-                # levels.
+                # Mark cell as connected or used. 
+                # Cells on this level are marked as connected so we can branch
+                # off of them as needed. Cells on other levels are marked as
+                # used, so they can be connected to later. Each set of cells on
+                # other levels is its own set in the disjoint set so we can
+                # mange connections to them later. 
                 roots = {}
                 for p in ps:
                     if p.y == y:
@@ -501,7 +512,8 @@ class Dungeon (object):
                 p = choice(ps)
                 x = p.x
                 z = p.z
-                # Upstairs
+                # Upstairs. Override the feature of the room above to blank so
+                # it can hold the stairwell. 
                 posup = level_start.up(1)
                 room = self.rooms[posup]
                 feature = features.new('blank', room)
@@ -509,7 +521,7 @@ class Dungeon (object):
                 feature.placed()
             # If we are on the last level, place a treasure room. 
             if (y == self.levels-1):
-                # Try to find a location as far away form the level_start as
+                # Try to find a location as far away from the level_start as
                 # possible.
                 pos = Vec(0,y,0)
                 if (level_start.x < self.xsize/2):
@@ -528,7 +540,8 @@ class Dungeon (object):
                 room.floors.append(floor)
                 # Place all these cells into a RESTRICTED set for connection
                 # later. These have a depth of zero, since we don't want to
-                # count them in the depth calculation.
+                # count them in the depth calculation. This helps keep shortcuts
+                # to the treasure room to a minimum. 
                 root1 = ds.find(pos)
                 for p in ps:
                     root2 = ds.find(p)
@@ -538,10 +551,9 @@ class Dungeon (object):
                     if self.maze[p].depth >= 0:
                         self.maze[p].depth = 0
             while 1:
-                #ds.dump()
+                # Walk the maze.
                 if self.args.debug == True:
                     self.printmaze(y, cursor=Vec(x,y,z))
-                # Walk the maze.
                 # Shuffle the directions.
                 random.shuffle(dkeys)
                 # Store the last known cell. 
@@ -598,8 +610,6 @@ class Dungeon (object):
                         x = p.x
                         z = p.z
                         # We found a good cell, no need to look further.
-                        #print 'Moved:', d, dirs[d]
-                        #print 'Set:', Vec(x,y,z)
                         break
 
                 # If we're stuck, hunt for a new starting cell. If
@@ -638,7 +648,6 @@ class Dungeon (object):
                         z = p.z
                         ox = x + dirs[d].x
                         oz = z + dirs[d].z
-                        #print 'Set:', Vec(x,y,z), 'connect to', Vec(ox,y,oz)
                         # If this is a BLANK cell, generate a new room.
                         if (self.maze[Vec(x,y,z)].state == state.BLANK):
                             room, pos = rooms.pickRoom(self, dsize, Vec(x,y,z))
@@ -657,7 +666,7 @@ class Dungeon (object):
                                     self.maze[p].state = state.USED
                                     self.maze[p].depth = maxdepth
                         # For used rooms, we grab the set of rooms and pick a
-                        # random one. Reset all the room to connected.
+                        # random one. Set all the rooms to connected.
                         else:
                             root = ds.find(Vec(x,y,z))
                             sets = ds.split_sets()
@@ -858,7 +867,8 @@ class Dungeon (object):
         count = 0
         # in MC space, 0=E, 1=N, 2=W, 3=S
         # doors are populated N->S and W->E
-        doordat = ((3,6),(2,5),(4,1),(7,0))
+        #doordat = ((3,6),(2,5),(4,1),(7,0))
+        doordat = ((3,6),(5,2),(4,1),(0,7))
         maxcount = perc * len(self.doors) / 100
         for pos, door in self.doors.items():
             if (count < maxcount):
@@ -1351,8 +1361,8 @@ class Dungeon (object):
         We "look-through" any air blocks to blocks underneath'''
         pn = perlin.SimplexNoise(256)
         layer = (floor-1)*self.room_height
-        for x in xrange(self.xsize*self.room_size):
-            for z in xrange(self.zsize*self.room_size):
+        for z in xrange(self.zsize*self.room_size):
+            for x in xrange(self.xsize*self.room_size):
                 y = layer
                 while (y < layer + self.room_height - 1 and
                        Vec(x,y,z) in self.blocks and
@@ -1424,9 +1434,9 @@ class Dungeon (object):
             f = open(filename, 'w')
             f.write(header+form)
             f.write('<table border=0 cellpadding=0 cellspacing=0>')
-            for x in xrange(self.xsize*self.room_size):
+            for z in xrange(self.zsize*self.room_size):
                 f.write('<tr>')
-                for z in xrange(self.zsize*self.room_size):
+                for x in xrange(self.xsize*self.room_size):
                     y = layer
                     while (y < layer + self.room_height-1 and
                            Vec(x,y,z) in self.blocks and
@@ -1491,7 +1501,7 @@ class Dungeon (object):
                 room._name == 'circularpit' or
                 room._name == 'pitmid' or
                 room._name == 'circularpitbottom' or
-                room._name == 'pitbottom' 
+                room._name == 'pitbottom'
                ):
                 continue
             hallsum = 0
@@ -1519,7 +1529,7 @@ class Dungeon (object):
             # Override this room's feature
             room.features = []
             room.features.append(features.new('secretroom', room))
-            # overrise this room's hallway
+            # override this room's hallway
             offset = room.halls[d].offset
             if offset < 4:
                 offset = 4
@@ -1540,8 +1550,8 @@ class Dungeon (object):
     def setentrance(self, world):
         if self.args.debug: print 'Extending entrance to the surface...'
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
-            self.position.y - self.entrance.parent.loc.y,
-            self.position.z - self.entrance.parent.loc.z)
+                   self.position.y - self.entrance.parent.loc.y,
+                   self.entrance.parent.loc.z + self.position.z)
         if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         #newheight = baseheight
@@ -1555,7 +1565,7 @@ class Dungeon (object):
                   77,81,83,85,86,90,91,92,93,94)
         chunk = world.getChunk(wcoord.x>>4, wcoord.z>>4)
         for x in xrange(wcoord.x+4, wcoord.x+12):
-            for z in xrange(wcoord.z-11, wcoord.z-3):
+            for z in xrange(wcoord.z+4, wcoord.z+12):
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
                 # Heightmap is a good starting place, but I need to look
@@ -1595,8 +1605,8 @@ class Dungeon (object):
             num = (self.zsize+10) * (self.xsize+10)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Filling in caves:')
-            for z in xrange((self.position.z>>4)-self.zsize-4,
-                            (self.position.z>>4)+6):
+            for z in xrange((self.position.z>>4)-5,
+                            (self.position.z>>4)+self.zsize+5):
                 for x in xrange((self.position.x>>4)-5,
                                 (self.position.x>>4)+self.xsize+5):
                     pm.update_left(num)
@@ -1616,8 +1626,8 @@ class Dungeon (object):
             num = (self.zsize) * (self.xsize)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Regenerating resources/chests:')
-            for z in xrange((self.position.z>>4)-self.zsize+1,
-                             (self.position.z>>4)+1):
+            for z in xrange((self.position.z>>4),
+                             (self.position.z>>4)+self.zsize):
                 for x in xrange(self.position.x>>4,
                                  (self.position.x>>4)+self.xsize):
                     pm.update_left(num)
@@ -1634,7 +1644,7 @@ class Dungeon (object):
                                 if (name == 'y'):
                                     p.y = self.position.y - int(tag.value)
                                 if (name == 'z'):
-                                    p.z = self.position.z - int(tag.value)
+                                    p.z = int(tag.value) - self.position.z
                             if p.y < 0:
                                 self.addchest(p, 0)
                     # Empty the tile entities from this chunk
@@ -1679,7 +1689,7 @@ class Dungeon (object):
             # Translate block coords to world coords
             x = block.loc.x + self.position.x
             y = self.position.y - block.loc.y
-            z = self.position.z - block.loc.z
+            z = block.loc.z + self.position.z
             # Due to bad planning, sometimes we try to draw outside the bounds
             if (y < 0 or y > 127):
                 print 'WARN: Block outside height bounds. y =', y
@@ -1746,7 +1756,7 @@ class Dungeon (object):
             # Calculate world coords.
             x = ent['x'].value + self.position.x
             y = self.position.y - ent['y'].value
-            z = self.position.z - ent['z'].value
+            z = ent['z'].value + self.position.z
             # Move this tile ent to the world coords.
             ent['x'].value = x
             ent['y'].value = y

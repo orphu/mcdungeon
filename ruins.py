@@ -17,7 +17,7 @@ class Blank(object):
         self.parent = parent
         self.pos = copy(parent.pos)
         cx = (parent.parent.position.x + parent.loc.x) >>4
-        cz = (parent.parent.position.z - parent.loc.z) >>4
+        cz = (parent.parent.position.z + parent.loc.z) >>4
         self.chunk = Vec(cx,0,cz)
         #print 'ruin chunk:', self.chunk
 
@@ -48,7 +48,7 @@ class EvilRunestones(Blank):
         p = self.loc
         # This chunk
         cx = (self.parent.parent.position.x + self.parent.loc.x) >>4
-        cz = (self.parent.parent.position.z - self.parent.loc.z) >>4
+        cz = (self.parent.parent.position.z + self.parent.loc.z) >>4
         chunk = self.parent.parent.world.getChunk(cx,cz)
         # dungeon y
         dy = self.parent.parent.position.y
@@ -78,8 +78,8 @@ class EvilRunestones(Blank):
                 # create a chest
                 if (x == 2 and z == 2):
                     cp = Vec(cx*16+x-self.parent.parent.position.x,
-                              self.parent.parent.position.y - y - 1,
-                              self.parent.parent.position.z-cz*16-z)
+                             self.parent.parent.position.y - y - 1,
+                             cz*16+z-self.parent.parent.position.z)
                     self.parent.parent.setblock(cp, materials.Chest)
                     self.parent.parent.addchest(cp, 0)
                     for r in iterate_cube(q.down(2), q.trans(0,height,0)):
@@ -155,7 +155,7 @@ class StepPyramid(Blank):
         for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
                               Vec(self.spos.x+3, 0, self.spos.z+3)):
             cx = (self.parent.parent.position.x>>4) + p.x
-            cz = (self.parent.parent.position.z>>4) - p.z
+            cz = (self.parent.parent.position.z>>4) + p.z
             self.depth = min(self.depth,
                              self.parent.parent.good_chunks[(cx, cz)])
         self.depth = max(self.depth, 62, self.parent.parent.position.y)
@@ -169,16 +169,16 @@ class StepPyramid(Blank):
         cz = self.parent.parent.position.z>>4
         world = self.parent.parent.world
         # N side
-        (low1, high1) = findChunkDepths(Vec(cx, 0, cz-1), world)
-        (low2, high2) = findChunkDepths(Vec(cx, 0, cz-2), world)
+        (low1, high1) = findChunkDepths(Vec(cx, 0, cz+1), world)
+        (low2, high2) = findChunkDepths(Vec(cx, 0, cz+2), world)
         self.ent_n = min(22, max(1, high1-self.depth, high2-self.depth)+1)
         # S side
-        (low1, high1) = findChunkDepths(Vec(cx+3, 0, cz-1), world)
-        (low2, high2) = findChunkDepths(Vec(cx+3, 0, cz-2), world)
+        (low1, high1) = findChunkDepths(Vec(cx+3, 0, cz+1), world)
+        (low2, high2) = findChunkDepths(Vec(cx+3, 0, cz+2), world)
         self.ent_s = min(22,max(1, high1-self.depth, high2-self.depth)+1)
         # E side
-        (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz-3), world)
-        (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz-3), world)
+        (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz+3), world)
+        (low2, high2) = findChunkDepths(Vec(cx+2, 0, cz+3), world)
         self.ent_e = min(22,max(1, high1-self.depth, high2-self.depth)+1)
         # W side
         (low1, high1) = findChunkDepths(Vec(cx+1, 0, cz), world)
@@ -383,7 +383,7 @@ class StepPyramid(Blank):
                                         materials.SandstoneSlab)
             for p in iterate_cube(c1.trans(30, -y, y),
                                   c1.trans(33, -y, y)):
-                self.parent.parent.setblock(p, materials.StoneStairs, 3)
+                self.parent.parent.setblock(p, materials.StoneStairs, 2)
                 self.parent.parent.setblock(p.trans(0,0,1),
                                             materials.meta_mossycobble, 0)
             if (y > 0 and y <= self.ent_w):
@@ -393,7 +393,7 @@ class StepPyramid(Blank):
                         self.parent.parent.setblock(p.trans(0,0,x),
                                                     materials.Air, 0)
                     self.parent.parent.setblock(p.trans(0,0,6),
-                                                materials.StoneStairs, 3)
+                                                materials.StoneStairs, 2)
                     self.parent.parent.setblock(p.trans(0,0,7),
                                                 materials.meta_mossycobble, 0)
             if (self.ent_w == y):
@@ -431,7 +431,7 @@ class StepPyramid(Blank):
             for p in iterate_cube(c1.trans(30, -y, 63-y),
                                   c1.trans(33, -y, 63-y)):
                 self.parent.parent.setblock(p,
-                                            materials.StoneStairs, 2)
+                                            materials.StoneStairs, 3)
                 self.parent.parent.setblock(p.trans(0,0,-1),
                                             materials.meta_mossycobble, 0)
             if (y > 0 and y <= self.ent_e):
@@ -441,7 +441,7 @@ class StepPyramid(Blank):
                         self.parent.parent.setblock(p.trans(0,0,-x),
                                                     materials.Air, 0)
                     self.parent.parent.setblock(p.trans(0,0,-6),
-                                                materials.StoneStairs, 2)
+                                                materials.StoneStairs, 3)
                     self.parent.parent.setblock(p.trans(0,0,-7),
                                                 materials.meta_mossycobble, 0)
             if (self.ent_e == y):

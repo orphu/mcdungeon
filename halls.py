@@ -63,28 +63,28 @@ def drawHall (hall):
         trap = 1
     if (hall.direction == 0):
         start += Vec(0,0,0)
-        start = start.east(hall.offset)
+        start = start.e(hall.offset)
         stepw = Vec(1,0,0)
         stepl = Vec(0,0,1)
         dd1 = 5
         dd2 = 4
     elif(hall.direction == 1):
         start += Vec(hall.parent.parent.room_size-1,0,0)
-        start = start.south(hall.offset)
+        start = start.s(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(-1,0,0)
         dd1 = 2
         dd2 = 3
     elif(hall.direction == 2):
         start += Vec(0,0,hall.parent.parent.room_size-1)
-        start = start.east(hall.offset)
+        start = start.e(hall.offset)
         stepw = Vec(1,0,0)
         stepl = Vec(0,0,-1)
         dd1 = 5
         dd2 = 4
     else:
         start += Vec(0,0,0)
-        start = start.south(hall.offset)
+        start = start.s(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(1,0,0)
         dd1 = 2

@@ -50,17 +50,17 @@ class Vec(object):
         return self.x!=b.x or self.y!=b.y or self.z!=b.z
     def __hash__(self):
         return self.x + (self.y<<4) + (self.z<<8)
-    def east(self, x):
+    def e(self, x):
         return Vec(self.x+x, self.y, self.z)
-    def west(self, x):
+    def w(self, x):
         return Vec(self.x-x, self.y, self.z)
     def up(self, y):
         return Vec(self.x,self.y-y,self.z)
     def down(self, y):
         return Vec(self.x,self.y+y,self.z)
-    def north(self, z):
+    def n(self, z):
         return Vec(self.x,self.y,self.z-z)
-    def south(self, z):
+    def s(self, z):
         return Vec(self.x,self.y,self.z+z)
     def mag2d(self):
         return math.sqrt(self.x*self.x + self.z*self.z)
@@ -86,6 +86,19 @@ class Vec(object):
         return self.rotate(1)
     def trans(self, x, y, z):
         return Vec(self.x+x, self.y+y, self.z+z)
+
+
+# As of 1.9 pre 4:
+#   North = -Z
+#   South = +Z
+#   East = +X
+#   West = -X
+NORTH = Vec(0,0,-1)
+SOUTH = Vec(0,0,1)
+EAST = Vec(1,0,0)
+WEST = Vec(-1,0,0)
+UP = Vec(0,1,0)
+DOWN = Vec(0,-1,0)
 
 
 class Vec2f(object):
@@ -501,7 +514,7 @@ def enum(*sequential, **named):
     return type('Enum', (), enums)
 
 def distribute(chunk, ymin, ymax, chance, material):
-    '''Ditributes a material throughthe strata of a given array'''
+    '''Ditributes a material through the strata of a given array'''
     view = chunk.Blocks[:,:,ymin:ymax]
     viewd = chunk.Data[:,:,ymin:ymax]
     for i,v in numpy.ndenumerate(view):

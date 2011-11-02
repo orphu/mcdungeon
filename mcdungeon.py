@@ -12,7 +12,7 @@ from pymclevel import mclevel, nbt
 import pmeter
 
 # Version info
-__version__ = '0.6.1'
+__version__ = '0.7.0'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -73,7 +73,7 @@ parser_inter.add_argument('-e', '--entrance',
                     dest='entrance',
                     nargs=2,
                     type=int,
-                    metavar=('Z', 'X'),
+                    metavar=('X', 'Z'),
                     help='Provide an offset for the entrance in chunks')
 parser_inter.add_argument('--dir',
                           dest='dir',
@@ -86,14 +86,12 @@ parser_add.set_defaults(command='add')
 parser_add.add_argument('world',
                     metavar='SAVEDIR',
                     help='Target world (path to save directory)')
-parser_add.add_argument('z',
-                    metavar='Z',
-                    help='Number of rooms West -> East. Use -1 for random, or \
-                        provide a range. (ie: 4-7)')
 parser_add.add_argument('x',
                     metavar='X',
-                    help='Number of rooms North -> South. Use -1 for random, \
-                        or provide a range.')
+                    help='Number of rooms West -> East, or provide a range.')
+parser_add.add_argument('z',
+                    metavar='Z',
+                    help='Number of rooms North -> South, or provide a range. (ie: 4-7)')
 parser_add.add_argument('levels',
                     metavar='LEVELS',
                     help='Number of levels. Enter a positive value, or \
@@ -149,7 +147,7 @@ parser_add.add_argument('-e', '--entrance',
                     dest='entrance',
                     nargs=2,
                     type=int,
-                    metavar=('Z', 'X'),
+                    metavar=('X', 'Z'),
                     help='Provide an offset for the entrance in chunks')
 parser_add.add_argument('-n','--number',
                     type=int,dest='number',
@@ -268,15 +266,16 @@ def listDungeons(world, expand_hard_mode=False):
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
-    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
-    output += '| %9s | %24s | %7s | %6s | %17s |\n' % (
+    output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
+    output += '| %9s | %14s | %7s | %7s | %6s | %17s |\n' % (
         'Position',
-        'Date Generated',
+        'Date/Time',
+        'Version',
         'Size',
         'Levels',
         'Options'
     )
-    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
+    output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
     pm = pmeter.ProgressMeter()
     count = world.chunkCount
     pm.init(count, label='Scanning world:')
@@ -287,23 +286,29 @@ def listDungeons(world, expand_hard_mode=False):
         for tileEntity in chunk.TileEntities:
             if (tileEntity["id"].value == "Sign" and
                 tileEntity["Text1"].value.startswith('[MCD]')):
+                ver = tileEntity["Text1"].value[5:]
+                (major, minor, patch) = ver.split('.')
+                version = float(major+'.'+minor)
                 (xsize, zsize, levels) = tileEntity["Text3"].value.split(',')
                 offset = 0
                 if (expand_hard_mode == True and
                     tileEntity["Text4"].value.find('H:1') >= 0):
                     offset = 5
                 dungeons.append((int(tileEntity["x"].value)-offset,
-                                 int(tileEntity["z"].value)+offset,
+                                 int(tileEntity["z"].value)-offset,
                                  int(zsize)+offset,
                                  int(xsize)+offset,
                                  tileEntity["Text4"].value,
                                  int(levels),
                                  int(tileEntity["x"].value),
                                  int(tileEntity["y"].value),
-                                 int(tileEntity["z"].value)))
-                output += '| %9s | %24s | %7s | %6d | %17s |\n' % (
+                                 int(tileEntity["z"].value),
+                                 version))
+                output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
                  '%s %s'%(int(tileEntity["x"].value),int(tileEntity["z"].value)),
-                 time.ctime(int(tileEntity["Text2"].value)),
+                    time.strftime('%x %H:%M',
+                               time.localtime(int(tileEntity["Text2"].value))),
+                 ver,
                  '%sx%s'%(xsize, zsize),
                  int(levels),
                  tileEntity["Text4"].value
@@ -376,15 +381,13 @@ if (args.command == 'interactive'):
         cfg.Load(args.config)
 
         m = cfg.max_dist - cfg.min_dist
-        print '\nEnter the size of the dungeon(s) from East to West. (Z size)'
+        print '\nEnter the size of the dungeon(s) in chunks from West to East. (X size)'
         print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-        print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
-        args.z = raw_input('Z size: ')
-
-        print '\nEnter the size of the dungeon(s) from North to South. (X size)'
-        print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-        print 'Enter -1 to pick random values between 4 and %d. (based on your config)'%(m)
         args.x = raw_input('X size: ')
+
+        print '\nEnter the size of the dungeon(s) in chunks from North to South. (Z size)'
+        print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
+        args.z = raw_input('Z size: ')
 
         print '\nEnter a number of levels.'
         print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
@@ -538,13 +541,13 @@ if (args.command == 'delete'):
                 # Hard mode. Delete all chunks.
                 if e[4].find('H:1') >= 0:
                     p[0] -= 5
-                    p[1] += 5
+                    p[1] -= 5
                     xsize += 10
                     zsize += 10
                 break
         for x in xrange(xsize):
             for z in xrange(zsize):
-                chunks.append((p[0]+x, p[1]-z))
+                chunks.append((p[0]+x, p[1]+z))
     # Delete the chunks
     for c in chunks:
         if world.containsChunk(c[0],c[1]):
@@ -583,6 +586,8 @@ if (args.command == 'regenerate'):
     # Location
     cfg.offset = '%d %d %d'%(info[6], info[7], info[8])
     args.offset = None
+    # Version 
+    version = info[9]
     # Don't bury
     args.bury = False
     # Let's not bother with hard mode
@@ -681,9 +686,9 @@ if (args.offset is not None):
                                  args.offset[2])
 
 if (args.entrance is not None and (
-    args.entrance[0] >= args.z or
+    args.entrance[0] >= args.x or
     args.entrance[0] < 0 or
-    args.entrance[1] >= args.x or
+    args.entrance[1] >= args.z or
     args.entrance[1] < 0)):
     print 'Entrance offset values out of range.'
     print 'These should be >= 0 and < the maximum width or length of the dungeon.'
@@ -783,8 +788,8 @@ if (cfg.offset is None or cfg.offset is ''):
         p = (d[0]/16, d[1]/16)
         for x in xrange(int(d[2])):
             for z in xrange(int(d[3])):
-                if (p[0]+x,p[1]-z) in good_chunks:
-                    del(good_chunks[(p[0]+x,p[1]-z)])
+                if (p[0]+x,p[1]+z) in good_chunks:
+                    del(good_chunks[(p[0]+x,p[1]+z)])
                     chunk_stats[4][1] += 1
                     chunk_stats[5][1] -= 1
 
@@ -812,7 +817,7 @@ while args.number is not 0:
         pos.x = pos.x &~15
         pos.z = (pos.z &~15)+15
         dungeon = Dungeon(x, z, levels, good_chunks, args, world)
-        print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+        print 'Dungeon size: %d x %d x %d' % (x, z, levels)
         dungeon.position = pos
         if (args.bury is False):
             located = dungeon.bury(world, manual=True)
@@ -910,7 +915,7 @@ while args.number is not 0:
             flags += '1'
         else:
             flags += '0'
-        flags += ';E:%d,%d'%(dungeon.entrance_pos.z, dungeon.entrance_pos.x)
+        flags += ';E:%d,%d'%(dungeon.entrance_pos.x, dungeon.entrance_pos.z)
         flags += ';T:%.2x'%dungeon.entrance.height
         dungeon.setblock(Vec(0,0,0), materials.WallSign, 4, hide=True)
         dungeon.addsign(Vec(0,0,0),
@@ -936,7 +941,7 @@ while args.number is not 0:
         start = dungeon.position
         end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
           start.y - dungeon.levels * dungeon.room_height + 1,
-          start.z - dungeon.zsize * dungeon.room_size + 1)
+          start.z + dungeon.zsize * dungeon.room_size - 1)
         dungeon_positions[Vec(start.x>>4,
                              0,
                              start.z>>4)] = start
@@ -945,8 +950,8 @@ while args.number is not 0:
                          z,
                          x,
                          levels,
-                         start.__str__(),
-                         end.__str__()))
+                         str(start),
+                         str(end)))
         total_rooms += (x * z * levels)
 
     args.number -= 1
