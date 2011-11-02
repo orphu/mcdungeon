@@ -571,16 +571,16 @@ class SecretRoom(Blank):
             bdata = 1
             if offset >= 7:
                 mats[6][1] = 5
-                mats[7][1] = 4
-                mats[9][1] = 3
-                mats[10][1] = 0
-                mats[11][1] = 4
-            else:
-                mats[6][1] = 5
                 mats[7][1] = 3
-                mats[9][1] = 2
+                mats[9][1] = 3
                 mats[10][1] = 2
                 mats[11][1] = 6
+            else:
+                mats[6][1] = 5
+                mats[7][1] = 4
+                mats[9][1] = 2
+                mats[10][1] = 0
+                mats[11][1] = 4
 
         # East, flipped
         if (d == 2 and offset >= 7):
@@ -595,16 +595,16 @@ class SecretRoom(Blank):
             bdata = 2
             if offset >= 7:
                 mats[6][1] = 4
-                mats[7][1] = 4
-                mats[9][1] = 3
-                mats[10][1] = 0
-                mats[11][1] = 4
-            else:
-                mats[6][1] = 4
                 mats[7][1] = 3
-                mats[9][1] = 2
+                mats[9][1] = 3
                 mats[10][1] = 2
                 mats[11][1] = 6
+            else:
+                mats[6][1] = 4
+                mats[7][1] = 4
+                mats[9][1] = 2
+                mats[10][1] = 0
+                mats[11][1] = 4
 
         # Draw the mechanism
         for y in xrange(6):
