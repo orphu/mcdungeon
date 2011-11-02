@@ -239,7 +239,7 @@ class CellBlock(Basic2x2):
     def setData(self):
         Basic2x2.setData(self)
         self.features.append(features.new('blank', self))
-        self.floors.append(floors.new('brokendoubleslab', self))
+        #self.floors.append(floors.new('brokendoubleslab', self))
         self.combo = random.randint(1,62)
 
     def placed(self):
