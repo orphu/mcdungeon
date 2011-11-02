@@ -73,8 +73,8 @@ def drawHall (hall):
         start = start.s(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(-1,0,0)
-        dd1 = 2
-        dd2 = 3
+        dd1 = 3
+        dd2 = 2
     elif(hall.direction == 2):
         start += Vec(0,0,hall.parent.parent.room_size-1)
         start = start.e(hall.offset)
@@ -87,8 +87,8 @@ def drawHall (hall):
         start = start.s(hall.offset)
         stepw = Vec(0,0,1)
         stepl = Vec(1,0,0)
-        dd1 = 2
-        dd2 = 3
+        dd1 = 3
+        dd2 = 2
     for j in xrange(length):
         pen = start+stepl*j
         # First wall
