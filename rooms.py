@@ -460,7 +460,7 @@ class CellBlock(Basic2x2):
         self.parent.setblock(self.c1+Vec(5,1,19),
                              materials.RedStoneRepeaterOn, 15, lock=True)
         self.parent.setblock(self.c1+Vec(3,1,19),
-                             materials.RedStoneTorchOn, 0, lock=True)
+                             materials.RedStoneTorchOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,19),
                              materials.RedStoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,18),
