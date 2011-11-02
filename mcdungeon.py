@@ -815,7 +815,7 @@ while args.number is not 0:
     if (cfg.offset is not None and cfg.offset is not ''):
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
-        pos.z = (pos.z &~15)+15
+        pos.z = pos.z &~15
         dungeon = Dungeon(x, z, levels, good_chunks, args, world)
         print 'Dungeon size: %d x %d x %d' % (x, z, levels)
         dungeon.position = pos
