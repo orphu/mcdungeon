@@ -296,8 +296,8 @@ def listDungeons(world, expand_hard_mode=False):
                     offset = 5
                 dungeons.append((int(tileEntity["x"].value)-offset,
                                  int(tileEntity["z"].value)-offset,
-                                 int(zsize)+offset,
                                  int(xsize)+offset,
+                                 int(zsize)+offset,
                                  tileEntity["Text4"].value,
                                  int(levels),
                                  int(tileEntity["x"].value),
@@ -852,7 +852,7 @@ while args.number is not 0:
                     print 'Unable to place any more dungeons.'
                     break
             else:
-                print 'Dungeon size: %d x %d x %d' % (z, x, levels)
+                print 'Dungeon size: %d x %d x %d' % (x, z, levels)
                 print "Location: ", dungeon.position
     if (located is True):
         if (args.seed is not None):
@@ -921,8 +921,8 @@ while args.number is not 0:
         dungeon.addsign(Vec(0,0,0),
                         '[MCD]'+__version__,
                         str(int(time.time())),
-                        '%d,%d,%d'%(dungeon.zsize,
-                                    dungeon.xsize,
+                        '%d,%d,%d'%(dungeon.xsize,
+                                    dungeon.zsize,
                                     dungeon.levels),
                         flags)
         dungeon.setblock(Vec(1,0,0), materials.Stone, hide=True)
@@ -947,8 +947,8 @@ while args.number is not 0:
                              start.z>>4)] = start
         dungeons.append('Dungeon %d (%d x %d x %d): %s to %s' %
                         (len(dungeons)+1,
-                         z,
                          x,
+                         z,
                          levels,
                          str(start),
                          str(end)))
