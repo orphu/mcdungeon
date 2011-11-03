@@ -418,7 +418,7 @@ class SecretRoom(Blank):
             [3,1,1,2],
             [0,4,5,4]
         ]
-        oo = o.trans(5,3,7)
+        oo = o.trans(5,3,4)
         for x in xrange(2):
             for z in xrange(4):
                 p = oo.trans(x,0,z)
@@ -427,7 +427,7 @@ class SecretRoom(Blank):
         self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
         self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
         sb(o.trans(5,2,5), materials.Torch)
-        self.parent.parent.addchest(oo)
+        self.parent.parent.addchest(o.trans(5,3,7))
 
         # Hallway
         # Find the direction, room, and connecting room.
