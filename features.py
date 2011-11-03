@@ -418,7 +418,7 @@ class SecretRoom(Blank):
             [3,1,1,2],
             [0,4,5,4]
         ]
-        oo = o.trans(5,3,4)
+        oo = o.trans(5,3,7)
         for x in xrange(2):
             for z in xrange(4):
                 p = oo.trans(x,0,z)
