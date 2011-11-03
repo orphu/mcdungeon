@@ -1023,12 +1023,12 @@ class Dungeon (object):
             'ST': [materials.Stone, 0],
             'R0': [materials.RedStoneWire, 0],
             'R1': [materials.RedStoneWire, 15],
-            'o-': [materials.RedStoneTorchOff, 3], # d = 2
-            '-*': [materials.RedStoneTorchOn, 4],  # d = 1
+            'o-': [materials.RedStoneTorchOff, 4],
+            '-*': [materials.RedStoneTorchOn, 3],
             '**': [materials.RedStoneTorchOn, 5],
             'AR': [materials.Air, 0],
-            'P0': [materials.RedStoneRepeaterOff, 2], # d = 3
-            'P1': [materials.RedStoneRepeaterOn, 0], # d = 1
+            'P0': [materials.RedStoneRepeaterOff, 0],
+            'P1': [materials.RedStoneRepeaterOn, 2],
             'PI': [materials.StickyPiston, 4+8],
             'PE': [materials.PistonExtension, 4+8],
             'TR': [materials.RedStoneRepeaterOff, 17],
@@ -1231,10 +1231,10 @@ class Dungeon (object):
             # Rotate some materials according to the direction of the hall.
             # Hall runs East
             if sl == Vec(0,0,1):
-                mat['o-'] = [materials.RedStoneTorchOff, 3]
-                mat['-*'] = [materials.RedStoneTorchOn, 4]
-                mat['P0'] = [materials.RedStoneRepeaterOff, 2]
-                mat['P1'] = [materials.RedStoneRepeaterOn, 0]
+                mat['o-'] = [materials.RedStoneTorchOff, 4]
+                mat['-*'] = [materials.RedStoneTorchOn, 3]
+                mat['P0'] = [materials.RedStoneRepeaterOff, 0]
+                mat['P1'] = [materials.RedStoneRepeaterOn, 2]
                 # South side
                 if sw == Vec(1,0,0):
                     mat['PI'] = [materials.StickyPiston, 4+8]
@@ -1253,15 +1253,15 @@ class Dungeon (object):
                 mat['P1'] = [materials.RedStoneRepeaterOn, 1]
                 # East side
                 if sw == Vec(0,0,1):
-                    mat['PI'] = [materials.StickyPiston, 3+8]
-                    mat['PE'] = [materials.PistonExtension, 3+8]
-                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+0]
-                # West side
-                else:
                     mat['PI'] = [materials.StickyPiston, 2+8]
                     mat['PE'] = [materials.PistonExtension, 2+8]
                     mat['TR'] = [materials.RedStoneRepeaterOff, 16+2]
-            # This is the first trigger machanism. 
+                # West side
+                else:
+                    mat['PI'] = [materials.StickyPiston, 3+8]
+                    mat['PE'] = [materials.PistonExtension, 3+8]
+                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+0]
+            # This is the first trigger mechanism. 
             for p in iterate_cube(Vec(0,0,0), Vec(3,5,2)):
                 q = pos + sw*p.x + sl*p.z + Vec(0,1,0)*p.y
                 block = ptrap[p.y][p.x][p.z]
