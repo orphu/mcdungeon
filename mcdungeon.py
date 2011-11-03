@@ -969,8 +969,10 @@ if (len(dungeons) == 0):
 # Relight
 if (args.write is True and args.skiprelight is False):
     print "Relighting chunks..."
+    logging.basicConfig(format=u'%(message)s')
     logging.getLogger().level = logging.INFO
     world.generateLights()
+    logging.getLogger().propagate = False
 
 print 'Placed', len(dungeons), 'dungeons!'
 for d in dungeons:
