@@ -332,7 +332,7 @@ class CellBlock(Basic2x2):
                     charge = 15
                     torch = materials.RedStoneTorchOn
                     repeater = materials.RedStoneRepeaterOn
-                    ctext2 += 'X '
+                    ctext2 = 'X ' + ctext2
                 else:
                     charge = 0
                     torch = materials.RedStoneWire
@@ -356,7 +356,7 @@ class CellBlock(Basic2x2):
                     charge = 15
                     torch = materials.RedStoneTorchOn
                     repeater = materials.RedStoneRepeaterOn
-                    ctext1 += 'X '
+                    ctext1 = 'X ' + ctext1
                 else:
                     charge = 0
                     torch = materials.RedStoneWire
@@ -380,8 +380,8 @@ class CellBlock(Basic2x2):
         self.parent.signs.append({
             's1': 'Level '+str(self.pos.y+1),
             's2': '',
-            's3': ctext1+'  ',
-            's4': ctext2
+            's3': ctext1,
+            's4': ctext2+'  ',
                             })
         #print 'Cell block: '+str(self.combo)+'\n',ctext1+'\n',' '+ctext2+'\n'
         # Inner bus
