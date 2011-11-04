@@ -926,7 +926,7 @@ class SpiderLair(Basic):
                 self.parent.setblock(p.up(1), materials.Air)
                 self.parent.setblock(p.up(2), materials.Air)
                 self.parent.setblock(p.up(3), materials.Air)
-                self.parent.addspawner(p, 'Spider')
+                self.parent.addspawner(p, 'CaveSpider')
                 count += 1
 
         # Portal
@@ -1219,9 +1219,9 @@ class Arena(Basic2x2):
         sb(o+Vec(16,sy-1,16), materials.Chest)
         self.parent.addchest(o+Vec(16,sy-1,16))
         sb(o+Vec(15,sy-1,16), materials.Spawner)
-        self.parent.addspawner(o+Vec(15,sy-1,16), 'Ghast')
+        self.parent.addspawner(o+Vec(15,sy-1,16), 'Blaze')
         sb(o+Vec(16,sy-1,15), materials.Spawner)
-        self.parent.addspawner(o+Vec(16,sy-1,15), 'Ghast')
+        self.parent.addspawner(o+Vec(16,sy-1,15), 'Blaze')
 
         # Portal
         if (cfg.mvportal != ''):
