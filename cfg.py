@@ -116,6 +116,8 @@ def Load(filename = 'default.cfg'):
         mob2 = mob[0].capitalize()
         if (mob2 == 'Pigzombie'):
             mob2 = 'PigZombie'
+        elif (mob2 == 'Cavespider'):
+            mob2 = 'CaveSpider'
         master_mobs.append((mob2, mob[1]))
 
     # Load other config options
