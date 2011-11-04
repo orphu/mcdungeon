@@ -212,10 +212,12 @@ def drawHall (hall):
                 abort = True
         # Create the portcullis.
         if (abort == False):
-            # All portcullises are fences. Except webs. 
+            # Portcullises can be makde from fence, nether fence, or iron bars.
             # They can be 1 (open) or 3 (closed) blocks high
+            mat = choice([materials.Fence, materials.NetherBrickFence,
+                         materials.IronBars])
             hall.parent.parent.portcullises[port] = portcullises.Portcullis()
-            hall.parent.parent.portcullises[port].material = materials.Fence
+            hall.parent.parent.portcullises[port].material = mat
             if (randint(1,100) <= cfg.portcullis_closed):
                 hall.parent.parent.portcullises[port].size = 3
             else:
