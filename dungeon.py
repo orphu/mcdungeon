@@ -329,8 +329,8 @@ class Dungeon (object):
 
 
     def addchest(self, loc, tier=-1):
+        level = loc.y/self.room_height
         if (tier < 0):
-            level = loc.y/self.room_height
             if (self.levels > 1):
                 tierf = (float(level) /
                          float(self.levels-1) *
@@ -347,12 +347,23 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
-        for i in loottable.rollLoot(tier):
+        for i in loottable.rollLoot(tier, level+1):
             item_tag = nbt.TAG_Compound()
+            # Standard stuff
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
             item_tag['Count'] = nbt.TAG_Byte(i.count)
             item_tag['id'] = nbt.TAG_Short(i.id)
             item_tag['Damage'] = nbt.TAG_Short(i.damage)
+            # Enchantments
+            if len(i.enchantments) > 0:
+                item_tag['tag'] = nbt.TAG_Compound()
+                item_tag['tag']['ench'] = nbt.TAG_List()
+                elist = item_tag['tag']['ench']
+                for e in i.enchantments:
+                    e_tag = nbt.TAG_Compound()
+                    e_tag['id'] = nbt.TAG_Short(e['id'])
+                    e_tag['lvl'] = nbt.TAG_Short(e['lvl'])
+                    elist.append(e_tag)
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 

@@ -6,6 +6,11 @@ v0.7.0 - ??/??/????
      generated with older version of MCDungeon. To reuse old maps, use 1.6.1
      to delete the maps before running 0.7.0. 
 
+   * NOTE 3: This version also break backward compatibility with old configs.
+     The loot table format has changed. If you want to use old configs, you can
+     but you'll have to replace all the loot tables with a list from one of the
+     standard configs. 
+
    * Revamped the cardinal directions to match 1.9.
 
    * CellBlock rooms can now have a variety of floor types.
@@ -22,6 +27,9 @@ v0.7.0 - ??/??/????
    * Arenas now host Blaze.
 
    * Spider Lairs now host cave spiders.
+
+   * Loot tables now handle multiple items per line (ie: add one of a list) and
+     will enchant armor, weapons, and tools.
 
 v0.6.0 - 09/22/2011
 
