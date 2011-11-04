@@ -100,6 +100,7 @@ LapisOre = Material('Lapis Lazuli Ore', 'o',BBLUE)
 Lava = Material('Lava', 'L',BRED)
 MossStone = Material('Moss Stone', '%',GREEN)
 MossyStoneBrick = Material('Mossy Stone Brick' ,'B',GREEN)
+NetherBrick = Material('Nether Brick', 'B',BPURPLE)
 NetherBrickFence = Material('Nether Brick Fence', 'o',BPURPLE)
 NetherPortal = Material('Portal', '@',BPURPLE)
 Netherrack = Material('Netherrack', '%',BPURPLE)
@@ -208,27 +209,45 @@ class meta_class_stonedungeon(MetaMaterial):
     c = StoneBrick.c
     pn = perlin.SimplexNoise(256)
     def update(self, x, y, z, maxx, maxy, maxz):
-        broken = .1+(float(y)/float(maxy))*.5
-        if random.randint(1,100) < broken*10+5:
-            self.val = CrackedStoneBrick.val
-            self.data = CrackedStoneBrick.data
-            self.c = CrackedStoneBrick.c
-            return
-
         n = self.pn.noise3(x / 100.0, y / 100.0, z / 100.0)
         n = n + (float(y)/float(maxy))*2
-        if (n > 2.7):
-            self.val = MossStone.val
-            self.data = MossStone.data
-            self.c = MossStone.c
-        elif (n > 1.5):
+
+        if n <= 1.5:
+            broken = .1+(float(y)/float(maxy))*.5
+            if random.randint(1,100) < broken*10+5:
+                self.val = CrackedStoneBrick.val
+                self.data = CrackedStoneBrick.data
+                self.c = CrackedStoneBrick.c
+                return
+
+        if (n > 1.5):
+            #self.val = MossStone.val
+            #self.data = MossStone.data
+            #self.c = MossStone.c
+            if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
+                self.val = MossStone.val
+                self.data = MossStone.data
+                self.c = MossStone.c
+            else:
+                self.val = Cobblestone.val
+                self.data = Cobblestone.data
+                self.c = Cobblestone.c
+        elif (n > 1.0):
             self.val = Cobblestone.val
             self.data = Cobblestone.data
             self.c = Cobblestone.c
-        elif (n > 0.7):
-            self.val = MossyStoneBrick.val
-            self.data = MossyStoneBrick.data
-            self.c = MossyStoneBrick.c
+        elif (n > 0.5):
+            #self.val = MossyStoneBrick.val
+            #self.data = MossyStoneBrick.data
+            #self.c = MossyStoneBrick.c
+            if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
+                self.val = MossyStoneBrick.val
+                self.data = MossyStoneBrick.data
+                self.c = MossyStoneBrick.c
+            else:
+                self.val = StoneBrick.val
+                self.data = StoneBrick.data
+                self.c = StoneBrick.c
         else:
             self.val = StoneBrick.val
             self.data = StoneBrick.data
