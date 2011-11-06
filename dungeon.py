@@ -208,7 +208,8 @@ class Dungeon (object):
         return False
 
     def worldmap(self, world):
-        rows, columns = os.popen('stty size', 'r').read().split()
+        #rows, columns = os.popen('stty size', 'r').read().split()
+        columns = 80
         bounds = world.bounds
         scx = world.playerSpawnPosition()[0]>>4
         scz = world.playerSpawnPosition()[2]>>4
