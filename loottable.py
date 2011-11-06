@@ -179,10 +179,7 @@ def rollLoot (tier, level):
 
             enchantments = []
             if ench_level > 0:
-                print
                 enchantments = list(enchant(item.name, ench_level))
-                print
-                print
 
             while (amount > 0):
                 if (amount > item.maxstack):
