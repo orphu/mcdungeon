@@ -292,6 +292,50 @@ class Dungeon (object):
                                 self.position.z)
         return True
 
+    def vines(self, pos, grow=False):
+        # Data values (1.9p5)
+        # 1 - South
+        # 2 - West
+        # 4 - North
+        # 8 - East
+        b = self.getblock(pos)
+        # Something here already
+        if b != materials.Air:
+            return
+
+        # Look around for something to attach to
+        noattach = [materials.Air, materials.Vines, materials.CobblestoneSlab,
+                    materials.SandstoneSlab, materials.StoneBrickSlab,
+                    materials.StoneSlab, materials.WoodenSlab, materials.Fence,
+                   materials.IronBars, materials.Cobweb, materials.Torch,
+                    materials.GlassPane, materials.StoneButton,
+                    materials.StoneBrickStairs, materials.StoneStairs,
+                    materials.WoodenStairs]
+        data = 0
+        b = self.getblock(pos.s(1))
+        if (b != False and b not in noattach):
+            data += 1
+        b = self.getblock(pos.w(1))
+        if (b != False and b not in noattach):
+            data += 2
+        b = self.getblock(pos.n(1))
+        if (b != False and b not in noattach):
+            data += 4
+        b = self.getblock(pos.e(1))
+        if (b != False and b not in noattach):
+            data += 8
+        # Nothing to attach to
+        if data == 0:
+            return
+        self.setblock(pos, materials.Vines, data)
+        if grow == False:
+            return
+        pos = pos.down(1)
+        b = self.getblock(pos)
+        while (b != False and b == materials.Air and random.randint(1,100)<75):
+            self.setblock(pos, materials.Vines, data)
+            pos = pos.down(1)
+            b = self.getblock(pos)
 
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
@@ -329,7 +373,7 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
 
 
-    def addchest(self, loc, tier=-1):
+    def addchest(self, loc, tier=-1, loot=[]):
         level = loc.y/self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -348,7 +392,9 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
-        for i in loottable.rollLoot(tier, level+1):
+        if len(loot) == 0:
+            loot = list(loottable.rollLoot(tier, level+1))
+        for i in loot:
             item_tag = nbt.TAG_Compound()
             # Standard stuff
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
