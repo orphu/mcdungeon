@@ -7,6 +7,7 @@ import floors
 import features
 import ruins
 import cfg
+import items
 import loottable
 from utils import *
 import random
@@ -1238,6 +1239,369 @@ class Arena(Basic2x2):
                                        '[multiverse]',
                                        cfg.mvportal,
                                        '<== Exit')
+
+
+class Crypt(Basic):
+    _name = 'crypt'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1,1,2)
+    _max_size = Vec(1,1,2)
+    size = Vec(1,1,2)
+
+    def placed(self):
+        self.canvas = (
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0),
+            Vec(0,self.parent.room_height-2,0))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # This room contains no halls, but is connected to the South  
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [1,1,0,1]
+        self.hallSize = [[6,sx-6],
+                         [6,sx-6],
+                         [6,sz-6],
+                         [6,sz-6]]
+        self.parent.halls[pos.x][pos.y][pos.z] = [0,0,1,0]
+
+        # Place one room to the South
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,0,0,0]
+        room.hallSize = [[6,sx-6],
+                         [6,sx-6],
+                         [6,sz-6],
+                         [6,sz-6]]
+        room.parent.halls[pos.x][pos.y][pos.z] = [1,1,1,1]
+        # This room cannot connect. Make the depth < 0
+        room.parent.maze[pos].depth = -1
+        return rooms
+
+    def render(self):
+        sx = 16
+        sy = 12
+        sz = 32
+        o = self.loc
+        pos = self.pos
+
+        # alias for setblock
+        sb = self.parent.setblock
+
+        # symmetrical setblock. A lot of this room will be symmetrical. 
+        def ssb (p, mat, data=0):
+            sb(o+p, mat, data)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+p.z), mat, data)
+
+        # Decoration colors
+        # inner color, trim color
+        dmat = random.choice([
+            [materials.StoneBrick, materials.StoneBrick]
+        ])
+
+        # Basic room
+        # Air space
+        for p in iterate_cube(o, o+Vec(sx-1,sy-1,sz-1)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o+Vec(sx-1,0,sz-1), -sy+1):
+            sb(p, materials.meta_mossycobble)
+        # Ceiling and floor
+        for p in iterate_cube(o, o+Vec(sx-1,0,sz-1)):
+            sb(p, materials._ceiling)
+            sb(p.down(sy-1), materials._floor)
+
+        # balcony
+        for p in iterate_cube(Vec(1,4,1), Vec(3,4,9)):
+            ssb(p, materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(1,4,1), Vec(5,4,3)):
+            ssb(p, materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(1,4,1), Vec(2,4,8)):
+            ssb(p, materials.StoneBrickSlab)
+        for p in iterate_cube(Vec(1,4,1), Vec(5,4,2)):
+            ssb(p, materials.StoneBrickSlab)
+        for p in iterate_cube(Vec(1,3,9), Vec(2,3,9)):
+            ssb(p, materials.IronBars)
+        for p in iterate_cube(Vec(4,3,3), Vec(5,3,3)):
+            ssb(p, materials.IronBars)
+        for p in iterate_cube(Vec(3,3,3), Vec(3,3,9)):
+            ssb(p, materials.IronBars)
+        for p in iterate_cube(Vec(4,2,3), Vec(6,2,3)):
+            ssb(p, materials.IronBars)
+            ssb(p+Vec(1,-1,0), materials.IronBars)
+
+        # Entry stairs
+        for x in xrange(6):
+            ssb(Vec(6,5+x,1+x), materials.meta_mossystonebrick)
+            ssb(Vec(7,5+x,1+x), materials.meta_mossystonebrick)
+            ssb(Vec(6,5+x,2+x), materials.meta_mossystonebrick)
+            ssb(Vec(7,5+x,2+x), materials.meta_mossystonebrick)
+            ssb(Vec(6,5+x,3+x), materials.StoneBrickStairs, 3)
+            ssb(Vec(7,5+x,3+x), materials.StoneBrickStairs, 3)
+        # Skip this is there is no door to the West
+        if self.parent.halls[pos.x][pos.y][pos.z][0] == 1:
+            for p in iterate_cube(Vec(6,4,1), Vec(7,4,1)):
+                ssb(p, materials.StoneBrickStairs, 3)
+
+        # Rug
+        for p in iterate_cube(Vec(6,11,9), Vec(6,11,25)):
+            ssb(p, dmat[1])
+        for p in iterate_cube(Vec(7,11,9), Vec(7,11,25)):
+            ssb(p, dmat[0])
+        for x in xrange(20):
+            p = Vec(random.randint(6,9), 11, random.randint(9,25))
+            sb(o+p, materials._floor)
+
+        # Back wall
+        wall = random.choice(
+            [
+                # Creeper
+               [[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+                [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                [0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0],
+                [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+
+                # Wings
+               [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0],
+                [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+                [0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0],
+                [0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0],
+                [0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+
+                # Triforce
+               [[0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0],
+                [0,0,0,0,0,2,0,2,2,0,2,0,0,0,0,0],
+                [0,0,0,0,3,0,2,2,2,2,0,3,0,0,0,0],
+                [0,0,0,3,3,3,0,0,0,0,3,3,3,0,0,0],
+                [0,0,3,0,0,0,3,0,0,3,0,0,0,3,0,0],
+                [0,3,3,3,0,3,3,3,3,3,3,0,3,3,3,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
+
+                # Banners
+               [[0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,3,2,2,3,0,3,2,2,3,0,3,2,2,3,0],
+                [0,0,2,2,0,0,3,2,2,3,0,0,2,2,0,0],
+                [0,0,0,0,0,0,3,2,2,3,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+            ]
+        )
+        w = materials.StoneBrick
+        for y in xrange(10):
+            for x in xrange(16):
+                if wall[y][x] == 1:
+                    sb(o+Vec(x,y+1,31), w)
+                elif wall[y][x] == 2:
+                    sb(o+Vec(x,y+1,31), dmat[0])
+                elif wall[y][x] == 3:
+                    sb(o+Vec(x,y+1,31), dmat[1])
+
+        # Loot for the small sarcophagi
+        loota = []
+        lootb = []
+        bone = items.byName('bone')
+        for slot in xrange(11,15,1):
+            loota.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+            lootb.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+        for slot in xrange(18,27,1):
+            loota.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+        for slot in xrange(0,9,1):
+            lootb.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+
+        # Random stuff to be buried with.
+        lootc = [(items.byName('bone'), 20),
+                 (items.byName('book'), 10),
+                 (items.byName('bow'), 10),
+                 (items.byName('diamond'), 5),
+                 (items.byName('gold ingot'), 5),
+                 (items.byName('bowl'), 10),
+                 (items.byName('feather'), 10),
+                 (items.byName('golden apple'), 5),
+                 (items.byName('paper'), 10),
+                 (items.byName('clock'), 10),
+                 (items.byName('compass'), 10),
+                 (items.byName('gold nugget'), 10),
+                 (items.byName('ender pearl'), 1),
+                 (items.byName('blaze rod'), 1),
+                 (items.byName('ghast tear'), 1),
+                 (items.byName('glass bottle'), 10),
+                 (items.byName('blaze powder'), 1),
+                 (items.byName('magma cream'), 1),
+                 (items.byName('eye of ender'), 1)]
+
+        # Small sarcophagi
+        for zoff in xrange(0, 24, 6):
+            ssb(Vec(2,10,1+zoff), materials.EndStone)
+            ssb(Vec(1,10,2+zoff), materials.EndStone)
+            ssb(Vec(3,10,2+zoff), materials.EndStone)
+            ssb(Vec(1,10,3+zoff), materials.EndStone)
+            ssb(Vec(3,10,3+zoff), materials.EndStone)
+            ssb(Vec(1,10,4+zoff), materials.EndStone)
+            ssb(Vec(3,10,4+zoff), materials.EndStone)
+            ssb(Vec(2,10,5+zoff), materials.EndStone)
+
+            ssb(Vec(1,10,1+zoff), materials.SandstoneSlab)
+            ssb(Vec(3,10,1+zoff), materials.SandstoneSlab)
+            ssb(Vec(1,10,5+zoff), materials.SandstoneSlab)
+            ssb(Vec(3,10,5+zoff), materials.SandstoneSlab)
+
+            ssb(Vec(2,10,2+zoff), materials.Chest,4)
+            i = weighted_choice(lootc)
+            loota[7].id = i.value
+            loota[7].data = i.data
+            self.parent.addchest(o+Vec(2,10,2+zoff), 0, loot=loota)
+            i = weighted_choice(lootc)
+            loota[7].id = i.value
+            loota[7].data = i.data
+            self.parent.addchest(o+Vec(13,10,2+zoff), 0, loot=loota)
+            ssb(Vec(2,10,3+zoff), materials.Chest,4)
+            i = weighted_choice(lootc)
+            lootb[7].id = i.value
+            lootb[7].data = i.data
+            self.parent.addchest(o+Vec(2,10,3+zoff), 0, loot=lootb)
+            i = weighted_choice(lootc)
+            lootb[7].id = i.value
+            lootb[7].data = i.data
+            self.parent.addchest(o+Vec(13,10,3+zoff), 0, loot=lootb)
+
+            ssb(Vec(2,9,2+zoff), materials.StoneBrickStairs, 3)
+            ssb(Vec(2,9,3+zoff), materials.StoneBrickSlab)
+            ssb(Vec(2,9,4+zoff), materials.meta_mossystonebrick)
+
+        # Spawners
+        for p in [Vec(2,10,4),Vec(2,10,4+6),Vec(2,10,4+12),Vec(2,10,4+18),
+                  Vec(13,10,4),Vec(13,10,4+6),Vec(13,10,4+12),Vec(13,10,4+18)]:
+            if random.randint(1,100) >= 33:
+                continue
+            self.parent.addspawner(o+p, 'Skeleton')
+            self.parent.setblock(o+p, materials.Spawner)
+
+        # Dais
+        for p in iterate_cube(o.trans(1,10,25), o.trans(14,10,25)):
+            sb(p, materials.StoneBrickStairs, 2)
+            sb(p+Vec(0,-1,1), materials.StoneBrickSlab)
+        for p in iterate_cube(o.trans(1,9,27), o.trans(14,9,30)):
+            sb(p, materials.meta_mossystonebrick)
+
+        # Large Sarcophagus
+        for p in iterate_cube(o.trans(5,8,28), o.trans(10,8,30)):
+            sb(p, materials.EndStone)
+        ssb(Vec(5,8,28), materials.SandstoneSlab)
+        ssb(Vec(5,8,30), materials.SandstoneSlab)
+        sb(o+Vec(6,7,29), materials.StoneBrick)
+        sb(o+Vec(7,7,29), materials.StoneBrickSlab)
+        sb(o+Vec(8,7,29), materials.StoneBrickSlab)
+        sb(o+Vec(9,7,29), materials.StoneBrickStairs, 0)
+
+        # Chest. Maxtier plus a level zero.
+        sb(o+Vec(7,8,29), materials.Chest, 2)
+        self.parent.addchest(o+Vec(7,8,29), loottable._maxtier)
+        sb(o+Vec(8,8,29), materials.Chest, 2)
+        self.parent.addchest(o+Vec(8,8,29), 0)
+
+        # Statues
+        # Legs/body
+        for p in iterate_cube(Vec(1,8,29), Vec(1,4,29)):
+            ssb(p, materials.StoneBrick)
+            ssb(p+Vec(1,0,1), materials.StoneBrick)
+        # Sword
+        ssb(Vec(2,8,29), materials.GlassPane)
+        ssb(Vec(2,7,29), materials.GlassPane)
+        ssb(Vec(2,6,29), materials.GlassPane)
+        ssb(Vec(2,5,29), materials.Fence)
+        # Arms
+        ssb(Vec(1,5,28), materials.StoneBrick)
+        ssb(Vec(1,4,28), materials.StoneBrickSlab)
+        ssb(Vec(3,5,30), materials.StoneBrick)
+        ssb(Vec(3,4,30), materials.StoneBrickSlab)
+        # Head
+        ssb(Vec(2,3,29), materials.StoneBrick)
+        # Feet
+        sb(o+Vec(1,8,28), materials.StoneBrickStairs, 2)
+        sb(o+Vec(3,8,30), materials.StoneBrickStairs, 1)
+        sb(o+Vec(14,8,28), materials.StoneBrickStairs, 2)
+        sb(o+Vec(12,8,30), materials.StoneBrickStairs, 0)
+        # Hands
+        sb(o+Vec(2,5,28), materials.StoneBrickStairs, 1)
+        sb(o+Vec(3,5,29), materials.StoneBrickStairs, 2)
+        sb(o+Vec(13,5,28), materials.StoneBrickStairs, 0)
+        sb(o+Vec(12,5,29), materials.StoneBrickStairs, 2)
+        # Eyes
+        ssb(Vec(2,3,28), materials.StoneButton, 4)
+        sb(o+Vec(3,3,29), materials.StoneButton, 1)
+        sb(o+Vec(12,3,29), materials.StoneButton, 2)
+        # Torches
+        ssb(Vec(1,5,30), materials.Torch)
+
+        # Webs
+        for p in iterate_cube(o.trans(5,1,5), o.trans(10,1,30)):
+            if random.random() < 0.07:
+                for q in iterate_cube(p, p.down(random.randint(0,2))):
+                    sb(q, materials.Cobweb)
+
+        # Portal
+        if (cfg.mvportal != ''):
+            # Obsidian portal frame.
+            for p in iterate_cube(Vec(6,7,1), Vec(9,11,1)):
+                sb(o+p, materials.Obsidian)
+            # Portal stuff.
+            for p in iterate_cube(Vec(7,8,1), Vec(8,10,1)):
+                sb(o+p, materials.NetherPortal)
+            # Sign.
+            sb(o+Vec(6,9,2), materials.WallSign, 3)
+            self.parent.addsign(o+Vec(6,9,2),
+                                       '[multiverse]',
+                                       cfg.mvportal,
+                                       '','')
+
+        # Vines
+        for p in iterate_cube(o+Vec(1,1,1), o+Vec(14,9,30)):
+            if random.randint(1,100) <= 20:
+                self.parent.vines(p, grow=True)
+
+        # Cobwebs
+        webs = {}
+        for p in iterate_cube(o.down(1), o.trans(15,4,31)):
+            count = 0
+            perc = 90 - (p.y - self.loc.down(1).y) * (70/3)
+            if (p not in self.parent.blocks or
+                self.parent.blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in self.parent.blocks and
+                    self.parent.blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            self.parent.setblock(p, materials.Cobweb)
+
 
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
