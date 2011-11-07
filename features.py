@@ -114,14 +114,19 @@ class Stairwell(Blank):
             # Clear a stairwell
             for x in iterate_cube(start.trans(0,0,1), start.trans(5,-5,4)):
                 self.parent.parent.setblock(x, materials.Air)
+            mat = random.choice([
+                (materials.StoneStairs, materials.meta_mossycobble),
+                (materials.WoodenStairs, materials.Wood),
+                (materials.StoneBrickStairs, materials.meta_stonedungeon)
+            ])
             # Draw the steps
             for x in xrange(6):
                 for p in iterate_cube(start.trans(x,-x,1),
                                       start.trans(x,-x,4)):
                     self.parent.parent.setblock(p,
-                                                materials.StoneStairs)
+                                                mat[0])
                     self.parent.parent.setblock(p.trans(0,1,0),
-                                                materials.meta_mossycobble)
+                                                mat[1])
 
 
 class Chasm(Blank):
