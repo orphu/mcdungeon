@@ -5,6 +5,7 @@ import materials
 import rooms
 import ruins
 import loottable
+import items
 import cfg
 from utils import *
 import perlin
@@ -392,57 +393,137 @@ class SecretRoom(Blank):
         o = self.parent.loc.trans(2,0,2)
         sb = self.parent.parent.setblock
 
+        roomtype = random.choice(('study', 'sepulchure'))
+
+        if roomtype == 'study':
+            wmat = materials._wall
+            fmat = materials._floor
+            cmat = materials._ceiling
+        else:
+            wmat = materials.meta_mossystonebrick
+            fmat = materials.meta_mossystonebrick
+            cmat = materials._ceiling
+
         # Reform the room.
         # Air space
         for p in iterate_cube(o.trans(1,1,1), o.trans(10,3,10)):
             sb(p, materials.Air)
         # Walls
         for p in iterate_four_walls(o, o.trans(11,0,11),-4):
-            sb(p, materials._wall)
+            sb(p, wmat)
         # Ceiling
         for p in iterate_cube(o, o.trans(11,0,11)):
-            sb(p, materials._ceiling)
+            sb(p, cmat)
         # Floor
         for p in iterate_cube(o.trans(0,4,0), o.trans(11,4,11)):
-            sb(p, materials._floor)
-        # Book cases
-        for p in iterate_four_walls(o.trans(1,1,1), o.trans(10,1,10),-2):
-            sb(p, materials.Bookshelf)
-        for p in (Vec(1,1,3), Vec(1,1,8),
-                  Vec(3,1,1), Vec(3,1,10),
-                  Vec(8,1,1), Vec(8,1,10),
-                  Vec(10,1,3), Vec(10,1,8)):
-            for q in iterate_cube(o+p, o+p.down(2)):
-                sb(q, materials.Air)
-        # Torches
-        for p in (Vec(2,3,2), Vec(2,3,9),
-                  Vec(9,3,2), Vec(9,3,9)):
-            sb(o+p, materials.Fence)
-            sb(o+p.up(1), materials.Torch, 5)
+            sb(p, fmat)
 
-        # Desk
-        mats = [
-            materials.Air,          # 0
-            materials.WoodPlanks,   # 1
-            materials.Chest,        # 2
-            materials.CraftingTable,# 3
-            materials.WallSign,     # 4
-            materials.WoodenStairs  # 5
-        ]
-        template = [
-            [3,1,1,2],
-            [0,4,5,4]
-        ]
-        oo = o.trans(5,3,4)
-        for x in xrange(2):
-            for z in xrange(4):
-                p = oo.trans(x,0,z)
-                sb(p, mats[template[x][z]])
-        self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
-        self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
-        self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
-        sb(o.trans(5,2,5), materials.Torch)
-        self.parent.parent.addchest(o.trans(5,3,7))
+        # Pick random contents. Right now there are two possibilities. 
+        if roomtype == 'study':
+            # A secret study
+            # Book cases
+            for p in iterate_four_walls(o.trans(1,1,1), o.trans(10,1,10),-2):
+                sb(p, materials.Bookshelf)
+            for p in (Vec(1,1,3), Vec(1,1,8),
+                      Vec(3,1,1), Vec(3,1,10),
+                      Vec(8,1,1), Vec(8,1,10),
+                      Vec(10,1,3), Vec(10,1,8)):
+                for q in iterate_cube(o+p, o+p.down(2)):
+                    sb(q, materials.Air)
+            # Torches
+            for p in (Vec(2,3,2), Vec(2,3,9),
+                      Vec(9,3,2), Vec(9,3,9)):
+                sb(o+p, materials.Fence)
+                sb(o+p.up(1), materials.Torch, 5)
+
+            # Desk
+            mats = [
+                materials.Air,          # 0
+                materials.WoodPlanks,   # 1
+                materials.Chest,        # 2
+                materials.CraftingTable,# 3
+                materials.WallSign,     # 4
+                materials.WoodenStairs  # 5
+            ]
+            template = [
+                [3,1,1,2],
+                [0,4,5,4]
+            ]
+            oo = o.trans(5,3,4)
+            for x in xrange(2):
+                for z in xrange(4):
+                    p = oo.trans(x,0,z)
+                    sb(p, mats[template[x][z]])
+            self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
+            self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
+            self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
+            sb(o.trans(5,2,5), materials.Torch)
+            self.parent.parent.addchest(o.trans(5,3,7))
+        else:
+            # a small sepulchure
+            # Torches
+            for p in (Vec(2,3,2), Vec(2,3,9),
+                      Vec(9,3,2), Vec(9,3,9)):
+                sb(o+p, materials.Fence)
+                sb(o+p.up(1), materials.Torch, 5)
+            # Sarcophagus
+            for p in iterate_cube(o.trans(3,3,4), o.trans(8,3,6)):
+                sb(p, materials.EndStone)
+            sb(o+Vec(3,3,4), materials.SandstoneSlab)
+            sb(o+Vec(3,3,6), materials.SandstoneSlab)
+            sb(o+Vec(8,3,4), materials.SandstoneSlab)
+            sb(o+Vec(8,3,6), materials.SandstoneSlab)
+            sb(o+Vec(4,2,5), materials.StoneBrick)
+            sb(o+Vec(5,2,5), materials.StoneBrickSlab)
+            sb(o+Vec(6,2,5), materials.StoneBrickSlab)
+            sb(o+Vec(7,2,5), materials.StoneBrickStairs, 0)
+
+            # Loot for the sarcophagus.
+            loota = []
+            lootb = []
+            bone = items.byName('bone')
+            for slot in xrange(11,15,1):
+                loota.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+                lootb.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+            for slot in xrange(18,27,1):
+                loota.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+            for slot in xrange(0,9,1):
+                lootb.append(loottable.Loot(slot,1,bone.value,bone.data,''))
+
+            # Random stuff to be buried with. Like Crypt, but not as good.
+            lootc = [(items.byName('iron ingot'), 5),
+                     (items.byName('book'), 10),
+                     (items.byName('bow'), 10),
+                     (items.byName('diamond'), 5),
+                     (items.byName('gold ingot'), 5),
+                     (items.byName('bowl'), 10),
+                     (items.byName('feather'), 10),
+                     (items.byName('golden apple'), 5),
+                     (items.byName('paper'), 10),
+                     (items.byName('arrow'), 10),
+                     (items.byName('clock'), 10),
+                     (items.byName('compass'), 10),
+                     (items.byName('gold nugget'), 10),
+                     (items.byName('ghast tear'), 1),
+                     (items.byName('glass bottle'), 10)]
+
+            i = weighted_choice(lootc)
+            loota[7].id = i.value
+            loota[7].data = i.data
+            sb(o+Vec(5,3,5), materials.Chest)
+            self.parent.parent.addchest(o+Vec(5,3,5), loot=loota)
+
+            i = weighted_choice(lootc)
+            lootb[7].id = i.value
+            lootb[7].data = i.data
+            sb(o+Vec(6,3,5), materials.Chest)
+            self.parent.parent.addchest(o+Vec(6,3,5), loot=lootb)
+
+            # Vines
+            for p in iterate_cube(o, o.trans(11,3,11)):
+                if random.randint(1,100) <= 20:
+                    self.parent.parent.vines(p, grow=True)
+
 
         # Hallway
         # Find the direction, room, and connecting room.
@@ -532,6 +613,9 @@ class SecretRoom(Blank):
             [materials._floor, 0],      # 14
             [materials._subfloor, 0]    # 15
         ]
+        if roomtype == 'sepulchure':
+            mats[2] = [materials.meta_mossystonebrick, 0]
+
         template = [
            [[ 8, 8, 8, 8, 8],
             [ 8, 8, 8, 8, 8],
