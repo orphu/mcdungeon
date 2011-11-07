@@ -182,15 +182,24 @@ class Columns(Blank):
     _name = 'columns'
 
     mats = (
-        (materials.Stone,0),  # Stone
-        (materials.meta_mossycobble,0),  # Mossy Cobble
-        (materials.Wood,0), # Wood
-        (materials.Wood,1), # Redwood
-        (materials.Bedrock,0), # Bedrock
-        (materials.Sandstone,0), # Sandstone
-        (materials.DoubleSlab,0), # DoubleSlab
-        (materials.Obsidian,0), # Obsidian
-        (materials.Glowstone,0) # Glowstone
+        materials.Stone,
+        materials.meta_mossycobble,
+        materials.Wood,
+        materials.Redwood,
+        materials.Bedrock,
+        materials.Sandstone,
+        materials.DoubleSlab,
+        materials.Obsidian,
+        materials.StoneBrick,
+        materials.meta_mossycobble,
+        materials.meta_mossystonebrick,
+        materials.meta_stonedungeon,
+        materials.IronBars,
+        materials.Fence,
+        materials.NetherBrick,
+        materials.NetherBrickFence,
+        materials.EndStone,
+        materials.Glowstone
     )
 
     def render (self):
@@ -205,20 +214,16 @@ class Columns(Blank):
         for x in xrange(start, stop, step):
             for p in iterate_cube(Vec(c.x-x, 1, c.z-x),
                                   Vec(c.x-x, 4, c.z-x)):
-                self.parent.parent.setblock(self.parent.loc+p, mat[0])
-                self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+                self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x+x+1, 1, c.z-x),
                                   Vec(c.x+x+1, 4, c.z-x)):
-                self.parent.parent.setblock(self.parent.loc+p, mat[0])
-                self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+                self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x-x, 1, c.z+x+1),
                                   Vec(c.x-x, 4, c.z+x+1)):
-                self.parent.parent.setblock(self.parent.loc+p, mat[0])
-                self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+                self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x+x+1, 1, c.z+x+1),
                                   Vec(c.x+x+1, 4, c.z+x+1)):
-                self.parent.parent.setblock(self.parent.loc+p, mat[0])
-                self.parent.parent.blocks[self.parent.loc+p].data = mat[1]
+                self.parent.parent.setblock(self.parent.loc+p, mat)
 
 
 class Arcane(Blank):
