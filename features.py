@@ -827,6 +827,12 @@ class Pool(Blank):
     def render (self):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
+        mat = random.choice((
+            materials.StoneSlab,
+            materials.CobblestoneSlab,
+            materials.SandstoneSlab,
+            materials.StoneBrickSlab
+        ))
         center = self.parent.canvasCenter()
         size = random.randint(4,
                                 min(self.parent.canvasWidth(),
@@ -839,7 +845,7 @@ class Pool(Blank):
             self.parent.parent.setblock(p, materials.Water)
         for p in iterate_ellipse(p0, p1):
             self.parent.parent.setblock(p, materials._floor)
-            self.parent.parent.setblock(p.up(1), materials.StoneSlab)
+            self.parent.parent.setblock(p.up(1), mat)
 
 
 # Catalog the features we know about. 
