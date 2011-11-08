@@ -65,8 +65,8 @@ parser_inter.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset in blocks')
-parser_inter.add_argument('-b', '--bury',
-                    action='store_true',
+parser_inter.add_argument('--skip-bury',
+                    action='store_false',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
 parser_inter.add_argument('-e', '--entrance',
@@ -139,8 +139,8 @@ parser_add.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset in blocks')
-parser_add.add_argument('-b', '--bury',
-                    action='store_true',
+parser_add.add_argument('--skip-bury',
+                    action='store_false',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
 parser_add.add_argument('-e', '--entrance',

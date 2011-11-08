@@ -11,6 +11,9 @@ v0.7.0 - ??/??/????
      but you'll have to replace all the loot tables with a list from one of the
      standard configs. 
 
+   * Removed --bury option and replaced it with --skip-bury. The default when
+     using --offset now is to bury the dungeon. 
+
    * Revamped the cardinal directions to match 1.9.
 
    * CellBlock rooms can now have a variety of floor types.
