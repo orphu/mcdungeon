@@ -259,6 +259,10 @@ class CellBlock(Basic2x2):
     def render(self):
         # We start with the basics...
         Basic2x2.render(self)
+        # Most floors are okay, excelt mud
+        if self.floors[0]._name == 'mud':
+            self.floors = []
+            self.floors.append(floors.new('brokenstonebrick', self))
         # Build some cells. They have doors.
         s = self.c1+Vec(2,-1,2)
         chest_rate = 80
