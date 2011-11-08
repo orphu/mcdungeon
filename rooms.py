@@ -342,7 +342,7 @@ class CellBlock(Basic2x2):
                     charge = 0
                     torch = materials.RedStoneWire
                     repeater = materials.RedStoneRepeaterOff
-                    ctext2 += 'O '
+                    ctext2 = 'O ' + ctext2
                 self.parent.setblock(p.up(1),
                                      materials.RedStoneWire, 0, lock=True)
                 self.parent.setblock(p.e(1),
@@ -366,7 +366,7 @@ class CellBlock(Basic2x2):
                     charge = 0
                     torch = materials.RedStoneWire
                     repeater = materials.RedStoneRepeaterOff
-                    ctext1 += 'O '
+                    ctext1 = 'O ' + ctext1
                 self.parent.setblock(p.up(1),
                                      materials.RedStoneWire, 15, lock=True)
                 self.parent.setblock(p.w(1),
