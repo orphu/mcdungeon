@@ -349,19 +349,14 @@ class Dais(Blank):
                                 min(self.parent.canvasWidth(),
                                     self.parent.canvasLength()) - 4)
         torches = (random.random() < .5)
-        platform = random.choice([materials.WoodPlanks,
-                                  materials.meta_mossycobble,
+        platform = random.choice([materials.meta_mossycobble,
                                   materials.meta_mossystonebrick,
                                   materials.meta_stonedungeon,
                                   materials.Stone,
-                                  materials.NetherBrick,
-                                  materials.StoneBrick,
-                                  materials.Sandstone])
-        steps = random.choice([materials.WoodenSlab,
-                               materials.CobblestoneSlab,
+                                  materials.StoneBrick])
+        steps = random.choice([materials.CobblestoneSlab,
                                materials.StoneSlab,
-                               materials.StoneBrickSlab,
-                               materials.SandstoneSlab])
+                               materials.StoneBrickSlab])
         pfunc = iterate_cube
         sfunc = iterate_four_walls
         if (random.random() < .5):
