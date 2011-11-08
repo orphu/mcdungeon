@@ -16,13 +16,12 @@ class Blank(object):
 class Cobble(Blank):
     _name = 'cobble'
     ruin = False
+    mat = materials.meta_mossycobble
     def render (self):
-        pn = perlin.SimplexNoise(256)
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
-            self.parent.parent.setblock(x+self.parent.loc,
-                                            materials.meta_mossycobble)
+            self.parent.parent.setblock(x+self.parent.loc, self.mat)
         # Ruined
         if (self.ruin is False):
             return
@@ -30,6 +29,7 @@ class Cobble(Blank):
         y = self.parent.canvasHeight()
         r = random.randint(1,1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+        pn = perlin.SimplexNoise(256)
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x+self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
@@ -42,6 +42,19 @@ class Cobble(Blank):
 class BrokenCobble(Cobble):
     _name = 'brokencobble'
     ruin = True
+    mat = materials.meta_mossycobble
+
+
+class StoneBrick(Cobble):
+    _name = 'stonebrick'
+    ruin = False
+    mat = materials.meta_mossystonebrick
+
+
+class BrokenStoneBrick(Cobble):
+    _name = 'brokenstonebrick'
+    ruin = True
+    mat = materials.meta_mossystonebrick
 
 
 class WoodTile(Blank):

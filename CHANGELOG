@@ -40,6 +40,8 @@ v0.7.0 - ??/??/????
 
    * Added additional materials for Stairwell, Columns, Pool, and Dais. 
 
+   * New floor types: StoneBrick and BrokenStoneBrick
+
 v0.6.0 - 09/22/2011
 
    * New room feature: Mushrooms.
