@@ -231,6 +231,61 @@ class Basic2x2(Basic):
         room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         return rooms
 
+class GreatHallNS(Basic):
+    _name = 'greathallns'
+    _min_size = Vec(1,2,2)
+    _max_size = Vec(1,2,2)
+    size = Vec(1,2,2)
+
+    def placed(self):
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # Fix our halls. Northern upper room.
+        # North, East, South, West
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [3,3,0,3]
+        self.hallSize = [[2,sx-2],
+                         [6,sx-6],
+                         [2,sz-2],
+                         [6,sz-6]]
+        self.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        # place three more blank rooms to hold the hallways
+        # This is the upper floor, Southern room
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,3,4,3]
+        room.hallSize = [[2,sx-2],
+                         [6,sx-6],
+                         [2,sz-2],
+                         [6,sz-6]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+
+        # Northern lower room.
+        pos = self.pos + Vec(0,1,0)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [3,3,0,3]
+        room.hallSize = [[2,sx-2],
+                         [6,sx-6],
+                         [2,sz-2],
+                         [6,sz-6]]
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        # Southern lower room.
+        pos = self.pos + Vec(0,1,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,3,4,3]
+        room.hallSize = [[2,sx-2],
+                         [6,sx-6],
+                         [2,sz-2],
+                         [6,sz-6]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        return rooms
+
 class CellBlock(Basic2x2):
     _name = 'cellblock'
     _is_entrance = False
@@ -2516,7 +2571,7 @@ def pickRoom (dungeon, dsize, pos,
     name = ''
     fpos = pos
     # print 'finding room @:', fpos
-    # Cycle through the weithed shuffled list of room names.
+    # Cycle through the weighted shuffled list of room names.
     while (len(room_list) and name == ''):
         newroom = room_list.pop()
         # If the name doesn't really exist, ignore it.
