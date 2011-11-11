@@ -1010,9 +1010,11 @@ class Dungeon (object):
         spawners = ceil(cfg.spawners * float(self.xsize * self.zsize) / 10.0)
         # Blocks we are not allowed to place a chest upon
         ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
-                 44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
-                 66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
-                 86, 88, 90, 91, 92, 93, 94)
+                  44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
+                  66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
+                  86, 88, 90, 91, 92, 93, 94, 95, 96, 101, 102, 103, 104, 105,
+                  106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
+                  120)
         for room in self.rooms:
             # Only consider rooms on this level
             if (self.rooms[room].pos.y != level):
@@ -1558,6 +1560,7 @@ class Dungeon (object):
                 continue
             if (room._name == 'blank' or
                 room._name == 'cblank' or
+                room._name == 'blankstairwell' or
                 room._name == 'circularpit' or
                 room._name == 'circularpitmid' or
                 room._name == 'circularpitbottom' or
