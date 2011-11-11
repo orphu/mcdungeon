@@ -1559,8 +1559,10 @@ class Dungeon (object):
             if (room._name == 'blank' or
                 room._name == 'cblank' or
                 room._name == 'circularpit' or
-                room._name == 'pitmid' or
+                room._name == 'circularpitmid' or
                 room._name == 'circularpitbottom' or
+                room._name == 'pit' or
+                room._name == 'pitmid' or
                 room._name == 'pitbottom'
                ):
                 continue
@@ -1580,12 +1582,14 @@ class Dungeon (object):
                 room2._name == 'cavern' or
                 room2._name == 'cavernlarge' or
                 room2._name == 'naturalcavern' or
-                room2._name == 'naturalcavernlarge' 
+                room2._name == 'naturalcavernlarge'
                ):
                 continue
             if random.randint(1,100) > cfg.secret_rooms:
                 continue
 
+            if self.args.debug == True:
+                print 'Secret room from',room._name, 'to', room2._name
             # Override this room's feature
             room.features = []
             room.features.append(features.new('secretroom', room))
