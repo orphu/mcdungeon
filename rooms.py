@@ -236,8 +236,11 @@ class GreatHallNS(Basic):
     _min_size = Vec(1,2,2)
     _max_size = Vec(1,2,2)
     size = Vec(1,2,2)
+    _is_entrance = False
+    _is_stairwell = False
 
     def placed(self):
+        self.features.append(features.new('blank', self))
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
@@ -246,7 +249,7 @@ class GreatHallNS(Basic):
         # North, East, South, West
         pos = self.pos
         rooms.append(pos)
-        self.hallLength = [3,3,0,3]
+        self.hallLength = [1,1,0,1]
         self.hallSize = [[2,sx-2],
                          [6,sx-6],
                          [2,sz-2],
@@ -257,7 +260,7 @@ class GreatHallNS(Basic):
         pos = self.pos + Vec(0,0,1)
         room = new('blank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
-        room.hallLength = [0,3,4,3]
+        room.hallLength = [0,1,2,1]
         room.hallSize = [[2,sx-2],
                          [6,sx-6],
                          [2,sz-2],
@@ -268,7 +271,7 @@ class GreatHallNS(Basic):
         pos = self.pos + Vec(0,1,0)
         room = new('blank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
-        room.hallLength = [3,3,0,3]
+        room.hallLength = [1,1,0,1]
         room.hallSize = [[2,sx-2],
                          [6,sx-6],
                          [2,sz-2],
@@ -278,13 +281,211 @@ class GreatHallNS(Basic):
         pos = self.pos + Vec(0,1,1)
         room = new('blank', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
-        room.hallLength = [0,3,4,3]
+        room.hallLength = [0,1,2,1]
         room.hallSize = [[2,sx-2],
                          [6,sx-6],
                          [2,sz-2],
                          [6,sz-6]]
         room.parent.halls[pos.x][pos.y][pos.z][0] = 1
         return rooms
+
+    def setData(self):
+        self.wall_func = iterate_four_walls
+        self.ceil_func = iterate_cube
+        self.floor_func = iterate_cube
+        self.air_func = iterate_cube
+
+        # size of the room
+        sx = self.size.x * self.parent.room_size
+        sz = self.size.z * self.parent.room_size
+        sy = self.size.y * self.parent.room_height
+
+        # Some paramters.
+        self.c1 = self.loc + Vec(0,sy-2,0)
+        self.c2 = self.c1 + Vec(sx-1, 0, 0)
+        self.c3 = self.c1 + Vec(sx-1, 0, sz-1)
+        self.c4 = self.c1 + Vec(0, 0, sz-1)
+        if sz > sx:
+            self.c3 = self.c3.n(1)
+            self.c4 = self.c4.n(1)
+        else:
+            self.c2 = self.c2.w(1)
+            self.c3 = self.c3.w(1)
+
+        self.hallLength = [3,3,3,3]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        self.canvas = (
+            Vec(4   ,sy-2, 4),
+            Vec(sx-5,sy-2, 4),
+            Vec(sx-5,sy-2, sz-5),
+            Vec(4   ,sy-2, sz-5))
+
+    def render(self):
+        height = self.size.y * self.parent.room_height - 2
+        # Air space
+        for x in self.air_func(self.c1, self.c3.up(height)):
+            self.parent.setblock(x, materials.Air)
+        # Floor
+        for x in self.floor_func(self.c1, self.c3):
+            self.parent.setblock(x, materials._floor)
+        # Ceiling
+        for x in self.ceil_func(self.c1.up(height), self.c3.up(height)):
+            self.parent.setblock(x, materials._ceiling)
+        # Walls
+        for x in self.wall_func(self.c1, self.c3, height):
+            self.parent.setblock(x, materials._wall)
+        # Subfloor
+        sf1 = self.loc.trans(0,
+                             self.size.y * self.parent.room_height - 1,
+                             0)
+        sf2 = sf1.trans(self.size.x * self.parent.room_size-1,
+                       0,
+                       self.size.z * self.parent.room_size-1)
+        for x in iterate_plane(sf1, sf2):
+            self.parent.setblock(x, materials._subfloor)
+        # balcony
+        mat = random.choice((
+            (materials.StoneBrickSlab,materials.StoneBrick,materials.IronBars),
+            (materials.WoodenSlab,materials.WoodPlanks,materials.Fence)
+        ))
+        for p in iterate_four_walls(self.c1+Vec(1,-6,1),
+                                    self.c3+Vec(-1,-6,-1),0):
+            self.parent.setblock(p, mat[0])
+        for p in iterate_four_walls(self.c1+Vec(2,-6,2),
+                                    self.c3+Vec(-2,-6,-2),0):
+            self.parent.setblock(p, mat[0])
+        for p in iterate_four_walls(self.c1+Vec(3,-6,3),
+                                    self.c3+Vec(-3,-6,-3),0):
+            self.parent.setblock(p, mat[1])
+        for p in iterate_four_walls(self.c1+Vec(3,-7,3),
+                                    self.c3+Vec(-3,-7,-3),0):
+            self.parent.setblock(p, mat[2])
+        # Columns
+        mat = random.choice((
+            materials.StoneBrick,
+            materials.meta_mossycobble,
+            materials.meta_mossystonebrick,
+            materials.DoubleSlab,
+            materials.meta_stonedungeon
+        ))
+        for n in xrange(0, 26, 3):
+            if self.size.x > self.size.z:
+                p = self.c1+Vec(3+n,-1,3)
+                d = Vec(0,0,9)
+            else:
+                p = self.c1+Vec(3,-1,3+n)
+                d = Vec(9,0,0)
+            for q in iterate_cube(p, p.up(height)):
+                self.parent.setblock(q, mat)
+                self.parent.setblock(q+d, mat)
+            self.parent.setblock(p, materials.DoubleSlab)
+            self.parent.setblock(p+d, materials.DoubleSlab)
+        # Chandeliers
+        s = self.parent.room_size-1
+        for x in xrange(self.size.x):
+            for z in xrange(self.size.z):
+                p = self.c1+Vec(x*s+s/2+random.randint(0,1),
+                                -height+1,
+                                z*s+s/2+random.randint(0,1))
+                for y in xrange(random.randint(1,2)):
+                    self.parent.setblock(p, materials.Fence)
+                    p = p.down(1)
+                for q in iterate_cube(p+Vec(-1,0,-1), p+Vec(1,0,1)):
+                    self.parent.setblock(q, materials.Fence)
+                if (random.randint(1,100) <= 33):
+                    self.parent.setblock(p, materials.Torch)
+                self.parent.setblock(p.down(1), materials.Fence)
+        # Vines
+        if (random.randint(1,100) <= 25):
+            for p in iterate_cube(self.c1+Vec(1,-1,1),
+                                  self.c3+Vec(-1, -height+1, -1)):
+                if random.randint(1,100) <= 20:
+                    self.parent.vines(p, grow=True)
+        # Cobwebs
+        if (random.randint(1,100) > 25):
+            return
+        webs = {}
+        for p in iterate_cube(self.c1+Vec(1,-1,1),
+                              self.c3+Vec(-1, -height+1, -1)):
+            count = 0
+            perc = 90 - (p.y - self.loc.down(1).y) * (70/3)
+            if (p not in self.parent.blocks or
+                self.parent.blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in self.parent.blocks and
+                    self.parent.blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            self.parent.setblock(p, materials.Cobweb)
+
+
+class GreatHallEW(GreatHallNS):
+    _name = 'greathallew'
+    _min_size = Vec(2,2,1)
+    _max_size = Vec(2,2,1)
+    size = Vec(2,2,1)
+    _is_entrance = False
+    _is_stairwell = False
+
+    def placed(self):
+        self.features.append(features.new('blank', self))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        # Fix our halls. Western upper room.
+        # North, East, South, West
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [1,0,1,1]
+        self.hallSize = [[6,sx-6],
+                         [2,sx-2],
+                         [6,sz-6],
+                         [2,sz-2]]
+        self.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        # place three more blank rooms to hold the hallways
+        # This is the upper floor, Eastern room
+        pos = self.pos + Vec(1,0,0)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [1,2,1,0]
+        room.hallSize = [[6,sx-6],
+                         [2,sx-2],
+                         [6,sz-6],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+
+        # Western lower room.
+        pos = self.pos + Vec(0,1,0)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [1,0,1,1]
+        room.hallSize = [[6,sx-6],
+                         [2,sx-2],
+                         [6,sz-6],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        # Easterb lower room.
+        pos = self.pos + Vec(1,1,0)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [1,2,1,0]
+        room.hallSize = [[6,sx-6],
+                         [2,sx-2],
+                         [6,sz-6],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+        return rooms
+
 
 class CellBlock(Basic2x2):
     _name = 'cellblock'
