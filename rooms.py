@@ -113,6 +113,10 @@ class Blank(object):
 class CBlank(Blank):
     _name = 'cblank'
 
+class BlankStairwell(Blank):
+    _name = 'blankstairwell'
+    _is_stairwell = True
+
 class Basic(Blank):
     _name = 'basic'
     _is_entrance = True
@@ -240,7 +244,6 @@ class GreatHallNS(Basic):
     _is_stairwell = False
 
     def placed(self):
-        self.features.append(features.new('blank', self))
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
@@ -269,7 +272,7 @@ class GreatHallNS(Basic):
 
         # Northern lower room.
         pos = self.pos + Vec(0,1,0)
-        room = new('blank', self.parent, pos)
+        room = new('blankstairwell', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [1,1,0,1]
         room.hallSize = [[2,sx-2],
@@ -279,7 +282,7 @@ class GreatHallNS(Basic):
         room.parent.halls[pos.x][pos.y][pos.z][2] = 1
         # Southern lower room.
         pos = self.pos + Vec(0,1,1)
-        room = new('blank', self.parent, pos)
+        room = new('blankstairwell', self.parent, pos)
         rooms.extend(self.parent.setroom(pos, room))
         room.hallLength = [0,1,2,1]
         room.hallSize = [[2,sx-2],
@@ -308,9 +311,11 @@ class GreatHallNS(Basic):
         if sz > sx:
             self.c3 = self.c3.n(1)
             self.c4 = self.c4.n(1)
+            sz -= 1
         else:
             self.c2 = self.c2.w(1)
             self.c3 = self.c3.w(1)
+            sx -=1
 
         self.hallLength = [3,3,3,3]
         self.hallSize = [[2,sx-2],
@@ -384,6 +389,10 @@ class GreatHallNS(Basic):
             self.parent.setblock(p, materials.DoubleSlab)
             self.parent.setblock(p+d, materials.DoubleSlab)
         # Chandeliers
+        mat = random.choice((
+            materials.Fence,
+            materials.IronBars
+        ))
         s = self.parent.room_size-1
         for x in xrange(self.size.x):
             for z in xrange(self.size.z):
@@ -391,10 +400,10 @@ class GreatHallNS(Basic):
                                 -height+1,
                                 z*s+s/2+random.randint(0,1))
                 for y in xrange(random.randint(1,2)):
-                    self.parent.setblock(p, materials.Fence)
+                    self.parent.setblock(p, mat)
                     p = p.down(1)
                 for q in iterate_cube(p+Vec(-1,0,-1), p+Vec(1,0,1)):
-                    self.parent.setblock(q, materials.Fence)
+                    self.parent.setblock(q, mat)
                 if (random.randint(1,100) <= 33):
                     self.parent.setblock(p, materials.Torch)
                 self.parent.setblock(p.down(1), materials.Fence)
@@ -437,7 +446,6 @@ class GreatHallEW(GreatHallNS):
     _is_stairwell = False
 
     def placed(self):
-        self.features.append(features.new('blank', self))
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
