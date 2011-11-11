@@ -794,10 +794,9 @@ class Forge(Blank):
             [1,2,5,2,2,8]
         ]
 
-        o = self.parent.loc.trans(6, self.parent.canvasHeight(), 5)
         center = self.parent.canvasCenter()
         o = self.parent.loc.trans(center.x-1,
-                                  self.parent.canvasHeight(),
+                                  self.parent.canvasHeight()-1,
                                   center.z-2)
 
         for x in xrange(4):
