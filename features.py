@@ -204,26 +204,27 @@ class Columns(Blank):
     )
 
     def render (self):
-        if (self.parent.canvasWidth() < 6 or self.parent.canvasLength() < 6):
+        limit = int(min(self.parent.canvasWidth(), self.parent.canvasLength()))
+        if (limit < 6):
             return
         c = self.parent.canvasCenter()
-        y = self.parent.canvasHeight()
-        start = random.randint(0, int(self.parent.canvasWidth() / 2)-1)
-        stop = int(self.parent.canvasWidth() / 2)
+        height = self.parent.canvasHeight()
+        start = random.randint(0, limit/2-1)
+        stop = limit/2
         step = random.randint(2, 3)
         mat = random.choice(self.mats)
         for x in xrange(start, stop, step):
             for p in iterate_cube(Vec(c.x-x, 1, c.z-x),
-                                  Vec(c.x-x, 4, c.z-x)):
+                                  Vec(c.x-x, height, c.z-x)):
                 self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x+x+1, 1, c.z-x),
-                                  Vec(c.x+x+1, 4, c.z-x)):
+                                  Vec(c.x+x+1, height, c.z-x)):
                 self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x-x, 1, c.z+x+1),
-                                  Vec(c.x-x, 4, c.z+x+1)):
+                                  Vec(c.x-x, height, c.z+x+1)):
                 self.parent.parent.setblock(self.parent.loc+p, mat)
             for p in iterate_cube(Vec(c.x+x+1, 1, c.z+x+1),
-                                  Vec(c.x+x+1, 4, c.z+x+1)):
+                                  Vec(c.x+x+1, height, c.z+x+1)):
                 self.parent.parent.setblock(self.parent.loc+p, mat)
 
 
@@ -793,12 +794,27 @@ class Forge(Blank):
             [1,2,5,2,2,8]
         ]
 
-        o = self.parent.loc.trans(6, 3, 5)
+        o = self.parent.loc.trans(6, self.parent.canvasHeight(), 5)
+        center = self.parent.canvasCenter()
+        o = self.parent.loc.trans(center.x-1,
+                                  self.parent.canvasHeight(),
+                                  center.z-2)
 
         for x in xrange(4):
             for z in xrange(6):
                 p = o.trans(x,0,z)
                 sb(p, mats[template[x][z]])
+
+        sb (o.trans(0,0,3), materials.StoneStairs, 0)
+        sb (o.trans(0,0,4), materials.StoneStairs, 0)
+        sb (o.trans(3,0,3), materials.StoneStairs, 1)
+        sb (o.trans(3,0,4), materials.StoneStairs, 1)
+        sb (o.trans(1,0,5), materials.StoneStairs, 3)
+        sb (o.trans(2,0,5), materials.StoneStairs, 3)
+
+        # Tall rooms won't have a flume
+        if self.parent.canvasHeight() > 4:
+            return
 
         sb (o.trans(0,-2,3), materials.StoneStairs, 0)
         sb (o.trans(0,-2,4), materials.StoneStairs, 0)
@@ -809,12 +825,6 @@ class Forge(Blank):
         sb (o.trans(1,-2,2), materials.StoneStairs, 2)
         sb (o.trans(2,-2,2), materials.StoneStairs, 2)
 
-        sb (o.trans(0,0,3), materials.StoneStairs, 0)
-        sb (o.trans(0,0,4), materials.StoneStairs, 0)
-        sb (o.trans(3,0,3), materials.StoneStairs, 1)
-        sb (o.trans(3,0,4), materials.StoneStairs, 1)
-        sb (o.trans(1,0,5), materials.StoneStairs, 3)
-        sb (o.trans(2,0,5), materials.StoneStairs, 3)
 
 class Pool(Blank):
     _name = 'pool'
