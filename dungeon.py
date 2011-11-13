@@ -1793,8 +1793,8 @@ class Dungeon (object):
 
             val = mat.val
             if (cfg.silverfish > 0 and
-                (val == 1 or val == 4 or val == 97) and
-                random.randint(1,100) < cfg.silverfish):
+                (val == 1 or val == 4 or val == 98) and
+                random.randint(1,100) <= cfg.silverfish):
                 if (val == 4):
                     val = 97
                     dat = 1
