@@ -21,8 +21,6 @@ v0.7.0 - ??/??/????
 
    * New room: GreatHall (two versions with multiple variations each)
 
-   * Updates to pymclevel greatly speed up relighting the level.
-
    * Removed --bury option and replaced it with --skip-bury. The default when
      using --offset now is to bury the dungeon. 
 
