@@ -1,40 +1,15 @@
 v0.7.0 - ??/??/????
 
-   * NOTE: This version requires Minecraft 1.9 pre 5 or higher!
+  !! NOTE: This version requires Minecraft 1.0 release or higher!
 
-   * NOTE 2: This version also BREAKS backward compatibility with dungeons
-     generated with older version of MCDungeon. To reuse old maps, use 1.6.1
+  !! NOTE 2: This version also breaks backward compatibility with dungeons
+     generated with older versions of MCDungeon. To reuse old maps, use 1.6.1
      to delete the maps before running 0.7.0. 
 
-   * NOTE 3: This version also break backward compatibility with old configs.
+  !! NOTE 3: This version also breaks backward compatibility with old configs.
      The loot table format has changed. If you want to use old configs, you can
      but you'll have to replace all the loot tables with a list from one of the
      standard configs. 
-
-   * Removed --bury option and replaced it with --skip-bury. The default when
-     using --offset now is to bury the dungeon. 
-
-   * Revamped the cardinal directions to match 1.9.
-
-   * CellBlock rooms can now have a variety of floor types.
-
-   * Adds various blocks and items in 1.9.
-
-   * Tweaked min/max distance and room ratios in the default configs. With the
-     addition of mines and ravines, there are fewer "good" chunks to place
-     dungeons into. The new defaults will result in more dungeons being
-     placed in small maps by default. 
-
-   * Portcullises can be fence, nether fence, or iron bars.
-
-   * Arenas now host Blaze.
-
-   * Spider Lairs now host cave spiders.
-
-   * Added additional materials for Stairwell, Columns, Pool, and Dais. 
-
-   * Loot tables now handle multiple items per line (ie: add one of a list) and
-     will enchant armor, weapons, and tools.
 
    * New treasure room: Crypt
 
@@ -45,6 +20,31 @@ v0.7.0 - ??/??/????
    * New floor types: StoneBrick and BrokenStoneBrick
 
    * New room: GreatHall (two versions with multiple variations each)
+
+   * Removed --bury option and replaced it with --skip-bury. The default when
+     using --offset now is to bury the dungeon. 
+
+   * Revamped the cardinal directions to match beta 1.9 and 1.0 release.
+
+   * CellBlock rooms can now have a variety of floor types.
+
+   * Adds various blocks and items in beta 1.9 and 1.0 release.
+
+   * Tweaked min/max distance and room ratios in the default configs. With the
+     addition of mines and ravines, there are fewer "good" chunks to place
+     dungeons into. The new defaults will result in more dungeons being
+     placed in small maps by default.
+
+   * Portcullises can be fence, nether fence, or iron bars.
+
+   * Arenas now host Blaze.
+
+   * Spider Lairs now host cave spiders.
+
+   * Added additional materials for Stairwell, Columns, Pool, and Dais. 
+
+   * Loot tables now handle multiple items per line (ie: add one of a list) and
+     will enchant armor, weapons, and tools. See default.cfg for details.
 
 v0.6.0 - 09/22/2011
 
