@@ -31,14 +31,16 @@ v0.7.0 - ??/??/????
 
    * Spider Lairs now host cave spiders.
 
+   * Added additional materials for Stairwell, Columns, Pool, and Dais. 
+
    * Loot tables now handle multiple items per line (ie: add one of a list) and
      will enchant armor, weapons, and tools.
 
    * New treasure room: Crypt
 
-   * New secret room type: Sepulchre
+   * New treasure room: EndPortal
 
-   * Added additional materials for Stairwell, Columns, Pool, and Dais. 
+   * New secret room type: Sepulchre
 
    * New floor types: StoneBrick and BrokenStoneBrick
 

@@ -1180,8 +1180,10 @@ class Dungeon (object):
                 if (size >= 1 and
                     size <= 2 and
                     length >= 8 and
-                    room1.features[0]._name != 'secretroom' and
-                    room2.features[0]._name != 'secretroom' and
+                    #room1.features[0]._name != 'secretroom' and
+                    #room2.features[0]._name != 'secretroom' and
+                    room1._pistontrap == True and
+                    room2._pistontrap == True and
                     random.randint(1,100) <= cfg.hall_piston_traps):
                     if (size == 1):
                         pos = room1.loc + Vec(offset,
@@ -1236,8 +1238,10 @@ class Dungeon (object):
                 if (size >= 1 and
                     size <= 2 and
                     length >= 8 and
-                    room1.features[0]._name != 'secretroom' and
-                    room2.features[0]._name != 'secretroom' and
+                    #room1.features[0]._name != 'secretroom' and
+                    #room2.features[0]._name != 'secretroom' and
+                    room1._pistontrap == True and
+                    room2._pistontrap == True and
                     random.randint(1,100) <= cfg.hall_piston_traps):
                     if (size == 1):
                         pos = room1.loc + Vec(
@@ -1329,7 +1333,7 @@ class Dungeon (object):
                 block = ptrap[p.y][p.x][p.z]
                 if block is not 'XX':
                     m = mat[block]
-                    self.setblock(q, m[0], m[1], hide=True)
+                    self.setblock(q, m[0], m[1])
             # First pressure plate
             p1 = pos + sw*-1 + sl*2 + Vec(0,1,0)*3
             self.setblock(p1, materials.StonePressurePlate)
@@ -1346,7 +1350,7 @@ class Dungeon (object):
                     block = ptrap[p.y][p.x][p.z]
                     if block is not 'XX':
                         m = mat[block]
-                        self.setblock(q, m[0], m[1], hide=True)
+                        self.setblock(q, m[0], m[1])
                 c  = (c+1)%2
             # The return trigger mechanism.
             for p in iterate_cube(Vec(0,0,4), Vec(3,5,5)):
@@ -1354,7 +1358,7 @@ class Dungeon (object):
                 block = ptrap[p.y][p.x][p.z]
                 if block is not 'XX':
                     m = mat[block]
-                    self.setblock(q, m[0], m[1], hide=True)
+                    self.setblock(q, m[0], m[1])
             # Return pressure plate
             p2 = pos + sw*-1 + sl*4  + sl*(length-1) + Vec(0,1,0)*3
             self.setblock(p2, materials.StonePressurePlate)
@@ -1500,16 +1504,14 @@ class Dungeon (object):
                 f.write('<tr>')
                 for x in xrange(self.xsize*self.room_size):
                     y = layer
-                    while (y < layer + self.room_height-1 and
-                           Vec(x,y,z) in self.blocks and
+                    while (Vec(x,y,z) in self.blocks and
                             (self.blocks[Vec(x,y,z)].hide == True or
                              self.blocks[Vec(x,y,z)].material ==
                              materials.Air or
                              self.blocks[Vec(x,y,z)].material ==
                              materials._ceiling)):
                         y += 1
-                    if (Vec(x,y,z) in self.blocks and
-                        self.blocks[Vec(x,y,z)].hide == False):
+                    if (Vec(x,y,z) in self.blocks):
                         mat = self.blocks[Vec(x,y,z)].material
                         if (mat._meta == True):
                             mat.update(x,y,z,
@@ -1596,6 +1598,7 @@ class Dungeon (object):
             # Override this room's feature
             room.features = []
             room.features.append(features.new('secretroom', room))
+            room.features[0].placed()
             # override this room's hallway
             offset = room.halls[d].offset
             if offset < 4:

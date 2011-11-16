@@ -23,6 +23,7 @@ class Blank(object):
     _is_entrance = False
     _is_stairwell = False
     _is_treasureroom = False
+    _pistontrap = True
 
     def __init__ (self, parent, pos):
         self.parent = parent
@@ -1337,6 +1338,240 @@ class PitWithArchers(Basic2x2):
                     self.parent.setblock(p, materials._floor)
             self.parent.addspawner(x.up(1), 'Skeleton')
             self.parent.setblock(x.up(1), materials.Spawner)
+
+class EndPortal(Basic2x2):
+    _name = 'endportal'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _pistontrap = False
+
+    def placed(self):
+        rooms = Basic2x2.placed(self)
+        # Narrow the hall connections 
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        sy = self.parent.room_height
+        for room in rooms:
+            r = self.parent.rooms[room]
+            r._pistontrap = False
+            for h in xrange(4):
+                if r.hallLength[h] > 0:
+                    if (h == 0 or h == 3):
+                        r.hallLength[h] = 3
+                    else:
+                        r.hallLength[h] = 4
+            r.hallSize = [[6,sx-7],
+                          [6,sx-7],
+                          [6,sz-7],
+                          [6,sz-7]]
+        return rooms
+
+    def setData(self):
+        Basic2x2.setData(self)
+        self.canvas = (
+            Vec(0,0,0),
+            Vec(0,0,0),
+            Vec(0,0,0))
+
+    def render(self):
+        sx = 31
+        sy = 9
+        sz = 31
+        o = self.loc
+        pos = self.pos
+
+        # custom setblock
+        def sb(p, mat, data=0, hide=False, stairdat=False, flip=False):
+            if stairdat == True:
+                x = p.x-o.x-(sx-1)/2
+                z = p.z-o.z-(sz-1)/2
+                if (abs(x) == abs(z)):
+                    mat = materials.StoneBrick
+                    data = 0
+                else:
+                    if (abs(x) > abs(z)):
+                        if x > 0:
+                            data = 0 # Ascending East
+                        else:
+                            data = 1 # Ascending West
+                    else:
+                        if z > 0:
+                            data = 2 # Ascending South
+                        else:
+                            data = 3 # Ascending North
+                    if flip == True:
+                        data = data ^ 1
+            self.parent.setblock(p, mat, data, hide)
+
+        # symmetrical setblock. A lot of this room will be symmetrical. 
+        def ssb (p, mat, data=0, hide=False, stairdat=False, flip=False):
+            sb(o+p, mat, data, hide, stairdat, flip)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+p.z), mat, data, hide,
+               stairdat, flip)
+            sb(Vec(o.x+p.x, o.y+p.y, o.z+sz-1-p.z), mat, data, hide,
+               stairdat, flip)
+            sb(Vec(o.x+sx-1-p.x, o.y+p.y, o.z+sz-1-p.z), mat, data, hide,
+               stairdat, flip)
+
+        # Basic room
+        # Air space
+        for p in iterate_cylinder(o, o+Vec(sx-1,sy-1,sz-1)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_tube(o+Vec(0,sy-1,0), o+Vec(sx-1,sy-1,sz-1), sy-1):
+            sb(p, materials._wall)
+        # Ceiling and floor
+        for p in iterate_cylinder(o, o+Vec(sx-1,0,sz-1)):
+            sb(p, materials._ceiling, hide=True)
+            sb(p.down(sy-1), materials.meta_mossystonebrick)
+
+        # Lava pit
+        for p in iterate_cube(o+Vec(12,sy-2,12), o+Vec(18,sy-2,18)):
+            sb(p, materials.Lava)
+        for p in iterate_cube(Vec(14,sy-2,13), Vec(15,sy-2,13)):
+            ssb (p, materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(13,sy-2,14), Vec(13,sy-2,15)):
+            ssb (p, materials.meta_mossystonebrick)
+        ssb (Vec(11, sy-2, 13), materials.meta_mossystonebrick)
+        ssb (Vec(12, sy-2, 12), materials.meta_mossystonebrick)
+        ssb (Vec(13, sy-2, 11), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(14,sy-2,10), Vec(15,sy-2,12)):
+            ssb (p, materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(10,sy-2,14), Vec(12,sy-2,15)):
+            ssb (p, materials.meta_mossystonebrick)
+
+        # Lava pit stairs
+        for p in iterate_cube(Vec(14,sy-2,9), Vec(16,sy-2,9)):
+            q = p.s(1)
+            ssb(p, materials.StoneBrickStairs, stairdat=True, flip=True)
+            ssb(q, materials.meta_mossystonebrick)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True,
+                flip=True)
+            ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(14,sy-3,10), Vec(16,sy-3,10)):
+            q = p.s(1)
+            ssb(p, materials.StoneBrickStairs, stairdat=True, flip=True)
+            ssb(q, materials.meta_mossystonebrick)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True,
+                flip=True)
+            ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(14,sy-4,11), Vec(16,sy-4,11)):
+            q = p.s(1)
+            ssb(p, materials.StoneBrickStairs, stairdat=True, flip=True)
+            ssb(q, materials.meta_mossystonebrick)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True,
+                flip=True)
+            ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+
+        # Portal
+        for p in iterate_cube(Vec(14,sy-4,13), Vec(16,sy-4,13)):
+            # North Edge
+            eye = random.choice([0,0,0,0,0,0,0,0,0,4])
+            sb(o+p, materials.EndPortalFrame, 0+eye)
+            # South Edge
+            eye = random.choice([0,0,0,0,0,0,0,0,0,4])
+            sb(o+p.trans(0,0,4), materials.EndPortalFrame, 2+eye)
+            # West Edge
+            eye = random.choice([0,0,0,0,0,0,0,0,0,4])
+            sb(o+Vec(p.z, p.y, p.x), materials.EndPortalFrame, 3+eye)
+            # East Edge
+            eye = random.choice([0,0,0,0,0,0,0,0,0,4])
+            sb(o+Vec(p.z, p.y, p.x).trans(4,0,0),materials.EndPortalFrame,1+eye)
+
+        # Entry stairs
+        for p in iterate_cube(Vec(7,4,3), Vec(8,4,3)):
+            ssb(p, materials.StoneBrickStairs, stairdat=True)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True)
+            for q in iterate_cube(p.down(1), p.down(3)):
+                ssb(q, materials.meta_mossystonebrick)
+                ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(6,5,4), Vec(8,5,4)):
+            ssb(p, materials.StoneBrickStairs, stairdat=True)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True)
+            for q in iterate_cube(p.down(1), p.down(2)):
+                ssb(q, materials.meta_mossystonebrick)
+                ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(5,6,5), Vec(8,6,5)):
+            ssb(p, materials.StoneBrickStairs, stairdat=True)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True)
+            for q in iterate_cube(p.down(1), p.down(1)):
+                ssb(q, materials.meta_mossystonebrick)
+                ssb(Vec(q.z, q.y, q.x), materials.meta_mossystonebrick)
+        for p in iterate_cube(Vec(6,7,6), Vec(8,7,6)):
+            ssb(p, materials.StoneBrickStairs, stairdat=True)
+            ssb(Vec(p.z, p.y, p.x), materials.StoneBrickStairs, stairdat=True)
+
+        # Candelabra
+        for p in [
+            Vec(9,sy-2,10), Vec(11,sy-2,10), Vec(10,sy-2,9), Vec(10,sy-2,11),
+            Vec(10,sy-2,10), Vec(10,sy-3,10),
+            Vec(9,sy-4,10), Vec(11,sy-4,10), Vec(10,sy-4,9), Vec(10,sy-4,11),
+            Vec(10,sy-4,10),
+            Vec(9,sy-5,10), Vec(11,sy-5,10), Vec(10,sy-5,9), Vec(10,sy-5,11),
+            ]:
+            ssb(p, materials.IronBars)
+        ssb(Vec(10,sy-5,10), materials.Netherrack)
+        ssb(Vec(10,sy-6,10), materials.Fire)
+
+        # Fancy iron bars
+        for p in iterate_cube(Vec(5,1,5), Vec(5,5,5)):
+            ssb(p, materials.IronBars)
+        for p in iterate_cube(Vec(10,2,1), Vec(10,sy-3,1)):
+            ssb(p, materials.IronBars)
+            ssb(Vec(p.z, p.y, p.x), materials.IronBars)
+
+        # Decoration colors
+        # inner color, trim color
+        dmat = random.choice([
+            #[materials.RedWool, materials.OrangeWool],
+            #[materials.PurpleWool, materials.BlackWool],
+            [materials.IronBars, materials.IronBars],
+            [materials.IronBars, materials.IronBars]
+        ])
+
+        # Wall decor
+        wall = random.choice(
+            [
+                # Banner
+               [[3,2,2,2,2,2,3],
+                [0,3,2,2,2,3,0],
+                [0,0,3,2,3,0,0],
+                [0,0,3,2,3,0,0],
+                [0,0,0,3,0,0,0],
+                [0,0,0,3,0,0,0],
+                [0,0,0,3,0,0,0]],
+                # Banner
+               [[3,2,2,2,2,2,3],
+                [0,3,2,2,2,3,0],
+                [0,0,3,2,3,0,0],
+                [0,0,3,2,3,0,0],
+                [0,0,0,3,0,0,0],
+                [0,0,0,3,0,0,0],
+                [0,0,0,3,0,0,0]]
+            ])
+        for y in xrange(7):
+            for x in xrange(7):
+                if wall[y][x] == 2:
+                    sb(o+Vec(x+12,y+1,0), dmat[0])
+                    sb(o+Vec(x+12,y+1,30), dmat[0])
+                    sb(o+Vec(0,y+1,x+12), dmat[0])
+                    sb(o+Vec(30,y+1,x+12), dmat[0])
+                elif wall[y][x] == 3:
+                    sb(o+Vec(x+12,y+1,0), dmat[1])
+                    sb(o+Vec(x+12,y+1,30), dmat[1])
+                    sb(o+Vec(0,y+1,x+12), dmat[1])
+                    sb(o+Vec(30,y+1,x+12), dmat[1])
+
+        # Treasure!
+        sb(o+Vec(15,sy-2,1), materials.Chest)
+        self.parent.addchest(o+Vec(15,sy-2,1), loottable._maxtier)
+
+        # Endermen
+        sb(o+Vec(0,sy-2,15), materials.Spawner)
+        self.parent.addspawner(o+Vec(0,sy-2,15), 'Enderman')
+        sb(o+Vec(31,sy-2,15), materials.Spawner)
+        self.parent.addspawner(o+Vec(31,sy-2,15), 'Enderman')
 
 
 class Arena(Basic2x2):

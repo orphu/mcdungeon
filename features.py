@@ -385,6 +385,9 @@ class Dais(Blank):
 class SecretRoom(Blank):
     _name = 'secretroom'
 
+    def placed(self):
+        self.parent._pistontrap = False
+
     def render(self):
         o = self.parent.loc.trans(2,0,2)
         sb = self.parent.parent.setblock
