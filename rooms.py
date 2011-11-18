@@ -1570,8 +1570,8 @@ class EndPortal(Basic2x2):
         # Endermen
         sb(o+Vec(0,sy-2,15), materials.Spawner)
         self.parent.addspawner(o+Vec(0,sy-2,15), 'Enderman')
-        sb(o+Vec(31,sy-2,15), materials.Spawner)
-        self.parent.addspawner(o+Vec(31,sy-2,15), 'Enderman')
+        sb(o+Vec(30,sy-2,15), materials.Spawner)
+        self.parent.addspawner(o+Vec(30,sy-2,15), 'Enderman')
 
 
 class Arena(Basic2x2):
