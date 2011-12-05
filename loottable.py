@@ -137,7 +137,7 @@ def Load ():
         thistable =  _master_loot[tiername]
         num = 0
         for line in loots:
-            chance, minmax, enchant = line[1].split(',')
+            chance, minmax, enchant = [x.strip() for x in line[1].split(',')]
             minimum = minmax.split('-')[0]
             maximum = minmax.split('-')[-1]
             if enchant is not '0':
