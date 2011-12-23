@@ -915,7 +915,8 @@ class Dungeon (object):
                pos in self.blocks and
                self.blocks[pos.down(offset)].material == materials.Air and
                pos.up(1).y/self.room_height == level):
-                self.blocks[pos.down(offset)].material = materials.Torch
+                #self.blocks[pos.down(offset)].material = materials.Torch
+                self.setblock(pos.down(offset), materials.Torch, val)
                 count += 1
         if (level < self.levels-1):
             self.placetorches(level+1)

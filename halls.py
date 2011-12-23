@@ -68,6 +68,7 @@ def drawHall (hall):
         stepl = Vec(0,0,1)
         dd1 = 5
         dd2 = 4
+        torch_dat = 3
     elif(hall.direction == 1):
         start += Vec(hall.parent.parent.room_size-1,0,0)
         start = start.s(hall.offset)
@@ -75,6 +76,7 @@ def drawHall (hall):
         stepl = Vec(-1,0,0)
         dd1 = 3
         dd2 = 2
+        torch_dat = 2
     elif(hall.direction == 2):
         start += Vec(0,0,hall.parent.parent.room_size-1)
         start = start.e(hall.offset)
@@ -82,6 +84,7 @@ def drawHall (hall):
         stepl = Vec(0,0,-1)
         dd1 = 5
         dd2 = 4
+        torch_dat = 4
     else:
         start += Vec(0,0,0)
         start = start.s(hall.offset)
@@ -89,6 +92,7 @@ def drawHall (hall):
         stepl = Vec(1,0,0)
         dd1 = 3
         dd2 = 2
+        torch_dat = 1
     for j in xrange(length):
         pen = start+stepl*j
         # First wall
@@ -170,8 +174,8 @@ def drawHall (hall):
 
     # Possible torches.
     pen = start+stepl*length
-    hall.parent.parent.torches[pen.down(1)] = True
-    hall.parent.parent.torches[pen.down(1)+(stepw*(hall.size-1))] = True
+    hall.parent.parent.torches[pen.down(1)] = torch_dat
+    hall.parent.parent.torches[pen.down(1)+(stepw*(hall.size-1))] = torch_dat
 
     # Possible doors
     # Only halls of width 1 and 2 can have doors (single and double doors)
