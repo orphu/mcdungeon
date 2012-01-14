@@ -30,6 +30,12 @@ SILK_TOUCH = 33
 UNBREAKING = 34
 FORTUNE = 35
 
+# Bow Enchantments
+POWER = 48
+PUNCH = 49
+FLAME = 50
+INFINITY = 51
+
 # Enchantment names
 _ench_name = {
     PROTECTION: 'Protection',
@@ -48,7 +54,11 @@ _ench_name = {
     EFFICIENCY: 'Efficiency',
     SILK_TOUCH: 'Silk Touch',
     UNBREAKING: 'Unbreaking',
-    FORTUNE: 'Fortune'
+    FORTUNE: 'Fortune',
+    POWER: 'Power',
+    PUNCH: 'Punch',
+    FLAME: 'Flame',
+    INFINITY: 'Infinity'
 }
 
 # Level names
@@ -60,7 +70,7 @@ _level_name = {
     5: 'V'
 }
 
-# Enchantment selection probabilities
+# Enchantment selection probabilities (weights)
 _ench_prob = {
     PROTECTION: 10,
     FIRE_PROTECTION: 5,
@@ -78,7 +88,11 @@ _ench_prob = {
     EFFICIENCY: 10,
     SILK_TOUCH: 1,
     UNBREAKING: 5,
-    FORTUNE: 2
+    FORTUNE: 2,
+    POWER: 10,
+    PUNCH: 2,
+    FLAME: 2,
+    INFINITY: 1
 }
 
 # Enchantment level table
@@ -100,7 +114,11 @@ _ench_level = {
     EFFICIENCY:            [(  1, 51),( 16, 66),( 33, 81),( 46, 96),( 61,111)],
     SILK_TOUCH:            [( 25, 75),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
     UNBREAKING:            [(  5, 55),( 15, 65),( 25, 75),(  0,  0),(  0,  0)],
-    FORTUNE:               [( 20, 70),( 32, 82),( 44, 94),(  0,  0),(  0,  0)]
+    FORTUNE:               [( 20, 70),( 32, 82),( 44, 94),(  0,  0),(  0,  0)],
+    POWER:                 [(  1, 16),( 11, 26),( 21, 36),( 31, 46),( 41, 56)],
+    PUNCH:                 [( 12, 37),( 32, 57),(  0,  0),(  0,  0),(  0,  0)],
+    FLAME:                 [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
+    INFINITY:              [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)]
 }
 
 _maxtier = -1
@@ -197,8 +215,8 @@ def rollLoot (tier, level):
                     yield thisloot
                     slot += 1
 
-def enchant (item, level, debug=False):
-    # Based on the info available in the wiki as of 1.9 pre 5:
+def enchant (item, level, debug=True):
+    # Based on the info available in the wiki as of 1.1:
     # http://http://www.minecraftwiki.net/wiki/Enchanting
     #
     # NBT for an item in a chest looks like this:
@@ -228,6 +246,8 @@ def enchant (item, level, debug=False):
     type = 'none'
     if 'sword' in item:
         type = 'weapon'
+    elif 'bow' in item:
+        type = 'bow'
     elif ('pickaxe' in item or
           'shovel' in item or
           'axe' in item):
@@ -326,6 +346,13 @@ def enchant (item, level, debug=False):
         check_enchantment(SILK_TOUCH, mlevel)
         check_enchantment(UNBREAKING, mlevel)
         check_enchantment(FORTUNE, mlevel)
+
+    # Bows
+    if type == 'bow':
+        check_enchantment(POWER, mlevel)
+        check_enchantment(PUNCH, mlevel)
+        check_enchantment(FLAME, mlevel)
+        check_enchantment(INFINITY, mlevel)
 
     # Item did not result in any enchantments
     if len(enchantments) == 0:
