@@ -149,6 +149,7 @@
 119,End Portal,0,64
 120,End Portal Frame,0,64
 121,End Stone,0,64
+122,Dragon Egg,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
