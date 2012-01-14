@@ -4,6 +4,8 @@ v0.7.1 - ??/??/????
 
    * Fixed whitespace parsing bug for enchant level.
 
+   * Added bow enchantments. 
+
 v0.7.0 - 11/20/2011
 
   !! NOTE: This version requires Minecraft 1.0.0 release or higher!
