@@ -278,7 +278,7 @@ def listDungeons(world, expand_hard_mode=False):
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
     pm = pmeter.ProgressMeter()
     count = world.chunkCount
-    pm.init(count, label='Scanning world:')
+    pm.init(count, label='Scanning world for existing dungeons:')
     for i, cPos in enumerate(world.allChunks):
         count -= 1
         pm.update_left(count)
@@ -739,7 +739,7 @@ if (cfg.offset is None or cfg.offset is ''):
                    ['Good Chunks', 0]
                 ]
     pm = pmeter.ProgressMeter()
-    pm.init(world.chunkCount, label='Analyzing terrain:')
+    pm.init(world.chunkCount, label='Analyzing chunks (finding good chunks):')
     cc = 0
     for cx, cz in world.allChunks:
         cc += 1
