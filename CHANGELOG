@@ -1,5 +1,7 @@
 v0.7.1 - ??/??/????
 
+  !! NOTE: This version requires Minecraft 1.1.0 release or higher!
+
    * Torches now properly attach to walls. (No more floating torches)
 
    * Fixed whitespace parsing bug for enchant level.
