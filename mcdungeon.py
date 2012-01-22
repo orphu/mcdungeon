@@ -75,6 +75,12 @@ parser_inter.add_argument('-e', '--entrance',
                     type=int,
                     metavar=('X', 'Z'),
                     help='Provide an offset for the entrance in chunks')
+parser_inter.add_argument('--spawn',
+                    dest='spawn',
+                    nargs=2,
+                    type=int,
+                    metavar=('X', 'Z'),
+                    help='Override spawn point')
 parser_inter.add_argument('--dir',
                           dest='dir',
                           metavar='SAVEDIR',
@@ -149,6 +155,12 @@ parser_add.add_argument('-e', '--entrance',
                     type=int,
                     metavar=('X', 'Z'),
                     help='Provide an offset for the entrance in chunks')
+parser_add.add_argument('--spawn',
+                    dest='spawn',
+                    nargs=2,
+                    type=int,
+                    metavar=('X', 'Z'),
+                    help='Override spawn point')
 parser_add.add_argument('-n','--number',
                     type=int,dest='number',
                     metavar='NUM',
@@ -744,8 +756,12 @@ if (cfg.offset is None or cfg.offset is ''):
     for cx, cz in world.allChunks:
         cc += 1
         pm.update(cc)
-        sx = world.playerSpawnPosition()[0]>>4
-        sz = world.playerSpawnPosition()[2]>>4
+        if args.spawn is not None:
+            sx = args.spawn[0]
+            sz = args.spawn[1]
+        else:
+            sx = world.playerSpawnPosition()[0]>>4
+            sz = world.playerSpawnPosition()[2]>>4
         # Far chunk
         if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
             chunk_stats[1][1] += 1

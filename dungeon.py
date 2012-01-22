@@ -211,8 +211,12 @@ class Dungeon (object):
         #rows, columns = os.popen('stty size', 'r').read().split()
         columns = 80
         bounds = world.bounds
-        scx = world.playerSpawnPosition()[0]>>4
-        scz = world.playerSpawnPosition()[2]>>4
+        if self.args.spawn is None:
+            scx = world.playerSpawnPosition()[0]>>4
+            scz = world.playerSpawnPosition()[2]>>4
+        else:
+            scx = self.args.spawn[0]
+            scz = self.args.spawn[1]
         spawn_chunk = Vec(scx, 0, scz)
         # Draw a nice little map of the dungeon location
         map_min_x = bounds.getMaxcx()
