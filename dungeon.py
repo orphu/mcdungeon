@@ -2,13 +2,10 @@
 
 import sys
 import os
-import platform
 import operator
 from random import *
 
-import perlin
 import cfg
-import items
 import loottable
 import materials
 import rooms
@@ -19,7 +16,7 @@ import ruins
 import pmeter
 from utils import *
 from disjoint_set import DisjointSet
-from pymclevel import mclevel, nbt
+from pymclevel import nbt
 
 class Block(object):
     def __init__(self, loc):
@@ -1430,7 +1427,6 @@ class Dungeon (object):
     def outputterminal(self, floor):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
-        pn = perlin.SimplexNoise(256)
         layer = (floor-1)*self.room_height
         for z in xrange(self.zsize*self.room_size):
             for x in xrange(self.xsize*self.room_size):
@@ -1458,7 +1454,6 @@ class Dungeon (object):
     def outputhtml(self, basename, force):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
-        pn = perlin.SimplexNoise(256)
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
@@ -1674,7 +1669,6 @@ class Dungeon (object):
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
         num_blocks = len(self.blocks)
-        pn = perlin.SimplexNoise(256)
         # Hard mode
         if (cfg.hard_mode is True):
             num = (self.zsize+10) * (self.xsize+10)
