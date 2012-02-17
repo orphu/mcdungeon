@@ -236,19 +236,6 @@ def drawHall (hall):
                 pen += stepw
                 hall.parent.parent.portcullises[port].portcullises[pen] = True
 
-def sizeByName (name):
-    if (name == 'single'):
-            return Single.size
-    if (name == 'double'):
-            return Double.size
-    if (name == 'triple'):
-            return Triple.size
-    if (name == 'four'):
-            return Four.size
-    if (name == 'ten'):
-            return Ten.size
-    return Blank.size
-
 # Catalog the halls we know about. 
 _halls = {}
 # List of classes in this module.
