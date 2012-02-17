@@ -8,7 +8,7 @@ import re
 import time
 from numpy import *
 
-from pymclevel import mclevel, nbt
+from pymclevel import mclevel
 import pmeter
 
 # Version info
