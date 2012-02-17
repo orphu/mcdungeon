@@ -5,7 +5,6 @@ import materials
 import halls
 import floors
 import features
-import ruins
 import cfg
 import items
 import loottable
@@ -187,7 +186,7 @@ class Basic2x2(Basic):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # Fix our halls so they only show N and W sides
         # West, South, East, North
         pos = self.pos
@@ -248,7 +247,7 @@ class GreatHallNS(Basic):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # Fix our halls. Northern upper room.
         # North, East, South, West
         pos = self.pos
@@ -450,7 +449,7 @@ class GreatHallEW(GreatHallNS):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # Fix our halls. Western upper room.
         # North, East, South, West
         pos = self.pos
@@ -512,7 +511,7 @@ class CellBlock(Basic2x2):
         rooms = Basic2x2.placed(self)
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         for room in rooms:
             r = self.parent.rooms[room]
             r.hallSize = [[6,sx-6],
@@ -778,7 +777,7 @@ class ThroneRoom(Basic):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # This room contains no halls, but is connected to the East  
         # West, South, East, North
         pos = self.pos
@@ -1059,7 +1058,7 @@ class SpiderLair(Basic):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # This room contains no halls, but is connected to the East  
         # West, South, East, North
         pos = self.pos
@@ -1095,7 +1094,7 @@ class SpiderLair(Basic):
         inner_cave = cave_factory.new(sx, sz)
 
         # Add halls
-        inner_room = self.parent.rooms[self.pos]
+        #inner_room = self.parent.rooms[self.pos]
         outer_room = self.parent.rooms[self.pos + Vec(0,0,1)]
         # South side
         if (outer_room.halls[1].size > 0):
@@ -1249,7 +1248,7 @@ class PitWithArchers(Basic2x2):
         # balconies.
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         for room in rooms:
             r = self.parent.rooms[room]
             r.hallSize = [[6,sx-6],
@@ -1351,7 +1350,7 @@ class EndPortal(Basic2x2):
         # Narrow the hall connections 
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         for room in rooms:
             r = self.parent.rooms[room]
             r._pistontrap = False
@@ -1378,8 +1377,8 @@ class EndPortal(Basic2x2):
         sx = 31
         sy = 9
         sz = 31
-        o = self.loc
-        pos = self.pos
+        #o = self.loc
+        #pos = self.pos
 
         # custom setblock
         def sb(p, mat, data=0, hide=False, stairdat=False, flip=False):
@@ -1586,7 +1585,7 @@ class Arena(Basic2x2):
         # balconies.
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         for room in rooms:
             r = self.parent.rooms[room]
             for h in xrange(4):
@@ -1603,7 +1602,7 @@ class Arena(Basic2x2):
         sy = 12
         sz = 32
         o = self.loc
-        pos = self.pos
+        #pos = self.pos
 
         # alias for setblock
         sb = self.parent.setblock
@@ -1761,7 +1760,7 @@ class Crypt(Basic):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # This room contains no halls, but is connected to the South  
         pos = self.pos
         rooms.append(pos)
@@ -2204,7 +2203,7 @@ class SandstoneCavernLarge(SandstoneCavern):
         rooms = []
         sx = self.parent.room_size
         sz = self.parent.room_size
-        sy = self.parent.room_height
+        #sy = self.parent.room_height
         # Fix our halls so they only show N and W sides
         # West, South, East, North
         pos = self.pos

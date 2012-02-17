@@ -2,11 +2,8 @@ import sys
 import inspect
 
 import materials
-import rooms
-import ruins
 import loottable
 import items
-import cfg
 from utils import *
 import perlin
 

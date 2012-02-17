@@ -5,7 +5,7 @@ import sys
 import numpy
 from copy import *
 from itertools import *
-from pymclevel import mclevel, nbt
+from pymclevel import mclevel
 
 def floor(n):
     return int(n)

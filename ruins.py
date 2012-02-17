@@ -2,9 +2,6 @@ import sys
 import inspect
 
 import materials
-import utils
-import rooms
-import loottable
 import cfg
 import perlin
 from utils import *
@@ -43,9 +40,7 @@ class EvilRunestones(Blank):
     def render(self):
         # For most of this one, we render directly to the chunk structure.
         # This works out better in the end.
-        size = self.parent.parent.room_size
         height = int(self.parent.parent.room_height*cfg.tower)
-        p = self.loc
         # This chunk
         cx = (self.parent.parent.position.x + self.parent.loc.x) >>4
         cz = (self.parent.parent.position.z + self.parent.loc.z) >>4

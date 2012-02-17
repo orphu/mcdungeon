@@ -1,5 +1,3 @@
-import ConfigParser
-import sys
 import random
 import math
 
