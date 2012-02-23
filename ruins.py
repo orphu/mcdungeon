@@ -508,7 +508,7 @@ class RoundTowerEntrance(Blank):
         clev = glev - rheight
         # Battlement level
         blev = glev  - rheight * 2 * cfg.tower
-        maxlev = 127 - self.parent.parent.position.y
+        maxlev = self.parent.parent.world.Height - self.parent.parent.position.y
         if -blev >= maxlev:
             blev = -maxlev+2
 
@@ -662,7 +662,7 @@ class SquareTowerEntrance(Blank):
         clev = glev - rheight
         # Battlement level
         blev = glev  - rheight * 2 * cfg.tower
-        maxlev = 127 - self.parent.parent.position.y
+        maxlev = self.parent.parent.world.Height - self.parent.parent.position.y
         if -blev >= maxlev:
             blev = -maxlev+2
 

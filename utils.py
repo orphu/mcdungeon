@@ -470,7 +470,7 @@ def findChunkDepth(p, world):
         chunk = world.getChunk(p.x, p.z)
     except:
         return 0
-    depth = 128
+    depth = world.Height
     # list of IDs that are solid. (for our purposes anyway)
     solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82)
     for x in xrange(16):
@@ -488,7 +488,7 @@ def findChunkDepths(p, world):
         chunk = world.getChunk(p.x, p.z)
     except:
         return 0
-    min_depth = 128
+    min_depth = world.Height
     max_depth = 0
     # list of IDs that are solid. (for our purposes anyway)
     solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82)

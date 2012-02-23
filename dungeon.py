@@ -239,7 +239,7 @@ class Dungeon (object):
         sx = self.position.x/self.room_size
         sz = self.position.z/self.room_size
         if self.args.debug: print 'spos:', Vec(sx, 0, sz)
-        d_box = Box(Vec(sx, 0, sz), self.xsize, 128, self.zsize)
+        d_box = Box(Vec(sx, 0, sz), self.xsize, world.Height, self.zsize)
 
         for z in xrange(map_min_z-1, map_max_z+2):
             for x in xrange(map_min_x-1, map_max_x+2):
@@ -269,7 +269,7 @@ class Dungeon (object):
             for z in xrange(self.zsize):
                 d_chunks.add((p[0]+x, p[1]+z))
 
-        depth = 128
+        depth = world.Height
         for chunk in d_chunks:
             if (chunk not in self.good_chunks):
                 d1 = findChunkDepth(Vec(chunk[0], 0, chunk[1]), world)
@@ -1625,7 +1625,7 @@ class Dungeon (object):
         if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         #newheight = baseheight
-        low_height = 127
+        low_height = world.Height
         high_height = baseheight
         if self.args.debug: print '   Base height:',baseheight
         # List of blocks to ignore.
@@ -1661,8 +1661,8 @@ class Dungeon (object):
             self.entrance.high_height += high_height - baseheight
         self.entrance.u = int(cfg.tower*self.entrance.u)
         # Check the upper bounds of the tower
-        if (high_height + self.entrance.u >= 128):
-            self.entrance.u = 124 - high_height
+        if (high_height + self.entrance.u >= world.Height):
+            self.entrance.u = world.Height - 3 - high_height
 
 
     def applychanges(self, world):
@@ -1685,7 +1685,6 @@ class Dungeon (object):
                         chunk = world.getChunk(x, z)
                         miny = self.good_chunks[(x,z)]
                         air = ( chunk.Blocks[:,:,0:miny] == 0)
-                        #air = ( chunk.Blocks[1:14,1:14,0:127] == 0)
                         chunk.Blocks[air] = materials._floor.val
                         changed_chunks.add(chunk)
                         del(self.good_chunks[(x,z)])
@@ -1760,7 +1759,7 @@ class Dungeon (object):
             y = self.position.y - block.loc.y
             z = block.loc.z + self.position.z
             # Due to bad planning, sometimes we try to draw outside the bounds
-            if (y < 0 or y > 127):
+            if (y < 0 or y >= world.Height):
                 print 'WARN: Block outside height bounds. y =', y
                 continue
             # Figure out the chunk and chunk offset

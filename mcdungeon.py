@@ -271,7 +271,9 @@ def loadWorld(world_name):
         except:
             print "Failed to open world:",world_name
             sys.exit(1)
-    print 'Loaded world: %s (%d chunks)' % (world_name, world.chunkCount)
+    print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
+                                                            world.chunkCount,
+                                                            world.Height)
     return world
 
 def listDungeons(world, expand_hard_mode=False):
@@ -751,7 +753,7 @@ if (cfg.offset is None or cfg.offset is ''):
                    ['Good Chunks', 0]
                 ]
     pm = pmeter.ProgressMeter()
-    pm.init(world.chunkCount, label='Analyzing chunks (finding good chunks):')
+    pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
     for cx, cz in world.allChunks:
         cc += 1
@@ -779,14 +781,13 @@ if (cfg.offset is None or cfg.offset is ''):
             x = (chunk.Blocks[:] == mats[i])
             t = x.any()
             i += 1
+        chunk.unload()
         if t == True:
             chunk_stats[4][1] += 1
-            chunk.unload()
             continue
-        chunk.unload()
         # Depths
         min_depth, max_depth = findChunkDepths(Vec(cx,0,cz), world)
-        if max_depth > 100:
+        if max_depth > world.Height - 27:
             chunk_stats[2][1] += 1
             continue
         if min_depth < (min_levels+1)*6:
