@@ -196,7 +196,6 @@ class Columns(Blank):
         materials.Fence,
         materials.NetherBrick,
         materials.NetherBrickFence,
-        materials.EndStone,
         materials.Glowstone
     )
 
@@ -464,7 +463,7 @@ class SecretRoom(Blank):
                 sb(o+p.up(1), materials.Torch, 5)
             # Sarcophagus
             for p in iterate_cube(o.trans(3,3,4), o.trans(8,3,6)):
-                sb(p, materials.EndStone)
+                sb(p, materials.Sandstone)
             sb(o+Vec(3,3,4), materials.SandstoneSlab)
             sb(o+Vec(3,3,6), materials.SandstoneSlab)
             sb(o+Vec(8,3,4), materials.SandstoneSlab)

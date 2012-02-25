@@ -1956,14 +1956,14 @@ class Crypt(Basic):
 
         # Small sarcophagi
         for zoff in xrange(0, 24, 6):
-            ssb(Vec(2,10,1+zoff), materials.EndStone)
-            ssb(Vec(1,10,2+zoff), materials.EndStone)
-            ssb(Vec(3,10,2+zoff), materials.EndStone)
-            ssb(Vec(1,10,3+zoff), materials.EndStone)
-            ssb(Vec(3,10,3+zoff), materials.EndStone)
-            ssb(Vec(1,10,4+zoff), materials.EndStone)
-            ssb(Vec(3,10,4+zoff), materials.EndStone)
-            ssb(Vec(2,10,5+zoff), materials.EndStone)
+            ssb(Vec(2,10,1+zoff), materials.Sandstone)
+            ssb(Vec(1,10,2+zoff), materials.Sandstone)
+            ssb(Vec(3,10,2+zoff), materials.Sandstone)
+            ssb(Vec(1,10,3+zoff), materials.Sandstone)
+            ssb(Vec(3,10,3+zoff), materials.Sandstone)
+            ssb(Vec(1,10,4+zoff), materials.Sandstone)
+            ssb(Vec(3,10,4+zoff), materials.Sandstone)
+            ssb(Vec(2,10,5+zoff), materials.Sandstone)
 
             ssb(Vec(1,10,1+zoff), materials.SandstoneSlab)
             ssb(Vec(3,10,1+zoff), materials.SandstoneSlab)
@@ -2010,7 +2010,7 @@ class Crypt(Basic):
 
         # Large Sarcophagus
         for p in iterate_cube(o.trans(5,8,28), o.trans(10,8,30)):
-            sb(p, materials.EndStone)
+            sb(p, materials.Sandstone)
         ssb(Vec(5,8,28), materials.SandstoneSlab)
         ssb(Vec(5,8,30), materials.SandstoneSlab)
         sb(o+Vec(6,7,29), materials.StoneBrick)
