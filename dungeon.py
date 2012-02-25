@@ -925,22 +925,24 @@ class Dungeon (object):
     def placedoors(self, perc):
         '''Place a proportion of the doors where possible'''
         count = 0
-        # in MC space, 0=E, 1=N, 2=W, 3=S
+        # in MC space, 0=W, 1=N, 2=E, 3=S
         # doors are populated N->S and W->E
-        #doordat = ((3,6),(2,5),(4,1),(7,0))
-        doordat = ((3,6),(5,2),(4,1),(0,7))
+        # This holds direction and starting hinge side
+        #           N      E      S      W
+        doordat = ((1,1), (2,1), (3,0), (0,0))
         maxcount = perc * len(self.doors) / 100
         for pos, door in self.doors.items():
             if (count < maxcount):
-                x = 0
+                x = doordat[door.direction][1]
                 for dpos in door.doors:
                     if(dpos in self.blocks and  self.blocks[dpos].material == materials.Air):
                         self.setblock(dpos, materials._wall, hide=True)
                         self.blocks[dpos.down(1)].material = door.material
-                        self.blocks[dpos.down(1)].data = doordat[door.direction][x] | 8 # Top door
+                        #self.blocks[dpos.down(1)].data = doordat[door.direction][x] | 8 # Top door
+                        self.blocks[dpos.down(1)].data = 8+x # Top door & hinge
                         self.blocks[dpos.down(2)].material = door.material
-                        self.blocks[dpos.down(2)].data = doordat[door.direction][x]
-                    x += 1
+                        self.blocks[dpos.down(2)].data = doordat[door.direction][0]
+                    x = 1 - x
                 count += 1
 
     def placechests(self, level=0):
@@ -1519,9 +1521,16 @@ class Dungeon (object):
                                        self.levels*self.room_height,
                                        self.zsize*self.room_size)
                             self.blocks[Vec(x,y,z)].data = mat.data
+                        dat = self.blocks[Vec(x,y,z)].data
+
+                        # Doors are ... different
+                        if (mat == materials.WoodenDoor or
+                            mat == materials.IronDoor):
+                            dat2 = self.blocks[Vec(x,y+1,z)].data
+                            dat = ((dat & 1) << 3) + dat2
+
                         f.write('<td><img src=d/%d-%d.png>' %
-                                (mat.val,
-                                 self.blocks[Vec(x,y,z)].data))
+                                (mat.val, dat))
                     else:
                         f.write('<td><img src=d/0.png>')
             f.write('</table>')

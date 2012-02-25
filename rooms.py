@@ -550,7 +550,7 @@ class CellBlock(Basic2x2):
                 self.parent.setblock(ss+doffset,
                                      materials.IronDoor, ddata+4)
                 self.parent.setblock(ss+doffset.up(1),
-                                     materials.IronDoor, ddata+4+8)
+                                     materials.IronDoor, 8)
                 self.parent.setblock(ss+doffset.up(2),
                                      materials._wall, hide=True)
             # Extra chests for solving the combo.
@@ -1377,7 +1377,7 @@ class EndPortal(Basic2x2):
         sx = 31
         sy = 9
         sz = 31
-        #o = self.loc
+        o = self.loc
         #pos = self.pos
 
         # custom setblock
