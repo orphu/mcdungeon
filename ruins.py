@@ -494,6 +494,7 @@ class RoundTowerEntrance(Blank):
     _name = 'roundtowerentrance'
     _ruin = False
     _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
 
     def render (self):
         # The room floor Y location
@@ -624,6 +625,22 @@ class RoundTowerEntrance(Blank):
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
 
+        # Add a few details with upside-down stairs
+        N = 2+4 # Data values for a north side stair
+        S = 3+4 # South
+        E = 1+4 # East 
+        W = 0+4 # West
+        sb = self.parent.parent.setblock
+        # Ground level archways
+        sb(c1.trans(6,3,0), self._stair, E)
+        sb(c1.trans(7,3,0), self._stair, W)
+        sb(c4.trans(6,3,0), self._stair, E)
+        sb(c4.trans(7,3,0), self._stair, W)
+        sb(c1.trans(0,3,6), self._stair, S)
+        sb(c1.trans(0,3,7), self._stair, N)
+        sb(c2.trans(0,3,6), self._stair, S)
+        sb(c2.trans(0,3,7), self._stair, N)
+
         # Ruin
         if self._ruin == True:
             ruinBlocks(b1.trans(0,rheight-1,0),
@@ -648,6 +665,7 @@ class SquareTowerEntrance(Blank):
     _name = 'squaretowerentrance'
     _ruin = False
     _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
 
     def render (self):
         # The room floor Y location
@@ -776,6 +794,49 @@ class SquareTowerEntrance(Blank):
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
 
+        # Add a few details with upside-down stairs
+        N = 2+4 # Data values for a north side stair
+        S = 3+4 # South
+        E = 1+4 # East 
+        W = 0+4 # West
+        sb = self.parent.parent.setblock
+        # Some supports under the lower battlements
+        sb(c1.trans(3,1,0), self._stair, N)
+        sb(c1.trans(6,1,0), self._stair, N)
+        sb(c4.trans(3,1,0), self._stair, S)
+        sb(c4.trans(6,1,0), self._stair, S)
+        sb(c1.trans(0,1,3), self._stair, W)
+        sb(c1.trans(0,1,6), self._stair, W)
+        sb(c2.trans(0,1,3), self._stair, E)
+        sb(c2.trans(0,1,6), self._stair, E)
+        # Supports under the upper battlements
+        sb(b1.trans(2,1,0), self._stair, N)
+        sb(b1.trans(5,1,0), self._stair, N)
+        sb(b4.trans(2,1,0), self._stair, S)
+        sb(b4.trans(5,1,0), self._stair, S)
+        sb(b1.trans(0,1,2), self._stair, W)
+        sb(b1.trans(0,1,5), self._stair, W)
+        sb(b2.trans(0,1,2), self._stair, E)
+        sb(b2.trans(0,1,5), self._stair, E)
+        # Ground level archways
+        sb(c1.trans(4,3,1), self._stair, E)
+        sb(c1.trans(5,3,1), self._stair, W)
+        sb(c4.trans(4,3,-1), self._stair, E)
+        sb(c4.trans(5,3,-1), self._stair, W)
+        sb(c1.trans(1,3,4), self._stair, S)
+        sb(c1.trans(1,3,5), self._stair, N)
+        sb(c2.trans(-1,3,4), self._stair, S)
+        sb(c2.trans(-1,3,5), self._stair, N)
+        # Chest level archways
+        sb(c1.trans(3,-3,2), self._stair, E)
+        sb(c1.trans(6,-3,2), self._stair, W)
+        sb(c4.trans(3,-3,-2), self._stair, E)
+        sb(c4.trans(6,-3,-2), self._stair, W)
+        sb(c1.trans(2,-3,3), self._stair, S)
+        sb(c1.trans(2,-3,6), self._stair, N)
+        sb(c2.trans(-2,-3,3), self._stair, S)
+        sb(c2.trans(-2,-3,6), self._stair, N)
+
         # Ruin
         if self._ruin == True:
             ruinBlocks(b1.trans(0,rheight-1,0),
@@ -799,31 +860,37 @@ class SquareTowerEntranceStoneBrick(SquareTowerEntrance):
     _name = 'squaretowerentrancestonebrick'
     _ruin = False
     _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
 
 class RuinedSquareTowerEntrance(SquareTowerEntrance):
     _name = 'ruinedsquaretowerentrance'
     _ruin = True
     _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
 
 class RuinedSquareTowerEntranceStoneBrick(SquareTowerEntrance):
     _name = 'ruinedsquaretowerentrancestonebrick'
     _ruin = True
     _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
 
 class RoundTowerEntranceStoneBrick(RoundTowerEntrance):
     _name = 'roundtowerentrancestonebrick'
     _ruin = False
     _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
 
 class RuinedRoundTowerEntrance(RoundTowerEntrance):
     _name = 'ruinedroundtowerentrance'
     _ruin = True
     _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
 
 class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
     _name = 'ruinedroundtowerentrancestonebrick'
     _ruin = True
     _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
 
 class CircularTower(Blank):
     _name = 'circulartower'
