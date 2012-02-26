@@ -857,6 +857,7 @@ class Arches(Blank):
         height = self.parent.parent.room_height*2
         sb = self.parent.parent.setblock
         mat = materials.meta_mossystonebrick
+        stair = materials.StoneBrickStairs
         for xo in xrange(2):
             for zo in xrange(2):
                 c1 = self.loc + Vec(8*xo, 0, 8*zo)
@@ -869,14 +870,14 @@ class Arches(Blank):
                     sb(p.trans(0,0,7), mat, hide=True)
                 # First level
                 p = c1.trans(0,-height+2,0)
-                sb(p.trans(1,0,0), mat)
-                sb(p.trans(6,0,0), mat)
-                sb(p.trans(0,0,1), mat)
-                sb(p.trans(7,0,1), mat)
-                sb(p.trans(0,0,6), mat)
-                sb(p.trans(7,0,6), mat)
-                sb(p.trans(1,0,7), mat)
-                sb(p.trans(6,0,7), mat)
+                sb(p.trans(1,0,0), stair, 1+4)
+                sb(p.trans(6,0,0), stair, 0+4)
+                sb(p.trans(0,0,1), stair, 3+4)
+                sb(p.trans(7,0,1), stair, 3+4)
+                sb(p.trans(0,0,6), stair, 2+4)
+                sb(p.trans(7,0,6), stair, 2+4)
+                sb(p.trans(1,0,7), stair, 1+4)
+                sb(p.trans(6,0,7), stair, 0+4)
                 # Second level
                 p = p.trans(0,-1,0)
                 sb(p.trans(1,0,0), mat)
@@ -888,14 +889,14 @@ class Arches(Blank):
                 sb(p.trans(1,0,7), mat)
                 sb(p.trans(6,0,7), mat)
                 # ---
-                sb(p.trans(2,0,0), mat)
-                sb(p.trans(5,0,0), mat)
-                sb(p.trans(0,0,2), mat)
-                sb(p.trans(7,0,2), mat)
-                sb(p.trans(0,0,5), mat)
-                sb(p.trans(7,0,5), mat)
-                sb(p.trans(2,0,7), mat)
-                sb(p.trans(5,0,7), mat)
+                sb(p.trans(2,0,0), stair, 1+4)
+                sb(p.trans(5,0,0), stair, 0+4)
+                sb(p.trans(0,0,2), stair, 3+4)
+                sb(p.trans(7,0,2), stair, 3+4)
+                sb(p.trans(0,0,5), stair, 2+4)
+                sb(p.trans(7,0,5), stair, 2+4)
+                sb(p.trans(2,0,7), stair, 1+4)
+                sb(p.trans(5,0,7), stair, 0+4)
                 # Top layer
                 p = p.trans(0,-1,0)
                 for p in iterate_four_walls(p, p.trans(7,0,7), 0):
