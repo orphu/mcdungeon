@@ -1,3 +1,20 @@
+v0.8.0 - ??/??/????
+
+  !! NOTE: This version requires Minecraft 1.2.0 release or higher!
+
+   * Added missing torch icons.
+
+   * Cleaned up code.
+
+   * Basic "Anvil" map support. (it's kinda slow and memory inefficient
+     right now, but it works)
+
+   * Fixed doors to work in 1.2.
+
+   * Replaced End Stone with Sandstone in crypts and sepulchres. 
+
+   * Improved the look of arch ruins with upside down stairs. 
+
 v0.7.1 - 01/22/2012
 
   !! NOTE: This version requires Minecraft 1.1.0 release or higher!
