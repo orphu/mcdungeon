@@ -1,10 +1,15 @@
+v0.8.1 - ??/??/????
+
+   * Added 1.2 blocks: Circle Stone, Redstone Lamps, Fire Charge, 
+     and Bottle of Enchanting.
+
 v0.8.0 - 03/02/2012
 
   !! NOTE: This version requires Minecraft 1.2.3 release or higher!
 
    * Added missing torch icons.
 
-   * Some clode clean up.
+   * Some code clean up.
 
    * Basic "Anvil" map support. (it's kinda slow and memory inefficient
      right now, but it works)
