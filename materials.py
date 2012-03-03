@@ -74,6 +74,7 @@ BrickBlock = Material('Brick Block', '#', RED)
 BrownMushroom = Material('Brown Mushroom', 'p',RED)
 Cactus = Material('Cactus', "*", BGREEN)
 Chest = Material('Chest', 'C',BPURPLE)
+CircleStoneBrick = Material('Circle Stone Brick' ,'0',GREY)
 CoalOre = Material('Coal Ore', 'o',DGREY)
 Cobblestone = Material('Cobblestone', '%',DGREY)
 CobblestoneSlab = Material('Cobblestone Slab', '%',GREY)
@@ -199,6 +200,12 @@ class meta_class_mossystonebrick(MetaMaterial):
             self.c = CrackedStoneBrick.c
             return
 
+        if random.randint(0,100) < 2:
+            self.val = CircleStoneBrick.val
+            self.data = CircleStoneBrick.data
+            self.c = CircleStoneBrick.c
+            return
+
         if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
             self.val = MossyStoneBrick.val
             self.data = MossyStoneBrick.data
@@ -219,6 +226,7 @@ class meta_class_stonedungeon(MetaMaterial):
         n = self.pn.noise3(x / 100.0, y / 100.0, z / 100.0)
         n = n + (float(y)/float(maxy))*2
 
+        # Random broken stone brick in stone brick and cobble zones.
         if n <= 1.5:
             broken = .1+(float(y)/float(maxy))*.5
             if random.randint(1,100) < broken*10+5:
@@ -227,10 +235,16 @@ class meta_class_stonedungeon(MetaMaterial):
                 self.c = CrackedStoneBrick.c
                 return
 
+        # Random circle stone in stone brick zones
+        if n <= 1.0:
+            if random.randint(0,100) < 2:
+                self.val = CircleStoneBrick.val
+                self.data = CircleStoneBrick.data
+                self.c = CircleStoneBrick.c
+                return
+
+        # Deepest areas are mossy cobble
         if (n > 1.5):
-            #self.val = MossStone.val
-            #self.data = MossStone.data
-            #self.c = MossStone.c
             if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
                 self.val = MossStone.val
                 self.data = MossStone.data
@@ -239,14 +253,13 @@ class meta_class_stonedungeon(MetaMaterial):
                 self.val = Cobblestone.val
                 self.data = Cobblestone.data
                 self.c = Cobblestone.c
+        # Deep areas are cobble
         elif (n > 1.0):
             self.val = Cobblestone.val
             self.data = Cobblestone.data
             self.c = Cobblestone.c
+        # lower areas as mossy brick
         elif (n > 0.5):
-            #self.val = MossyStoneBrick.val
-            #self.data = MossyStoneBrick.data
-            #self.c = MossyStoneBrick.c
             if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
                 self.val = MossyStoneBrick.val
                 self.data = MossyStoneBrick.data
@@ -255,6 +268,7 @@ class meta_class_stonedungeon(MetaMaterial):
                 self.val = StoneBrick.val
                 self.data = StoneBrick.data
                 self.c = StoneBrick.c
+        # High areas are stone brick
         else:
             self.val = StoneBrick.val
             self.data = StoneBrick.data
