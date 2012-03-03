@@ -153,7 +153,7 @@ class Basic(Blank):
     def render (self):
         height = self.size.y * self.parent.room_height - 2
         # Air space
-        for x in self.air_func(self.c1.up(1), self.c3.up(3)):
+        for x in self.air_func(self.c1.up(1), self.c3.up(height-1)):
             self.parent.setblock(x, materials.Air)
         # Floor
         for x in self.floor_func(self.c1, self.c3):
@@ -234,6 +234,112 @@ class Basic2x2(Basic):
         room.parent.halls[pos.x][pos.y][pos.z][0] = 1
         room.parent.halls[pos.x][pos.y][pos.z][3] = 1
         return rooms
+
+
+class Basic2x2x2(Basic):
+    _name = 'basic2x2x2'
+    _min_size = Vec(2,2,2)
+    _max_size = Vec(2,2,2)
+    size = Vec(2,2,2)
+    _is_entrance = False
+    _is_stairwell = False
+
+    def placed(self):
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        # Fix our halls so they only show N and W sides
+        # West, South, East, North
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [3,0,0,3]
+        self.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        self.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        self.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        # place three more blank rooms to hold the hallways
+        # This is the Southern room
+        pos = self.pos + Vec(1,0,0)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [3,3,0,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+        # Eastern room.
+        pos = self.pos + Vec(0,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,0,3,3]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        # South East room.
+        pos = self.pos + Vec(1,0,1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,3,3,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+        # Do it again for the bottom floor
+        pos = self.pos + Vec(0,1,0)
+        room = new('blankstairwell', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [3,0,0,3]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        # place three more blank rooms to hold the hallways
+        # This is the Southern room
+        pos = self.pos + Vec(1,1,0)
+        room = new('blankstairwell', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [3,3,0,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][2] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+        # Eastern room.
+        pos = self.pos + Vec(0,1,1)
+        room = new('blankstairwell', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,0,3,3]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][1] = 1
+        # South East room.
+        pos = self.pos + Vec(1,1,1)
+        room = new('blankstairwell', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0,3,3,0]
+        room.hallSize = [[2,sx-2],
+                         [2,sx-2],
+                         [2,sz-2],
+                         [2,sz-2]]
+        room.parent.halls[pos.x][pos.y][pos.z][0] = 1
+        room.parent.halls[pos.x][pos.y][pos.z][3] = 1
+        return rooms
+
 
 class GreatHallNS(Basic):
     _name = 'greathallns'
