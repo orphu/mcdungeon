@@ -2058,6 +2058,7 @@ class Crypt(Basic):
                  (items.byName('glass bottle'), 10),
                  (items.byName('blaze powder'), 1),
                  (items.byName('magma cream'), 1),
+                 (items.byName('bottle o\' enchanting'), 5),
                  (items.byName('eye of ender'), 1)]
 
         # Small sarcophagi

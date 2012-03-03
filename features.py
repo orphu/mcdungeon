@@ -498,6 +498,7 @@ class SecretRoom(Blank):
                      (items.byName('compass'), 10),
                      (items.byName('gold nugget'), 10),
                      (items.byName('ghast tear'), 1),
+                     (items.byName('bottle o\' enchanting'), 10),
                      (items.byName('glass bottle'), 10)]
 
             i = weighted_choice(lootc)
