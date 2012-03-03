@@ -59,16 +59,14 @@ class Entrance(Blank):
         for p in iterate_cube(wstart.trans(5,0,1), wstart.trans(5,-3,4)):
             self.parent.parent.setblock(p, materials.Air)
         # Draw the staircase
+        mat = materials.StoneSlab
         for p in iterate_spiral(Vec(0,0,0),
                                 Vec(4,0,4),
                                 self.height*2+2):
-            mat = materials.StoneSlab
-            if ((p.y%2) == 1):
-                mat = materials.DoubleSlab
             self.parent.parent.setblock(start.trans(p.x,
                                                     floor(float(p.y)/2.0),
                                                     p.z),
-                                        mat)
+                                        mat, mat.data+(p.y%2)*8)
         # Signs
         locs = [
             (Vec(-1,-2, 0),4),

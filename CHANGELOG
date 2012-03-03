@@ -3,6 +3,10 @@ v0.8.1 - ??/??/????
    * Added 1.2 blocks: Circle Stone, Redstone Lamps, Fire Charge, 
      and Bottle of Enchanting.
 
+   * Added circle brick to dungeon and mossy brick meta materials.
+
+   * Spiral stairs now use upside down slabs for a cleaner look. 
+
 v0.8.0 - 03/02/2012
 
   !! NOTE: This version requires Minecraft 1.2.3 release or higher!

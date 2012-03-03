@@ -248,20 +248,15 @@ class StepPyramid(Blank):
             self.parent.parent.setblock(p, materials._wall)
         for p in iterate_four_walls(start, start.trans(5,0,5),0):
             self.parent.parent.setblock(p, materials.StoneSlab)
-        mat1 = materials.WoodenSlab
-        mat2 = materials.WoodPlanks
-        if random.randint(1,100) <= 0:
-            mat1 = materials.StoneSlab
-            mat2 = materials.DoubleSlab
+        mat = materials.WoodenSlab
+        if random.randint(1,100) <= 50:
+            mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x+1,7,start.z+1),
                                 Vec(start.x+5,7,start.z+5),
                                 (abs(c1.y)+3)*2):
-            mat = mat1
-            if ((p.y%2) == 0):
-                mat = mat2
             self.parent.parent.setblock(Vec(p.x,
                                         0+int(p.y/2),
-                                        p.z), mat)
+                                        p.z), mat, mat.data+((p.y&1)^1)*8)
         # Entrances.
         # Draw stairs up the sides.
         for y in xrange(29):
@@ -606,20 +601,15 @@ class RoundTowerEntrance(Blank):
             self.parent.parent.setblock(p, materials.DoubleSlab)
         # (re)draw the staircase
         self.parent.parent.entrance.height = abs(room_floor-elev-1)
-        mat1 = materials.WoodenSlab
-        mat2 = materials.WoodPlanks
+        mat = materials.WoodenSlab
         if random.randint(1,100) <= 50:
-            mat1 = materials.StoneSlab
-            mat2 = materials.DoubleSlab
+            mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x,room_floor+4,start.z),
                                 Vec(start.x+4,room_floor+4,start.z+4),
                                 (room_floor-blev)*2):
-            mat = mat1
-            if ((p.y%2) == 0):
-                mat = mat2
             self.parent.parent.setblock(Vec(p.x,
                                         p.y/2,
-                                        p.z), mat)
+                                        p.z), mat, mat.data+((p.y&1)^1)*8)
         # Supply chest
         pos = Vec(b1.x, clev, b1.z-1)
         self.parent.parent.setblock(pos, materials.Chest)
@@ -775,20 +765,15 @@ class SquareTowerEntrance(Blank):
                 self.parent.parent.setblock(p, materials.Air)
         # (re)draw the staircase
         self.parent.parent.entrance.height = abs(room_floor-elev-1)
-        mat1 = materials.WoodenSlab
-        mat2 = materials.WoodPlanks
+        mat = materials.WoodenSlab
         if random.randint(1,100) <= 50:
-            mat1 = materials.StoneSlab
-            mat2 = materials.DoubleSlab
+            mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x,room_floor+4,start.z),
                                 Vec(start.x+4,room_floor+4,start.z+4),
                                 (room_floor-blev)*2):
-            mat = mat1
-            if ((p.y%2) == 0):
-                mat = mat2
             self.parent.parent.setblock(Vec(p.x,
                                         p.y/2,
-                                        p.z), mat)
+                                        p.z), mat, mat.data+((p.y&1)^1)*8)
         # Supply chest
         pos = c1.trans(1, 0, 1)
         self.parent.parent.setblock(pos, materials.Chest)
