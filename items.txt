@@ -128,6 +128,7 @@
 98,Stone Brick,0,64
 98,Mossy Stone Brick,1,64
 98,Cracked Stone Brick,2,64
+98,Circle Stone Brick,3,64
 101,Iron Bars,0,64
 102,Glass Pane,0,64
 103,Melon,0,64
@@ -150,6 +151,8 @@
 120,End Portal Frame,0,64
 121,End Stone,0,64
 122,Dragon Egg,0,64
+123,Redstone Lamp off,0,64
+124,Redstone Lamp,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
@@ -316,6 +319,8 @@
 383,Spawn Villager,120,1
 383,Spawn Wolf,95,1
 383,Spawn Zombie,54,1
+384,Bottle o' Enchanting,0,64
+385,Fire Charge,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
