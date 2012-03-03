@@ -417,6 +417,7 @@ class Dungeon (object):
 
 
     def addtrap(self, loc):
+        item = random.choice([262, 385])
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Trap')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -427,7 +428,7 @@ class Dungeon (object):
         item_tag = nbt.TAG_Compound()
         item_tag['Slot'] = nbt.TAG_Byte(0)
         item_tag['Count'] = nbt.TAG_Byte(3)
-        item_tag['id'] = nbt.TAG_Short(262)
+        item_tag['id'] = nbt.TAG_Short(item)
         item_tag['Damage'] = nbt.TAG_Short(0)
         inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
