@@ -306,8 +306,10 @@
 383,Spawn Creeper,50,1
 383,Spawn Enderman,58,1
 383,Spawn Ghast,56,1
+383,Spawn Iron Golem,99,1
 383,Spawn Magma Cube,62,1
 383,Spawn Mooshroom,96,1
+383,Spawn Ocelot,98,1
 383,Spawn Pig Zombie,57,1
 383,Spawn Pig,90,1
 383,Spawn Skeleton,51,1
