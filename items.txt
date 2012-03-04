@@ -8,6 +8,7 @@
 6,Sapling,0,64
 6,Spruce Sapling,1,64
 6,Birch Sapling,2,64
+6,Jungle Sapling,3,64
 7,Bedrock,0,64
 8,Water,0,64
 9,StillWater,0,64
@@ -21,6 +22,7 @@
 17,Wood,0,64
 17,Redwood,1,64
 17,Birch,2,64
+17,Jungle,3,64
 18,Leaves,0,64
 18,Spruce Leaves,1,64
 18,Birch Leaves,2,64
