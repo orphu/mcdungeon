@@ -26,6 +26,7 @@
 18,Leaves,0,64
 18,Spruce Leaves,1,64
 18,Birch Leaves,2,64
+18,Jungle Leaves,3,64
 19,Sponge,0,64
 20,Glass,0,64
 21,Lapis Lazuli Ore,0,64
