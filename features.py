@@ -181,7 +181,7 @@ class Columns(Blank):
         materials.Stone,
         materials.meta_mossycobble,
         materials.Wood,
-        materials.Redwood,
+        materials.Spruce,
         materials.Jungle,
         materials.Bedrock,
         materials.Sandstone,

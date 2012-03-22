@@ -5,6 +5,9 @@
 3,Dirt,0,64
 4,Cobblestone,0,64
 5,Wooden Plank,0,64
+5,Spruce Plank,1,64
+5,Birch Plank,2,64
+5,Jungle Plank,3,64
 6,Sapling,0,64
 6,Spruce Sapling,1,64
 6,Birch Sapling,2,64
@@ -20,7 +23,7 @@
 15,Iron Ore,0,64
 16,Coal Ore,0,64
 17,Wood,0,64
-17,Redwood,1,64
+17,Spruce,1,64
 17,Birch,2,64
 17,Jungle,3,64
 18,Leaves,0,64
