@@ -9,6 +9,7 @@ import time
 from numpy import *
 
 from pymclevel import mclevel
+from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
@@ -262,21 +263,26 @@ def loadWorld(world_name):
     try:
         print "Trying to open:", world_name
         world = mclevel.fromFile(world_name)
+        oworld = ov_world.World(world_name)
     except:
         saveFileDir = mclevel.saveFileDir
         world_name = os.path.join(saveFileDir, world_name)
         print "Trying to open:", world_name
         try:
             world = mclevel.fromFile(world_name)
+            oworld = ov_world.World(world_name)
         except:
             print "Failed to open world:",world_name
             sys.exit(1)
     print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
                                                             world.chunkCount,
                                                             world.Height)
-    return world
+    return world, oworld
 
-def listDungeons(world, expand_hard_mode=False):
+def listDungeons(world, oworld, expand_hard_mode=False):
+    pm = pmeter.ProgressMeter()
+
+    # Try scanning with overviewer instead.
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
@@ -290,44 +296,41 @@ def listDungeons(world, expand_hard_mode=False):
         'Options'
     )
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
-    pm = pmeter.ProgressMeter()
+    regions = oworld.get_regionset("overworld")
     count = world.chunkCount
     pm.init(count, label='Scanning world for existing dungeons:')
-    for i, cPos in enumerate(world.allChunks):
+    for c in regions.iterate_chunks():
         count -= 1
         pm.update_left(count)
-        chunk = world.getChunk(*cPos)
-        for tileEntity in chunk.TileEntities:
-            if (tileEntity["id"].value == "Sign" and
-                tileEntity["Text1"].value.startswith('[MCD]')):
-                ver = tileEntity["Text1"].value[5:]
+        for tileEntity in regions.get_chunk(c[0], c[1])["TileEntities"]:
+            if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
+                ver = tileEntity["Text1"][5:]
                 (major, minor, patch) = ver.split('.')
                 version = float(major+'.'+minor)
-                (xsize, zsize, levels) = tileEntity["Text3"].value.split(',')
+                (xsize, zsize, levels) = tileEntity["Text3"].split(',')
                 offset = 0
                 if (expand_hard_mode == True and
-                    tileEntity["Text4"].value.find('H:1') >= 0):
+                    tileEntity["Text4"].find('H:1') >= 0):
                     offset = 5
-                dungeons.append((int(tileEntity["x"].value)-offset,
-                                 int(tileEntity["z"].value)-offset,
+                dungeons.append((int(tileEntity["x"])-offset,
+                                 int(tileEntity["z"])-offset,
                                  int(xsize)+offset,
                                  int(zsize)+offset,
-                                 tileEntity["Text4"].value,
+                                 tileEntity["Text4"],
                                  int(levels),
-                                 int(tileEntity["x"].value),
-                                 int(tileEntity["y"].value),
-                                 int(tileEntity["z"].value),
+                                 int(tileEntity["x"]),
+                                 int(tileEntity["y"]),
+                                 int(tileEntity["z"]),
                                  version))
                 output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
-                 '%s %s'%(int(tileEntity["x"].value),int(tileEntity["z"].value)),
+                 '%s %s'%(int(tileEntity["x"]),int(tileEntity["z"])),
                     time.strftime('%x %H:%M',
-                               time.localtime(int(tileEntity["Text2"].value))),
+                               time.localtime(int(tileEntity["Text2"]))),
                  ver,
                  '%sx%s'%(xsize, zsize),
                  int(levels),
-                 tileEntity["Text4"].value
+                 tileEntity["Text4"]
                 )
-        chunk.unload()
     pm.set_complete()
     output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     if len(dungeons) > 0:
@@ -448,7 +451,7 @@ if (args.command == 'interactive'):
         cfg.Load(args.config)
 
         args.dungeon = None
-        world = loadWorld(args.world)
+        world, oworld = loadWorld(args.world)
         dungeons = listDungeons(world)
         if len(dungeons) == 0:
             sys.exit()
@@ -474,7 +477,7 @@ if (args.command == 'interactive'):
         args.command = 'delete'
         args.dungeons = None
         args.all = False
-        world = loadWorld(args.world)
+        world, oworld = loadWorld(args.world)
         dungeons = listDungeons(world)
         if len(dungeons) == 0:
             sys.exit()
@@ -503,12 +506,12 @@ elif(args.command == 'add' or args.command == 'regenerate'):
     cfg.Load(args.config)
 
 if world == None:
-    world = loadWorld(args.world)
+    world, oworld = loadWorld(args.world)
 
 # List mode
 if (args.command == 'list'):
     # List the known dungeons and exit
-    dungeons = listDungeons(world)
+    dungeons = listDungeons(world, oworld)
     #print dungeons
     sys.exit()
 
@@ -521,7 +524,7 @@ if (args.command == 'delete'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == None:
-        dungeons = listDungeons(world)
+        dungeons = listDungeons(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
@@ -575,7 +578,7 @@ if (args.command == 'delete'):
 if (args.command == 'regenerate'):
     # Get a list of known dungeons and their size.
     if dungeons == None:
-        dungeons = listDungeons(world)
+        dungeons = listDungeons(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
@@ -799,7 +802,7 @@ if (cfg.offset is None or cfg.offset is ''):
     pm.set_complete()
 
     # Find old dungeons
-    old_dungeons = listDungeons(world, expand_hard_mode=True)
+    old_dungeons = listDungeons(world, oworld, expand_hard_mode=True)
     for d in old_dungeons:
         if args.debug: print 'old dungeon:', d
         p = (d[0]/16, d[1]/16)
