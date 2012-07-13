@@ -5,6 +5,8 @@ import ConfigParser
 
 from utils import *
 
+cache_dir = 'mcdungeon_cache'
+
 loops = '0'
 min_dist = '2'
 max_dist = '10'

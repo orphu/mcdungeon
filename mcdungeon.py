@@ -6,6 +6,7 @@ import argparse
 import logging
 import re
 import time
+import cPickle
 from numpy import *
 
 from pymclevel import mclevel
@@ -257,8 +258,14 @@ from dungeon import *
 from utils import *
 
 def loadWorld(world_name):
+    '''Attempt to load a world file. Look in the literal path first, then look
+    in the typical save directory for the given platform. Check to see if the
+    mcdungeon cache directory exists, and create it if not.'''
     # Attempt to open the world. Look in cwd first, then try to search the
     # user's save directory. 
+    global cfg
+    global cache_path
+
     world = None
     try:
         print "Trying to open:", world_name
@@ -277,12 +284,101 @@ def loadWorld(world_name):
     print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
                                                             world.chunkCount,
                                                             world.Height)
+    # Create the mcdungeon cahce dir if needed. 
+    cache_path = os.path.join(world_name, cfg.cache_dir)
+    if os.path.exists(cache_path) is False:
+        os.makedirs(cache_path)
+
     return world, oworld
 
+def loadMTime(world_name):
+    '''Try to load the MCDungeon mtime for this world. If the mcdungeon dir does
+    not exist, create it and return zero for mtime.'''
+    global cache_path
+
+    cache_path = os.path.join(world_name, 'mcdungeon')
+    mtime_path = os.path.join(cache_path, 'mtime')
+    if os.path.exists(cache_path) is False:
+        os.makedirs(cache_path)
+    if os.path.exists(mtime_path) is False:
+        return 0
+    try:
+        FILE = open(mtime_path, 'r')
+    except:
+        print  "Failed to open MCDungeon mtime file:", mtime_path
+        sys.exit(1)
+    return cPickle.load(FILE)
+
 def listDungeons(world, oworld, expand_hard_mode=False):
+    '''Scan a world for dungeons. Try to cache the results and only look at
+    chunks that have changed since the last run.'''
+    global cache_path
     pm = pmeter.ProgressMeter()
 
-    # Try scanning with overviewer instead.
+    # Try to load the cache
+    dungeonCache = {}
+    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_cache')):
+        try:
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'r')
+            dungeonCache = cPickle.load(FILE)
+            FILE.close()
+        except:
+            sys.exit('Failed to read the dungeon_scan_cache file. Check\
+                     permissions and try again.')
+
+    # Try to read the cache mtime
+    mtime = 0
+    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_mtime')):
+        try:
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'r')
+            mtime = cPickle.load(FILE)
+            FILE.close()
+        except:
+            sys.exit('Failed to read the dungeon_scan_mtime file. Check\
+                     permissions and try again.')
+
+    # Scan with overviewer
+    regions = oworld.get_regionset("overworld")
+    count = world.chunkCount
+    cached = 0
+    notcached = 0
+    print 'Scanning world for existing dungeons:'
+    print 'cache mtime: %d' % (mtime)
+    pm.init(count, label='')
+    for c in regions.iterate_chunks():
+        count -= 1
+        pm.update_left(count)
+        key = '%s,%s' % (c[0]*16, c[1]*16)
+        if dungeonCache.has_key(key):
+            del  dungeonCache[key]
+        elif regions.get_chunk_mtime(c[0], c[1]) < mtime:
+            cached += 1
+            continue
+        notcached += 1
+        for tileEntity in regions.get_chunk(c[0], c[1])["TileEntities"]:
+            if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
+                key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                dungeonCache[key] = tileEntity
+    pm.set_complete()
+    print '    Cached chunks: %d' % (cached)
+    print 'Non-cached chunks: %d' % (notcached)
+
+    # Re-cache the dungeons and update mtime
+    try:
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'w')
+        cPickle.dump(dungeonCache, FILE)
+    except:
+        sys.exit('Failed to write dungeon_scan_cache. Check permissions and try\
+                 again.')
+    mtime = int(time.time())
+    try:
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'w')
+        cPickle.dump(mtime, FILE)
+    except:
+        sys.exit('Failed to write dungeon_scan_mtime. Check permissions and try\
+                 again.')
+
+    # Process the dungeons
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
@@ -296,42 +392,34 @@ def listDungeons(world, oworld, expand_hard_mode=False):
         'Options'
     )
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
-    regions = oworld.get_regionset("overworld")
-    count = world.chunkCount
-    pm.init(count, label='Scanning world for existing dungeons:')
-    for c in regions.iterate_chunks():
-        count -= 1
-        pm.update_left(count)
-        for tileEntity in regions.get_chunk(c[0], c[1])["TileEntities"]:
-            if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
-                ver = tileEntity["Text1"][5:]
-                (major, minor, patch) = ver.split('.')
-                version = float(major+'.'+minor)
-                (xsize, zsize, levels) = tileEntity["Text3"].split(',')
-                offset = 0
-                if (expand_hard_mode == True and
-                    tileEntity["Text4"].find('H:1') >= 0):
-                    offset = 5
-                dungeons.append((int(tileEntity["x"])-offset,
-                                 int(tileEntity["z"])-offset,
-                                 int(xsize)+offset,
-                                 int(zsize)+offset,
-                                 tileEntity["Text4"],
-                                 int(levels),
-                                 int(tileEntity["x"]),
-                                 int(tileEntity["y"]),
-                                 int(tileEntity["z"]),
-                                 version))
-                output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
-                 '%s %s'%(int(tileEntity["x"]),int(tileEntity["z"])),
-                    time.strftime('%x %H:%M',
-                               time.localtime(int(tileEntity["Text2"]))),
-                 ver,
-                 '%sx%s'%(xsize, zsize),
-                 int(levels),
-                 tileEntity["Text4"]
-                )
-    pm.set_complete()
+    for tileEntity in dungeonCache.values():
+        ver = tileEntity["Text1"][5:]
+        (major, minor, patch) = ver.split('.')
+        version = float(major+'.'+minor)
+        (xsize, zsize, levels) = tileEntity["Text3"].split(',')
+        offset = 0
+        if (expand_hard_mode == True and
+            tileEntity["Text4"].find('H:1') >= 0):
+            offset = 5
+        dungeons.append((int(tileEntity["x"])-offset,
+                         int(tileEntity["z"])-offset,
+                         int(xsize)+offset,
+                         int(zsize)+offset,
+                         tileEntity["Text4"],
+                         int(levels),
+                         int(tileEntity["x"]),
+                         int(tileEntity["y"]),
+                         int(tileEntity["z"]),
+                         version))
+        output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
+         '%s %s'%(int(tileEntity["x"]),int(tileEntity["z"])),
+            time.strftime('%x %H:%M',
+                       time.localtime(int(tileEntity["Text2"]))),
+         ver,
+         '%sx%s'%(xsize, zsize),
+         int(levels),
+         tileEntity["Text4"]
+        )
     output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     if len(dungeons) > 0:
         print output
@@ -341,6 +429,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
 
 world = None
 dungeons = None
+cache_path = None
 
 # Interactive mode
 if (args.command == 'interactive'):
@@ -1005,6 +1094,3 @@ if (args.write is True):
     world.saveInPlace()
 else:
     print "Map NOT saved! This was a dry run. Use --write to enable saving."
-
-print 'Done!                   '
-
