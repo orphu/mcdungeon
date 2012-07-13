@@ -291,24 +291,6 @@ def loadWorld(world_name):
 
     return world, oworld
 
-def loadMTime(world_name):
-    '''Try to load the MCDungeon mtime for this world. If the mcdungeon dir does
-    not exist, create it and return zero for mtime.'''
-    global cache_path
-
-    cache_path = os.path.join(world_name, 'mcdungeon')
-    mtime_path = os.path.join(cache_path, 'mtime')
-    if os.path.exists(cache_path) is False:
-        os.makedirs(cache_path)
-    if os.path.exists(mtime_path) is False:
-        return 0
-    try:
-        FILE = open(mtime_path, 'r')
-    except:
-        print  "Failed to open MCDungeon mtime file:", mtime_path
-        sys.exit(1)
-    return cPickle.load(FILE)
-
 def listDungeons(world, oworld, expand_hard_mode=False):
     '''Scan a world for dungeons. Try to cache the results and only look at
     chunks that have changed since the last run.'''
