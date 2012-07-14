@@ -206,7 +206,7 @@ class Dungeon (object):
 
     def worldmap(self, world):
         #rows, columns = os.popen('stty size', 'r').read().split()
-        columns = 80
+        columns = 39
         bounds = world.bounds
         if self.args.spawn is None:
             scx = world.playerSpawnPosition()[0]>>4
@@ -221,10 +221,10 @@ class Dungeon (object):
         map_min_z = bounds.getMaxcz()
         map_max_z = bounds.getMincz()
         for p in self.good_chunks:
-            map_min_x = min(map_min_x, p[0])
-            map_max_x = max(map_max_x, p[0]+self.xsize-1)
-            map_min_z = min(map_min_z, p[1])
-            map_max_z = max(map_max_z, p[1]+self.zsize-1)
+            map_min_x = min(map_min_x, p[0]+1)
+            map_max_x = max(map_max_x, p[0]-1)
+            map_min_z = min(map_min_z, p[1]+1)
+            map_max_z = max(map_max_z, p[1]-1)
 
         # Include spawn
         map_min_x = min(map_min_x, spawn_chunk.x)
@@ -232,7 +232,7 @@ class Dungeon (object):
         map_min_z = min(map_min_z, spawn_chunk.z)
         map_max_z = max(map_max_z, spawn_chunk.z)
 
-        if map_max_x-map_min_x >= int(columns)/2:
+        if map_max_x-map_min_x >= int(columns):
             print 'Map too wide for terminal:', map_max_x-map_min_x
             return
 
