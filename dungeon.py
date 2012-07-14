@@ -254,7 +254,7 @@ class Dungeon (object):
                 elif ((x,z) in positions.keys()):
                     sys.stdout.write('++')
                 elif ((x,z) in self.good_chunks.keys()):
-                    sys.stdout.write('~~')
+                    sys.stdout.write('--')
                 else:
                     sys.stdout.write('``')
             print
