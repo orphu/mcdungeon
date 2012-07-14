@@ -200,11 +200,11 @@ class Dungeon (object):
                                     0,
                                     (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
-                self.worldmap(world)
+                self.worldmap(world, positions)
                 return self.bury(world)
         return False
 
-    def worldmap(self, world):
+    def worldmap(self, world, positions):
         #rows, columns = os.popen('stty size', 'r').read().split()
         columns = 39
         bounds = world.bounds
@@ -251,8 +251,10 @@ class Dungeon (object):
                     sys.stdout.write('XX')
                 elif (d_box.containsPoint(Vec(x,64,z))):
                     sys.stdout.write('##')
-                elif ((x,z) in self.good_chunks.keys()):
+                elif ((x,z) in positions.keys()):
                     sys.stdout.write('++')
+                elif ((x,z) in self.good_chunks.keys()):
+                    sys.stdout.write('~~')
                 else:
                     sys.stdout.write('``')
             print
