@@ -232,7 +232,7 @@ class Dungeon (object):
         map_min_z = min(map_min_z, spawn_chunk.z)
         map_max_z = max(map_max_z, spawn_chunk.z)
 
-        if map_max_x-map_min_x >= int(columns):
+        if map_max_x-map_min_x+1 >= int(columns):
             print 'Map too wide for terminal:', map_max_x-map_min_x
             return
 
