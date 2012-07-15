@@ -301,7 +301,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     dungeonCache = {}
     if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_cache')):
         try:
-            FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'r')
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'rb')
             dungeonCache = cPickle.load(FILE)
             FILE.close()
         except:
@@ -312,7 +312,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     mtime = 0
     if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_mtime')):
         try:
-            FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'r')
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'rb')
             mtime = cPickle.load(FILE)
             FILE.close()
         except:
@@ -342,20 +342,22 @@ def listDungeons(world, oworld, expand_hard_mode=False):
                 key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                 dungeonCache[key] = tileEntity
     pm.set_complete()
-    print '    Cached chunks: %d' % (cached)
-    print 'Non-cached chunks: %d' % (notcached)
+    print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
+                                             100*cached/world.chunkCount)
 
     # Re-cache the dungeons and update mtime
     try:
-        FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'w')
-        cPickle.dump(dungeonCache, FILE)
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'wb')
+        cPickle.dump(dungeonCache, FILE, -1)
+        FILE.close()
     except:
         sys.exit('Failed to write dungeon_scan_cache. Check permissions and try\
                  again.')
     mtime = int(time.time())
     try:
-        FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'w')
-        cPickle.dump(mtime, FILE)
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'wb')
+        cPickle.dump(mtime, FILE, -1)
+        FILE.close()
     except:
         sys.exit('Failed to write dungeon_scan_mtime. Check permissions and try\
                  again.')
@@ -817,19 +819,45 @@ dungeon_positions = {}
 total_rooms = 0
 good_chunks = {}
 
+# Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
+    # Load the chunk cache
+    chunkCache = {}
+    if os.path.exists(os.path.join(cache_path, 'chunk_scan_cache')):
+        try:
+            FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'rb')
+            chunkCache = cPickle.load(FILE)
+            FILE.close()
+        except:
+            sys.exit('Failed to read the chunk_scan_cache file. Check permissions and try again.')
+    # Try to read the cache mtime
+    chunkMTime = 0
+    cached = 0
+    notcached = 0
+    if  os.path.exists(os.path.join(cache_path, 'chunk_scan_mtime')):
+        try:
+            FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'rb')
+            chunkMTime = cPickle.load(FILE)
+            FILE.close()
+        except:
+            sys.exit('Failed to read the dungeon_scan_mtime file. Check permissions and try again.')
+
+    # Store some stats
     chunk_stats = [
-                   ['Near Chunks', 0],
-                   [' Far Chunks', 0],
-                   ['High Chunks', 0],
-                   [' Low Chunks', 0],
-                   [' Structures', 0],
-                   ['Good Chunks', 0]
+                   ['          Far Chunks', 0],
+                   ['         Near Chunks', 0],
+                   ['         Unpopulated', 0],
+                   ['              Oceans', 0],
+                   ['          Structures', 0],
+                   ['         High Chunks', 0],
+                   ['          Low Chunks', 0],
+                   ['         Good Chunks', 0]
                 ]
     pm = pmeter.ProgressMeter()
     pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
-    for cx, cz in world.allChunks:
+    regions = oworld.get_regionset("overworld")
+    for cx, cz, mtime in regions.iterate_chunks():
         cc += 1
         pm.update(cc)
         if args.spawn is not None:
@@ -840,37 +868,111 @@ if (cfg.offset is None or cfg.offset is ''):
             sz = world.playerSpawnPosition()[2]>>4
         # Far chunk
         if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
-            chunk_stats[1][1] += 1
+            chunk_stats[0][1] += 1
             continue
         # Near chunk
         if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
-            chunk_stats[0][1] += 1
+            chunk_stats[1][1] += 1
             continue
-        # Structures
-        chunk = world.getChunk(cx, cz)
-        mats = cfg.structure_values
-        t = False
-        i = 0
-        while (i < len(mats) and t == False):
-            x = (chunk.Blocks[:] == mats[i])
-            t = x.any()
-            i += 1
-        chunk.unload()
-        if t == True:
-            chunk_stats[4][1] += 1
-            continue
-        # Depths
-        min_depth, max_depth = findChunkDepths(Vec(cx,0,cz), world)
-        if max_depth > world.Height - 27:
+        # Check mtime on the chunk to avoid loading the whole thing
+        key = '%s,%s' % (cx, cz)
+        if (regions.get_chunk_mtime(cx, cz) < chunkMTime and
+            key in chunkCache):
+            cached += 1
+        else:
+            notcached += 1
+            chunkCache[key] = [None, -1, 0]
+            # Load the chunk
+            chunk = regions.get_chunk(cx, cz)
+            while chunkCache[key][0] is None:
+                # Unpopulated
+                if (chunk['TerrainPopulated'] is not 1):
+                    chunkCache[key][0] = 'U'
+                    continue
+                # Biomes
+                chunkCache[key][1] = int(numpy.average(chunk['Biomes']))
+                # Exclude Oceans
+                if chunkCache[key][1] < 1:
+                    chunkCache[key][0] = 'O'
+                    continue
+                # Now the heavy stuff
+                # We need to be able to reference the sections in order.
+                # for strutures and depths
+                b = {}
+                for section in sorted(chunk['Sections'],
+                                      key=lambda section: section['Y']):
+                    b[int(section['Y'])] = section['Blocks']
+                # Structures
+                mats = cfg.structure_values
+                t = False
+                i = 0
+                y = 0
+                while (t == False and y < world.Height//16):
+                    if y in b:
+                        x = (b[y][:] == mats[i])
+                        t = x.any()
+                        i += 1
+                    if i >= len(mats):
+                        y += 1
+                        i = 0
+                    else:
+                        y += 1
+                if t == True:
+                    chunkCache[key][0] = 'S'
+                    continue
+                # Depths
+                min_depth = world.Height
+                max_depth = 0
+                # list of IDs that are solid. (for our purposes anyway)
+                solids = ( 1, 2, 3, 4, 5, 12, 13, 24, 48, 60, 82, 98)
+                for x in xrange(16):
+                    for z in xrange(16):
+                        y = chunk['HeightMap'][z+x*16]-1
+                        while (y > 0 and
+                               b[y//16][x, z, y%16] not in solids):
+                            y = y - 1
+                            min_depth = min(y, min_depth)
+                            max_depth = max(y, max_depth)
+                # Surface too close to the max height
+                if max_depth > world.Height - 27:
+                    chunkCache[key][0] = 'H'
+                    continue
+                # Surface too close to the bottom of the world
+                if min_depth < 12:
+                    chunkCache[key][0] = 'L'
+                    continue
+                chunkCache[key][2] = min_depth
+                chunkCache[key][0] = 'G'
+        # Classify chunks
+        if  chunkCache[key][0] == 'U':
             chunk_stats[2][1] += 1
-            continue
-        if min_depth < (min_levels+1)*6:
+        elif  chunkCache[key][0] == 'O':
             chunk_stats[3][1] += 1
-            continue
-        # Good chunks
-        chunk_stats[5][1] += 1
-        good_chunks[(cx, cz)] = min_depth
+        elif  chunkCache[key][0] == 'S':
+            chunk_stats[4][1] += 1
+        elif  chunkCache[key][0] == 'H':
+            chunk_stats[5][1] += 1
+        elif  chunkCache[key][0] == 'L':
+            chunk_stats[6][1] += 1
+        else:
+            chunk_stats[7][1] += 1
+            good_chunks[(cx, cz)] = chunkCache[key][2]
     pm.set_complete()
+
+    # Re-cache the chunks and update mtime
+    try:
+        FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'wb')
+        cPickle.dump(chunkCache, FILE, -1)
+        FILE.close()
+    except:
+        sys.exit('Failed to write chunk_scan_cache. Check permissions and try again.')
+    chunkMTime = int(time.time())
+    try:
+        FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'wb')
+        cPickle.dump(chunkMTime, FILE, -1)
+        FILE.close()
+    except:
+        sys.exit('Failed to write chunk_scan_mtime. Check permissions and try again.')
 
     # Find old dungeons
     old_dungeons = listDungeons(world, oworld, expand_hard_mode=True)
@@ -882,10 +984,13 @@ if (cfg.offset is None or cfg.offset is ''):
                 if (p[0]+x,p[1]+z) in good_chunks:
                     del(good_chunks[(p[0]+x,p[1]+z)])
                     chunk_stats[4][1] += 1
-                    chunk_stats[5][1] -= 1
+                    chunk_stats[7][1] -= 1
 
     for stat in chunk_stats:
         print '   %s: %d'%(stat[0], stat[1])
+    print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached+cached,
+                                             100*cached/(notcached+cached))
+
 
 while args.number is not 0:
 
