@@ -3,8 +3,9 @@ MCDungeon
 MCDungeon will create a procedurally generated dungeon in a preexisting
 Minecraft map. It is not yet feature complete, but can already generate
 dungeons with quite a bit of variety. It is written in Python and
-makes use of code from Paul Hodge's minetown project and David Rio
-Vierra's pymclevel. This was inspired by BeeTLe BeTHLeHeM's MCMapper.
+makes use of code from Paul Hodge's minetown, David Rio Vierra's pymclevel,
+and the Minecraft Overviewer project. This was inspired by BeeTLe BeTHLeHeM's
+MCMapper.
 
 For detailed information and documentation try the wiki:
 
@@ -22,7 +23,7 @@ CURRENT FEATURES:
 
    * Automatically finds a good location on a map based on range, size, and
      depth parameters. Can detect player structures and try not to overwrite
-     them. 
+     them. Avoids placing dungeons in the middle of the ocean.
 
    * Dungeons can be removed from a map later and the landscape allowed to
      regenerate. 
@@ -30,7 +31,7 @@ CURRENT FEATURES:
    * Dungeons can be regenerated in place with a new layout, mobs, and 
      treasure.
 
-   * Can generate multiple dungeon in a map, or try to fill the map with as
+   * Can generate multiple dungeons in a map, or try to fill the map with as
      many dungeons as possible.
 
    * Generates room layouts based on a random weighted selection

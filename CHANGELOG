@@ -4,6 +4,19 @@ v0.8.2 - ??/??/????
 
    * Added wood plank types.
 
+   * Many performance improvements. 
+
+   * Initial dungeon scanning is 3-4X faster.
+
+   * Initial chunk scanning is 2-3X faster.
+
+   * Dungeon and chunk scanning is now cached between runs, and only
+     chunks that have changed are re-scanned. This results in huge
+     speed increases when running MCDungeon more than once, even on
+     large maps. 
+
+   * MCDungeon now uses much less memory.
+
 v0.8.1 - 03/03/2012
 
    * Added 1.2 blocks: Circle Stone, Redstone Lamps, Fire Charge, 
