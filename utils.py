@@ -2,7 +2,10 @@ import random
 import math
 import re
 import sys
+import os
 import numpy
+import cPickle
+import time
 from copy import *
 from itertools import *
 from pymclevel import mclevel
@@ -521,3 +524,92 @@ def distribute(chunk, ymin, ymax, chance, material):
         if random.uniform(0.0, 100.0) <= chance:
             view[i] = material.val
             viewd[i] = 0
+
+def loadDungeonCache(cache_path):
+    '''Load the dungeon cache given a path'''
+    # Try to load the cache
+    dungeonCache = {}
+    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_cache')):
+        try:
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'rb')
+            dungeonCache = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the dungeon_scan_cache file. Check permissions and try again.')
+
+    # Try to read the cache mtime
+    mtime = 0
+    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_mtime')):
+        try:
+            FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'rb')
+            mtime = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the dungeon_scan_mtime file. Check permissions and try again.')
+    return dungeonCache, mtime
+
+
+def saveDungeonCache(cache_path, dungeonCache):
+    ''' save the dungeon cache given a path and array'''
+    try:
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'wb')
+        cPickle.dump(dungeonCache, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write dungeon_scan_cache. Check permissions and try again.')
+    mtime = int(time.time())
+    try:
+        FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'wb')
+        cPickle.dump(mtime, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write dungeon_scan_mtime. Check permissions and try again.')
+
+
+def loadChunkCache(cache_path):
+    '''Load the chunk cache given a path'''
+    # Load the chunk cache
+    chunkCache = {}
+    if os.path.exists(os.path.join(cache_path, 'chunk_scan_cache')):
+        try:
+            FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'rb')
+            chunkCache = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the chunk_scan_cache file. Check permissions and try again.')
+    # Try to read the cache mtime
+    chunkMTime = 0
+    if  os.path.exists(os.path.join(cache_path, 'chunk_scan_mtime')):
+        try:
+            FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'rb')
+            chunkMTime = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the dungeon_scan_mtime file. Check permissions and try again.')
+
+    return chunkCache, chunkMTime
+
+def saveChunkCache(cache_path, chunkCache):
+    ''' save the chunk cache given a path and array'''
+    try:
+        FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'wb')
+        cPickle.dump(chunkCache, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write chunk_scan_cache. Check permissions and try again.')
+    chunkMTime = int(time.time())
+    try:
+        FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'wb')
+        cPickle.dump(chunkMTime, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write chunk_scan_mtime. Check permissions and try again.')
+

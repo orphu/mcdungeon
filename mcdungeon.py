@@ -298,26 +298,8 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     pm = pmeter.ProgressMeter()
 
     # Try to load the cache
+    dungeonCacheOld, mtime = loadDungeonCache(cache_path)
     dungeonCache = {}
-    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_cache')):
-        try:
-            FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'rb')
-            dungeonCache = cPickle.load(FILE)
-            FILE.close()
-        except:
-            sys.exit('Failed to read the dungeon_scan_cache file. Check\
-                     permissions and try again.')
-
-    # Try to read the cache mtime
-    mtime = 0
-    if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_mtime')):
-        try:
-            FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'rb')
-            mtime = cPickle.load(FILE)
-            FILE.close()
-        except:
-            sys.exit('Failed to read the dungeon_scan_mtime file. Check\
-                     permissions and try again.')
 
     # Scan with overviewer
     regions = oworld.get_regionset("overworld")
@@ -327,17 +309,15 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     print 'Scanning world for existing dungeons:'
     print 'cache mtime: %d' % (mtime)
     pm.init(count, label='')
-    for c in regions.iterate_chunks():
+    for cx, cz, cmtime in regions.iterate_chunks():
         count -= 1
         pm.update_left(count)
-        key = '%s,%s' % (c[0]*16, c[1]*16)
-        if dungeonCache.has_key(key):
-            del  dungeonCache[key]
-        elif regions.get_chunk_mtime(c[0], c[1]) < mtime:
+        key = '%s,%s' % (cx*16, cz*16)
+        if cmtime < mtime and key not in dungeonCacheOld:
             cached += 1
             continue
         notcached += 1
-        for tileEntity in regions.get_chunk(c[0], c[1])["TileEntities"]:
+        for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
             if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
                 key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                 dungeonCache[key] = tileEntity
@@ -345,22 +325,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100*cached/world.chunkCount)
 
-    # Re-cache the dungeons and update mtime
-    try:
-        FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'wb')
-        cPickle.dump(dungeonCache, FILE, -1)
-        FILE.close()
-    except:
-        sys.exit('Failed to write dungeon_scan_cache. Check permissions and try\
-                 again.')
-    mtime = int(time.time())
-    try:
-        FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'wb')
-        cPickle.dump(mtime, FILE, -1)
-        FILE.close()
-    except:
-        sys.exit('Failed to write dungeon_scan_mtime. Check permissions and try\
-                 again.')
+    saveDungeonCache(cache_path, dungeonCache)
 
     # Process the dungeons
     dungeons = []
@@ -822,25 +787,9 @@ good_chunks = {}
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
     # Load the chunk cache
-    chunkCache = {}
-    if os.path.exists(os.path.join(cache_path, 'chunk_scan_cache')):
-        try:
-            FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'rb')
-            chunkCache = cPickle.load(FILE)
-            FILE.close()
-        except:
-            sys.exit('Failed to read the chunk_scan_cache file. Check permissions and try again.')
-    # Try to read the cache mtime
-    chunkMTime = 0
+    chunkCache, chunkMTime = loadChunkCache(cache_path)
     cached = 0
     notcached = 0
-    if  os.path.exists(os.path.join(cache_path, 'chunk_scan_mtime')):
-        try:
-            FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'rb')
-            chunkMTime = cPickle.load(FILE)
-            FILE.close()
-        except:
-            sys.exit('Failed to read the dungeon_scan_mtime file. Check permissions and try again.')
 
     # Store some stats
     chunk_stats = [
@@ -959,21 +908,6 @@ if (cfg.offset is None or cfg.offset is ''):
             good_chunks[(cx, cz)] = chunkCache[key][2]
     pm.set_complete()
 
-    # Re-cache the chunks and update mtime
-    try:
-        FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'wb')
-        cPickle.dump(chunkCache, FILE, -1)
-        FILE.close()
-    except:
-        sys.exit('Failed to write chunk_scan_cache. Check permissions and try again.')
-    chunkMTime = int(time.time())
-    try:
-        FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'wb')
-        cPickle.dump(chunkMTime, FILE, -1)
-        FILE.close()
-    except:
-        sys.exit('Failed to write chunk_scan_mtime. Check permissions and try again.')
-
     # Find old dungeons
     old_dungeons = listDungeons(world, oworld, expand_hard_mode=True)
     for d in old_dungeons:
@@ -983,8 +917,13 @@ if (cfg.offset is None or cfg.offset is ''):
             for z in xrange(int(d[3])):
                 if (p[0]+x,p[1]+z) in good_chunks:
                     del(good_chunks[(p[0]+x,p[1]+z)])
+                    key = '%s,%s' % (p[0]+x,p[1]+z)
+                    chunkCache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
                     chunk_stats[7][1] -= 1
+
+    # Re-cache the chunks and update mtime
+    saveChunkCache(cache_path, chunkCache)
 
     for stat in chunk_stats:
         print '   %s: %d'%(stat[0], stat[1])
@@ -1179,5 +1118,10 @@ print 'Total rooms:', total_rooms
 if (args.write is True):
     print "Saving..."
     world.saveInPlace()
+    # Update the cache
+    dungeonCache, mtime = loadDungeonCache(cache_path)
+    key = '%s,%s' % (dungeon.position.x, dungeon.position.z)
+    dungeonCache[key] = 1
+    saveDungeonCache(cache_path, dungeonCache)
 else:
     print "Map NOT saved! This was a dry run. Use --write to enable saving."
