@@ -1,8 +1,6 @@
 v0.8.2 - ??/??/????
 
-   * Fixes for pymclevel. 
-
-   * Added wood plank types.
+   * Fixes vines making towers too tall.
 
    * Many performance improvements. 
 
@@ -16,6 +14,10 @@ v0.8.2 - ??/??/????
      large maps. 
 
    * MCDungeon now uses much less memory.
+
+   * Additional Fixes for pymclevel. 
+
+   * Added wood plank types.
 
 v0.8.1 - 03/03/2012
 
