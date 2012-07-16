@@ -67,8 +67,8 @@ parser_inter.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset in blocks')
-parser_inter.add_argument('--skip-bury',
-                    action='store_false',
+parser_inter.add_argument('--force-bury',
+                    action='store_true',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
 parser_inter.add_argument('-e', '--entrance',
@@ -147,8 +147,8 @@ parser_add.add_argument('-o', '--offset',
                     type=int,
                     metavar=('X', 'Y', 'Z'),
                     help='Provide a location offset in blocks')
-parser_add.add_argument('--skip-bury',
-                    action='store_false',
+parser_add.add_argument('--force-bury',
+                    action='store_true',
                     dest='bury',
                     help='Attempt to calculate Y when using --offset')
 parser_add.add_argument('-e', '--entrance',
@@ -644,7 +644,7 @@ if (args.command == 'regenerate'):
     # Version 
     version = info[9]
     # Don't bury
-    args.bury = False
+    cfg.bury = False
     # Let's not bother with hard mode
     # override it from the config
     cfg.hard_mode = False
@@ -658,7 +658,7 @@ if (args.command == 'regenerate'):
     args.write = True
     #print 'offset:', cfg.offset
     #print 'size:', args.z, args.x, args.levels
-    #print 'bury:', args.bury
+    #print 'bury:', cfg.bury
     #print 'hard mode:', cfg.hard_mode
     #print 'entrance:', args.entrance
     # From here, we just go through the add process with the exception that we
@@ -734,6 +734,9 @@ if (args.x < 4 and args.x >= 0):
     sys.exit('Too few rooms in X direction. (%d) Try >= 4.'%(args.x))
 if (args.levels == 0 or args.levels > 18):
     sys.exit('Invalid number of levels. (%d) Try between 1 and 18.'%(args.levels))
+
+if (args.bury is not None):
+    cfg.bury = args.bury
 
 if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
@@ -954,7 +957,7 @@ while args.number is not 0:
         dungeon = Dungeon(x, z, levels, good_chunks, args, world)
         print 'Dungeon size: %d x %d x %d' % (x, z, levels)
         dungeon.position = pos
-        if (args.bury is False):
+        if (cfg.bury is False):
             located = dungeon.bury(world, manual=True)
             located = True
         else:

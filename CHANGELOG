@@ -2,6 +2,9 @@ v0.8.2 - ??/??/????
 
    * Fixes vines making towers too tall.
 
+   * renamed --skip-bury to --force-bury and added a force_bury config
+     file option.
+
    * Many performance improvements. 
 
    * Initial dungeon scanning is 3-4X faster.
