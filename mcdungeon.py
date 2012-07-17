@@ -376,9 +376,15 @@ def listDungeons(world, oworld, expand_hard_mode=False):
         print 'No dungeons found!'
     return dungeons
 
+# Globals
 world = None
-dungeons = None
+oworld = None
 cache_path = None
+dungeons = []
+dungeon_positions = {}
+total_rooms = 0
+chunk_cache = {}
+good_chunks = {}
 
 # Interactive mode
 if (args.command == 'interactive'):
@@ -525,7 +531,7 @@ if (args.command == 'interactive'):
             print '\t[%d] Dungeon at %d %d.'%(i+1,
                                               dungeons[i][0],
                                               dungeons[i][1])
-        while (args.all == False and args.dungeons == None):
+        while (args.all == False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
                 args.all = True
@@ -556,12 +562,12 @@ if (args.command == 'list'):
 # Delete mode
 if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
-    if args.dungeons == None and args.all == False:
+    if args.dungeons == [] and args.all == False:
         print 'You must specify either --all or at least one -d option when '+\
                 'deleting dungeons.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
-    if dungeons == None:
+    if dungeons == []:
         dungeons = listDungeons(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
@@ -615,7 +621,7 @@ if (args.command == 'delete'):
 # Regenerate mode
 if (args.command == 'regenerate'):
     # Get a list of known dungeons and their size.
-    if dungeons == None:
+    if dungeons == []:
         dungeons = listDungeons(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
@@ -641,6 +647,7 @@ if (args.command == 'regenerate'):
     # Location
     cfg.offset = '%d %d %d'%(info[6], info[7], info[8])
     args.offset = None
+    args.bury = None
     # Version 
     version = info[9]
     # Don't bury
@@ -781,16 +788,10 @@ if args.debug == True:
     print '   ', min_levels
     print '   ', max_levels
 
-
-dungeons = []
-dungeon_positions = {}
-total_rooms = 0
-good_chunks = {}
-
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
-    # Load the chunk cache
-    chunkCache, chunkMTime = loadChunkCache(cache_path)
+    # Load the chchunk_cache cache
+    chunk_cache, chunk_mtime = loadChunkCache(cache_path)
     cached = 0
     notcached = 0
 
@@ -828,24 +829,24 @@ if (cfg.offset is None or cfg.offset is ''):
             continue
         # Check mtime on the chunk to avoid loading the whole thing
         key = '%s,%s' % (cx, cz)
-        if (regions.get_chunk_mtime(cx, cz) < chunkMTime and
-            key in chunkCache):
+        if (regions.get_chunk_mtime(cx, cz) < chunk_mtime and
+            key in chunk_cache):
             cached += 1
         else:
             notcached += 1
-            chunkCache[key] = [None, -1, 0]
+            chunk_cache[key] = [None, -1, 0]
             # Load the chunk
             chunk = regions.get_chunk(cx, cz)
-            while chunkCache[key][0] is None:
+            while chunk_cache[key][0] is None:
                 # Unpopulated
                 if (chunk['TerrainPopulated'] is not 1):
-                    chunkCache[key][0] = 'U'
+                    chunk_cache[key][0] = 'U'
                     continue
                 # Biomes
-                chunkCache[key][1] = int(numpy.average(chunk['Biomes'])+.5)
+                chunk_cache[key][1] = int(numpy.average(chunk['Biomes'])+.5)
                 # Exclude Oceans
-                if chunkCache[key][1] in [0, 10]:
-                    chunkCache[key][0] = 'O'
+                if chunk_cache[key][1] in [0, 10]:
+                    chunk_cache[key][0] = 'O'
                     continue
                 # Now the heavy stuff
                 # We need to be able to reference the sections in order.
@@ -870,7 +871,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     else:
                         y += 1
                 if t == True:
-                    chunkCache[key][0] = 'S'
+                    chunk_cache[key][0] = 'S'
                     continue
                 # Depths
                 min_depth = world.Height
@@ -887,28 +888,28 @@ if (cfg.offset is None or cfg.offset is ''):
                             max_depth = max(y, max_depth)
                 # Surface too close to the max height
                 if max_depth > world.Height - 27:
-                    chunkCache[key][0] = 'H'
+                    chunk_cache[key][0] = 'H'
                     continue
                 # Surface too close to the bottom of the world
                 if min_depth < 12:
-                    chunkCache[key][0] = 'L'
+                    chunk_cache[key][0] = 'L'
                     continue
-                chunkCache[key][2] = min_depth
-                chunkCache[key][0] = 'G'
+                chunk_cache[key][2] = min_depth
+                chunk_cache[key][0] = 'G'
         # Classify chunks
-        if  chunkCache[key][0] == 'U':
+        if  chunk_cache[key][0] == 'U':
             chunk_stats[2][1] += 1
-        elif  chunkCache[key][0] == 'O':
+        elif  chunk_cache[key][0] == 'O':
             chunk_stats[3][1] += 1
-        elif  chunkCache[key][0] == 'S':
+        elif  chunk_cache[key][0] == 'S':
             chunk_stats[4][1] += 1
-        elif  chunkCache[key][0] == 'H':
+        elif  chunk_cache[key][0] == 'H':
             chunk_stats[5][1] += 1
-        elif  chunkCache[key][0] == 'L':
+        elif  chunk_cache[key][0] == 'L':
             chunk_stats[6][1] += 1
         else:
             chunk_stats[7][1] += 1
-            good_chunks[(cx, cz)] = chunkCache[key][2]
+            good_chunks[(cx, cz)] = chunk_cache[key][2]
     pm.set_complete()
 
     # Find old dungeons
@@ -921,12 +922,12 @@ if (cfg.offset is None or cfg.offset is ''):
                 if (p[0]+x,p[1]+z) in good_chunks:
                     del(good_chunks[(p[0]+x,p[1]+z)])
                     key = '%s,%s' % (p[0]+x,p[1]+z)
-                    chunkCache[key] = ['S', -1, 0]
+                    chunk_cache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
                     chunk_stats[7][1] -= 1
 
     # Re-cache the chunks and update mtime
-    saveChunkCache(cache_path, chunkCache)
+    saveChunkCache(cache_path, chunk_cache)
 
     for stat in chunk_stats:
         print '   %s: %d'%(stat[0], stat[1])
