@@ -1,6 +1,8 @@
-v0.8.2 - ??/??/????
+v0.8.2 - 07/16/2012
 
-   * Fixes vines making towers too tall.
+   * Fixed vines making towers too tall.
+
+   * Additional Fixes for pymclevel. 
 
    * renamed --skip-bury to --force-bury and added a force_bury config
      file option.
@@ -16,9 +18,8 @@ v0.8.2 - ??/??/????
      speed increases when running MCDungeon more than once, even on
      large maps. 
 
-   * MCDungeon now uses much less memory.
-
-   * Additional Fixes for pymclevel. 
+   * MCDungeon now uses much less memory. Scanning a 5000x5000 map
+     (111,222 chunks) uses less than 200MB of RAM.
 
    * Added wood plank types.
 
