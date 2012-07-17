@@ -842,9 +842,9 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunkCache[key][0] = 'U'
                     continue
                 # Biomes
-                chunkCache[key][1] = int(numpy.average(chunk['Biomes']))
+                chunkCache[key][1] = int(numpy.average(chunk['Biomes'])+.5)
                 # Exclude Oceans
-                if chunkCache[key][1] < 1:
+                if chunkCache[key][1] in [0, 10]:
                     chunkCache[key][0] = 'O'
                     continue
                 # Now the heavy stuff
