@@ -1,3 +1,7 @@
+v0.8.3 - ??/??/????
+
+   * Fixed bug with regenerate and the --force-bury option.
+
 v0.8.2 - 07/16/2012
 
    * Fixed vines making towers too tall.
