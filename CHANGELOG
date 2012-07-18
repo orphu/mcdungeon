@@ -2,6 +2,12 @@ v0.8.3 - ??/??/????
 
    * Fixed bug with regenerate and the --force-bury option.
 
+   * Fixed lots of caching bugs.
+
+   * Fixed ruins being set too low into the ground.
+
+   * Dungeons in swamp and jungle biomes will grow vines.
+
 v0.8.2 - 07/16/2012
 
    * Fixed vines making towers too tall.

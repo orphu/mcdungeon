@@ -10,6 +10,8 @@ from copy import *
 from itertools import *
 from pymclevel import mclevel
 
+cache_version = '2'
+
 def floor(n):
     return int(n)
 
@@ -494,7 +496,7 @@ def findChunkDepths(p, world):
     min_depth = world.Height
     max_depth = 0
     # list of IDs that are solid. (for our purposes anyway)
-    solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82)
+    solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1
@@ -527,8 +529,16 @@ def distribute(chunk, ymin, ymax, chance, material):
 
 def loadDungeonCache(cache_path):
     '''Load the dungeon cache given a path'''
-    # Try to load the cache
+    global cache_version
     dungeonCache = {}
+    mtime = 0
+    # Try some basic versioning.
+    if not os.path.exists(os.path.join(cache_path,
+                                       'dungeon_scan_version_'+cache_version)):
+        print 'Dungeon cache missing, or is an old verision. Resetting...'
+        return dungeonCache, mtime
+
+    # Try to load the cache
     if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_cache')):
         try:
             FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'rb')
@@ -539,7 +549,6 @@ def loadDungeonCache(cache_path):
             sys.exit('Failed to read the dungeon_scan_cache file. Check permissions and try again.')
 
     # Try to read the cache mtime
-    mtime = 0
     if  os.path.exists(os.path.join(cache_path, 'dungeon_scan_mtime')):
         try:
             FILE = open(os.path.join(cache_path, 'dungeon_scan_mtime'), 'rb')
@@ -553,6 +562,7 @@ def loadDungeonCache(cache_path):
 
 def saveDungeonCache(cache_path, dungeonCache):
     ''' save the dungeon cache given a path and array'''
+    global cache_version
     try:
         FILE = open(os.path.join(cache_path, 'dungeon_scan_cache'), 'wb')
         cPickle.dump(dungeonCache, FILE, -1)
@@ -568,12 +578,32 @@ def saveDungeonCache(cache_path, dungeonCache):
     except Exception as e:
         print e
         sys.exit('Failed to write dungeon_scan_mtime. Check permissions and try again.')
+    try:
+        for f in os.listdir(cache_path):
+            if re.search('dungeon_scan_version_.*', f):
+                os.remove(os.path.join(cache_path, f))
+        FILE = open(os.path.join(cache_path,
+                                 'dungeon_scan_version_'+cache_version), 'wb')
+        cPickle.dump('SSsssss....BOOM', FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write dungeon_scan_version. Check permissions and try again.')
 
 
 def loadChunkCache(cache_path):
     '''Load the chunk cache given a path'''
+    global cache_version
     # Load the chunk cache
     chunkCache = {}
+    chunkMTime = 0
+
+    # Try some basic versioning.
+    if not os.path.exists(os.path.join(cache_path,
+                                       'chunk_scan_version_'+cache_version)):
+        print 'Chunk cache missing, or is an old verision. Resetting...'
+        return chunkCache, chunkMTime
+
     if os.path.exists(os.path.join(cache_path, 'chunk_scan_cache')):
         try:
             FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'rb')
@@ -583,7 +613,6 @@ def loadChunkCache(cache_path):
             print e
             sys.exit('Failed to read the chunk_scan_cache file. Check permissions and try again.')
     # Try to read the cache mtime
-    chunkMTime = 0
     if  os.path.exists(os.path.join(cache_path, 'chunk_scan_mtime')):
         try:
             FILE = open(os.path.join(cache_path, 'chunk_scan_mtime'), 'rb')
@@ -592,11 +621,11 @@ def loadChunkCache(cache_path):
         except Exception as e:
             print e
             sys.exit('Failed to read the dungeon_scan_mtime file. Check permissions and try again.')
-
     return chunkCache, chunkMTime
 
 def saveChunkCache(cache_path, chunkCache):
     ''' save the chunk cache given a path and array'''
+    global cache_version
     try:
         FILE = open(os.path.join(cache_path, 'chunk_scan_cache'), 'wb')
         cPickle.dump(chunkCache, FILE, -1)
@@ -612,4 +641,15 @@ def saveChunkCache(cache_path, chunkCache):
     except Exception as e:
         print e
         sys.exit('Failed to write chunk_scan_mtime. Check permissions and try again.')
+    try:
+        for f in os.listdir(cache_path):
+            if re.search('chunk_scan_version_.*', f):
+                os.remove(os.path.join(cache_path, f))
+        FILE = open(os.path.join(cache_path,
+                                 'chunk_scan_version_'+cache_version), 'wb')
+        cPickle.dump('SSsssss....BOOM', FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write dungeon_scan_version. Check permissions and try again.')
 

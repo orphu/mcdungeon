@@ -17,14 +17,20 @@ import pmeter
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
+from overviewer_core import cache
+from overviewer_core import world as ov_world
 
 class Block(object):
     def __init__(self, loc):
         self.loc = loc
         self.material = None
         self.data = 0
+        # Hidden blocks are not drawn on maps
         self.hide = False
+        # Locked blocks cannot be overwritten later
         self.lock = False
+        # Soft blocks are only rendered in the world block is air
+        self.soft = False
 
 class MazeCell(object):
     states = enum('BLANK', 'USED', 'CONNECTED', 'RESTRICTED')
@@ -34,8 +40,14 @@ class MazeCell(object):
         self.state = 0
 
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels, good_chunks, args, world):
+    def __init__(self, xsize, zsize, levels, good_chunks, args, world, oworld,
+                 chunk_cache):
+        self.caches = []
+        self.caches.append(cache.LRUCache(size=100))
+
         self.world = world
+        self.oworld = oworld
+        self.chunk_cache = chunk_cache
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
         self.good_chunks = good_chunks
@@ -63,6 +75,8 @@ class Dungeon (object):
         self.room_height = 6
         self.position = Vec(0,0,0)
         self.args = args
+        self.heightmap = numpy.zeros((xsize*self.room_size,
+                                      zsize*self.room_size))
 
     def printmaze(self, y, cursor=None):
         for z in xrange(self.zsize):
@@ -115,7 +129,7 @@ class Dungeon (object):
         raw_input('continue...')
 
 
-    def setblock(self, loc, material, data=0, hide=False, lock=False):
+    def setblock(self, loc, material, data=0, hide=False, lock=False, soft=False):
         # If material is None, remove this block
         if material == None:
             if loc in self.blocks:
@@ -125,6 +139,13 @@ class Dungeon (object):
         # Build a block if we need to 
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
+
+        if (loc.x >= 0 and
+            loc.z >= 0 and
+            loc.x < self.xsize*self.room_size and
+            loc.z < self.zsize*self.room_size):
+            self.heightmap[loc.x][loc.z] = min(loc.y,
+                                               self.heightmap[loc.x][loc.z])
 
         # If the existing block is locked, abort
         # Unless we are requesting a locked block
@@ -145,6 +166,9 @@ class Dungeon (object):
 
         # Lock it
         self.blocks[loc].lock = lock
+
+        # Soft blocks are only drawn when the world block is air
+        self.blocks[loc].soft = soft
 
     def delblock(self, loc):
         if loc in self.blocks:
@@ -283,7 +307,7 @@ class Dungeon (object):
                 if (d1 < min_depth):
                     print 'Selected area is too shallow to bury dungeon.'
                     return False
-                elif (d1 >= 100):
+                elif (d1 > world.Height - 27):
                     print 'Selected area is too high to hold dungeon.'
                     return False
 
@@ -303,14 +327,19 @@ class Dungeon (object):
         # 8 - East
         b = self.getblock(pos)
         # Something here already
-        if b != materials.Air:
+        if (b != False and b != materials.Air):
             return
+
+        if b == False:
+            soft = True
+        else:
+            soft = False
 
         # Look around for something to attach to
         noattach = [materials.Air, materials.Vines, materials.CobblestoneSlab,
                     materials.SandstoneSlab, materials.StoneBrickSlab,
                     materials.StoneSlab, materials.WoodenSlab, materials.Fence,
-                   materials.IronBars, materials.Cobweb, materials.Torch,
+                    materials.IronBars, materials.Cobweb, materials.Torch,
                     materials.GlassPane, materials.StoneButton,
                     materials.StoneBrickStairs, materials.StoneStairs,
                     materials.WoodenStairs]
@@ -330,15 +359,66 @@ class Dungeon (object):
         # Nothing to attach to
         if data == 0:
             return
-        self.setblock(pos, materials.Vines, data)
+        self.setblock(pos, materials.Vines, data, soft=soft)
         if grow == False:
             return
         pos = pos.down(1)
         b = self.getblock(pos)
-        while (b != False and b == materials.Air and random.randint(1,100)<75):
-            self.setblock(pos, materials.Vines, data)
+        while ((b == False or b == materials.Air) and random.randint(1,100)<75):
+            if b == False:
+                soft = True
+            else:
+                soft = False
+            self.setblock(pos, materials.Vines, data, soft=soft)
             pos = pos.down(1)
             b = self.getblock(pos)
+
+    def processBiomes(self):
+        '''Add vines and snow according to biomes.'''
+        rset = self.oworld.get_regionset('overworld')
+        r = ov_world.CachedRegionSet(rset, self.caches)
+        wp = Vec(self.position.x, 0, self.position.z)
+        count = self.xsize*16*self.zsize*16
+        self.pm.init(count, label='Processing biomes:')
+        for p in iterate_cube(Vec(0,0,0),
+                              Vec(self.xsize*16-1,0,self.zsize*16-1)):
+            self.pm.update_left(count)
+            count -= 1
+            cx = (p.x+wp.x)//16
+            cz = (p.z+wp.z)//16
+            chunk = r.get_chunk(cx,cz)
+            biome = chunk['Biomes'][p.x%16][p.z%16]
+            # Vines in swamp, jungle, and jungle hills
+            if biome in [6, 21, 22]:
+                h = 0
+                try:
+                    h = min(self.heightmap[p.x-1][p.z], h)
+                except IndexError:
+                    pass
+                try:
+                    h = min(self.heightmap[p.x+1][p.z], h)
+                except IndexError:
+                    pass
+                try:
+                    h = min(self.heightmap[p.x][p.z-1], h)
+                except IndexError:
+                    pass
+                try:
+                    h = min(self.heightmap[p.x][p.z+1], h)
+                except IndexError:
+                    pass
+                if h == 0:
+                    continue
+                for q in iterate_cube(Vec(p.x,h,p.z),
+                                      Vec(p.x,0,p.z)):
+                    if random.randint(1,100)<20:
+                        self.vines(q, grow=True)
+            # Snow in taiga, frozen ocean, frozen river, ice plains, ice
+            # mountains, taiga hills
+            if biome in [5, 10, 11, 12, 13, 19]:
+                pass
+        self.pm.set_complete()
+
 
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
@@ -1789,19 +1869,26 @@ class Dungeon (object):
                     print 'crd: (%d, %d) chk: (%d, %d) mat: %s' % \
                         (x, z, chunk_x, chunk_z, block.material.name)
                 continue
+            # Don't render soft blocks if there is something there already
+            if (block.soft is True and
+                chunk.Blocks[xInChunk, zInChunk, y] > 0):
+                continue
             mat = block.material
             dat = block.data
+            # Update meta materials
             if (mat._meta == True):
                 mat.update(block.loc.x,block.loc.y,block.loc.z,
                            self.xsize*self.room_size,
                            self.levels*self.room_height,
                            self.zsize*self.room_size)
                 dat = mat.data
+            # Sandbars only render over water
             if (mat == materials._sandbar and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and
                 chunk.Blocks[xInChunk, zInChunk, y] != materials.Ice.val):
                 continue
+            # Natural just looks like the existing world block
             if (mat == materials._natural):
                 continue
 

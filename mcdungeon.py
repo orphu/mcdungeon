@@ -590,9 +590,16 @@ if (args.command == 'delete'):
             to_delete.append(d)
     # Build a list of chunks to delete from the dungeon info.
     chunks = []
+    # We need to update the caches for the chunks we are affecting
+    dcache, dmtime = loadDungeonCache(cache_path)
     for d in to_delete:
         p = [d[0]/16, d[1]/16]
         print 'Deleting dungeon at %d %d...'%(d[0], d[1])
+        dkey = '%s,%s' % (d[0],d[1])
+        if dkey in dcache:
+            del dcache[dkey]
+        else:
+            print 'WARN: Dungeon not in dungeon cache! '+dkey
         xsize = 0
         zsize = 0
         for e in dungeons:
@@ -609,13 +616,22 @@ if (args.command == 'delete'):
         for x in xrange(xsize):
             for z in xrange(zsize):
                 chunks.append((p[0]+x, p[1]+z))
+    # We need to update the caches for the chunks we are affecting
+    ccache, cmtime = loadChunkCache(cache_path)
     # Delete the chunks
     for c in chunks:
         if world.containsChunk(c[0],c[1]):
             world.deleteChunk(c[0],c[1])
+            ckey = '%s,%s' % (c[0],c[1])
+            if ckey in ccache:
+                del ccache[ckey]
+            else:
+                print 'WARN: Chunk not in chunk cache! '+ckey
     # Save the world.
     print "Saving..."
     world.saveInPlace()
+    saveDungeonCache(cache_path, dcache)
+    saveChunkCache(cache_path, ccache)
     sys.exit()
 
 # Regenerate mode
@@ -790,7 +806,7 @@ if args.debug == True:
 
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
-    # Load the chchunk_cache cache
+    # Load the chunk cache
     chunk_cache, chunk_mtime = loadChunkCache(cache_path)
     cached = 0
     notcached = 0
@@ -843,7 +859,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunk_cache[key][0] = 'U'
                     continue
                 # Biomes
-                chunk_cache[key][1] = int(numpy.average(chunk['Biomes'])+.5)
+                chunk_cache[key][1] = numpy.argmax(numpy.bincount((chunk['Biomes'].flatten())))
                 # Exclude Oceans
                 if chunk_cache[key][1] in [0, 10]:
                     chunk_cache[key][0] = 'O'
@@ -877,12 +893,12 @@ if (cfg.offset is None or cfg.offset is ''):
                 min_depth = world.Height
                 max_depth = 0
                 # list of IDs that are solid. (for our purposes anyway)
-                solids = ( 1, 2, 3, 4, 5, 12, 13, 24, 48, 60, 82, 98)
+                solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
                 for x in xrange(16):
                     for z in xrange(16):
                         y = chunk['HeightMap'][z+x*16]-1
-                        while (y > 0 and
-                               b[y//16][x, z, y%16] not in solids):
+                        while (y > 0 and y//16 in b and
+                               b[y//16][y%16, z, x] not in solids):
                             y = y - 1
                             min_depth = min(y, min_depth)
                             max_depth = max(y, max_depth)
@@ -935,8 +951,9 @@ if (cfg.offset is None or cfg.offset is ''):
                                              100*cached/(notcached+cached))
 
 
+# Load the cache for updates later.
+dungeonCache, mtime = loadDungeonCache(cache_path)
 while args.number is not 0:
-
     # Define our dungeon.
     x = args.x
     z = args.z
@@ -955,7 +972,8 @@ while args.number is not 0:
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
         pos.z = pos.z &~15
-        dungeon = Dungeon(x, z, levels, good_chunks, args, world)
+        dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
+                          chunk_cache)
         print 'Dungeon size: %d x %d x %d' % (x, z, levels)
         dungeon.position = pos
         if (cfg.bury is False):
@@ -972,7 +990,8 @@ while args.number is not 0:
     else:
         print "Searching for a suitable location..."
         while (located is False):
-            dungeon = Dungeon(x, z, levels, good_chunks, args, world)
+            dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
+                              chunk_cache)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):
                 adjusted = False
@@ -1032,6 +1051,8 @@ while args.number is not 0:
         dungeon.renderhallpistons()
 
         dungeon.renderruins()
+
+        dungeon.processBiomes()
 
         print "Placing doors..."
         dungeon.placedoors(cfg.doors)
@@ -1093,6 +1114,10 @@ while args.number is not 0:
                          str(end)))
         total_rooms += (x * z * levels)
 
+        # Update the cache
+        key = '%s,%s' % (dungeon.position.x, dungeon.position.z)
+        dungeonCache[key] = 1
+
     args.number -= 1
     if (located is False):
         args.number = 0
@@ -1122,10 +1147,6 @@ print 'Total rooms:', total_rooms
 if (args.write is True):
     print "Saving..."
     world.saveInPlace()
-    # Update the cache
-    dungeonCache, mtime = loadDungeonCache(cache_path)
-    key = '%s,%s' % (dungeon.position.x, dungeon.position.z)
-    dungeonCache[key] = 1
     saveDungeonCache(cache_path, dungeonCache)
 else:
     print "Map NOT saved! This was a dry run. Use --write to enable saving."

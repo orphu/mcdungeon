@@ -22,7 +22,7 @@ class Blank(object):
         self.depth = self.parent.parent.good_chunks[(self.chunk.x, self.chunk.z)]
         self.vtrans = max(self.parent.parent.position.y-1, self.depth) - \
                 self.parent.parent.position.y
-        #print 'ruin depth:', self.parent.parent.position.y, self.depth, -vtrans
+        #print 'ruin depth:', self.parent.parent.position.y, self.depth, -self.vtrans
         self.loc = Vec(self.pos.x * self.parent.parent.room_size,
                        -self.vtrans,
                        self.pos.z * self.parent.parent.room_size)
