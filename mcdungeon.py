@@ -519,7 +519,7 @@ if (args.command == 'interactive'):
         args.command = 'list'
     elif command == 'd':
         args.command = 'delete'
-        args.dungeons = None
+        args.dungeons = []
         args.all = False
         world, oworld = loadWorld(args.world)
         dungeons = listDungeons(world, oworld)
