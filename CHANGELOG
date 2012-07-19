@@ -1,3 +1,9 @@
+v0.8.4 - 
+
+   * Fixed a bug calculating depths with perfectly flat chunks.
+
+   * It now snows on ruins in winter biomes.
+
 v0.8.3 - 07/18/2012
 
    * Fixed bug with regenerate and the --force-bury option.

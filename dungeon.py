@@ -302,13 +302,12 @@ class Dungeon (object):
                 self.good_chunks[chunk] = d1
             else:
                 d1 = self.good_chunks[chunk]
-
             if manual == False:
                 if (d1 < min_depth):
                     print 'Selected area is too shallow to bury dungeon.'
                     return False
                 elif (d1 > world.Height - 27):
-                    print 'Selected area is too high to hold dungeon.'
+                    print 'Selected area is too high to hold dungeon. ', d1
                     return False
 
             depth = min(depth, d1)
@@ -318,6 +317,30 @@ class Dungeon (object):
                                 depth,
                                 self.position.z)
         return True
+
+    def snow(self, pos, limit=16):
+        b = self.getblock(pos)
+        if (b != False and b != materials.Air):
+            return
+
+        count = 1
+        b = self.getblock(pos.down(count))
+        while (count <= limit and (b == False or b == materials.Air)):
+            count += 1
+            b = self.getblock(pos.down(count))
+
+        if count > limit:
+            return
+
+        if b == False:
+            soft = True
+        else:
+            soft = False
+        solids = [1, 2, 3, 4, 5, 12, 13, 17, 24, 43, 45, 48, 60, 89, 98, 99,
+                  100, 112, 121, 123, 124, 125, 35]
+        if self.getblock(pos.down(count)).val in solids:
+            self.setblock(pos.down(count-1), materials.Snow, soft=soft)
+            #print 'snow placed: ',pos.down(count-1), soft
 
     def vines(self, pos, grow=False):
         # Data values (1.9p5)
@@ -416,7 +439,10 @@ class Dungeon (object):
             # Snow in taiga, frozen ocean, frozen river, ice plains, ice
             # mountains, taiga hills
             if biome in [5, 10, 11, 12, 13, 19]:
-                pass
+                h = self.heightmap[p.x][p.z]
+                if (h < 0):
+                    self.snow(Vec(p.x, h-1, p.z), limit=abs(h-1))
+
         self.pm.set_complete()
 
 
