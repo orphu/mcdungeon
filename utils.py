@@ -477,7 +477,7 @@ def findChunkDepth(p, world):
         return 0
     depth = world.Height
     # list of IDs that are solid. (for our purposes anyway)
-    solids = ( 1, 2, 3, 4, 5, 12, 13, 24, 48, 60, 82, 98)
+    solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1

@@ -14,7 +14,7 @@ from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
-__version__ = '0.8.3'
+__version__ = '0.8.4'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -900,8 +900,8 @@ if (cfg.offset is None or cfg.offset is ''):
                         while (y > 0 and y//16 in b and
                                b[y//16][y%16, z, x] not in solids):
                             y = y - 1
-                            min_depth = min(y, min_depth)
-                            max_depth = max(y, max_depth)
+                        min_depth = min(y, min_depth)
+                        max_depth = max(y, max_depth)
                 # Surface too close to the max height
                 if max_depth > world.Height - 27:
                     chunk_cache[key][0] = 'H'
