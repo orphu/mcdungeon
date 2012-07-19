@@ -637,16 +637,16 @@ if (args.command == 'delete'):
 # Regenerate mode
 if (args.command == 'regenerate'):
     # Get a list of known dungeons and their size.
-    if dungeons == []:
-        dungeons = listDungeons(world, oworld)
+    if dlist == []:
+        dlist = listDungeons(world, oworld)
     # No dungeons. Exit.
-    if len(dungeons) == 0:
+    if len(dlist) == 0:
         sys.exit()
     # A list of existing dungeon positions for convenience.
     info = None
     # Find our dungeon
     d = args.dungeon
-    for e in dungeons:
+    for e in dlist:
         if (d[0] == e[0] and d[1] == e[1]):
             info = e
     if info == None:
