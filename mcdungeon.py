@@ -496,7 +496,7 @@ if (args.command == 'interactive'):
 
         args.dungeon = None
         world, oworld = loadWorld(args.world)
-        dungeons = listDungeons(world)
+        dungeons = listDungeons(world, oworld)
         if len(dungeons) == 0:
             sys.exit()
         print 'Choose a dungeon to regenerate:\n-------------------------------\n'
@@ -522,7 +522,7 @@ if (args.command == 'interactive'):
         args.dungeons = None
         args.all = False
         world, oworld = loadWorld(args.world)
-        dungeons = listDungeons(world)
+        dungeons = listDungeons(world, oworld)
         if len(dungeons) == 0:
             sys.exit()
         print 'Choose dungeon(s) to delete:\n----------------------------\n'
