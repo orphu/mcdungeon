@@ -496,19 +496,19 @@ if (args.command == 'interactive'):
 
         args.dungeon = None
         world, oworld = loadWorld(args.world)
-        dungeons = listDungeons(world, oworld)
-        if len(dungeons) == 0:
+        dlist = listDungeons(world, oworld)
+        if len(dlist) == 0:
             sys.exit()
         print 'Choose a dungeon to regenerate:\n-------------------------------\n'
-        for i in xrange(len(dungeons)):
+        for i in xrange(len(dlist)):
             print '\t[%d] Dungeon at %d %d.'%(i+1,
-                                              dungeons[i][0],
-                                              dungeons[i][1])
+                                              dlist[i][0],
+                                              dlist[i][1])
         while (args.dungeon == None):
             d = raw_input('\nEnter choice, or q to quit: ')
-            if d.isdigit() and int(d) > 0 and int(d) <= len(dungeons):
+            if d.isdigit() and int(d) > 0 and int(d) <= len(dlist):
                 d = int(d)
-                args.dungeon = [dungeons[d-1][0], dungeons[d-1][1]]
+                args.dungeon = [dlist[d-1][0], dlist[d-1][1]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
