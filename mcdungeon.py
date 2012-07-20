@@ -826,6 +826,8 @@ if (cfg.offset is None or cfg.offset is ''):
     pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
     regions = oworld.get_regionset("overworld")
+    chunk_min = None
+    chunk_max = None
     for cx, cz, mtime in regions.iterate_chunks():
         cc += 1
         pm.update(cc)
@@ -843,6 +845,15 @@ if (cfg.offset is None or cfg.offset is ''):
         if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
             chunk_stats[1][1] += 1
             continue
+        # Chunk map stuff
+        if chunk_min == None:
+            chunk_min = (cx, cz)
+        else:
+            chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
+        if chunk_max == None:
+            chunk_max = (cx, cz)
+        else:
+            chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
         # Check mtime on the chunk to avoid loading the whole thing
         key = '%s,%s' % (cx, cz)
         if (regions.get_chunk_mtime(cx, cz) < chunk_mtime and
@@ -941,6 +952,31 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunk_cache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
                     chunk_stats[7][1] -= 1
+
+    # Funky little chunk map
+    if args.debug:
+        for cz in xrange(chunk_min[1], chunk_max[1]+1):
+            for cx in xrange(chunk_min[0], chunk_max[0]+1):
+                key = '%s,%s' % (cx,cz)
+                if key in chunk_cache:
+                    if chunk_cache[key][0] == 'U':
+                        sys.stdout.write(materials.RED)
+                    if chunk_cache[key][0] == 'O':
+                        sys.stdout.write(materials.BLUE)
+                    if chunk_cache[key][0] == 'S':
+                        sys.stdout.write(materials.DGREY)
+                    if chunk_cache[key][0] == 'H':
+                        sys.stdout.write(materials.PURPLE)
+                    if chunk_cache[key][0] == 'L':
+                        sys.stdout.write(materials.PURPLE)
+                    if chunk_cache[key][0] == 'G':
+                        sys.stdout.write(materials.GREEN)
+                    sys.stdout.write(chunk_cache[key][0])
+                    sys.stdout.write(chunk_cache[key][0])
+                    sys.stdout.write(materials.ENDC)
+                else:
+                    sys.stdout.write('  ')
+            print
 
     # Re-cache the chunks and update mtime
     saveChunkCache(cache_path, chunk_cache)
