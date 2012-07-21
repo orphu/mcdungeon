@@ -126,6 +126,8 @@ RedStoneRepeaterOn = Material('Redstone Repeater On', '>', BRED)
 Spruce = Material('Spruce', 'W', RED)
 Sand = Material('Sand','"',BYELLOW)
 Sandstone = Material('Sandstone', '~',BYELLOW)
+ChiseledSandstone = Material('ChiseledSandstone', '#',BYELLOW)
+SmoothSandstone = Material('SmoothSandstone', '-',BYELLOW)
 SandstoneSlab = Material('Sandstone Slab', '~',BYELLOW)
 Snow = Material('Snow', 'S',WHITE)
 SoulSand = Material('Soul Sand', 'S',PURPLE)
@@ -218,6 +220,34 @@ class meta_class_mossystonebrick(MetaMaterial):
             self.c = StoneBrick.c
 
 
+class meta_class_decoratedsandstone(MetaMaterial):
+    name = 'meta_decoratedsandstone'
+    val = Sandstone.val
+    data = Sandstone.data
+    c = Sandstone.c
+    def update(self, x, y, z, maxx, maxy, maxz):
+        if random.randint(1,100) < 10:
+            self.val = Sandstone.val
+            self.data = Sandstone.data
+            self.c = Sandstone.c
+            return
+
+        if random.randint(1,100) < 10:
+            self.val = SmoothSandstone.val
+            self.data = SmoothSandstone.data
+            self.c = SmoothSandstone.c
+            return
+
+        if  y % 5 == 0:
+            self.val = ChiseledSandstone.val
+            self.data = ChiseledSandstone.data
+            self.c = ChiseledSandstone.c
+        else:
+            self.val = Sandstone.val
+            self.data = Sandstone.data
+            self.c = Sandstone.c
+
+
 class meta_class_stonedungeon(MetaMaterial):
     name = 'meta_stonedungeon'
     val = StoneBrick.val
@@ -279,6 +309,7 @@ class meta_class_stonedungeon(MetaMaterial):
 meta_mossycobble = meta_class_mossycobble()
 meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
+meta_decoratedsandstone = meta_class_decoratedsandstone()
 
 _wall = copy(Cobblestone)
 _secret_door = copy(Cobblestone)

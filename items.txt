@@ -36,6 +36,8 @@
 22,Lapis Lazuli Block,0,64
 23,Dispenser,0,64
 24,Sandstone,0,64
+24,ChiseledSandstone,1,64
+24,SmoothSandstone,2,64
 25,Note Block,0,64
 26,Bed Block,0,64
 27,Powered Rail,0,64

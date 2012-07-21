@@ -884,6 +884,16 @@ class CircularTower(Blank):
         self.wallsf = iterate_tube
 
     def render(self):
+        # Use sandstone for deserts
+        if self.parent.parent.biome in [2, 17]:
+            mat = materials.meta_decoratedsandstone
+        # Use cobblestone for jungle and swamp
+        elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+            mat = materials.meta_mossycobble
+        # Otherwise use stone brick
+        else:
+            mat = materials.meta_mossystonebrick
+
         c1 = self.loc.trans(3, 0, 3)
         c3 = c1 + Vec(self.parent.parent.room_size-7,
                       0,
@@ -891,7 +901,7 @@ class CircularTower(Blank):
         height = int(self.parent.parent.room_height*1.5)
         #print 'ruin:', c1, c3, height
         for p in self.wallsf(c1, c3, height):
-            self.parent.parent.setblock(p, materials.meta_mossystonebrick, hide=True)
+            self.parent.parent.setblock(p, mat, hide=True)
         ruinBlocks(c1, c3, height, self.parent.parent)
 
 
@@ -908,8 +918,25 @@ class Arches(Blank):
     def render(self):
         height = self.parent.parent.room_height*2
         sb = self.parent.parent.setblock
-        mat = materials.meta_mossystonebrick
-        stair = materials.StoneBrickStairs
+        # Sandstone in deserts
+        if self.parent.parent.biome in [2, 17]:
+            mat = materials.meta_decoratedsandstone
+            # TODO make this sandstone stair in 1.3
+            stair = materials.meta_decoratedsandstone
+            slab1 = materials.SandstoneSlab
+            slab2 = materials.SandstoneSlab
+        # Swamps and jungles are cobblestone
+        elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+            mat = materials.meta_mossycobble
+            stair = materials.StoneStairs
+            slab1 = materials.CobblestoneSlab
+            slab2 = materials.StoneSlab
+        else:
+            mat = materials.meta_mossystonebrick
+            stair = materials.StoneBrickStairs
+            slab1 = materials.StoneBrickSlab
+            slab2 = materials.CobblestoneSlab
+
         for xo in xrange(2):
             for zo in xrange(2):
                 c1 = self.loc + Vec(8*xo, 0, 8*zo)
@@ -955,9 +982,9 @@ class Arches(Blank):
                     if (cfg.ruin_ruins == False or
                         random.randint(1,100) <= 50):
                         if (random.randint(1,100) <= 25):
-                            sb(p, materials.StoneBrickSlab)
+                            sb(p, slab1)
                         else:
-                            sb(p, materials.CobblestoneSlab)
+                            sb(p, slab2)
 
                 # Maybe ruin this section
                 if (random.randint(1,100) <= 50):

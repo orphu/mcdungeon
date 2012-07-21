@@ -213,7 +213,7 @@ class Dungeon (object):
         if cfg.hard_mode == True:
             offset = 10
         for p, d in sorted_p:
-            if self.args.debug: print 'Checking: ', p
+            #if self.args.debug: print 'Checking: ', p
             d_chunks = set()
             for x in xrange(self.xsize+offset):
                 for z in xrange(self.zsize+offset):
@@ -225,6 +225,16 @@ class Dungeon (object):
                                     (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
                 self.worldmap(world, positions)
+                # Calaculate the biome
+                biomes = {}
+                for chunk in d_chunks:
+                    key = self.chunk_cache['%s,%s'%(chunk[0], chunk[1])][1]
+                    if key in biomes:
+                        biomes[key] += 1
+                    else:
+                        biomes[key] = 1
+                self.biome = max(biomes, key=lambda k: biomes[k])
+                if self.args.debug: print 'Biome: ', self.biome
                 return self.bury(world)
         return False
 
