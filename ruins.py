@@ -584,10 +584,21 @@ class StepPyramid(Blank):
 class RoundTowerEntrance(Blank):
     _name = 'roundtowerentrance'
     _ruin = False
-    _mat = materials.meta_mossycobble
-    _stair = materials.StoneStairs
+    _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
+    _biome = True
 
     def render (self):
+        # adjust to biomes if needed
+        if self._biome == True:
+            # Desert
+            if self.parent.parent.biome in [2, 17]:
+                self._mat = materials.meta_decoratedsandstone
+                self._stair = materials.WoodenStairs
+            elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+                self._mat = materials.meta_mossycobble
+                self._stair = materials.StoneStairs
+
         # The room floor Y location
         room_floor = self.parent.loc.y+self.parent.parent.room_height-3
         # The height of one room
@@ -750,10 +761,21 @@ class RoundTowerEntrance(Blank):
 class SquareTowerEntrance(Blank):
     _name = 'squaretowerentrance'
     _ruin = False
-    _mat = materials.meta_mossycobble
-    _stair = materials.StoneStairs
+    _mat = materials.meta_mossystonebrick
+    _stair = materials.StoneBrickStairs
+    _biome = True
 
     def render (self):
+        # adjust to biomes if needed
+        if self._biome == True:
+            # Desert
+            if self.parent.parent.biome in [2, 17]:
+                self._mat = materials.meta_decoratedsandstone
+                self._stair = materials.WoodenStairs
+            elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+                self._mat = materials.meta_mossycobble
+                self._stair = materials.StoneStairs
+
         # The room floor Y location
         room_floor = self.parent.loc.y+self.parent.parent.room_height-3
         # The height of one room
@@ -937,41 +959,73 @@ class SquareTowerEntrance(Blank):
                     self.parent.parent.setblock(p, materials._sandbar)
             d += 1
 
+# Square tower variants
+class RuinedSquareTowerEntrance(SquareTowerEntrance):
+    _name = 'ruinedsquaretowerentrance'
+    _ruin = True
+
 class SquareTowerEntranceStoneBrick(SquareTowerEntrance):
     _name = 'squaretowerentrancestonebrick'
     _ruin = False
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
-
-class RuinedSquareTowerEntrance(SquareTowerEntrance):
-    _name = 'ruinedsquaretowerentrance'
-    _ruin = True
-    _mat = materials.meta_mossycobble
-    _stair = materials.StoneStairs
+    _biome = False
 
 class RuinedSquareTowerEntranceStoneBrick(SquareTowerEntrance):
     _name = 'ruinedsquaretowerentrancestonebrick'
     _ruin = True
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
+    _biome = False
+
+class SquareTowerEntranceCobble(SquareTowerEntrance):
+    _name = 'squaretowerentrancecobble'
+    _ruin = False
+    _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
+    _biome = False
+
+class RuinedSquareTowerEntranceCobble(SquareTowerEntrance):
+    _name = 'ruinedsquaretowerentrancecobble'
+    _ruin = True
+    _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
+    _biome = False
+
+# Round tower variants
+class RuinedRoundTowerEntrance(RoundTowerEntrance):
+    _name = 'ruinedroundtowerentrance'
+    _ruin = True
+
+class RoundTowerEntranceCobble(RoundTowerEntrance):
+    _name = 'roundtowerentrancecobble'
+    _ruin = False
+    _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
+    _biome = False
+
+class RuinedRoundTowerEntranceCobble(RoundTowerEntrance):
+    _name = 'ruinedroundtowerentrancecobble'
+    _ruin = True
+    _mat = materials.meta_mossycobble
+    _stair = materials.StoneStairs
+    _biome = False
 
 class RoundTowerEntranceStoneBrick(RoundTowerEntrance):
     _name = 'roundtowerentrancestonebrick'
     _ruin = False
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
-
-class RuinedRoundTowerEntrance(RoundTowerEntrance):
-    _name = 'ruinedroundtowerentrance'
-    _ruin = True
-    _mat = materials.meta_mossycobble
-    _stair = materials.StoneStairs
+    _biome = False
 
 class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
     _name = 'ruinedroundtowerentrancestonebrick'
     _ruin = True
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
+    _biome = False
+
+## Other ruins
 
 class CircularTower(Blank):
     _name = 'circulartower'
