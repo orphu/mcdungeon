@@ -11,6 +11,10 @@ v0.8.4 -
 
    * Potions now appear in treasure chests.
 
+   * Potions and monster eggs can now appear in dispenser traps.
+
+   * The contents of dispenser traps is configurable.
+
 v0.8.3 - 07/18/2012
 
    * Fixed bug with regenerate and the --force-bury option.

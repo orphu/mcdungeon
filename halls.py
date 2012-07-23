@@ -59,8 +59,10 @@ def drawHall (hall):
     length = hall.parent.hallLength[hall.direction]
     start = hall.parent.loc
     trap = 0
+    tname = None 
     if (randint(1,100) <= cfg.arrow_traps):
         trap = 1
+        tname = weighted_choice(cfg.master_dispensers)
     if (hall.direction == 0):
         start += Vec(0,0,0)
         start = start.e(hall.offset)
@@ -110,7 +112,7 @@ def drawHall (hall):
                 hall.parent.parent.setblock(k, materials._wall)
             tpen = pen.down(2)
             hall.parent.parent.setblock(tpen, materials.Dispenser, dd1)
-            hall.parent.parent.addtrap(tpen)
+            hall.parent.parent.addtrap(tpen, tname)
             hall.parent.parent.setblock(tpen-stepw,
                                         materials.RedStoneTorchOff, 5)
             tpen = tpen.down(2)
@@ -162,7 +164,7 @@ def drawHall (hall):
                 hall.parent.parent.setblock(k, materials._wall)
             tpen = pen.down(2)
             hall.parent.parent.setblock(tpen, materials.Dispenser, dd2)
-            hall.parent.parent.addtrap(tpen)
+            hall.parent.parent.addtrap(tpen, tname)
             hall.parent.parent.setblock(tpen+stepw,
                                         materials.RedStoneTorchOff, 5)
             tpen = tpen.down(2)

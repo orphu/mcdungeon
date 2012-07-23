@@ -534,8 +534,9 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
 
 
-    def addtrap(self, loc):
-        item = random.choice([262, 385])
+    def addtrap(self, loc, name=None):
+        if name == None:
+            name = weighted_choice(cfg.master_dispensers)
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Trap')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -545,9 +546,9 @@ class Dungeon (object):
         root_tag['Items'] = inv_tag
         item_tag = nbt.TAG_Compound()
         item_tag['Slot'] = nbt.TAG_Byte(0)
-        item_tag['Count'] = nbt.TAG_Byte(3)
-        item_tag['id'] = nbt.TAG_Short(item)
-        item_tag['Damage'] = nbt.TAG_Short(0)
+        item_tag['Count'] = nbt.TAG_Byte(int(cfg.lookup_dispensers[name][1]))
+        item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
+        item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
         inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 

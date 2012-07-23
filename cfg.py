@@ -48,6 +48,8 @@ master_floors = []
 master_ruins = [('blank',1)]
 master_entrances = [('squaretowerentrance',1)]
 master_treasure = [('pitwitharchers',1)]
+master_dispensers = []
+lookup_dispensers = {}
 master_mobs = []
 structure_values = []
 
@@ -78,7 +80,7 @@ def Load(filename = 'default.cfg'):
     arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
-    secret_door, silverfish, bury
+    secret_door, silverfish, bury, master_dispensers
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -101,6 +103,7 @@ def Load(filename = 'default.cfg'):
     master_features = parser.items('features')
     master_floors = parser.items('floors')
     temp_mobs = parser.items('mobs')
+    temp_dispensers = parser.items('dispensers')
     try:
         master_ruins = parser.items('ruins')
     except:
@@ -122,6 +125,13 @@ def Load(filename = 'default.cfg'):
         elif (mob2 == 'Cavespider'):
             mob2 = 'CaveSpider'
         master_mobs.append((mob2, mob[1]))
+
+    # Process dispensers config
+    for d in temp_dispensers:
+        (prob, number) = d[1].split(',')
+        name = d[0].lower()
+        lookup_dispensers[name]= (prob, number)
+        master_dispensers.append((name, prob))
 
     # Load other config options
     offset = get('dungeon', 'offset', offset)
