@@ -1,3 +1,5 @@
+# Items file. See the bottom for potions.
+# 
 # ID,Item Name,Data Value,Maximum Stack Size
 0,Air,0,64
 1,Stone,0,64
@@ -344,3 +346,43 @@
 2263,Music Disc strad,0,1
 2264,Music Disc ward,0,1
 2265,Music Disc 11,0,1
+
+# Potions
+# #################
+#
+# Positive potions
+373,Potion of Regeneration,8193,1
+373,Splash Potion of Regeneration,16385,1
+373,Potion of Regeneration II,8225,1
+373,SplashPotion of Regeneration II,16417,1
+373,Potion of Swiftness,8194,1
+373,Splash Potion of Swiftness,16386,1
+373,Potion of Swiftness II,8226,1
+373,Splash Potion of Swiftness II,16418,1
+373,Potion of Fire Resistance,8195,1
+373,Splash Potion of Fire Resistance,16387,1
+373,Potion of Healing,8197,1
+373,Splash Potion of Healing,16389,1
+373,Potion of Healing II,8229,1
+373,Splash Potion of Healing II,16421,1
+373,Potion of Strength,8201,1
+373,Splash Potion of Strength,16393,1
+373,Potion of Strength II,8233,1
+373,Splash Potion of Strength II,16425,1
+# Negative Potions
+373,Potion of Poison,8196,1
+373,Splash Potion of Poison,16388,1
+373,Potion of Poison II,8228,1
+373,Splash Potion of Poison II,16420,1
+373,Potion of Weakness,8200,1
+373,Splash Potion of Weakness,16392,1
+373,Potion of Weakness II,8264,1
+373,Splash Potion of Weakness II,16456,1
+373,Potion of Slowness,8202,1
+373,Splash Potion of Slowness,16394,1
+373,Potion of Slowness II,8266,1
+373,Splash Potion of Slowness II,16458,1
+373,Potion of Harming,8204,1
+373,Splash Potion of Harming,16396,1
+373,Potion of Harming II,8236,1
+373,Splash Potion of Harming II,16428,1
