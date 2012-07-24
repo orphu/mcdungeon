@@ -2589,10 +2589,8 @@ class Pit(Blank):
     def render (self):
         pn = perlin.SimplexNoise(256)
         # Sand pit!
-        # Restrict sandpits to rooms with small halls.
         maxhall = max(map(lambda x: x.size, self.halls))
         if (self.depth > 1 and
-            maxhall<=4 and
             random.randint(1,100) <= cfg.sand_traps):
             self.sandpit = True
             if [f for f in self.floors if f._name == 'bridges']:

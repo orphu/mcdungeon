@@ -205,7 +205,8 @@ class Bridges(Blank):
         # We'll store a random position within the range of the hall.
         halls = [0,0,0,0]
         hallcount = 0
-        buttons = set()
+        wires = set()
+        #wirehooks = set()
         for h in xrange(4):
             if (self.parent.halls[h].size > 0):
                 halls[h] = \
@@ -282,35 +283,48 @@ class Bridges(Blank):
                     self.parent.parent.setblock(p, materials.Gravel)
                 else:
                     self.parent.parent.setblock(p, materials._floor)
-            # Find button locations
+            # Find wire locations
             # h0
+            # Cool fact: in 12w30c tripwires will trigger sand without hooks.
             if (halls[0] !=  0):
-                for x in xrange(0, self.parent.halls[0].size - 2):
-                    buttons.add(Vec(self.parent.halls[0].offset+1+x,
-                                    y-1,
-                                    self.parent.hallLength[0]))
+                for x in xrange(1, self.parent.halls[0].size-1):
+                    p = Vec(self.parent.halls[0].offset+x,
+                            y-1,
+                            self.parent.hallLength[0])
+                    #if x == 0:
+                    #    wirehooks.add((p, 4+3))
+                    #elif x == self.parent.halls[0].size-1:
+                    #    wirehooks.add((p, 4+1))
+                    #else:
+                    #    wires.add(p)
+                    wires.add(p)
             # h1
             if (halls[1] !=  0):
-                for x in xrange(0, self.parent.halls[1].size - 2):
-                    buttons.add(Vec(self.parent.parent.room_size-self.parent.hallLength[1]-1,
+                for x in xrange(1, self.parent.halls[1].size-1):
+                    wires.add(Vec(self.parent.parent.room_size-self.parent.hallLength[1]-1,
                                     y-1,
-                                    self.parent.halls[1].offset+1+x))
+                                    self.parent.halls[1].offset+x))
             # h2
             if (halls[2] !=  0):
-                for x in xrange(0, self.parent.halls[2].size - 2):
-                    buttons.add(Vec(self.parent.halls[2].offset+1+x,
+                for x in xrange(1, self.parent.halls[2].size-1):
+                    wires.add(Vec(self.parent.halls[2].offset+x,
                                     y-1,
                                     self.parent.parent.room_size-self.parent.hallLength[2]-1))
             # h3
             if (halls[3] !=  0):
-                for x in xrange(0, self.parent.halls[3].size - 2):
-                    buttons.add(Vec(self.parent.hallLength[3],
+                for x in xrange(1, self.parent.halls[3].size-1):
+                    wires.add(Vec(self.parent.hallLength[3],
                                     y-1,
-                                    self.parent.halls[3].offset+1+x))
-            for p in buttons:
-                self.parent.parent.setblock(offset+p.down(1), mat)
+                                    self.parent.halls[3].offset+x))
+            for p in wires:
+                self.parent.parent.setblock(offset+p.down(1), materials.Gravel,
+                                           lock=True)
                 self.parent.parent.setblock(offset+p,
-                                            materials.StonePressurePlate)
+                                            materials.Tripwire)
+            #for p in wirehooks:
+            #    self.parent.parent.setblock(offset+p[0].down(1), mat)
+            #    self.parent.parent.setblock(offset+p[0],
+            #                                materials.TripwireHook, p[1])
         # Draw the bridges, if a hallway exists.
         # h0 -> c1
         # h1 -> c2

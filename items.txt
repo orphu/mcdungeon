@@ -163,6 +163,8 @@
 122,Dragon Egg,0,64
 123,Redstone Lamp off,0,64
 124,Redstone Lamp,0,64
+131,Tripwire Hook,0,1
+132,Tripwire,0,1
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
