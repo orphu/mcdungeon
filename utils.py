@@ -463,7 +463,7 @@ def dumpEnts(world):
 
 
 def spin(c = ''):
-    spinner = ['|', '/', '-', '\\']
+    spinner = ['O o o', 'O O o', 'o O O', 'o o O', 'o O O', 'O O o']
     if (c == ''):
         c = spinner[random.randint(0,len(spinner)-1)]
     sys.stdout.write("\r"+str(c)+"   \r")
