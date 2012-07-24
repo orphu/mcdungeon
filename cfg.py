@@ -14,7 +14,6 @@ maximize_distance = 'True'
 offset = ''
 bury = 'True'
 tower = '2.0'
-tower_ruin = '80'
 ruin_ruins = 'True'
 doors = '25'
 portcullises = '25'
@@ -77,7 +76,7 @@ def Load(filename = 'default.cfg'):
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
-    arrow_trap_defects, sand_traps, master_ruins, tower_ruin, ruin_ruins, \
+    arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers
@@ -138,7 +137,6 @@ def Load(filename = 'default.cfg'):
     bury = str2bool(get('dungeon', 'force_bury', bury))
 
     tower = float(get('dungeon', 'tower', tower))
-    tower_ruin = int(get('dungeon', 'tower_ruin', tower_ruin))
     ruin_ruins = str2bool(get('dungeon', 'ruin_ruins', ruin_ruins))
     doors = int(get('dungeon', 'doors', doors))
     portcullises = int(get('dungeon', 'portcullises', portcullises))

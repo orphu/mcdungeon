@@ -17,6 +17,8 @@ v0.8.4 -
 
    * Sand traps now use tripwire and appear more commonly.
 
+   * Removed tower_ruin config option. 
+
 v0.8.3 - 07/18/2012
 
    * Fixed bug with regenerate and the --force-bury option.
