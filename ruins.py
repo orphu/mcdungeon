@@ -186,8 +186,7 @@ class StepPyramid(Blank):
             mat_ext = materials.SmoothSandstone
             mat_block = materials.meta_decoratedsandstone
             mat_ruins = materials.meta_decoratedsandstone
-            # TODO make this sand stairs in 1.3
-            mat_stair = materials.StoneBrickStairs
+            mat_stair = materials.SandstoneStairs
             mat_slab = materials.SandstoneSlab
             mat_floor = materials.Sand
         elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
@@ -594,7 +593,7 @@ class RoundTowerEntrance(Blank):
             # Desert
             if self.parent.parent.biome in [2, 17]:
                 self._mat = materials.meta_decoratedsandstone
-                self._stair = materials.WoodenStairs
+                self._stair = materials.SandstoneStairs
             elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
                 self._mat = materials.meta_mossycobble
                 self._stair = materials.StoneStairs
@@ -763,6 +762,7 @@ class SquareTowerEntrance(Blank):
     _ruin = False
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
+    _support = materials.StoneBrickStairs
     _biome = True
 
     def render (self):
@@ -771,9 +771,11 @@ class SquareTowerEntrance(Blank):
             # Desert
             if self.parent.parent.biome in [2, 17]:
                 self._mat = materials.meta_decoratedsandstone
-                self._stair = materials.WoodenStairs
+                self._support = materials.WoodenStairs
+                self._stair = materials.SandstoneStairs
             elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
                 self._mat = materials.meta_mossycobble
+                self._support = materials.StoneStairs
                 self._stair = materials.StoneStairs
 
         # The room floor Y location
@@ -904,23 +906,23 @@ class SquareTowerEntrance(Blank):
         W = 0+4 # West
         sb = self.parent.parent.setblock
         # Some supports under the lower battlements
-        sb(c1.trans(3,1,0), self._stair, N)
-        sb(c1.trans(6,1,0), self._stair, N)
-        sb(c4.trans(3,1,0), self._stair, S)
-        sb(c4.trans(6,1,0), self._stair, S)
-        sb(c1.trans(0,1,3), self._stair, W)
-        sb(c1.trans(0,1,6), self._stair, W)
-        sb(c2.trans(0,1,3), self._stair, E)
-        sb(c2.trans(0,1,6), self._stair, E)
+        sb(c1.trans(3,1,0), self._support, N)
+        sb(c1.trans(6,1,0), self._support, N)
+        sb(c4.trans(3,1,0), self._support, S)
+        sb(c4.trans(6,1,0), self._support, S)
+        sb(c1.trans(0,1,3), self._support, W)
+        sb(c1.trans(0,1,6), self._support, W)
+        sb(c2.trans(0,1,3), self._support, E)
+        sb(c2.trans(0,1,6), self._support, E)
         # Supports under the upper battlements
-        sb(b1.trans(2,1,0), self._stair, N)
-        sb(b1.trans(5,1,0), self._stair, N)
-        sb(b4.trans(2,1,0), self._stair, S)
-        sb(b4.trans(5,1,0), self._stair, S)
-        sb(b1.trans(0,1,2), self._stair, W)
-        sb(b1.trans(0,1,5), self._stair, W)
-        sb(b2.trans(0,1,2), self._stair, E)
-        sb(b2.trans(0,1,5), self._stair, E)
+        sb(b1.trans(2,1,0), self._support, N)
+        sb(b1.trans(5,1,0), self._support, N)
+        sb(b4.trans(2,1,0), self._support, S)
+        sb(b4.trans(5,1,0), self._support, S)
+        sb(b1.trans(0,1,2), self._support, W)
+        sb(b1.trans(0,1,5), self._support, W)
+        sb(b2.trans(0,1,2), self._support, E)
+        sb(b2.trans(0,1,5), self._support, E)
         # Ground level archways
         sb(c1.trans(4,3,1), self._stair, E)
         sb(c1.trans(5,3,1), self._stair, W)
@@ -1071,8 +1073,7 @@ class Arches(Blank):
         # Sandstone in deserts
         if self.parent.parent.biome in [2, 17]:
             mat = materials.meta_decoratedsandstone
-            # TODO make this sandstone stair in 1.3
-            stair = materials.meta_decoratedsandstone
+            stair = materials.SandstoneStairs
             slab1 = materials.SandstoneSlab
             slab2 = materials.SandstoneSlab
         # Swamps and jungles are cobblestone
