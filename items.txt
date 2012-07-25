@@ -249,9 +249,9 @@
 320,Cooked Porkchop,0,64
 321,Paintings,0,64
 322,Golden Apple,0,1
-323,Sign,0,1
+323,Sign,0,16
 324,Wooden Door,0,1
-325,Bucket,0,1
+325,Bucket,0,16
 326,Water Bucket,0,1
 327,Lava Bucket,0,1
 328,Minecart,0,1
@@ -327,28 +327,28 @@
 380,Cauldron,0,64
 381,Eye of Ender,0,64
 382,Glistering Melon,0,64
-383,Spawn Blaze,61,1
-383,Spawn Cave Spider,59,1
-383,Spawn Chicken,93,1
-383,Spawn Cow,92,1
-383,Spawn Creeper,50,1
-383,Spawn Enderman,58,1
-383,Spawn Ghast,56,1
-383,Spawn Iron Golem,99,1
-383,Spawn Magma Cube,62,1
-383,Spawn Mooshroom,96,1
-383,Spawn Ocelot,98,1
-383,Spawn Pig Zombie,57,1
-383,Spawn Pig,90,1
-383,Spawn Skeleton,51,1
-383,Spawn Sheep,91,1
-383,Spawn Silverfish,60,1
-383,Spawn Slime,55,1
-383,Spawn Spider,52,1
-383,Spawn Squid,94,1
-383,Spawn Villager,120,1
-383,Spawn Wolf,95,1
-383,Spawn Zombie,54,1
+383,Spawn Blaze,61,64
+383,Spawn Cave Spider,59,64
+383,Spawn Chicken,93,64
+383,Spawn Cow,92,64
+383,Spawn Creeper,50,64
+383,Spawn Enderman,58,64
+383,Spawn Ghast,56,64
+383,Spawn Iron Golem,99,64
+383,Spawn Magma Cube,62,64
+383,Spawn Mooshroom,96,64
+383,Spawn Ocelot,98,64
+383,Spawn Pig Zombie,57,64
+383,Spawn Pig,90,64
+383,Spawn Skeleton,51,64
+383,Spawn Sheep,91,64
+383,Spawn Silverfish,60,64
+383,Spawn Slime,55,64
+383,Spawn Spider,52,64
+383,Spawn Squid,94,64
+383,Spawn Villager,120,64
+383,Spawn Wolf,95,64
+383,Spawn Zombie,54,64
 384,Bottle o' Enchanting,0,64
 385,Fire Charge,0,64
 388,Emerald,0,64
