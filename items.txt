@@ -72,11 +72,9 @@
 42,Iron Block,0,64
 43,Stone Double Slab,0,64
 43,Sandstone Double Slab,1,64
-43,Wooden Double Slab,2,64
 43,Cobblestone Double Slab,3,64
 44,Stone Slab,0,64
 44,Sandstone Slab,1,64
-44,Wooden Slab,2,64
 44,Cobblestone Slab,3,64
 44,Brick Slab,4,64
 44,Stone Brick Slab,5,64
@@ -163,8 +161,26 @@
 122,Dragon Egg,0,64
 123,Redstone Lamp off,0,64
 124,Redstone Lamp,0,64
+125,Wooden Double Slab,0,64
+125,Oak Double Slab,0,64
+125,Spruce Double Slab,1,64
+125,Birch Double Slab,2,64
+125,Jungle Double Slab,3,64
+126,Wooden Slab,0,64
+126,Oak Slab,0,64
+126,Spruce Slab,1,64
+126,Birch Slab,2,64
+126,Jungle Slab,3,64
+127,Cocoa Plant,0,64
+128,Sandstone Stairs,0,64
+129,Emerald Ore,0,64
+130,Ender Chest,0,64
 131,Tripwire Hook,0,1
 132,Tripwire,0,1
+133,Emerald Block,0,64
+134,Spruce Stairs,0,64
+135,Birch Stairs,0,64
+136,Jungle Stairs,0,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
@@ -335,6 +351,7 @@
 383,Spawn Zombie,54,1
 384,Bottle o' Enchanting,0,64
 385,Fire Charge,0,64
+388,Emerald,0,64
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
