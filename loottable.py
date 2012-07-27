@@ -180,7 +180,14 @@ def rollLoot (tier, level):
             amount = random.randint(loot['min'], loot['max'])
             item = random.choice(loot['item'])
 
-            if 'level*' in loot['ench']:
+            enchantments = []
+            if item.name.startswith('magic_'):
+                ench_level = 0
+                for e in item.ench.split(','):
+                    k = int(e.split('-')[0])
+                    v = int(e.split('-')[-1])
+                    enchantments.append(dict({'id':k, 'lvl':v}))
+            elif 'level*' in loot['ench']:
                 ench_level = int(level*float(loot['ench'].split('level*')[-1]))
                 ench_level = max(1, ench_level)
             elif '-' in loot['ench']:
@@ -193,7 +200,6 @@ def rollLoot (tier, level):
                 except:
                     ench_level = 0
 
-            enchantments = []
             if ench_level > 0:
                 enchantments = list(enchant(item.name, ench_level))
 

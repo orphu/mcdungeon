@@ -1,0 +1,42 @@
+# Magic Items
+# 
+# These are specific enchanted items that can be included in loot tables.
+# Note that any sort of item/enchantment combo is possible. Not everything
+# works in the game and care should be taken as some combinations may have
+# unexpected results. 
+#
+# NOTE names do not actually appear in game, they are only used to identify
+# the item in teh loot tables.
+#
+# NOTE 2: Items that cannot normally be enchanted will not appear enchanted
+# in multiplayer, even though they still work. 
+#
+# =======
+#
+# Format is:
+# <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...
+#
+# Items should be referenced as "magic_<name>" in the loot tables. Make sure
+# all items in the list have unique names. 
+#
+# Any number of enchantments can be listed. Use enchantment codes listed in 
+# the wiki:
+# http://www.minecraftwiki.net/wiki/Enchant
+#
+# Examples:
+#
+# A golden sword with every legal enchantment:
+# masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3
+#
+# A feather of feather fall five:
+# parachute:Feather,2-5
+#
+
+# A Diamond Sword of Smite X named smitten:
+smitten:Diamond Sword,17-10
+
+# A cookie of fortune V
+fortune_cookie:Cookie,35-5
+
+# A really efficent fish
+enchanted_fish:Raw Fish,32-5
