@@ -495,24 +495,46 @@ class GreatHallNS(Basic):
             self.parent.setblock(p, materials.DoubleSlab)
             self.parent.setblock(p+d, materials.DoubleSlab)
         # Chandeliers
-        mat = random.choice((
-            materials.Fence,
-            materials.IronBars
-        ))
-        s = self.parent.room_size-1
-        for x in xrange(self.size.x):
-            for z in xrange(self.size.z):
-                p = self.c1+Vec(x*s+s/2+random.randint(0,1),
-                                -height+1,
-                                z*s+s/2+random.randint(0,1))
-                for y in xrange(random.randint(1,2)):
-                    self.parent.setblock(p, mat)
-                    p = p.down(1)
-                for q in iterate_cube(p+Vec(-1,0,-1), p+Vec(1,0,1)):
-                    self.parent.setblock(q, mat)
-                if (random.randint(1,100) <= 33):
-                    self.parent.setblock(p, materials.Torch)
-                self.parent.setblock(p.down(1), materials.Fence)
+        # Type A
+        if (random.randint(1,100) <= 50):
+            mat = random.choice((
+                materials.Fence,
+                materials.IronBars
+            ))
+            s = self.parent.room_size-1
+            for x in xrange(self.size.x):
+                for z in xrange(self.size.z):
+                    p = self.c1+Vec(x*s+s/2+random.randint(0,1),
+                                    -height+1,
+                                    z*s+s/2+random.randint(0,1))
+                    for y in xrange(random.randint(1,2)):
+                        self.parent.setblock(p, mat)
+                        p = p.down(1)
+                    for q in iterate_cube(p+Vec(-1,0,-1), p+Vec(1,0,1)):
+                        self.parent.setblock(q, mat)
+                    if (random.randint(1,100) <= 33):
+                        self.parent.setblock(p, materials.Torch)
+                    self.parent.setblock(p.down(1), materials.Fence)
+        # Type B - Hanging pendant
+        else:
+            s = self.parent.room_size-1
+            for x in xrange(self.size.x):
+                for z in xrange(self.size.z):
+                    p = self.c1+Vec(x*s+s/2+random.randint(0,1),
+                                    -height+1,
+                                    z*s+s/2+random.randint(0,1))
+                    self.parent.setblock(p, materials.Fence)
+                    self.parent.setblock(p.down(1), materials.Fence)
+                    self.parent.setblock(p.down(2), materials.Piston, 1)
+                    self.parent.setblock(p.down(3), materials.Glowstone)
+                    self.parent.setblock(p.down(4), materials.Piston, 0)
+                    self.parent.setblock(p.down(5), materials.Fence)
+                    p = p.down(3)
+                    self.parent.setblock(p.n(1), materials.Trapdoor,4+0)
+                    self.parent.setblock(p.s(1), materials.Trapdoor,4+1)
+                    self.parent.setblock(p.e(1), materials.Trapdoor,4+3)
+                    self.parent.setblock(p.w(1), materials.Trapdoor,4+2)
+
         # Vines
         if (random.randint(1,100) <= 25):
             for p in iterate_cube(self.c1+Vec(1,-1,1),
