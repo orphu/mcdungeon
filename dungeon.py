@@ -225,16 +225,6 @@ class Dungeon (object):
                                     (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
                 self.worldmap(world, positions)
-                # Calaculate the biome
-                biomes = {}
-                for chunk in d_chunks:
-                    key = self.chunk_cache['%s,%s'%(chunk[0], chunk[1])][1]
-                    if key in biomes:
-                        biomes[key] += 1
-                    else:
-                        biomes[key] = 1
-                self.biome = max(biomes, key=lambda k: biomes[k])
-                if self.args.debug: print 'Biome: ', self.biome
                 return self.bury(world)
         return False
 
@@ -304,6 +294,19 @@ class Dungeon (object):
         for x in xrange(self.xsize):
             for z in xrange(self.zsize):
                 d_chunks.add((p[0]+x, p[1]+z))
+
+        # Calaculate the biome
+        biomes = {}
+        rset = self.oworld.get_regionset('overworld')
+        for chunk in d_chunks:
+            cdata = rset.get_chunk(chunk[0],chunk[1])
+            key = numpy.argmax(numpy.bincount((cdata['Biomes'].flatten())))
+            if key in biomes:
+                biomes[key] += 1
+            else:
+                biomes[key] = 1
+            self.biome = max(biomes, key=lambda k: biomes[k])
+        if self.args.debug: print 'Biome: ', self.biome
 
         depth = world.Height
         for chunk in d_chunks:
