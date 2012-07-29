@@ -6,6 +6,8 @@ v0.9.0 -
 
    * Fixed a bug calculating depths with perfectly flat chunks.
 
+   * Fixed floating blocks on some ruins.
+
    * It now snows on ruins in winter biomes.
 
    * Ruins will change materials depending on the biome they
@@ -17,7 +19,7 @@ v0.9.0 -
 
    * Potions and monster eggs can now appear in dispenser traps.
 
-   * The contents of dispenser traps is configurable.
+   * The contents of dispenser traps are configurable.
 
    * Sand traps now use tripwire and appear more commonly.
 

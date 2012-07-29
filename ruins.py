@@ -1051,10 +1051,9 @@ class CircularTower(Blank):
                       0,
                       self.parent.parent.room_size-7)
         height = int(self.parent.parent.room_height*1.5)
-        #print 'ruin:', c1, c3, height
         for p in self.wallsf(c1, c3, height):
             self.parent.parent.setblock(p, mat, hide=True)
-        ruinBlocks(c1, c3, height, self.parent.parent)
+        ruinBlocks(c1.up(1), c3.up(1), height, self.parent.parent)
 
 
 class SquareTower(CircularTower):
@@ -1139,7 +1138,7 @@ class Arches(Blank):
 
                 # Maybe ruin this section
                 if (random.randint(1,100) <= 50):
-                    ruinBlocks(c1, c3, height, self.parent.parent)
+                    ruinBlocks(c1.up(1), c3.up(1), height, self.parent.parent)
 
 
 def ruinBlocks (p1, p2, height, dungeon, override=False):
@@ -1153,6 +1152,44 @@ def ruinBlocks (p1, p2, height, dungeon, override=False):
             for p in iterate_cube(Vec(x, p1.y-depth, z),
                                   Vec(x, p1.y-height, z)):
                 dungeon.delblock(p)
+    # Look for floating blocks
+    floaters = []
+    for p in iterate_cube(p1, Vec(p2.x, p2.y-height, p2.z)):
+        if ((p in dungeon.blocks and
+             dungeon.blocks[p].material != materials.Air) and
+            (p.down(1) not in dungeon.blocks or
+                 dungeon.blocks[p.down(1)].material == materials.Air) and
+            (p.n(1) not in dungeon.blocks or
+                 dungeon.blocks[p.n(1)].material == materials.Air) and
+            (p.s(1) not in dungeon.blocks or
+                 dungeon.blocks[p.s(1)].material == materials.Air) and
+            (p.e(1) not in dungeon.blocks or
+                 dungeon.blocks[p.e(1)].material == materials.Air) and
+            (p.w(1) not in dungeon.blocks or
+                 dungeon.blocks[p.w(1)].material == materials.Air)):
+            floaters.append(p)
+        #elif (p in dungeon.blocks and
+        #      dungeon.blocks[p].material != materials.Air):
+        #    dungeon.setblock(p, materials.WallSign,0)
+        #    dungeon.addsign(p,
+        #                    'D: '+str(p.down(1) not in dungeon.blocks or
+        #                           dungeon.blocks[p.down(1)].material ==
+        #                           materials.Air),
+        #                    'N: '+str(p.n(1) not in dungeon.blocks or
+        #                           dungeon.blocks[p.n(1)].material ==
+        #                           materials.Air)+
+        #                    ' - S: '+str(p.s(1) not in dungeon.blocks or
+        #                           dungeon.blocks[p.s(1)].material ==
+        #                           materials.Air),
+        #                    'E: '+str(p.e(1) not in dungeon.blocks or
+        #                           dungeon.blocks[p.e(1)].material ==
+        #                           materials.Air)+
+        #                    ' - W: '+str(p.w(1) not in dungeon.blocks or
+        #                           dungeon.blocks[p.w(1)].material ==
+        #                           materials.Air), '')
+    for p in floaters:
+        dungeon.delblock(p)
+
 
 # Catalog the ruins we know about. 
 _ruins = {}
