@@ -320,7 +320,7 @@ class Bridges(Blank):
                 self.parent.parent.setblock(offset+p.down(1), materials.Gravel,
                                            lock=True)
                 self.parent.parent.setblock(offset+p,
-                                            materials.Tripwire)
+                                            materials.Tripwire, hide=True)
             #for p in wirehooks:
             #    self.parent.parent.setblock(offset+p[0].down(1), mat)
             #    self.parent.parent.setblock(offset+p[0],

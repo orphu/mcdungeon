@@ -530,10 +530,14 @@ class GreatHallNS(Basic):
                     self.parent.setblock(p.down(4), materials.Piston, 0)
                     self.parent.setblock(p.down(5), materials.Fence)
                     p = p.down(3)
-                    self.parent.setblock(p.n(1), materials.Trapdoor,4+0)
-                    self.parent.setblock(p.s(1), materials.Trapdoor,4+1)
-                    self.parent.setblock(p.e(1), materials.Trapdoor,4+3)
-                    self.parent.setblock(p.w(1), materials.Trapdoor,4+2)
+                    self.parent.setblock(p.n(1),
+                                         materials.Trapdoor,4+0,hide=True)
+                    self.parent.setblock(p.s(1),
+                                         materials.Trapdoor,4+1,hide=True)
+                    self.parent.setblock(p.e(1),
+                                         materials.Trapdoor,4+3,hide=True)
+                    self.parent.setblock(p.w(1),
+                                         materials.Trapdoor,4+2,hide=True)
 
         # Vines
         if (random.randint(1,100) <= 25):
