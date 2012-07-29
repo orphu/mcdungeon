@@ -432,22 +432,25 @@ class SecretRoom(Blank):
 
             # Desk
             mats = [
-                materials.Air,          # 0
-                materials.WoodPlanks,   # 1
-                materials.Chest,        # 2
-                materials.CraftingTable,# 3
-                materials.WallSign,     # 4
-                materials.WoodenStairs  # 5
+                (materials.Air,0),          # 0
+                (materials.WoodenStairs,7), # 1
+                (materials.Chest,0),        # 2
+                (materials.CraftingTable,0),# 3
+                (materials.WallSign,0),     # 4
+                (materials.WoodenStairs,0), # 5
+                (materials.WoodenStairs,6)  # 6
             ]
             template = [
-                [3,1,1,2],
+                [3,1,6,2],
                 [0,4,5,4]
             ]
             oo = o.trans(5,3,4)
             for x in xrange(2):
                 for z in xrange(4):
                     p = oo.trans(x,0,z)
-                    sb(p, mats[template[x][z]])
+                    sb(p,
+                       mats[template[x][z]][0],
+                       mats[template[x][z]][1])
             self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
             self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
             self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
