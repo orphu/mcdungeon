@@ -334,6 +334,56 @@ class Mushrooms(Blank):
             return
 
 
+class MessHall(Blank):
+    _name = 'messhall'
+
+    def render(self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+        sb = self.parent.parent.setblock
+        # Draw tables. cram several in the room if it is large enough.
+        for x in xrange(self.parent.size.x):
+            for z in xrange(self.parent.size.z):
+                rp = self.parent.pos + Vec(x,0,z)
+                if (self.parent.parent.rooms[rp].features[0]._name != 'blank'):
+                    p = self.parent.loc + Vec(
+                        x * self.parent.parent.room_size,
+                        self.parent.canvasHeight()-1,
+                        z * self.parent.parent.room_size)
+                    for q in iterate_cube(p+Vec(5,0,7), p+Vec(10,0,8)):
+                        sb(q, materials.Fence)
+                        sb(q.up(1), materials.WoodenPressurePlate)
+                    # Seating
+                    q = p+Vec(5,0,6)
+                    o = random.randint(0,1)
+                    while o <= 5:
+                            sb(q.e(o), materials.WoodenStairs, 3)
+                            o += random.randint(2,3)
+                    q = p+Vec(5,0,9)
+                    o = random.randint(0,1)
+                    while o <= 5:
+                            sb(q.e(o), materials.WoodenStairs, 2)
+                            o += random.randint(2,3)
+
+        # If the room is 1x1, stop here.
+        if (self.parent.size.x < 2 and self.parent.size.z < 2):
+            return
+        # Draw a fire pit in the middle
+        center = self.parent.canvasCenter()
+        size = 2
+        p0 = Vec(center.x - size/2 + 1,
+                 self.parent.canvasHeight(),
+                 center.z - size/2 + 1) + self.parent.loc
+        p1 = p0.trans(size-1, 0, size-1)
+        for p in iterate_disc(p0+Vec(-2,0,-2), p1+Vec(2,0,2)):
+            sb(p, materials._floor)
+            sb(p.up(1), materials.IronBars)
+        for p in iterate_disc(p0, p1):
+            sb(p, materials.Netherrack)
+            sb(p.up(1), materials.Fire)
+
+
+
 class Dais(Blank):
     _name = 'dais'
 
