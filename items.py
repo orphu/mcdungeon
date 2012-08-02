@@ -24,9 +24,20 @@ class ItemInfo (object):
 def LoadItems(filename = 'items.txt'):
     # Try to load items from sys.path[0] if we can, 
     # otherwise default to the cd. 
-    filename = os.path.join(sys.path[0],filename)
+    temp = os.path.join(sys.path[0],filename)
+    try:
+        fh = open(temp)
+        fh.close
+        filename = temp
+    except:
+        pass
     print 'Reading items database:', filename, '...'
     items = 0
+    try:
+        fh = open(filename)
+    except IOError as e:
+        sys.exit(e)
+    fh.close()
     try:
         with file(filename) as f:
             items_txt = f.read()
@@ -51,9 +62,22 @@ def LoadItems(filename = 'items.txt'):
     print 'Loaded', items, 'items.'
 
 def LoadMagicItems(filename = 'magic_items.txt'):
-    filename = os.path.join(sys.path[0],filename)
+    # Try to load items from sys.path[0] if we can, 
+    # otherwise default to the cd. 
+    temp = os.path.join(sys.path[0],filename)
+    try:
+        fh = open(temp)
+        fh.close
+        filename = temp
+    except:
+        pass
     print 'Reading magic items:', filename, '...'
     items = 0
+    try:
+        fh = open(filename)
+    except IOError as e:
+        sys.exit(e)
+    fh.close()
     try:
         with file(filename) as f:
             items_txt = f.read()
