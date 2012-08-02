@@ -345,7 +345,8 @@ class MessHall(Blank):
         for x in xrange(self.parent.size.x):
             for z in xrange(self.parent.size.z):
                 rp = self.parent.pos + Vec(x,0,z)
-                if (self.parent.parent.rooms[rp].features[0]._name != 'blank'):
+                if (self.parent.parent.rooms[rp].features[0]._name not in
+                    ['stairwell', 'blank']):
                     p = self.parent.loc + Vec(
                         x * self.parent.parent.room_size,
                         self.parent.canvasHeight()-1,
