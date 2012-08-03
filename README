@@ -7,9 +7,7 @@ makes use of code from Paul Hodge's minetown, David Rio Vierra's pymclevel,
 and the Minecraft Overviewer project. This was inspired by BeeTLe BeTHLeHeM's
 MCMapper.
 
-For detailed information and documentation try the wiki:
-
-http://mcdungeon.wikkii.com/
+http://mcdungeon.bubblemod.org
 
 Thanks to the following for their interest, inspiration, and great ideas! 
 (in no particular order)
@@ -75,9 +73,7 @@ TODO:
    * Harder hard mode!
    * More stuff as Minecraft evolves!
 
-QUICK START:
-
-Go to the wiki! http://mcdungeon.wikkii.com/wiki/Quick_Start
+QUICK START
 
 List available subcommands and options:
 
@@ -88,6 +84,11 @@ Help on a specific subcommand:
 ./mcdungeon.py <subcommand> --help
 
 EXAMPLES:
+
+Run in interactive mode. From here you can add, list, delete or regenerate
+dungeons.
+
+./mcdungeon interactive
 
 Load a world named 'Dungeon' in the current directory, generate a
 5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
@@ -102,7 +103,3 @@ save them to the world.
 
 ./mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
 
-Run in interactive mode. From here you can add, list, delete or regenerate
-dungeons.
-
-./mcdungeon interactive
