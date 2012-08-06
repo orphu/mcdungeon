@@ -14,7 +14,7 @@ from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
-__version__ = '0.9.0'
+__version__ = '0.9.1'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -809,7 +809,7 @@ if (cfg.offset is None or cfg.offset is ''):
     # Load the chunk cache
     chunk_cache, chunk_mtime = loadChunkCache(cache_path)
     cached = 0
-    notcached = 0
+    notcached = 1
 
     # Store some stats
     chunk_stats = [
