@@ -405,3 +405,39 @@
 373,Splash Potion of Harming,16396,1
 373,Potion of Harming II,8236,1
 373,Splash Potion of Harming II,16428,1
+# Extended Positive Potions
+373,Extended Potion of Regeneration,8257,1
+373,Extended Splash Potion of Regeneration,16449,1
+373,Extended Potion of Regeneration II,8289,1
+373,Extended Splash Potion of Regeneration II,16481,1
+373,Extended Potion of Swiftness,8260,1
+373,Extended Splash Potion of Swiftness,16450,1
+373,Extended Potion of Swiftness II,8290,1
+373,Extended Splash Potion of Swiftness II,16482,1
+373,Extended Potion of Fire Resistance,8259,1
+373,Extended Splash Potion of Fire Resistance,16451,1
+373,Extended Potion of Healing,8261,1
+373,Extended Splash Potion of Healing,16453,1
+373,Extended Potion of Healing II,8296,1
+373,Extended Splash Potion of Healing II,16485,1
+373,Extended Potion of Strength,8265,1
+373,Extended Splash Potion of Strength,16457,1
+373,Extended Potion of Strength II,8297,1
+373,Extended Splash Potion of Strength II,16489,1
+# Extended Negative Potions
+373,Extended Potion of Poison,8260,1
+373,Extended Splash Potion of Poison,16452,1
+373,Extended Potion of Poison II,8292,1
+373,Extended Splash Potion of Poison II,16484,1
+373,Extended Potion of Weakness,8264,1
+373,Extended Splash Potion of Weakness,16456,1
+373,Extended Potion of Weakness II,8328,1
+373,Extended Splash Potion of Weakness II,16520,1
+373,Extended Potion of Slowness,8266,1
+373,Extended Splash Potion of Slowness,16458,1
+373,Extended Potion of Slowness II,8330,1
+373,Extended Splash Potion of Slowness II,16522,1
+373,Extended Potion of Harming,8268,1
+373,Extended Splash Potion of Harming,16460,1
+373,Extended Potion of Harming II,8300,1
+373,Extended Splash Potion of Harming II,16492,1
