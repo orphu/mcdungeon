@@ -219,7 +219,7 @@ def rollLoot (tier, level):
                     yield thisloot
                     slot += 1
 
-def enchant (item, level, debug=True):
+def enchant (item, level, debug=False):
     # Based on the info available in the wiki as of 1.3.1:
     # http://www.minecraftwiki.net/wiki/Enchantment_Mechanics
     #
