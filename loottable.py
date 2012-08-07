@@ -77,7 +77,7 @@ _ench_prob = {
     PROJECTILE_PROTECTION: 5,
     RESPIRATION: 2,
     AQUA_AFFINITY: 2,
-    SHARPNESS: 2,
+    SHARPNESS: 10,
     SMITE: 5,
     BANE_OF_ARTHROPODS: 5,
     KNOCKBACK: 5,
@@ -104,8 +104,8 @@ _ench_level = {
     RESPIRATION:           [( 10, 40),( 20, 50),( 30, 60),(  0,  0),(  0,  0)],
     AQUA_AFFINITY:         [(  1, 41),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
     SHARPNESS:             [(  1, 21),( 17, 37),( 33, 53),( 49, 69),( 65, 85)],
-    SMITE:                 [(  5, 17),( 13, 25),( 21, 33),( 29, 41),( 37, 49)],
-    BANE_OF_ARTHROPODS:    [(  5, 17),( 13, 25),( 21, 33),( 29, 41),( 37, 49)],
+    SMITE:                 [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
+    BANE_OF_ARTHROPODS:    [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
     KNOCKBACK:             [(  5, 25),( 25, 75),(  0,  0),(  0,  0),(  0,  0)],
     FIRE_ASPECT:           [( 10, 60),( 30, 80),(  0,  0),(  0,  0),(  0,  0)],
     LOOTING:               [( 20, 70),( 32, 82),( 44, 94),(  0,  0),(  0,  0)],
@@ -219,9 +219,9 @@ def rollLoot (tier, level):
                     yield thisloot
                     slot += 1
 
-def enchant (item, level, debug=False):
-    # Based on the info available in the wiki as of 1.1:
-    # http://http://www.minecraftwiki.net/wiki/Enchanting
+def enchant (item, level, debug=True):
+    # Based on the info available in the wiki as of 1.3.1:
+    # http://www.minecraftwiki.net/wiki/Enchantment_Mechanics
     #
     # NBT for an item in a chest looks like this:
     #
@@ -262,15 +262,15 @@ def enchant (item, level, debug=False):
           'boots' in item):
         type = 'armor'
 
-    enchantability = 0.0
+    enchantability = 1.0
     material = ''
     # Determine material enchantability
     if 'wooden' in item:
         material = 'wood'
-        enchantability = 1.0
+        enchantability = 15.0
     elif 'leather' in item:
         material = 'leather'
-        enchantability = 1.0
+        enchantability = 15.0
     elif 'stone' in item:
         material = 'stone'
         enchantability = 5.0
@@ -284,7 +284,7 @@ def enchant (item, level, debug=False):
         enchantability = 12.0
     elif 'diamond' in item:
         material = 'diamond'
-        enchantability = 12.0
+        enchantability = 10.0
         if type == 'armor':
             enchantability = 10.0
     elif 'gold' in item:
@@ -294,11 +294,10 @@ def enchant (item, level, debug=False):
             enchantability = 25.0
 
     # Modify the enchantment level
-    mean = enchantability/2
-    std = math.sqrt(mean)
-    emod = random.normalvariate(mean, std) + 1
-    mod= random.uniform(0.75, 1.25)
-    mlevel = int((level + emod) * mod + .5)
+    # Step 1 = level plus random 0 - enchantability plus one
+    mlevel = level + random.triangular(0, enchantability) + 1
+    # Step 2 = vary by +- 25%
+    mlevel = int(mlevel * random.triangular(0.75, 1.25) + .5)
 
     # Further determine the type
     if 'helmet' in item:
@@ -365,7 +364,7 @@ def enchant (item, level, debug=False):
     if debug is True:
         print 'Enchanting', item
         print 'Enchantability of', material, '=', enchantability
-        print 'Modified level:', '(', level, '+', emod, ') *', mod, '~=', mlevel
+        print 'Modified level:', '(', level, ') ~=', mlevel
         print 'Possible enchantments for', type, '@', 'level', mlevel
         for k, v in enchantments.items():
             print '\t', _ench_name[k], _level_name[v], '@', _ench_prob[k]
