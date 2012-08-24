@@ -883,23 +883,24 @@ if (cfg.offset is None or cfg.offset is ''):
                                       key=lambda section: section['Y']):
                     b[int(section['Y'])] = section['Blocks']
                 # Structures
-                mats = cfg.structure_values
-                t = False
-                i = 0
-                y = 0
-                while (t == False and y < world.Height//16):
-                    if y in b:
-                        x = (b[y][:] == mats[i])
-                        t = x.any()
-                        i += 1
-                    if i >= len(mats):
-                        y += 1
-                        i = 0
-                    else:
-                        y += 1
-                if t == True:
-                    chunk_cache[key][0] = 'S'
-                    continue
+                if (len(cfg.structure_values) > 0):
+                    mats = cfg.structure_values
+                    t = False
+                    i = 0
+                    y = 0
+                    while (t == False and y < world.Height//16):
+                        if y in b:
+                            x = (b[y][:] == mats[i])
+                            t = x.any()
+                            i += 1
+                        if i >= len(mats):
+                            y += 1
+                            i = 0
+                        else:
+                            y += 1
+                    if t == True:
+                        chunk_cache[key][0] = 'S'
+                        continue
                 # Depths
                 min_depth = world.Height
                 max_depth = 0
