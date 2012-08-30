@@ -459,15 +459,13 @@ class Dungeon (object):
         self.pm.set_complete()
 
 
-    def getpotioneffecttaglist(self, id, amplifier, duration):
+    def getpotioneffecttag(self, id, amplifier, duration):
         active_effects_tag = nbt.TAG_Compound()
         active_effects_tag['Amplifier'] = nbt.TAG_Byte(amplifier)
         active_effects_tag['Id'] = nbt.TAG_Byte(id)
         active_effects_tag['Duration'] = nbt.TAG_Int(duration)
-        active_effects_tag_list = nbt.TAG_List()
-        active_effects_tag_list.append(active_effects_tag)
 
-        return active_effects_tag_list
+        return active_effects_tag
 
 
     def getspawnertags(self, entity, root_tag):
@@ -492,7 +490,8 @@ class Dungeon (object):
             root_tag['SpawnData'] = nbt.TAG_Compound()
             root_tag['SpawnData']['Health'] = nbt.TAG_Short(16)
             #Add Strength Potion Effect, longest duration
-            root_tag['SpawnData']['ActiveEffects'] = self.getpotioneffecttaglist(5, 1, 10000000)
+            root_tag['SpawnData']['ActiveEffects'] = nbt.TAG_List()
+            root_tag['SpawnData']['ActiveEffects'].append(self.getpotioneffecttag(5, 1, 10000000))
         #For everything else the input is the EntityId
         else:
             root_tag['EntityId'] = nbt.TAG_String(entity)
