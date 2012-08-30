@@ -123,6 +123,8 @@ def Load(filename = 'default.cfg'):
             mob2 = 'PigZombie'
         elif (mob2 == 'Cavespider'):
             mob2 = 'CaveSpider'
+        elif (mob2 == 'Lavaslime'):
+            mob2 = 'LavaSlime'
         master_mobs.append((mob2, mob[1]))
 
     # Process dispensers config
