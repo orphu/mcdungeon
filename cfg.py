@@ -116,15 +116,9 @@ def Load(filename = 'default.cfg'):
     except:
         print 'WARNING: No treasure rooms section found in config. Using default.'
 
-    # Fix the mob names...
+    # Load the mob spawner names
     for mob in temp_mobs:
         mob2 = mob[0].capitalize()
-        if (mob2 == 'Pigzombie'):
-            mob2 = 'PigZombie'
-        elif (mob2 == 'Cavespider'):
-            mob2 = 'CaveSpider'
-        elif (mob2 == 'Lavaslime'):
-            mob2 = 'LavaSlime'
         master_mobs.append((mob2, mob[1]))
 
     # Process dispensers config
