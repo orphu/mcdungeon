@@ -366,6 +366,9 @@
 2264,Music Disc ward,0,1
 2265,Music Disc 11,0,1
 
+# Written books will be given random text from the books folder
+387,Written Book,0,1
+
 # Potions
 # #################
 #
