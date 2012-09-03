@@ -60,6 +60,11 @@ def LoadItems(filename = 'items.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'items.'
+    #We need to prevent written books being generated if the books folder is empty
+    #Substitute written books for plain book here to ensure they never get genetated
+    if (BooksReady() == False):
+        print 'Notice: There are no texts in the books folder. Written Books will be generated as Books instead.'
+        _items['written book'] = _items['book']
 
 def LoadMagicItems(filename = 'magic_items.txt'):
     # Try to load items from sys.path[0] if we can, 
@@ -104,6 +109,17 @@ def LoadMagicItems(filename = 'magic_items.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'magic items.'
+    
+    
+def BooksReady():
+    #Book directory existance
+    if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
+        return False
+    #Check for at least one book
+    for file in os.listdir(os.path.join(os.getcwd(),'books')):
+        if (file.endswith(".txt")):
+            return True
+    return False
 
 
 def byName (name):
