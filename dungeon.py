@@ -1271,6 +1271,8 @@ class Dungeon (object):
             return
         # Some lookups
         # sides maps a dir to a room side for hall placement.
+        # TODO: This is still backwards from the coordinate switch.
+        # S == E, E == S, etc. 
         sides = {'N': 3,
                  'S': 1,
                  'E': 2,

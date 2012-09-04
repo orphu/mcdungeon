@@ -6,6 +6,13 @@ v0.9.1 -
 
    * Enchanting probabilities work like 1.3 now.
 
+   * Fixed LavaSlime (Magma Cube) spawners. (Thanks JiFish!)
+
+   * Added a few extra hard mob spawner types. Charged Creepers,
+     Angry Pig Zombies, and Tougher Zombies. See conf files. (JiFish)
+
+   * Maximum levels is now 42 (which will not fit in a 256 tall world)
+
 v0.9.0 -  08/02/2012
 
   !! NOTE: This version requires Minecraft 1.3.1 release or higher!
