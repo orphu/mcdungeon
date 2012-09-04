@@ -506,7 +506,25 @@ class SecretRoom(Blank):
             self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
             self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
             sb(o.trans(5,2,5), materials.Torch)
-            self.parent.parent.addchest(o.trans(5,3,7))
+            
+            # A chest in a study should have writing supplies :)
+            #item, probability, max stack amount
+            writing_items = [(items.byName('written book'), 1, 1),
+                             (items.byName('written book'), 0.3, 1),
+                             (items.byName('written book'), 0.2, 1),
+                             (items.byName('book'), 0.7, 5),
+                             (items.byName('paper'), 0.8, 10),
+                             (items.byName('ink sac'), 0.9, 4),
+                             (items.byName('feather'), 0.9, 4),
+                             (items.byName('leather'), 0.4, 3),
+                             (items.byName('apple'), 0.2, 1)]
+            # Generate desk loot and place chest
+            deskloot = []
+            for s in writing_items:
+                if (random.random() < s[1]):
+                    amount = random.randint(1,min(s[2],s[0].maxstack))
+                    deskloot.append(loottable.Loot(len(deskloot),amount,s[0].value,s[0].data,''))
+            self.parent.parent.addchest(o.trans(5,3,7), loot=deskloot)
         else:
             # a small sepulchure
             # Torches
