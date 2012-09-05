@@ -3,6 +3,7 @@
 import sys
 import os
 import operator
+import random
 from random import *
 
 import cfg
@@ -534,6 +535,31 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
+        
+    
+    def loadrandbooktext(self):
+        #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
+        if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
+            sys.exit("Error: Could not find the books folder!")
+        #Make a list of all the txt files in the books directory (excluding _readme.txt)
+        booklist = []
+        for file in os.listdir(os.path.join(os.getcwd(),'books')):
+            if (file.endswith(".txt")):
+                booklist.append(file);
+        #This error should also never trip.
+        if (len(booklist) < 1):
+            sys.exit("Error: There should be at least one book in the book folder")
+        bookfile = open(os.path.join(os.getcwd(), 'books', random.choice(booklist)))
+        bookdata = bookfile.read().splitlines()
+        bookfile.close()
+        outtag = nbt.TAG_Compound()
+        outtag['author'] = nbt.TAG_String(bookdata.pop(0))
+        outtag['title'] = nbt.TAG_String(bookdata.pop(0))
+        outtag["pages"] = nbt.TAG_List()
+        for p in bookdata:
+            outtag["pages"].append(nbt.TAG_String(p))
+        
+        return outtag
 
 
     def addchest(self, loc, tier=-1, loot=[]):
@@ -574,6 +600,9 @@ class Dungeon (object):
                     e_tag['id'] = nbt.TAG_Short(e['id'])
                     e_tag['lvl'] = nbt.TAG_Short(e['lvl'])
                     elist.append(e_tag)
+            #special case for item id 387 (written books!)
+            if (i.id == 387):
+                item_tag['tag'] = self.loadrandbooktext()
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 

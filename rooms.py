@@ -2066,15 +2066,14 @@ class Crypt(Basic):
             lootb.append(loottable.Loot(slot,1,bone.value,bone.data,''))
 
         # Random stuff to be buried with.
-        lootc = [(items.byName('bone'), 20),
-                 (items.byName('book'), 10),
+        lootc = [(items.byName('bone'), 10),
+                 (items.byName('written book'), 10),
                  (items.byName('bow'), 10),
                  (items.byName('diamond'), 5),
                  (items.byName('gold ingot'), 5),
                  (items.byName('bowl'), 10),
                  (items.byName('feather'), 10),
                  (items.byName('golden apple'), 5),
-                 (items.byName('paper'), 10),
                  (items.byName('clock'), 10),
                  (items.byName('compass'), 10),
                  (items.byName('gold nugget'), 10),
