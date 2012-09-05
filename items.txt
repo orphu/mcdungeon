@@ -185,7 +185,7 @@
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
 259,Flint and Steel,0,1
-260,Apple,0,1
+260,Apple,0,64
 261,Bow,0,1
 262,Arrow,0,64
 263,Coal,0,64
@@ -248,7 +248,8 @@
 319,Raw Porkchop,0,64
 320,Cooked Porkchop,0,64
 321,Paintings,0,64
-322,Golden Apple,0,1
+322,Golden Apple,0,64
+322,Enchanted Golden Apple,1,64
 323,Sign,0,16
 324,Wooden Door,0,1
 325,Bucket,0,16
@@ -298,7 +299,7 @@
 354,Cake,0,1
 355,Bed,0,1
 356,Redstone Repeater,0,64
-357,Cookie,0,8
+357,Cookie,0,64
 358,Map,0,0
 358,Map0,0,0
 358,Map1,1,0
