@@ -506,7 +506,7 @@ class SecretRoom(Blank):
             self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
             self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
             sb(o.trans(5,2,5), materials.Torch)
-            
+
             # A chest in a study should have writing supplies :)
             #item, probability, max stack amount
             writing_items = [(items.byName('written book'), 1, 1),
