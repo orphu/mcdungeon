@@ -460,16 +460,14 @@ class Dungeon (object):
         self.pm.set_complete()
 
 
-    def getpotioneffecttag(self, id, amplifier, duration):
-        active_effects_tag = nbt.TAG_Compound()
-        active_effects_tag['Amplifier'] = nbt.TAG_Byte(amplifier)
-        active_effects_tag['Id'] = nbt.TAG_Byte(id)
-        active_effects_tag['Duration'] = nbt.TAG_Int(duration)
+    def getspawnertags(self, entity):
+        #See if we have an NBT file match
+        if (os.path.isfile(os.path.join(os.getcwd(),'spawners',entity+'.nbt'))):
+            root_tag = nbt.load(filename=os.path.join(os.getcwd(),'spawners',entity+'.nbt'))
+            return root_tag
+        else:
+            root_tag = nbt.TAG_Compound()
 
-        return active_effects_tag
-
-
-    def getspawnertags(self, entity, root_tag):
         #Cases where the entity id doesn't match the config
         if (entity == 'Pigzombie'):
             root_tag['EntityId'] = nbt.TAG_String('PigZombie')
@@ -477,22 +475,6 @@ class Dungeon (object):
             root_tag['EntityId'] = nbt.TAG_String('CaveSpider')
         elif (entity == 'Lavaslime'):
             root_tag['EntityId'] = nbt.TAG_String('LavaSlime')
-        #add spawn data for special custom spawners
-        elif (entity == 'Angrypig'):
-            root_tag['EntityId'] = nbt.TAG_String('PigZombie')
-            root_tag['SpawnData'] = nbt.TAG_Compound()
-            root_tag['SpawnData']['Anger'] = nbt.TAG_Short(400)
-        elif (entity == 'Chargedcreeper'):
-            root_tag['EntityId'] = nbt.TAG_String('Creeper')
-            root_tag['SpawnData'] = nbt.TAG_Compound()
-            root_tag['SpawnData']['powered'] = nbt.TAG_Byte(1)
-        elif (entity == 'Hardzombie'):
-            root_tag['EntityId'] = nbt.TAG_String('Zombie')
-            root_tag['SpawnData'] = nbt.TAG_Compound()
-            root_tag['SpawnData']['Health'] = nbt.TAG_Short(16)
-            #Add Strength Potion Effect, longest duration
-            root_tag['SpawnData']['ActiveEffects'] = nbt.TAG_List()
-            root_tag['SpawnData']['ActiveEffects'].append(self.getpotioneffecttag(5, 1, 10000000))
         #For everything else the input is the EntityId
         else:
             root_tag['EntityId'] = nbt.TAG_String(entity)
@@ -514,15 +496,14 @@ class Dungeon (object):
 
 
     def addspawner(self, loc, entity=''):
-        root_tag = nbt.TAG_Compound()
+        if (entity == ''):
+            entity = weighted_choice(cfg.master_mobs)
+        root_tag = self.getspawnertags(entity)
+        #Do generic spawner setup
         root_tag['id'] = nbt.TAG_String('MobSpawner')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        if (entity == ''):
-            entity = weighted_choice(cfg.master_mobs)
-        #Add additional tags by the entity
-        root_tag = self.getspawnertags(entity, root_tag)
         root_tag['Delay'] = nbt.TAG_Short(0)
         self.tile_ents[loc] = root_tag
 
