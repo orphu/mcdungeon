@@ -8,8 +8,11 @@ v0.9.1 -
 
    * Fixed LavaSlime (Magma Cube) spawners. (Thanks JiFish!)
 
-   * Added a few extra hard mob spawner types. Charged Creepers,
-     Angry Pig Zombies, and Tougher Zombies. See conf files. (JiFish)
+   * Added custom spawner types. Use an NBT editor (like NBTEdit)
+     to create custom mob types in the spawners directory. These can be
+     used to create custom mob spawners. A few examples are included:
+     Charged Creepers, Angry Pig Zombies, and Tougher Zombies (zombies
+     with a potion affect) (JiFish)
 
    * Maximum levels is now 42 (which will not fit in a 256 tall world)
 
