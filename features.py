@@ -514,9 +514,9 @@ class SecretRoom(Blank):
                              (items.byName('written book'), 0.2, 1),
                              (items.byName('book'), 0.7, 5),
                              (items.byName('paper'), 0.8, 10),
-                             (items.byName('ink sac'), 0.9, 4),
-                             (items.byName('feather'), 0.9, 4),
-                             (items.byName('leather'), 0.4, 3),
+                             (items.byName('ink sac'), 0.9, 5),
+                             (items.byName('feather'), 0.9, 10),
+                             (items.byName('leather'), 0.4, 5),
                              (items.byName('apple'), 0.2, 1)]
             # Generate desk loot and place chest
             deskloot = []
