@@ -335,7 +335,6 @@
 383,Spawn Creeper,50,64
 383,Spawn Enderman,58,64
 383,Spawn Ghast,56,64
-383,Spawn Iron Golem,99,64
 383,Spawn Magma Cube,62,64
 383,Spawn Mooshroom,96,64
 383,Spawn Ocelot,98,64
