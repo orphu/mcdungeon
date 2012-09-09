@@ -11,14 +11,25 @@ v0.9.1 -
    * Added custom spawner types. Use an NBT editor (like NBTEdit)
      to create custom mob types in the spawners directory. These can be
      used to create custom mob spawners. A few examples are included:
-     Charged Creepers, Angry Pig Zombies, and Tougher Zombies (zombies
+     Charged Creepers, Angry Pig Zombies, and Tougher Zombies. (zombies
      with a potion affect) (JiFish)
 
-   * Maximum levels is now 42 (which will not fit in a 256 tall world)
+   * Maximum levels is now 42. (which will not fit in a 256 tall world)
 
    * 59 new written books as loot. Collect 'em all! (JiFish)
 
-   * Fixed some item stacking and missing items (JiFish)
+   * Fixed some item stacking and missing items. (JiFish)
+
+   * Added Chainmail to tier 2 chests. (JiFish)
+
+   * Added all music discs avalible in survival (excl. Disc 11) to max
+     tier. (JiFish)
+
+   * Added enchanted golden apple and glistering melon to max tier. (JiFish)
+
+   * Removed Iron Golem Egg (Hasn't worked since release 1.2) (JiFish)
+
+   * Studies (secret rooms) now contain unique loot. (JiFish)
 
 v0.9.0 -  08/02/2012
 
