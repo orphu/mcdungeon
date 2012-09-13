@@ -72,14 +72,14 @@ class WoodTile(Blank):
 
 class MixedWoodTile(Blank):
     _name = 'mixedwoodtile'
+    woodtypes = (
+        materials.WoodPlanks,
+        materials.SprucePlanks,
+        materials.BirchPlanks,
+        materials.JunglePlanks
+        )
     def render (self):
-        woodtypes = (
-            materials.WoodPlanks,
-            materials.SprucePlanks,
-            materials.BirchPlanks,
-            materials.JunglePlanks
-            )
-        wood = random.sample(woodtypes,2)
+        wood = random.sample(self.woodtypes,2)
         if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
             for x in iterate_points_inside_flat_poly(*self.parent.canvas):
                 if ((x.x+x.z)&1 == 1):
