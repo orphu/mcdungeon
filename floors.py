@@ -217,6 +217,12 @@ class Sand(Blank):
 class Bridges(Blank):
     _name = 'bridges'
     sandpit = False
+    slabtypes = (
+        materials.WoodenSlab,
+        materials.SpruceSlab,
+        materials.BirchSlab,
+        materials.JungleSlab
+        )
     def render(self):
         pn = perlin.SimplexNoise(256)
         # Find all the valid halls. These are halls with a size > 0.
@@ -283,7 +289,7 @@ class Bridges(Blank):
                  y,
                  z2)
         # Sandpit?
-        mat = materials.WoodenSlab
+        mat = random.choice(self.slabtypes)
         if (self.sandpit == True):
             # Draw the false sand floor
             mat = materials.Sand
