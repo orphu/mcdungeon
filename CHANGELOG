@@ -38,6 +38,10 @@ v0.9.1 -
      maps: Chance to generate a map for a given level
      mapstore: Where to place maps (if you use bukkit/multiworld)
 
+   * The default easy_mode config will always generate maps. 
+     hard_mode will never generate maps. And all other example
+     configs will generate level maps 80% of the time. 
+
    
 
 v0.9.0 -  08/02/2012

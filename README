@@ -58,7 +58,10 @@ CURRENT FEATURES:
 
    * Places mob spawners throughout the dungeon. These will likely be near
      chests, but not always. Mob types are configurable. The density of
-     spawners is configurable. Some 'non-standard' mobs are available. ;)
+     spawners is configurable. Some 'non-standard' mobs are available.
+     Custom mob spawners can be created with an NBT editor.
+
+   * Optional in-game maps of dungeons.
 
    * Random placement of secret traps and puzzles.
 
@@ -75,31 +78,68 @@ TODO:
 
 QUICK START
 
-List available subcommands and options:
+   For the Windows stand-alone version, just run launcher.bat for
+   interactive mode. You can also run mcdungeon.exe from the command
+   line for advanced usage like the Python version.
 
-./mcdungeon.py --help
+   List available subcommands and options:
 
-Help on a specific subcommand:
+   $ mcdungeon.py --help
 
-./mcdungeon.py <subcommand> --help
+   Help on a specific subcommand:
+
+   $ mcdungeon.py <subcommand> --help
 
 EXAMPLES:
 
-Run in interactive mode. From here you can add, list, delete or regenerate
-dungeons.
+   Run in interactive mode. From here you can add, list, delete or regenerate
+   dungeons.
 
-./mcdungeon interactive
+   $ mcdungeon interactive
 
-Load a world named 'Dungeon' in the current directory, generate a
-5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
-and display the results in a terminal window. (In color on ANSI
-terminals only. Sorry Windows) The world files will not be modified,
-but are required. Basically a "dry run."
+   Load a world named 'Dungeon' in the current directory, generate a
+   5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
+   and display the results in a terminal window. (In color on ANSI
+   terminals only. Sorry Windows) The world files will not be modified,
+   but are required. Basically a "dry run."
 
-./mcdungeon.py add Dungeon 5 4 3 --term 1
+   $ mcdungeon.py add Dungeon 5 4 3 --term 1
 
-Generate five random dungeons between the sizes of 4x4x5 and 6x6x8 and 
-save them to the world.
+   Generate five random dungeons between the sizes of 4x4x5 and 6x6x8
+   and save them to the world.
 
-./mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
+   $ mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
+
+EXAMPLE CONFIGURATIONS
+
+   Several example configs are included. 
+
+   default.cfg
+   
+      A little of everything.
+
+   caverns.cfg   
+
+      Mostly cavern type rooms. Very few "dungeon" looking rooms
+      except the treasure chambers. It's a bit like exploring caves
+      with the occasional dungeon room.
+
+   maze.cfg 
+
+      Basically bumps up the number of corridor type rooms and the
+      number of loops the dungeon layout has. You'll end up with
+      fewer rooms and lots of twisty halls to get lost in. 
+
+   easy_mode.cfg 
+
+      Better treasure, fewer monsters and traps. Easier dungeon layout
+      (very linear) and maps of every level.
+
+   hard_mode.cfg
+
+      Less treasure in upper levels, more confusing dungeon layout
+      (lots of loops) more monster spawners. Creepers are more
+      common. Buffed monster spawners. No maps. It also fills in all
+      the surrounding underground caves so that monsters spawn inside
+      the dungeon much more frequently.
 
