@@ -516,8 +516,8 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
-        
-    
+
+
     def loadrandbooktext(self):
         #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
         if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
@@ -539,7 +539,7 @@ class Dungeon (object):
         outtag["pages"] = nbt.TAG_List()
         for p in bookdata:
             outtag["pages"].append(nbt.TAG_String(p))
-        
+
         return outtag
 
 
@@ -587,6 +587,20 @@ class Dungeon (object):
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 
+    def addchestitem_tag(self, loc, item_tag):
+        '''Add an item to an existing chest'''
+        # No chest here!
+        if (loc not in self.tile_ents or
+            self.tile_ents[loc]['id'].value != 'Chest'):
+            return False
+        root_tag = self.tile_ents[loc]
+        slot = len(root_tag['Items'])
+        # Chest is full
+        if slot > 26:
+            return False
+        item_tag['Slot'] = nbt.TAG_Byte(slot)
+        root_tag['Items'].append(item_tag)
+        return True
 
     def addtrap(self, loc, name=None):
         if name == None:
@@ -1513,7 +1527,7 @@ class Dungeon (object):
                 block = ptrap[p.y][p.x][p.z]
                 if block is not 'XX':
                     m = mat[block]
-                    self.setblock(q, m[0], m[1])
+                    self.setblock(q, m[0], m[1], hide=True)
             # First pressure plate
             p1 = pos + sw*-1 + sl*2 + Vec(0,1,0)*3
             self.setblock(p1, materials.StonePressurePlate)
@@ -1530,7 +1544,7 @@ class Dungeon (object):
                     block = ptrap[p.y][p.x][p.z]
                     if block is not 'XX':
                         m = mat[block]
-                        self.setblock(q, m[0], m[1])
+                        self.setblock(q, m[0], m[1], hide=True)
                 c  = (c+1)%2
             # The return trigger mechanism.
             for p in iterate_cube(Vec(0,0,4), Vec(3,5,5)):
@@ -1538,7 +1552,7 @@ class Dungeon (object):
                 block = ptrap[p.y][p.x][p.z]
                 if block is not 'XX':
                     m = mat[block]
-                    self.setblock(q, m[0], m[1])
+                    self.setblock(q, m[0], m[1], hide=True)
             # Return pressure plate
             p2 = pos + sw*-1 + sl*4  + sl*(length-1) + Vec(0,1,0)*3
             self.setblock(p2, materials.StonePressurePlate)

@@ -12,6 +12,7 @@ from numpy import *
 from pymclevel import mclevel
 from overviewer_core import world as ov_world
 import pmeter
+import mapstore
 
 # Version info
 __version__ = '0.9.1'
@@ -87,6 +88,10 @@ parser_inter.add_argument('--dir',
                           dest='dir',
                           metavar='SAVEDIR',
                           help='Override the default map directory.')
+parser_inter.add_argument('--mapstore',
+                    dest='mapstore',
+                    metavar='PATH',
+                    help='Provide an alternate world to store maps.')
 
 # Add subcommand parser 
 parser_add = subparsers.add_parser('add', help='Add new dungeons.')
@@ -169,6 +174,10 @@ parser_add.add_argument('-n','--number',
                     default=1,
                     help='Number of dungeons to generate. -1 will create as \
                     many as possible given X, Z, and LEVEL settings.')
+parser_add.add_argument('--mapstore',
+                    dest='mapstore',
+                    metavar='PATH',
+                    help='Provide an alternate world to store maps.')
 
 # List subcommand parser
 parser_list= subparsers.add_parser('list',
@@ -198,6 +207,10 @@ parser_del.add_argument('-a', '--all',
                     dest='all',
                     action='store_true',
                     help='Delete all known dungeons. Overrides -d.')
+parser_del.add_argument('--mapstore',
+                    dest='mapstore',
+                    metavar='PATH',
+                    help='Provide an alternate world to store maps.')
 
 # Regnerate subcommand parser
 parser_regen= subparsers.add_parser('regenerate',
@@ -243,6 +256,10 @@ parser_regen.add_argument('--skip-relight',
                     action='store_true',
                     dest='skiprelight',
                     help='Skip relighting the level')
+parser_regen.add_argument('--mapstore',
+                    dest='mapstore',
+                    metavar='PATH',
+                    help='Provide an alternate world to store maps.')
 #parser_regen.add_argument('-a', '--all',
 #                    dest='all',
 #                    action='store_true',
@@ -288,6 +305,15 @@ def loadWorld(world_name):
     cache_path = os.path.join(world_name, cfg.cache_dir)
     if os.path.exists(cache_path) is False:
         os.makedirs(cache_path)
+
+    # Find the mapstore path
+    print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+    if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
+        cfg.mapstore = os.path.join(mclevel.saveFileDir, cfg.mapstore)
+        print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+        if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
+            print "Cannot find world data directory!"
+            sys.exit(1)
 
     return world, oworld
 
@@ -441,6 +467,15 @@ if (args.command == 'interactive'):
         args.config = str(config)+'.cfg'
         cfg.Load(args.config)
 
+        # Prompt for a mapstore if we need to
+        if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore == None):
+            print '\nThis configuration may generate dungeon maps. If you are'
+            print 'using bukkit/multiverse you need supply the name of your'
+            print 'primary world for this to work. You can also provide this'
+            print 'in the config file or as a command switch.'
+            print '\n(if you don\'t use bukkit, just hit enter)'
+            cfg.mapstore = raw_input('Name of primary bukkit world: ')
+
         m = cfg.max_dist - cfg.min_dist
         print '\nEnter the size of the dungeon(s) in chunks from West to East. (X size)'
         print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
@@ -494,6 +529,18 @@ if (args.command == 'interactive'):
         args.config = str(config)+'.cfg'
         cfg.Load(args.config)
 
+        # Prompt for a mapstore if we need to
+        if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore == None):
+            print '\nThis configuration may generate dungeon maps. If you are'
+            print 'using bukkit/multiverse you need supply the name of your'
+            print 'primary world for this to work. You can also provide this'
+            print 'in the config file or as a command switch.'
+            print '\n(if you don\'t use bukkit, just hit enter)'
+            cfg.mapstore = raw_input('Name of primary bukkit world: ')
+
+        if (cfg.mapstore == ''):
+            cfg.mapstore = args.world
+
         args.dungeon = None
         world, oworld = loadWorld(args.world)
         dlist = listDungeons(world, oworld)
@@ -521,8 +568,21 @@ if (args.command == 'interactive'):
         args.command = 'delete'
         args.dungeons = []
         args.all = False
+
+        # Prompt for a mapstore if we need to
+        if args.mapstore == None:
+            print '\nIf you are using bukkit/multiverse you need supply the'
+            print 'name of your primary world so any existing dungeon maps'
+            print 'can be removed. You can also provide this as a command switch.'
+            print '\n(if you don\'t use bukkit, just hit enter)'
+            cfg.mapstore = raw_input('Name of primary bukkit world: ')
+
+        if (cfg.mapstore == ''):
+            cfg.mapstore = args.world
+
         world, oworld = loadWorld(args.world)
         dungeons = listDungeons(world, oworld)
+
         if len(dungeons) == 0:
             sys.exit()
         print 'Choose dungeon(s) to delete:\n----------------------------\n'
@@ -549,6 +609,13 @@ if (args.command == 'interactive'):
 elif(args.command == 'add' or args.command == 'regenerate'):
     cfg.Load(args.config)
 
+# Check to see if mapstore is being overridden
+if (hasattr(args, 'mapstore') and args.mapstore is not None):
+    cfg.mapstore = args.mapstore
+if (cfg.mapstore == ''):
+    cfg.mapstore = args.world
+
+# Load the world if we havent already
 if world == None:
     world, oworld = loadWorld(args.world)
 
@@ -592,10 +659,12 @@ if (args.command == 'delete'):
     chunks = []
     # We need to update the caches for the chunks we are affecting
     dcache, dmtime = loadDungeonCache(cache_path)
+    ms = mapstore.new(cfg.mapstore)
     for d in to_delete:
         p = [d[0]/16, d[1]/16]
         print 'Deleting dungeon at %d %d...'%(d[0], d[1])
         dkey = '%s,%s' % (d[0],d[1])
+        ms.delete_maps(dkey)
         if dkey in dcache:
             del dcache[dkey]
         else:
@@ -637,8 +706,7 @@ if (args.command == 'delete'):
 # Regenerate mode
 if (args.command == 'regenerate'):
     # Get a list of known dungeons and their size.
-    if dlist == []:
-        dlist = listDungeons(world, oworld)
+    dlist = listDungeons(world, oworld)
     # No dungeons. Exit.
     if len(dlist) == 0:
         sys.exit()
@@ -651,6 +719,11 @@ if (args.command == 'regenerate'):
             info = e
     if info == None:
         sys.exit('Unable to locate dungeon at %d %d.'%(d[0], d[1]))
+
+    # Delete the existing maps for this dungeon so they can be recycled.
+    ms = mapstore.new(cfg.mapstore)
+    ms.delete_maps('%s,%s'%(d[0], d[1]))
+
     # Build out our parameters
     # Just build one dungeon
     args.number = 1
@@ -1123,6 +1196,26 @@ while args.number is not 0:
                                     dungeon.levels),
                         flags)
         dungeon.setblock(Vec(1,0,0), materials.Stone, hide=True)
+
+        # Generate maps
+        if (args.write and cfg.maps > 0):
+            print "Generating maps..."
+            ms = mapstore.new(cfg.mapstore)
+            for level in xrange(1, dungeon.levels+1):
+                if randint(1, 100) > cfg.maps:
+                    next
+                m = ms.generate_map(dungeon, level)
+                for loc in dungeon.tile_ents.keys():
+                    ent = dungeon.tile_ents[loc]
+                    # Place the map in chests that are one level less than
+                    # the map, or in the case of level 1, above ground.
+                    if (ent['id'].value == 'Chest' and
+                        (loc.y//dungeon.room_height == level-2 or
+                        (loc.y < 0 and level == 1))):
+                        if not dungeon.addchestitem_tag(loc, m):
+                            print 'WARNING: Unable to add map to chest'
+                        else:
+                            break
 
         # Write the changes to the world.
         dungeon.applychanges(world)

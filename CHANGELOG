@@ -14,6 +14,8 @@ v0.9.1 -
      Charged Creepers, Angry Pig Zombies, and Tougher Zombies. (zombies
      with a potion affect) (JiFish)
 
+   * Hard mode config will use more diffuicult mob spawners. (JiFish)
+
    * Maximum levels is now 42. (which will not fit in a 256 tall world)
 
    * 59 new written books as loot. Collect 'em all! (JiFish)
@@ -30,6 +32,13 @@ v0.9.1 -
    * Removed Iron Golem Egg (Hasn't worked since release 1.2) (JiFish)
 
    * Studies (secret rooms) now contain unique loot. (JiFish)
+
+   * Two new config options for dungeon maps:
+
+     maps: Chance to generate a map for a given level
+     mapstore: Where to place maps (if you use bukkit/multiworld)
+
+   
 
 v0.9.0 -  08/02/2012
 
