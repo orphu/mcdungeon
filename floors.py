@@ -70,6 +70,24 @@ class WoodTile(Blank):
                                                 materials.WoodPlanks)
 
 
+class MixedWoodTile(Blank):
+    _name = 'mixedwoodtile'
+    def render (self):
+        woodtypes = (
+            materials.WoodPlanks,
+            materials.SprucePlanks,
+            materials.BirchPlanks,
+            materials.JunglePlanks
+            )
+        wood = random.sample(woodtypes,2)
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
+            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+                if ((x.x+x.z)&1 == 1):
+                    self.parent.parent.setblock(x+self.parent.loc, wood[0])
+                else:
+                    self.parent.parent.setblock(x+self.parent.loc, wood[1])
+
+
 class CheckerRug(Blank):
     _name = 'checkerrug'
     ruin = False
