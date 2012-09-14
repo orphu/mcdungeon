@@ -70,6 +70,24 @@ class WoodTile(Blank):
                                                 materials.WoodPlanks)
 
 
+class MixedWoodTile(Blank):
+    _name = 'mixedwoodtile'
+    woodtypes = (
+        materials.WoodPlanks,
+        materials.SprucePlanks,
+        materials.BirchPlanks,
+        materials.JunglePlanks
+        )
+    def render (self):
+        wood = random.sample(self.woodtypes,2)
+        if (sum_points_inside_flat_poly(*self.parent.canvas) > 4):
+            for x in iterate_points_inside_flat_poly(*self.parent.canvas):
+                if ((x.x+x.z)&1 == 1):
+                    self.parent.parent.setblock(x+self.parent.loc, wood[0])
+                else:
+                    self.parent.parent.setblock(x+self.parent.loc, wood[1])
+
+
 class CheckerRug(Blank):
     _name = 'checkerrug'
     ruin = False
@@ -199,6 +217,12 @@ class Sand(Blank):
 class Bridges(Blank):
     _name = 'bridges'
     sandpit = False
+    slabtypes = (
+        materials.WoodenSlab,
+        materials.SpruceSlab,
+        materials.BirchSlab,
+        materials.JungleSlab
+        )
     def render(self):
         pn = perlin.SimplexNoise(256)
         # Find all the valid halls. These are halls with a size > 0.
@@ -265,7 +289,7 @@ class Bridges(Blank):
                  y,
                  z2)
         # Sandpit?
-        mat = materials.WoodenSlab
+        mat = random.choice(self.slabtypes)
         if (self.sandpit == True):
             # Draw the false sand floor
             mat = materials.Sand
