@@ -537,8 +537,9 @@ class Dungeon (object):
         outtag['author'] = nbt.TAG_String(bookdata.pop(0))
         outtag['title'] = nbt.TAG_String(bookdata.pop(0))
         outtag["pages"] = nbt.TAG_List()
-        for p in bookdata:
-            outtag["pages"].append(nbt.TAG_String(p))
+        #Slice the pages at 50 and the page text at 256 to match minecraft limits
+        for p in bookdata[:50]:
+            outtag["pages"].append(nbt.TAG_String(p[:256]))
 
         return outtag
 
