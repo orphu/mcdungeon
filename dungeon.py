@@ -475,6 +475,8 @@ class Dungeon (object):
             root_tag['EntityId'] = nbt.TAG_String('CaveSpider')
         elif (entity == 'Lavaslime'):
             root_tag['EntityId'] = nbt.TAG_String('LavaSlime')
+        elif (entity == 'Witherboss'):
+            root_tag['EntityId'] = nbt.TAG_String('WitherBoss')
         #For everything else the input is the EntityId
         else:
             root_tag['EntityId'] = nbt.TAG_String(entity)
