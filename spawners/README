@@ -5,7 +5,7 @@ for more details.
 Each custom spawner is an NBT file containing the tags required to create
 the spawner object. You may add your own files by editing the defaults
 using an NBT editor (like NBTEdit.) It may also be possible to extract
-the tags form an existing spawner in a Minecraft level and use that. (But
+the tags from an existing spawner in a Minecraft level and use that. (But
 this has not been tested.)
 
 Spawners can be very simple, or potentially a very complex tree of values.

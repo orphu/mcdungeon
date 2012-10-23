@@ -475,6 +475,8 @@ class Dungeon (object):
             root_tag['EntityId'] = nbt.TAG_String('CaveSpider')
         elif (entity == 'Lavaslime'):
             root_tag['EntityId'] = nbt.TAG_String('LavaSlime')
+        elif (entity == 'Witherboss'):
+            root_tag['EntityId'] = nbt.TAG_String('WitherBoss')
         #For everything else the input is the EntityId
         else:
             root_tag['EntityId'] = nbt.TAG_String(entity)
@@ -522,7 +524,7 @@ class Dungeon (object):
         #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
         if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
             sys.exit("Error: Could not find the books folder!")
-        #Make a list of all the txt files in the books directory (excluding _readme.txt)
+        #Make a list of all the txt files in the books directory
         booklist = []
         for file in os.listdir(os.path.join(os.getcwd(),'books')):
             if (file.endswith(".txt")):
@@ -530,16 +532,21 @@ class Dungeon (object):
         #This error should also never trip.
         if (len(booklist) < 1):
             sys.exit("Error: There should be at least one book in the book folder")
+        #Prevent unusual characters from being used
+        valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
+        #Open the book's text file
         bookfile = open(os.path.join(os.getcwd(), 'books', random.choice(booklist)))
         bookdata = bookfile.read().splitlines()
         bookfile.close()
+        #Create NBT tag
         outtag = nbt.TAG_Compound()
-        outtag['author'] = nbt.TAG_String(bookdata.pop(0))
-        outtag['title'] = nbt.TAG_String(bookdata.pop(0))
+        outtag['author'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
+        outtag['title'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
         outtag["pages"] = nbt.TAG_List()
         #Slice the pages at 50 and the page text at 256 to match minecraft limits
         for p in bookdata[:50]:
-            outtag["pages"].append(nbt.TAG_String(p[:256]))
+            page = filter(lambda x: x in valid_characters, p)
+            outtag["pages"].append(nbt.TAG_String(page[:256]))
 
         return outtag
 
