@@ -459,6 +459,7 @@ class GreatHallNS(Basic):
             self.parent.setblock(x, materials._subfloor)
         # balcony
         mat = random.choice((
+            (materials.CobblestoneSlab,materials.meta_mossycobble,materials.meta_mossycobblewall),
             (materials.StoneBrickSlab,materials.StoneBrick,materials.IronBars),
             (materials.WoodenSlab,materials.WoodPlanks,materials.Fence)
         ))
@@ -953,7 +954,7 @@ class ThroneRoom(Basic):
 
         # Column materials
         cmat = random.choice([
-            [materials.Sandstone, materials.SandstoneSlab],
+            [materials.ChiseledSandstone, materials.SandstoneSlab],
             [materials.meta_mossycobble, materials.CobblestoneSlab],
             [materials.Stone, materials.StoneSlab]
         ])
@@ -3076,10 +3077,11 @@ class Corridor(Blank):
                 (materials._wall,150),
                 (materials.CoalOre,90),
                 (materials.IronOre,40),
-                (materials.GoldOre,5),
+                (materials.GoldOre,10),
                 (materials.DiamondOre,5),
-                (materials.RedStoneOre,40),
-                (materials.LapisOre,5)
+                (materials.RedStoneOre,20),
+                (materials.LapisOre,5),
+                (materials.EmeraldOre,5)
             )
             start = c4.trans(1,1,-2)
             width = x2-x1-1

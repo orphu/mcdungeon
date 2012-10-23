@@ -179,16 +179,15 @@ class Columns(Blank):
 
     mats = (
         materials.Stone,
-        materials.meta_mossycobble,
         materials.Wood,
         materials.Spruce,
         materials.Jungle,
         materials.Bedrock,
-        materials.Sandstone,
+        materials.ChiseledSandstone,
         materials.DoubleSlab,
         materials.Obsidian,
         materials.StoneBrick,
-        materials.meta_mossycobble,
+        materials.meta_mossycobblewall,
         materials.meta_mossystonebrick,
         materials.meta_stonedungeon,
         materials.IronBars,
