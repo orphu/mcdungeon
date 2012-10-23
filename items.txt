@@ -392,7 +392,7 @@
 385,Fire Charge,0,64
 386,Book and Quill,0,1
 388,Emerald,0,64
-389,Item Frame,64
+389,Item Frame,0,64
 390,Flower Pot,0,64
 391,Carrot,0,64
 392,Potato,0,64
