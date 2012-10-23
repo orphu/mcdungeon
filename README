@@ -118,6 +118,11 @@ EXAMPLE CONFIGURATIONS
    
       A little of everything.
 
+   more_mobs.cfg
+ 
+      This produces maps that are the same as the default, but with
+      more types of monsters and more spawners.
+
    caverns.cfg   
 
       Mostly cavern type rooms. Very few "dungeon" looking rooms
