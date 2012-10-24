@@ -1,5 +1,15 @@
 v0.9.2 -
 
+   * Fixes a potentially chunk corrupting bug with books. (JiFish)
+
+   * Over 50 new books. (JiFish)
+
+   * 1.4 Mobs  (JiFish)
+
+   * New example config "more_mobs" adds a lot more monsters. (JiFish)
+
+   * Updates to pymclevel. Better Anvil support and memory leak fixes. (orphu)
+
 v0.9.1 - 09/20/2012
 
   !! NOTE: This version requires Minecraft 1.3.1 release or higher!
