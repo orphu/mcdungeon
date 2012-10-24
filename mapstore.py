@@ -18,7 +18,7 @@ import cPickle
 
 from numpy import  array, uint8, zeros, fromstring
 
-from pymclevel import nbt, pynbt
+from pymclevel import nbt
 from utils import Vec
 import materials
 
@@ -27,12 +27,10 @@ class new:
         self.mapstore = os.path.join(mapstore, 'data')
 
         # Load the idcounts.dat NBT if it exists, otherwise make
-        # a new one. Minecraft doesn't compress this file, and the cython nbt
+        # a new one. Minecraft doesn't compress this file, and the nbt
         # library in pymclevel seems to have a bug loading non-zipped nbt
         # files, so we have to manually load the file into a string buffer
-        # and call pynbt to load it reliably. I think the problem is that 
-        # the cython version ALWAYS calls gunzip, even if the test for a
-        # zipped file fails. 
+        # and call _load_buffer(). 
         #
         # To test this bug, try loading an idcounts.dat file with a map id of 3.
         # Something about this file seems to look like a gzip header and the
@@ -40,11 +38,12 @@ class new:
         # 
         if (os.path.isfile(os.path.join(self.mapstore, 'idcounts.dat'))):
             with file(os.path.join(self.mapstore, 'idcounts.dat'), "rb") as f:
-                self.idcounts = pynbt.load(buf=f.read())
+                self.idcounts = nbt._load_buffer(f.read())
+                print self.idcounts
         else:
             print 'No idcounts.dat file found. Creating a new one...'
-            self.idcounts = pynbt.TAG_Compound()
-            self.idcounts['map'] = pynbt.TAG_Short(-1)
+            self.idcounts = nbt.TAG_Compound()
+            self.idcounts['map'] = nbt.TAG_Short(-1)
 
         # Load the mcdungeon map ID usage cache
         if (os.path.isfile(os.path.join(self.mapstore, 'mcdungeon_maps'))):
@@ -67,12 +66,11 @@ class new:
             print e
             sys.exit('Failed to write mcdungeon_maps.')
 
-        # We can't just call save() on this nbt, since for some odd reason
         # Minecraft expects this one to be uncompressed. Compressed versions
         # cause java exceptions in Minecraft.
         try:
-            with open(os.path.join(self.mapstore, 'idcounts.dat'), 'wb') as FILE:
-                self.idcounts.save(buf=FILE)
+            self.idcounts.save(os.path.join(self.mapstore, 'idcounts.dat'),
+                               compressed=False)
         except Exception as e:
             print e
             sys.exit('Failed to write idcounts.dat.')
