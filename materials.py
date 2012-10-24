@@ -67,6 +67,7 @@ class MetaMaterial(Material):
 
 
 Air = Material('Air', ' ',BLACK)
+Anvil = Material('Anvil', 'T',DGREY)
 Bedrock = Material('Bedrock', '#', DGREY)
 Birch = Material('Birch', 'W', DGREY)
 Bookshelf = Material('Bookshelf', '#', RED)

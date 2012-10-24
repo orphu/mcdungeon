@@ -181,6 +181,9 @@
 134,Spruce Stairs,0,64
 135,Birch Stairs,0,64
 136,Jungle Stairs,0,64
+145,Anvil,0,64
+145,Slightly Damaged Anvil,1,64
+145,Very Damaged Anvil,2,64
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1

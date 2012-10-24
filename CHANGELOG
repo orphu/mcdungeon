@@ -4,11 +4,13 @@ v0.9.2 -
 
    * Over 50 new books. (JiFish)
 
-   * 1.4 Mobs  (JiFish)
+   * 1.4 Mobs.  (JiFish)
 
    * New example config "more_mobs" adds a lot more monsters. (JiFish)
 
    * Updates to pymclevel. Better Anvil support and memory leak fixes. (orphu)
+
+   * Forges contain anvils. (orphu)
 
 v0.9.1 - 09/20/2012
 
