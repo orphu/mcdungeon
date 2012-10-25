@@ -90,6 +90,11 @@ QUICK START
 
    $ mcdungeon.py <subcommand> --help
 
+PYTHON REQUIREMENTS
+
+   Python 2.7
+   Numpy
+
 EXAMPLES:
 
    Run in interactive mode. From here you can add, list, delete or regenerate
