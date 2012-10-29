@@ -1,0 +1,31 @@
+# Dye Colors
+# 
+# These are the colors to create dyed leather armour loot.
+#
+# =======
+#
+# Format is:
+# <name>:<hex color>
+#
+# Dyed armour should be referenced as "<name> Leather <type>" in the loot
+# tables. e.g. "Red Leather Chestplate".
+#
+# You can also use 'Random' as a color in loot tables to get a randomised
+# dye color. e.g. "Random Leather Boots".
+#
+White:FFFFFF
+Silver:C0C0C0
+Gray:808080
+Black:000000
+Red:FF0000
+Maroon:800000
+Yellow:FFFF00
+Olive:808000
+Lime:00FF00
+Green:008000
+Aqua:00FFFF
+Teal:008080
+Blue:0000FF
+Navy:000080
+Fuchsia:FF00FF
+Purple:800080

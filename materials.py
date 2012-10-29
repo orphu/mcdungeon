@@ -67,7 +67,11 @@ class MetaMaterial(Material):
 
 
 Air = Material('Air', ' ',BLACK)
+# Annoyingly, the anvil data values are different when in the inventory
+# and placed as a block. The values must be set in each setblock call
 Anvil = Material('Anvil', 'T',DGREY)
+AnvilSlightlyDmg = Material('Slightly Damaged Anvil', 'T',DGREY)
+AnvilVeryDmg = Material('Very Damaged Anvil', 'T',DGREY)
 Bedrock = Material('Bedrock', '#', DGREY)
 Birch = Material('Birch', 'W', DGREY)
 Bookshelf = Material('Bookshelf', '#', RED)

@@ -844,25 +844,36 @@ class Forge(Blank):
 
         sb = self.parent.parent.setblock
 
+        # Note: Anvil block damage values are different from when they are
+        # in the player's inventory
         mats = [
-            (materials.Air, 0),          # 0
-            (materials.Furnace, 0),      # 1
-            (materials.DoubleSlab, 0),   # 2
-            (materials.Water, 0),        # 3
-            (materials.BrickBlock, 0),   # 4
-            (materials.StoneSlab, 0),    # 5
-            (materials.Lava, 0),         # 6
-            (materials.Chest, 0),        # 7
-            (materials.CraftingTable, 0),# 8
-            (materials.Anvil, 2)        # 9
+            (materials.Air, 0),             # 0
+            (materials.Furnace, 0),         # 1
+            (materials.DoubleSlab, 0),      # 2
+            (materials.Water, 0),           # 3
+            (materials.BrickBlock, 0),      # 4
+            (materials.StoneSlab, 0),       # 5
+            (materials.Lava, 0),            # 6
+            (materials.Chest, 0),           # 7
+            (materials.CraftingTable, 0),   # 8
+            (materials.Anvil, 0),           # 9
+            (materials.AnvilSlightlyDmg, 4),# 10
+            (materials.AnvilVeryDmg, 8)     # 11
         ]
 
         template = [
-            [9,2,5,2,2,7],
+            [0,2,5,2,2,7],
             [2,3,4,6,6,2],
             [2,3,4,6,6,2],
             [1,2,5,2,2,8]
         ]
+        
+        #random anvil (or other...)
+        anvil_options = ((9,1),     #New anvil
+                         (10,20),   #Slightly Damged
+                         (11,50),   #Very Damaged
+                         (1,30))    #Furnace!
+        template[0][0] = weighted_choice(anvil_options)
 
         center = self.parent.canvasCenter()
         o = self.parent.loc.trans(center.x-1,

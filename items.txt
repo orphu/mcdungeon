@@ -1,6 +1,8 @@
 # Items file. See the bottom for potions.
 # 
-# ID,Item Name,Data Value,Maximum Stack Size
+# ID,Item Name,Data Value,Maximum Stack Size,Special Flag (optional)
+# 
+# Do not remove items from this list unless you really know what you are doing.
 
 # Blocks
 #
@@ -356,6 +358,7 @@
 370,Ghast Tear,0,64
 371,Gold Nugget,0,64
 372,Nether Wart,0,64
+373,Water Bottle,0,1
 374,Glass Bottle,0,64
 375,Spider Eye,0,64
 376,Fermented Spider Eye,0,64
@@ -423,8 +426,13 @@
 2264,Music Disc ward,0,1
 2265,Music Disc 11,0,1
 
-# Written books will be given random text from the books folder
-387,Written Book,0,1
+# Items with special flags.
+# Do not modify unless you really know what you are doing.
+387,Written Book,0,1,WRITTEN
+298,Random Leather Helmet,0,1,DYED
+299,Random Leather Chestplate,0,1,DYED
+300,Random Leather Leggings,0,1,DYED
+301,Random Leather Boots,0,1,DYED
 
 # Potions
 # #################

@@ -1,0 +1,25 @@
+# Potions
+# 
+# These are potions with custom effects that can be referenced in loot tables.
+#
+# =======
+#
+# Format is:
+# <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...
+#
+# The data value is just for appearance. Any effects are overridden by
+# those provided. Duraction is the during of the effect in game ticks.
+# (20 ticks = 1 second, 1200 ticks = 1 minute)
+#
+# Potion Data values and effect ids can be found on the minecraft wiki:
+# * http://www.minecraftwiki.net/wiki/Potions
+# * http://www.minecraftwiki.net/wiki/Potion_effect
+#
+# Potions with a data value of 0 (water) have their effects hidden in game.
+#
+# Potions can be referenced by the provided name in loot tables. Make sure
+# you use unique names. The name will also be used in game.
+#
+Bottle of Ale:8195,9-0-1200
+Potion of Wonder:0,8-0-1200,12-1-2400,3-2-600
+Potion of Raw Chaos:0,7-22-1
