@@ -84,40 +84,40 @@ QUICK START
 
    List available subcommands and options:
 
-   $ mcdungeon.py --help
+   $ python mcdungeon.py --help
 
    Help on a specific subcommand:
 
-   $ mcdungeon.py <subcommand> --help
+   $ python mcdungeon.py <subcommand> --help
 
 PYTHON REQUIREMENTS
 
    Python 2.7
    Numpy
 
-EXAMPLES:
+PYTHON EXAMPLES:
 
    Run in interactive mode. From here you can add, list, delete or regenerate
    dungeons.
 
-   $ mcdungeon interactive
+   $ python mcdungeon.py interactive
 
-   Load a world named 'Dungeon' in the current directory, generate a
-   5x4x3 dungeon layout (5 rooms E/W, 4 rooms N/S, and 3 levels deep)
-   and display the results in a terminal window. (In color on ANSI
-   terminals only. Sorry Windows) The world files will not be modified,
-   but are required. Basically a "dry run."
+   Load a world named 'Dungeon', generate a 5x4x3 dungeon layout
+   (5 rooms E/W, 4 rooms N/S, and 3 levels deep) and display
+   the results in a terminal window. (In color on ANSI terminals
+   only. Sorry Windows) The world files will not be modified, but
+   are required. Basically a "dry run."
 
-   $ mcdungeon.py add Dungeon 5 4 3 --term 1
+   $ python mcdungeon.py add Dungeon 5 4 3 --term 1
 
    Generate five random dungeons between the sizes of 4x4x5 and 6x6x8
    and save them to the world.
 
-   $ mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
+   $ python mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
 
 EXAMPLE CONFIGURATIONS
 
-   Several example configs are included. 
+   Several example configs are included: 
 
    default.cfg
    
