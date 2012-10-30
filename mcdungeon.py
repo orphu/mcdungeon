@@ -15,7 +15,7 @@ import pmeter
 import mapstore
 
 # Version info
-__version__ = '0.9.2'
+__version__ = '0.10.0'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 

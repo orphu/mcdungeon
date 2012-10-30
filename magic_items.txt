@@ -8,9 +8,6 @@
 # You can use the colored armours from dye_colors.txt. Names will be used
 # in-game.
 #
-# NOTE: Items that cannot normally be enchanted will not appear enchanted
-# in multiplayer, even though they still work. (Untested - this may now work.)
-#
 # =======
 #
 # Format is:
@@ -24,22 +21,24 @@
 # http://www.minecraftwiki.net/wiki/Enchant
 #
 # Examples:
-#
+
 # A golden sword with every legal enchantment and lore text:
-# masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3:A masamune sword.:Sharp.
+Masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3:Cosmic Blade Masamune.:Sharp.
 #
 # A feather of feather fall five:
-# parachute:Feather,2-5
-#
+# Does not actually work, but funny anyway.
+Parachute:Feather,2-5:Warning!:Not responsible for:death due to falling.
 
 # A Diamond Sword of Smite X named smitten:
 Smitten:Diamond Sword,17-10
 
 # A cookie of fortune V
-Fortune Cookie:Cookie,35-5
+# Needs testing
+Fortune Cookie:Cookie,35-5:...in bed.
 
-# A really efficent fish
-Marlin Saber:Raw Fish,32-5:Epoch-making ninja sword:with a swordfish for a blade.
+# A really efficient fish
+# This actually works!
+Marlin Saber:Raw Fish,32-5:A mola of efficiency.
 
 # Red Armour
 Flame Armour:Red Leather Chestplate,1-4

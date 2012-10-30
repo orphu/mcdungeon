@@ -1,4 +1,6 @@
-v0.9.2 -
+v0.10.0 -
+
+  !! NOTE: This version requires Minecraft 1.4.2 release or higher!
 
    * Fixes a potentially chunk corrupting bug with books. (JiFish)
 
@@ -6,11 +8,31 @@ v0.9.2 -
 
    * 1.4 Mobs.  (JiFish)
 
+   * Additional 1.4 loot in shipping configs (JiFish)
+
    * New example config "more_mobs" adds a lot more monsters. (JiFish)
 
    * Updates to pymclevel. Better Anvil support and memory leak fixes. (orphu)
 
-   * Forges contain anvils. (orphu)
+   * Forges can contain anvils. (JiFish)
+
+   * New wall blocks used in various places (columns, balconies) (JiFish)
+
+   * Potions of Night Vision and Invisibility. (JiFish)
+
+   * Emerald ore can be found in cave-ins. (JiFish)
+
+   * Custom magic items can be named in game, and include lore text. (JiFish)
+     (see magic_items.txt)
+
+   * Custom potion effects. (JiFish)
+     (see potions.txt)
+
+   * Custom dye colors for armor. (JiFish)
+     (see dye_colors.txt)
+
+   * Heads of famous (and not so famous) players can be found as loot! (JiFish)
+     (see heads.txt)
 
 v0.9.1 - 09/20/2012
 

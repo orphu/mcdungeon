@@ -8,7 +8,7 @@
 # <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...
 #
 # The data value is just for appearance. Any effects are overridden by
-# those provided. Duraction is the during of the effect in game ticks.
+# those provided. Duration is the during of the effect in game ticks.
 # (20 ticks = 1 second, 1200 ticks = 1 minute)
 #
 # Potion Data values and effect ids can be found on the minecraft wiki:
