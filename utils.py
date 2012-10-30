@@ -459,7 +459,6 @@ def dumpEnts(world):
 
         if i % 100 == 0:
             print "Chunk {0}...".format(i)
-        chunk.unload()
 
 
 def spin(c = ''):
@@ -485,7 +484,6 @@ def findChunkDepth(p, world):
                    chunk.Blocks[x, z, y] not in solids):
                 y = y - 1
             depth = min(y, depth)
-    chunk.unload()
     return depth
 
 def findChunkDepths(p, world):
@@ -505,7 +503,6 @@ def findChunkDepths(p, world):
                 y = y - 1
             min_depth = min(y, min_depth)
             max_depth = max(y, max_depth)
-    chunk.unload()
     return (min_depth, max_depth)
 
 def enum(*sequential, **named):
