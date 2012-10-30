@@ -67,7 +67,11 @@ class MetaMaterial(Material):
 
 
 Air = Material('Air', ' ',BLACK)
+# Annoyingly, the anvil data values are different when in the inventory
+# and placed as a block. The values must be set in each setblock call
 Anvil = Material('Anvil', 'T',DGREY)
+AnvilSlightlyDmg = Material('Slightly Damaged Anvil', 'T',DGREY)
+AnvilVeryDmg = Material('Very Damaged Anvil', 'T',DGREY)
 Bedrock = Material('Bedrock', '#', DGREY)
 Birch = Material('Birch', 'W', DGREY)
 Bookshelf = Material('Bookshelf', '#', RED)
@@ -79,6 +83,7 @@ CircleStoneBrick = Material('Circle Stone Brick' ,'0',GREY)
 CoalOre = Material('Coal Ore', 'o',DGREY)
 Cobblestone = Material('Cobblestone', '%',DGREY)
 CobblestoneSlab = Material('Cobblestone Slab', '%',GREY)
+CobblestoneWall = Material('Cobblestone Wall' ,'o',DGREY)
 Cobweb = Material('Cobweb','*',WHITE)
 CrackedStoneBrick = Material('Cracked Stone Brick' ,'P',GREY)
 CraftingTable = Material('Crafting Table', 'C', YELLOW)
@@ -88,6 +93,7 @@ Dispenser = Material('Dispenser', 'D', PURPLE)
 DoubleSlab = Material('Stone Double Slab', 'D',WHITE)
 EndPortalFrame = Material('End Portal Frame', 'E',CYAN)
 EndStone = Material('End Stone', 'E',WHITE)
+EmeraldOre = Material('Emerald Ore', 'o',GREEN)
 Farmland = Material('Farmland', "=", YELLOW)
 Fence = Material('Fence', 'o',RED)
 Fire = Material('Fire', '!',BRED)
@@ -108,6 +114,7 @@ LapisOre = Material('Lapis Lazuli Ore', 'o',BBLUE)
 Lava = Material('Lava', 'L',BRED)
 MossStone = Material('Moss Stone', '%',GREEN)
 MossyStoneBrick = Material('Mossy Stone Brick' ,'B',GREEN)
+MossStoneWall = Material('Moss Stone Wall' ,'o',GREEN)
 NetherBrick = Material('Nether Brick', 'B',BPURPLE)
 NetherBrickFence = Material('Nether Brick Fence', 'o',BPURPLE)
 NetherPortal = Material('Portal', '@',BPURPLE)
@@ -200,6 +207,23 @@ class meta_class_mossycobble(MetaMaterial):
             self.val = Cobblestone.val
             self.data = Cobblestone.data
             self.c = Cobblestone.c
+
+
+class meta_class_mossycobblewall(MetaMaterial):
+    name = 'meta_mossycobblewall'
+    val = CobblestoneWall.val
+    data = CobblestoneWall.data
+    c = CobblestoneWall.c
+    pn = perlin.SimplexNoise(256)
+    def update(self, x, y, z, maxx, maxy, maxz):
+        if self.pn.noise3(x / 4.0, y / 4.0, z / 4.0) < 0:
+            self.val = MossStoneWall.val
+            self.data = MossStoneWall.data
+            self.c = MossStoneWall.c
+        else:
+            self.val = CobblestoneWall.val
+            self.data = CobblestoneWall.data
+            self.c = CobblestoneWall.c
 
 
 class meta_class_mossystonebrick(MetaMaterial):
@@ -318,6 +342,7 @@ class meta_class_stonedungeon(MetaMaterial):
             self.c = StoneBrick.c
 
 meta_mossycobble = meta_class_mossycobble()
+meta_mossycobblewall = meta_class_mossycobblewall()
 meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
 meta_decoratedsandstone = meta_class_decoratedsandstone()

@@ -1,6 +1,11 @@
 # Items file. See the bottom for potions.
 # 
-# ID,Item Name,Data Value,Maximum Stack Size
+# ID,Item Name,Data Value,Maximum Stack Size,Special Flag (optional)
+# 
+# Do not remove items from this list unless you really know what you are doing.
+
+# Blocks
+#
 0,Air,0,64
 1,Stone,0,64
 2,Grass,0,64
@@ -46,6 +51,9 @@
 28,Detector Rail,0,64
 29,Sticky Piston,0,64
 30,Cobweb,0,64
+31,Tall Grass,1,64
+31,Fern,2,64
+32,Dead Bush,0,64
 33,Piston,0,64
 34,Piston Extension,0,64
 35,Wool,0,64
@@ -93,6 +101,7 @@
 57,Diamond Block,0,64
 58,Crafting Table,0,64
 59,Crops,0,64
+59,Grown Crops,7,64
 60,Farmland,0,64
 61,Furnace,2,64
 62,Burning Furnace,0,64
@@ -152,8 +161,9 @@
 113,Nether Brick Fence,0,64
 114,Nether Brick Stairs,0,64
 115,Nether Wart Block,0,64
+115,Grown Nether Wart Block,7,64
 116,Enchantment Table,0,64
-117,Brewing Stand,0,64
+117,Brewing Stand Block,0,64
 118,Cauldron Block,0,64
 119,End Portal,0,64
 120,End Portal Frame,0,64
@@ -181,9 +191,34 @@
 134,Spruce Stairs,0,64
 135,Birch Stairs,0,64
 136,Jungle Stairs,0,64
+137,Command Block,0,64
+138,Beacon,0,64
+139,Cobblestone Wall,0,64
+139,Moss Stone Wall,1,64
+140,Flower Pot Block,0,64
+140,Potted Rose,1,64
+140,Potted Dandelion,2,64
+140,Potted Oak Sapling,3,64
+140,Potted Spruce Sapling,4,64
+140,Potted Birch Sapling,5,64
+140,Potted Jungle Tree Sapling,6,64
+140,Potted Red Mushroom,7,64
+140,Potted Brown Mushroom,8,64
+140,Potted Cactus,9,64
+140,Potted Dead Bush,10,64
+140,Potted Fern,11,64
+141,Carrot Crops,0,64
+141,Grown Carrot Crops,7,64
+142,Potato Crops,0,64
+142,Grown Potato Crops,7,64
+143,Wooden Button,0,64
+144,Head Block,0,64
 145,Anvil,0,64
 145,Slightly Damaged Anvil,1,64
 145,Very Damaged Anvil,2,64
+
+# Items
+#
 256,Iron Shovel,0,1
 257,Iron Pickaxe,0,1
 258,Iron Axe,0,1
@@ -323,14 +358,17 @@
 370,Ghast Tear,0,64
 371,Gold Nugget,0,64
 372,Nether Wart,0,64
+373,Water Bottle,0,1
 374,Glass Bottle,0,64
 375,Spider Eye,0,64
 376,Fermented Spider Eye,0,64
 377,Blaze Powder,0,64
 378,Magma Cream,0,64
+379,Brewing Stand,0,64
 380,Cauldron,0,64
 381,Eye of Ender,0,64
 382,Glistering Melon,0,64
+383,Spawn Bat,65,64
 383,Spawn Blaze,61,64
 383,Spawn Cave Spider,59,64
 383,Spawn Chicken,93,64
@@ -350,11 +388,30 @@
 383,Spawn Spider,52,64
 383,Spawn Squid,94,64
 383,Spawn Villager,120,64
+383,Spawn Witch,66,64
 383,Spawn Wolf,95,64
 383,Spawn Zombie,54,64
 384,Bottle o' Enchanting,0,64
 385,Fire Charge,0,64
+386,Book and Quill,0,1
 388,Emerald,0,64
+389,Item Frame,0,64
+390,Flower Pot,0,64
+391,Carrot,0,64
+392,Potato,0,64
+393,Baked Potato,0,64
+394,Poisonous Potato,0,64
+396,Golden Carrot,0,64
+397,Skeleton Skull,0,64
+397,Wither Skeleton Skull,1,64
+397,Zombie Head,2,64
+397,Head,3,1
+397,Creeper Head,4,64
+398,Carrot on a Stick,0,1
+399,Nether Star,0,64
+400,Pumpkin Pie,0,64
+# Disks
+#
 2256,Gold Music Disc,0,1
 2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
@@ -369,8 +426,13 @@
 2264,Music Disc ward,0,1
 2265,Music Disc 11,0,1
 
-# Written books will be given random text from the books folder
-387,Written Book,0,1
+# Items with special flags.
+# Do not modify unless you really know what you are doing.
+387,Written Book,0,1,WRITTEN
+298,Random Leather Helmet,0,1,DYED
+299,Random Leather Chestplate,0,1,DYED
+300,Random Leather Leggings,0,1,DYED
+301,Random Leather Boots,0,1,DYED
 
 # Potions
 # #################
@@ -379,7 +441,7 @@
 373,Potion of Regeneration,8193,1
 373,Splash Potion of Regeneration,16385,1
 373,Potion of Regeneration II,8225,1
-373,SplashPotion of Regeneration II,16417,1
+373,Splash Potion of Regeneration II,16417,1
 373,Potion of Swiftness,8194,1
 373,Splash Potion of Swiftness,16386,1
 373,Potion of Swiftness II,8226,1
@@ -394,6 +456,10 @@
 373,Splash Potion of Strength,16393,1
 373,Potion of Strength II,8233,1
 373,Splash Potion of Strength II,16425,1
+373,Potion of Night Vision,8198,1
+373,Splash Potion of Night Vision,32694,1
+373,Potion of Invisibility,8206,1
+373,Splash Potion of Invisibility,32702,1
 # Negative Potions
 373,Potion of Poison,8196,1
 373,Splash Potion of Poison,16388,1
@@ -430,6 +496,10 @@
 373,Extended Splash Potion of Strength,16457,1
 373,Extended Potion of Strength II,8297,1
 373,Extended Splash Potion of Strength II,16489,1
+373,Extended Potion of Night Vision,8262,1
+373,Extended Splash Potion of Night Vision,32758,1
+373,Extended Potion of Invisibility,8270,1
+373,Extended Splash Potion of Invisibility,32766,1
 # Extended Negative Potions
 373,Extended Potion of Poison,8260,1
 373,Extended Splash Potion of Poison,16452,1

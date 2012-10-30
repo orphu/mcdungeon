@@ -123,7 +123,8 @@ _maxtier = -1
 _master_loot = {}
 
 class Loot (object):
-    def __init__ (self, slot, count, id, damage, enchantments):
+    def __init__ (self, slot, count, id, damage, enchantments, p_effect = '',
+                  customname = '', flag = '', flagparam = '', lore = ''):
         self.slot = slot
         self.id = id
         self.value = id
@@ -131,13 +132,24 @@ class Loot (object):
         self.data = damage
         self.count = count
         self.enchantments = enchantments
+        self.p_effect = p_effect
+        self.customname = customname
+        self.flag = flag
+        self.flagparam = flagparam
+        self.lore = lore
 
+    # Intentionally not printing lore
     def __str__ (self):
-        return 'Slot: %d, ID: %d, Dmg: %d, Cnt: %d, E: %s'%(self.slot,
+        return 'Slot: %d, ID: %d, Dmg: %d, Cnt: %d, E: %s, PE: %s, N: %s, F: %s, FP: %s'%(
+                                                     self.slot,
                                                      self.id,
                                                      self.damage,
                                                      self.count,
-                                                     self.enchantments)
+                                                     self.enchantments,
+                                                     self.p_effect,
+                                                     self.customname,
+                                                     self.flag,
+                                                     self.flagparam)
 
 
 def Load ():
@@ -215,7 +227,12 @@ def rollLoot (tier, level):
                                     thisamount,
                                     item.value,
                                     item.data,
-                                    enchantments)
+                                    enchantments,
+                                    item.p_effect,
+                                    item.customname,
+                                    item.flag,
+                                    item.flagparam,
+                                    item.lore)
                     yield thisloot
                     slot += 1
 

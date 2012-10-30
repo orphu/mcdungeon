@@ -5,16 +5,16 @@
 # works in the game and care should be taken as some combinations may have
 # unexpected results. 
 #
-# NOTE names do not actually appear in game, they are only used to identify
-# the item in teh loot tables.
+# You can use the colored armours from dye_colors.txt. Names will be used
+# in-game.
 #
-# NOTE 2: Items that cannot normally be enchanted will not appear enchanted
-# in multiplayer, even though they still work. 
+# NOTE: Items that cannot normally be enchanted will not appear enchanted
+# in multiplayer, even though they still work. (Untested - this may now work.)
 #
 # =======
 #
 # Format is:
-# <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...
+# <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...:<lore>:<lore>...
 #
 # Items should be referenced as "magic_<name>" in the loot tables. Make sure
 # all items in the list have unique names. 
@@ -25,18 +25,21 @@
 #
 # Examples:
 #
-# A golden sword with every legal enchantment:
-# masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3
+# A golden sword with every legal enchantment and lore text:
+# masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3:A masamune sword.:Sharp.
 #
 # A feather of feather fall five:
 # parachute:Feather,2-5
 #
 
 # A Diamond Sword of Smite X named smitten:
-smitten:Diamond Sword,17-10
+Smitten:Diamond Sword,17-10
 
 # A cookie of fortune V
-fortune_cookie:Cookie,35-5
+Fortune Cookie:Cookie,35-5
 
 # A really efficent fish
-enchanted_fish:Raw Fish,32-5
+Marlin Saber:Raw Fish,32-5:Epoch-making ninja sword:with a swordfish for a blade.
+
+# Red Armour
+Flame Armour:Red Leather Chestplate,1-4
