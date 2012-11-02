@@ -27,20 +27,10 @@ class new:
         self.mapstore = os.path.join(mapstore, 'data')
 
         # Load the idcounts.dat NBT if it exists, otherwise make
-        # a new one. Minecraft doesn't compress this file, and the nbt
-        # library in pymclevel seems to have a bug loading non-zipped nbt
-        # files, so we have to manually load the file into a string buffer
-        # and call _load_buffer(). 
-        #
-        # To test this bug, try loading an idcounts.dat file with a map id of 3.
-        # Something about this file seems to look like a gzip header and the
-        # nbt buffer that gets passed to the parser turns out to be empty.
-        # 
-        if (os.path.isfile(os.path.join(self.mapstore, 'idcounts.dat'))):
-            with file(os.path.join(self.mapstore, 'idcounts.dat'), "rb") as f:
-                self.idcounts = nbt._load_buffer(f.read())
-                print self.idcounts
-        else:
+        # a new one. 
+        try:
+            self.idcounts = nbt.load(os.path.join(self.mapstore, 'idcounts.dat'))
+        except:
             print 'No idcounts.dat file found. Creating a new one...'
             self.idcounts = nbt.TAG_Compound()
             self.idcounts['map'] = nbt.TAG_Short(-1)

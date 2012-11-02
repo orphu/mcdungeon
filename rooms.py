@@ -477,11 +477,12 @@ class GreatHallNS(Basic):
             self.parent.setblock(p, mat[2])
         # Columns
         mat = random.choice((
-            materials.StoneBrick,
-            materials.meta_mossycobble,
-            materials.meta_mossystonebrick,
-            materials.DoubleSlab,
-            materials.meta_stonedungeon
+            (materials.StoneBrick, materials.CircleStoneBrick),
+            (materials.meta_mossycobble, materials.StoneBrick),
+            (materials.meta_mossystonebrick, materials.CircleStoneBrick),
+            (materials.DoubleSlab, materials.DoubleSlab),
+            (materials.meta_stonedungeon, materials.DoubleSlab),
+            (materials.meta_mossycobblewall, materials.meta_mossycobble)
         ))
         for n in xrange(0, 26, 3):
             if self.size.x > self.size.z:
@@ -491,10 +492,10 @@ class GreatHallNS(Basic):
                 p = self.c1+Vec(3,-1,3+n)
                 d = Vec(9,0,0)
             for q in iterate_cube(p, p.up(height)):
-                self.parent.setblock(q, mat)
-                self.parent.setblock(q+d, mat)
-            self.parent.setblock(p, materials.DoubleSlab)
-            self.parent.setblock(p+d, materials.DoubleSlab)
+                self.parent.setblock(q, mat[0])
+                self.parent.setblock(q+d, mat[0])
+            self.parent.setblock(p, mat[1])
+            self.parent.setblock(p+d, mat[1])
         # Chandeliers
         # Type A
         if (random.randint(1,100) <= 50):

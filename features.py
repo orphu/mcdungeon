@@ -202,7 +202,7 @@ class Columns(Blank):
         if (limit < 6):
             return
         c = self.parent.canvasCenter()
-        height = self.parent.canvasHeight()
+        height = self.parent.canvasHeight()-1
         start = random.randint(0, limit/2-1)
         stop = limit/2
         step = random.randint(2, 3)

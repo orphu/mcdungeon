@@ -1908,7 +1908,6 @@ class Dungeon (object):
                     self.entrance.inwater = True
                 high_height = max(y, high_height)
                 low_height = min(y, low_height)
-        chunk.unload()
         if self.args.debug:
             print "    Low height:",low_height
             print "   High height:",high_height

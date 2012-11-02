@@ -1262,11 +1262,36 @@ if (len(dungeons) == 0):
 
 # Relight
 if (args.write is True and args.skiprelight is False):
-    print "Relighting chunks..."
-    logging.basicConfig(format=u'%(message)s')
-    logging.getLogger().level = logging.INFO
+    class myHandler(object):
+        _curr = 34
+        _count = 0
+        def __init__(self):
+            self.pm = pmeter.ProgressMeter()
+            self.pm.init(self._curr, label='Relighting chunks:')
+            #self.pm.update_left(self._curr)
+
+        def write(self, buff=''):
+            #self._count += 1
+            #print self._count
+            self._curr -= 1
+            self.pm.update_left(self._curr)
+
+        def flush(self):
+            pass
+
+        def done(self):
+            self.pm.set_complete()
+
+    # This is super ugly but, dammit, I want progress bars!
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    h = myHandler()
+    logging.basicConfig(stream=h, level=logging.INFO)
     world.generateLights()
-    logging.getLogger().propagate = False
+    h.done()
+    logging.getLogger().level = logging.CRITICAL
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
 
 print 'Placed', len(dungeons), 'dungeons!'
 for d in dungeons:
