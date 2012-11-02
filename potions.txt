@@ -8,7 +8,7 @@
 # <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...
 #
 # The data value is just for appearance. Any effects are overridden by
-# those provided. Duration is the during of the effect in game ticks.
+# those provided. Duration is the time of the effect in game ticks.
 # (20 ticks = 1 second, 1200 ticks = 1 minute)
 #
 # Potion Data values and effect ids can be found on the minecraft wiki:
@@ -20,6 +20,15 @@
 # Potions can be referenced by the provided name in loot tables. Make sure
 # you use unique names. The name will also be used in game.
 #
+# Examples:
 Bottle of Ale:8195,9-0-1200
 Potion of Wonder:0,8-0-1200,12-1-2400,3-2-600
 Potion of Raw Chaos:0,7-22-1
+
+# Basic potions that are normally unobtainable
+Potion of Haste:8193:3-0-3600
+Potion of Dullness:8194:4-0-4800
+Potion of Leaping:8197:8-0-3600
+Potion of Resistance:8198:11-0-3600
+Potion of Water Breathing:8206:13-0-3600
+Potion of Hunger:8201:17-0-4800
