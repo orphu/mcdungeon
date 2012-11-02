@@ -31,4 +31,4 @@ Potion of Dullness:8194:4-0-4800
 Potion of Leaping:8197:8-0-3600
 Potion of Resistance:8198:11-0-3600
 Potion of Water Breathing:8206:13-0-3600
-Potion of Blindness:8201:13-0-4800
+Potion of Hunger:8201:17-0-4800
