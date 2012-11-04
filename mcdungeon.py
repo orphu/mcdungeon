@@ -12,7 +12,6 @@ from numpy import *
 from pymclevel import mclevel
 from overviewer_core import world as ov_world
 import pmeter
-import mapstore
 
 # Version info
 __version__ = '0.10.0'
@@ -273,6 +272,7 @@ import cfg
 import loottable
 from dungeon import *
 from utils import *
+import mapstore
 
 def loadWorld(world_name):
     '''Attempt to load a world file. Look in the literal path first, then look
