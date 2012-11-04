@@ -9,12 +9,12 @@ import time
 import cPickle
 from numpy import *
 
+# Silence some logging from pymclevel
+logging.basicConfig(level=logging.CRITICAL)
+
 from pymclevel import mclevel
 from overviewer_core import world as ov_world
 import pmeter
-
-# Silence some logging from pymclevel
-logging.basicConfig(level=logging.CRITICAL)
 
 # Version info
 __version__ = '0.10.0'
