@@ -42,7 +42,6 @@ def LoadItems(filename = 'items.txt'):
         filename = temp
     except:
         pass
-    print 'Reading items database:', filename, '...'
     items = 0
     try:
         fh = open(filename)
@@ -91,7 +90,6 @@ def LoadMagicItems(filename = 'magic_items.txt'):
         filename = temp
     except:
         pass
-    print 'Reading magic items:', filename, '...'
     items = 0
     try:
         fh = open(filename)
@@ -134,7 +132,8 @@ def LoadMagicItems(filename = 'magic_items.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'magic items.'
-    
+
+
 def LoadPotions(filename = 'potions.txt'):
     # Try to load items from sys.path[0] if we can, 
     # otherwise default to the cd. 
@@ -145,7 +144,6 @@ def LoadPotions(filename = 'potions.txt'):
         filename = temp
     except:
         pass
-    print 'Reading custom potions:', filename, '...'
     items = 0
     try:
         fh = open(filename)
@@ -179,7 +177,8 @@ def LoadPotions(filename = 'potions.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'custom potions.'
-    
+
+
 def LoadDyedArmour(filename = 'dye_colors.txt'):
     # Try to load items from sys.path[0] if we can, 
     # otherwise default to the cd. 
@@ -190,7 +189,6 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
         filename = temp
     except:
         pass
-    print 'Reading dye colors:', filename, '...'
     items = 0
     try:
         fh = open(filename)
@@ -215,7 +213,7 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
             colorname, colorval = line.split(':')
             flag = 'DYED'
             flagparam = int(colorval, 16)
-            
+
             for arm in arms:
                 value = _items[arm].value
                 name = '%s %s' % (colorname.lower(),_items[arm].name)
@@ -227,8 +225,8 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'dye colors.'
-    
-    
+
+
 def LoadHeads(filename = 'heads.txt'):
     # Try to load items from sys.path[0] if we can, 
     # otherwise default to the cd. 
@@ -239,7 +237,6 @@ def LoadHeads(filename = 'heads.txt'):
         filename = temp
     except:
         pass
-    print 'Reading heads:', filename, '...'
     items = 0
     try:
         fh = open(filename)
@@ -263,7 +260,7 @@ def LoadHeads(filename = 'heads.txt'):
             flagparam = line
             value = _items['head'].value
             data = _items['head'].data
-            
+
             name = '%s\'s head' % (line.lower())
             _items[name] = ItemInfo(name, value, data=data, maxstack=1,
                                     flag=flag, flagparam=flagparam)
@@ -273,8 +270,8 @@ def LoadHeads(filename = 'heads.txt'):
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'heads.'
-    
-    
+
+
 def BooksReady():
     #Book directory existance
     if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
