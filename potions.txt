@@ -26,9 +26,9 @@ Potion of Wonder:0,8-0-1200,12-1-2400,3-2-600
 Potion of Raw Chaos:0,7-22-1
 
 # Basic potions that are normally unobtainable
-Potion of Haste:8193:3-0-3600
-Potion of Dullness:8194:4-0-4800
-Potion of Leaping:8197:8-0-3600
-Potion of Resistance:8198:11-0-3600
-Potion of Water Breathing:8206:13-0-3600
-Potion of Hunger:8201:17-0-4800
+Potion of Haste:8193,3-0-3600
+Potion of Dullness:8194,4-0-4800
+Potion of Leaping:8197,8-0-3600
+Potion of Resistance:8198,11-0-3600
+Potion of Water Breathing:8206,13-0-3600
+Potion of Hunger:8201,17-0-4800
