@@ -241,10 +241,10 @@ class Dungeon (object):
             scz = self.args.spawn[1]
         spawn_chunk = Vec(scx, 0, scz)
         # Draw a nice little map of the dungeon location
-        map_min_x = bounds.getMaxcx()
-        map_max_x = bounds.getMincx()
-        map_min_z = bounds.getMaxcz()
-        map_max_z = bounds.getMincz()
+        map_min_x = bounds.maxcx
+        map_max_x = bounds.mincx
+        map_min_z = bounds.maxcz
+        map_max_z = bounds.mincz
         for p in self.good_chunks:
             map_min_x = min(map_min_x, p[0]+1)
             map_max_x = max(map_max_x, p[0]-1)
