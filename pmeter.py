@@ -23,7 +23,7 @@ class ETA(object):
         self.max_point = max_point
         self.max_seconds = max_seconds
         self.points.append([tfunc(), 0])
-        self.eta = 'N/A'
+        self.eta = 'TBD'
 
     def _cleanup(self):
         if len(self.points) < 2:
@@ -50,7 +50,7 @@ class ETA(object):
             return
 
         eta = (float(self.wanted_size) - float(cursize)) / float(speed)
-        self.eta = format_sec(eta+1)+' ETA'
+        self.eta = format_sec(eta+1)
 
     def getstatus(self):
         return self.eta
@@ -58,7 +58,7 @@ class ETA(object):
 
 class ProgressMeter(object):
 
-    def __init__(self, steps=58, min_update_delta=0.20, outstream=sys.stdout):
+    def __init__(self, steps=64, min_update_delta=0.20, outstream=sys.stdout):
         self.wantsteps = steps
         self.prev_message = ''
         self.last_update_time = -100
@@ -104,7 +104,7 @@ class ProgressMeter(object):
 
         if cursize == self.size:
             percent = 100.0
-            eta = format_sec(tfunc()-self.start_time)+'      '
+            eta = format_sec(tfunc()-self.start_time)
         else:
             eta = self.eta_calculator.getstatus()
 
