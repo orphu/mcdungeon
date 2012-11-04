@@ -13,6 +13,9 @@ from pymclevel import mclevel
 from overviewer_core import world as ov_world
 import pmeter
 
+# Silence some logging from pymclevel
+logging.basicConfig(level=logging.CRITICAL)
+
 # Version info
 __version__ = '0.10.0'
 __version_info__ = tuple([ num for num in __version__.split('.')])
