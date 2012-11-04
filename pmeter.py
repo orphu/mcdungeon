@@ -58,7 +58,7 @@ class ETA(object):
 
 class ProgressMeter(object):
 
-    def __init__(self, steps=64, min_update_delta=0.20, outstream=sys.stdout):
+    def __init__(self, steps=63, min_update_delta=0.20, outstream=sys.stdout):
         self.wantsteps = steps
         self.prev_message = ''
         self.last_update_time = -100
