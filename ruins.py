@@ -241,7 +241,7 @@ class StepPyramid(Blank):
             else:
                 self.parent.parent.setblock(p, mat_block)
         # Build internal ruins. 
-        cchance =80
+        cchance = 80
         for p in iterate_cube(Vec(0, 0, 0), Vec(3, 0, 3)):
             wfunc = iterate_four_walls
             if random.randint(1,100) <= 50:
@@ -252,8 +252,12 @@ class StepPyramid(Blank):
             if random.randint(1,100) <= cchance:
                 cchance /= 5
                 cp = pp1.trans(3,-1,3)
-                self.parent.parent.setblock(cp, materials.Chest)
-                self.parent.parent.addchest(cp, 0)
+                if random.randint(1,100) <= 50:
+                    self.parent.parent.setblock(cp, materials.Chest)
+                    self.parent.parent.addchest(cp, 0)
+                else:
+                    self.parent.parent.setblock(cp, materials.Spawner)
+                    self.parent.parent.addspawner(cp, tier=0)
             height = 5
             for j in wfunc(pp1, pp2, 0):
                 depth = (pn.noise3(j.x / 4.0,

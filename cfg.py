@@ -51,7 +51,8 @@ master_entrances = [('squaretowerentrance',1)]
 master_treasure = [('pitwitharchers',1)]
 master_dispensers = []
 lookup_dispensers = {}
-master_mobs = []
+master_mobs = {}
+max_mob_tier = 0
 structure_values = []
 
 parser = ConfigParser.SafeConfigParser()
@@ -81,7 +82,8 @@ def Load(filename = 'default.cfg'):
     arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
-    secret_door, silverfish, bury, master_dispensers, maps, mapstore
+    secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
+    max_mob_tier
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -103,7 +105,6 @@ def Load(filename = 'default.cfg'):
     master_rooms = parser.items('rooms')
     master_features = parser.items('features')
     master_floors = parser.items('floors')
-    temp_mobs = parser.items('mobs')
     temp_dispensers = parser.items('dispensers')
     try:
         master_ruins = parser.items('ruins')
@@ -118,10 +119,28 @@ def Load(filename = 'default.cfg'):
     except:
         print 'WARNING: No treasure rooms section found in config. Using default.'
 
-    # Load the mob spawner names
-    for mob in temp_mobs:
-        mob2 = mob[0].capitalize()
-        master_mobs.append((mob2, mob[1]))
+    # Load the mob spawner tables
+    max_mob_tier = 0
+    if parser.has_section('mobs'):
+        print 'WARNING: This config file contains old-stye mob definitions.'
+        print 'You should update your config file with the new mob features.'
+        temp_mobs = parser.items('mobs')
+    elif parser.has_section('mobs.0'):
+        temp_mobs = parser.items('mobs.0')
+    else:
+        sys.exit('Failed to read mob config from config file.')
+    while len(temp_mobs) is not 0:
+        for mob in temp_mobs:
+            mob_name = mob[0].capitalize()
+            if max_mob_tier not in master_mobs:
+                master_mobs[max_mob_tier] = []
+            master_mobs[max_mob_tier].append((mob_name, mob[1]))
+        max_mob_tier += 1
+        try:
+            temp_mobs = parser.items('mobs.'+str(max_mob_tier))
+        except:
+            temp_mobs = []
+            max_mob_tier -= 1
 
     # Process dispensers config
     for d in temp_dispensers:

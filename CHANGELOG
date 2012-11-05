@@ -1,3 +1,8 @@
+v0.10.2 - 
+
+   * Mob spawners can now pick more difficult mobs by depth. (orphu)
+     (see default.cfg)
+
 v0.10.1 - 11/05/2012
 
    * Fixes from pymclevel dealing with chunk saving bugs.

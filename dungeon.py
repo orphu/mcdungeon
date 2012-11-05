@@ -497,9 +497,21 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
 
 
-    def addspawner(self, loc, entity=''):
+    def addspawner(self, loc, entity='', tier=-1):
         if (entity == ''):
-            entity = weighted_choice(cfg.master_mobs)
+            level = loc.y/self.room_height
+            if (cfg.max_mob_tier == 0 or level < 0):
+                tier = 0
+            elif tier == -1:
+                if (self.levels > 1):
+                    tier = (float(level) /
+                            float(self.levels-1) *
+                            float(cfg.max_mob_tier-2))+1.5
+                    tier = int(min(cfg.max_mob_tier-1, tier))
+                else:
+                    tier = cfg.max_mob_tier-1
+            entity = weighted_choice(cfg.master_mobs[tier])
+            #print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
         root_tag = self.getspawnertags(entity)
         #Do generic spawner setup
         root_tag['id'] = nbt.TAG_String('MobSpawner')

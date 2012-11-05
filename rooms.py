@@ -1129,10 +1129,12 @@ class ThroneRoom(Basic):
             j = i*4
             if (random.random() < 0.5):
                 sb(o+Vec(0,10,4+j), materials.Spawner)
-                self.parent.addspawner(o+Vec(0,10,4+j))
+                self.parent.addspawner(o+Vec(0,10,4+j),
+                                       tier=random.randint(cfg.max_mob_tier-1,cfg.max_mob_tier))
             if (random.random() < 0.5):
                 sb(o+Vec(15,10,4+j), materials.Spawner)
-                self.parent.addspawner(o+Vec(15,10,4+j))
+                self.parent.addspawner(o+Vec(15,10,4+j),
+                                       tier=random.randint(cfg.max_mob_tier-1,cfg.max_mob_tier))
         # Ropes
         for p in iterate_cube(o.trans(5,1,5), o.trans(10,1,30)):
             if random.random() < 0.07:
@@ -1702,9 +1704,9 @@ class EndPortal(Basic2x2):
 
         # Endermen
         sb(o+Vec(0,sy-2,15), materials.Spawner)
-        self.parent.addspawner(o+Vec(0,sy-2,15), 'Enderman')
+        self.parent.addspawner(o+Vec(0,sy-2,15), tier=cfg.max_mob_tier)
         sb(o+Vec(30,sy-2,15), materials.Spawner)
-        self.parent.addspawner(o+Vec(30,sy-2,15), 'Enderman')
+        self.parent.addspawner(o+Vec(30,sy-2,15), tier=cfg.max_mob_tier)
 
 
 class Arena(Basic2x2):
@@ -2132,7 +2134,8 @@ class Crypt(Basic):
                   Vec(13,10,4),Vec(13,10,4+6),Vec(13,10,4+12),Vec(13,10,4+18)]:
             if random.randint(1,100) >= 33:
                 continue
-            self.parent.addspawner(o+p, 'Skeleton')
+            self.parent.addspawner(o+p, random.choice(['Skeleton',
+                                                      'WitherSkeleton']))
             self.parent.setblock(o+p, materials.Spawner)
 
         # Dais
