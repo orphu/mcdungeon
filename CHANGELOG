@@ -1,4 +1,6 @@
-v0.10.1 - 
+v0.10.1 - 11/05/2012
+
+   * Fixes from pymclevel dealing with chunk saving bugs.
 
 v0.10.0 - 11/04/2012
 
