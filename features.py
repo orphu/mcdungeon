@@ -858,7 +858,11 @@ class Forge(Blank):
             (materials.CraftingTable, 0),   # 8
             (materials.Anvil, 0),           # 9
             (materials.AnvilSlightlyDmg, 4),# 10
-            (materials.AnvilVeryDmg, 8)     # 11
+            (materials.AnvilVeryDmg, 8),    # 11
+            (materials.Cauldron, 0),        # 12
+            (materials.Cauldron, 1),        # 13
+            (materials.Cauldron, 2),        # 14
+            (materials.Cauldron, 3),        # 15
         ]
 
         template = [
@@ -867,11 +871,15 @@ class Forge(Blank):
             [2,3,4,6,6,2],
             [1,2,5,2,2,8]
         ]
-        
+
         #random anvil (or other...)
         anvil_options = ((9,1),     #New anvil
                          (10,20),   #Slightly Damged
                          (11,50),   #Very Damaged
+                         (12,8),    #Empty cauldron
+                         (13,8),    #1/3 cauldron
+                         (14,8),    #2/3 cauldron
+                         (15,8),    #Full cauldron
                          (1,30))    #Furnace!
         template[0][0] = weighted_choice(anvil_options)
 
