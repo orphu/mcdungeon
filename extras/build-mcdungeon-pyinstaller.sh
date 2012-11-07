@@ -28,26 +28,26 @@ FILES="items.txt magic_items.txt dye_colors.txt heads.txt potions.txt configs bo
 
 # Figure out the platform
 case `python -c 'import platform;print platform.system()'` in
-Windows)
-	PLATFORM="win"
-	EXE="mcdungeon.exe"
-	OPTS=" --icon=favicon.ico "
-	FILES="${FILES} launcher.bat"
-	;;
-Darwin)
-	PLATFORM="macosx"
-	EXE="mcdungeon"
-	OPTS=""
-	;;
-Linux)
-	PLATFORM="linux"
-	EXE="mcdungeon"
-	OPTS=""
-	;;
-*)
-	echo 'Unable to determine platform! Aborting!'
-	exit
-	;;
+	Windows)
+		PLATFORM="win"
+		EXE="mcdungeon.exe"
+		OPTS=" --icon=favicon.ico "
+		FILES="${FILES} launcher.bat"
+		;;
+	Darwin)
+		PLATFORM="macosx"
+		EXE="mcdungeon"
+		OPTS=""
+		;;
+	Linux)
+		PLATFORM="linux"
+		EXE="mcdungeon"
+		OPTS=""
+		;;
+	*)
+		echo 'Unable to determine platform! Aborting!'
+		exit
+		;;
 esac
 echo "Platform is $PLATFORM"
 	
@@ -87,15 +87,15 @@ echo "MCDungeon Version is $VERSION"
 
 # Figure out the machine		
 case `python -c 'import platform;print platform.machine()'` in
-x86_64)
-	MACH="64"
-	;;
-x86)
-	MACH="32"
-	;;
-*)
-	MACH=""
-	;;
+	x86_64)
+		MACH="64"
+		;;
+	x86)
+		MACH="32"
+		;;
+	*)
+		MACH=""
+		;;
 esac
 
 NAME="mcdungeon-${VERSION}.${PLATFORM}${MACH}"
@@ -117,6 +117,14 @@ done
 cp mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
 cp mcdungeon/README $NAME/README.txt
 cp mcdungeon/LICENSE $NAME/LICENSE.txt
+case $PLATFORM in
+	win)
+		cp mcdungeon/extras/launcher.bat $NAME/lancher.bat
+		;;
+	macosx)
+		cp mcdungeon/extras/launcher.command $NAME/launcher.command
+		;;
+esac
 
 mkdir $NAME/pymclevel
 cp mcdungeon/pymclevel/*yaml $NAME/pymclevel
