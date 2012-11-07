@@ -32,7 +32,6 @@ case `python -c 'import platform;print platform.system()'` in
 		PLATFORM="win"
 		EXE="mcdungeon.exe"
 		OPTS=" --icon=favicon.ico "
-		FILES="${FILES} launcher.bat"
 		;;
 	Darwin)
 		PLATFORM="macosx"
