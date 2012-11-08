@@ -5,6 +5,8 @@ v0.10.2 -
 
    * Forges can sometimes contain cauldrons. (orphu)
 
+   * New Linux and OS X stand-alone distributions.
+
 v0.10.1 - 11/05/2012
 
    * Fixes from pymclevel dealing with chunk saving bugs.
