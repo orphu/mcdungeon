@@ -2,20 +2,9 @@ MCDungeon
 
 MCDungeon will create a procedurally generated dungeon in a preexisting
 Minecraft map. It is not yet feature complete, but can already generate
-dungeons with quite a bit of variety. It is written in Python and
-makes use of code from Paul Hodge's minetown, David Rio Vierra's pymclevel,
-and the Minecraft Overviewer project. This was inspired by BeeTLe BeTHLeHeM's
-MCMapper.
+dungeons with quite a bit of variety. 
 
 http://mcdungeon.bubblemod.org
-
-Thanks to the following for their interest, inspiration, and great ideas! 
-(in no particular order)
-
-BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
-Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
-SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
-janxious, compgurusteve, Meindratheal, ChosenLama, JiFish.
 
 CURRENT FEATURES:
 
@@ -42,15 +31,11 @@ CURRENT FEATURES:
 
    * A "hard mode" that will fill in nearby natural caves in an attempt to
      concentrate random monster spawns inside the dungeon, add more traps,
-     and make silverfish extremely common. 
+     and place more difficult mobs.
 
    * Places stairwells between levels, and a random entrance with a
      spiraling staircase. Some entrances have a configurable height so it 
      can be seen from far away.
-
-   * Optionally places a MultiVerse (Craftbukkit plugin) portal at
-     the bottom of the dungeon to teleport players out to the world of
-     your choice.
 
    * Places chests with loot around the dungeon in (probably) hard
      to reach places. An arbitrary number of loot tables can be configured
@@ -70,7 +55,7 @@ CURRENT FEATURES:
 
    * Output entire dungeon maps to HTML.
 
-TODO:
+TODO
 
    * More room, hall, floor, feature, and ruin types.
    * More traps!
@@ -79,29 +64,37 @@ TODO:
 
 QUICK START
 
-   For the Windows stand-alone version, just run launcher.bat for
-   interactive mode. You can also run mcdungeon.exe from the command
-   line for advanced usage like the Python version.
+   The stand-alone versions for Windows and OS X, include a 
+   "launcher" script that will run in interactive mode. For advanced
+   usage, run the mcdungeon executable from the command line like
+   the python version. 
 
    List available subcommands and options:
 
    $ python mcdungeon.py --help
+   $ ./mcdungeon --help
 
    Help on a specific subcommand:
 
    $ python mcdungeon.py <subcommand> --help
+   $ ./mcdungeon <subcommand> --help
 
 PYTHON REQUIREMENTS
 
    Python 2.7
    Numpy
 
-PYTHON EXAMPLES:
+PYTHON EXAMPLES
+
+   These also work for the stand-alone version. Just replace 
+   "python mcdungeon.py" with "mcdungeon"
+
+   $ python mcdungeon.py interactive
 
    Run in interactive mode. From here you can add, list, delete or regenerate
    dungeons.
 
-   $ python mcdungeon.py interactive
+   $ python mcdungeon.py add Dungeon 5 4 3 --term 1
 
    Load a world named 'Dungeon', generate a 5x4x3 dungeon layout
    (5 rooms E/W, 4 rooms N/S, and 3 levels deep) and display
@@ -109,20 +102,20 @@ PYTHON EXAMPLES:
    only. Sorry Windows) The world files will not be modified, but
    are required. Basically a "dry run."
 
-   $ python mcdungeon.py add Dungeon 5 4 3 --term 1
+   $ python mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
 
    Generate five random dungeons between the sizes of 4x4x5 and 6x6x8
    and save them to the world.
 
-   $ python mcdungeon.py add Dungeon 4-6 4-6 5-8 -n 5 --write
-
 EXAMPLE CONFIGURATIONS
 
-   Several example configs are included: 
+   Several example configs are included. These can be copied and/or modifed
+   to suit your own tastes.
 
    default.cfg
    
-      A little of everything.
+      A little of everything. This one is heavily commented. If you want to
+      know what a config option does, look here.
 
    more_mobs.cfg
  
@@ -153,4 +146,14 @@ EXAMPLE CONFIGURATIONS
       common. Buffed monster spawners. No maps. It also fills in all
       the surrounding underground caves so that monsters spawn inside
       the dungeon much more frequently.
+
+CREDITS
+
+Thanks to the following for their code, interest, inspiration, and great
+ideas!  (in no particular order)
+
+BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
+Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
+SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
+janxious, compgurusteve, Meindratheal, ChosenLama, JiFish.
 
