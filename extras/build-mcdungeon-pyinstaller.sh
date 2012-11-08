@@ -97,7 +97,7 @@ case `python -c 'import platform;print platform.machine()'` in
 		;;
 esac
 
-NAME="mcdungeon-${VERSION}.${PLATFORM}${MACH}"
+NAME="mcdungeon-${VERSION}-${PLATFORM}${MACH}"
 echo "Build name will be: $NAME"
 
 if [ -d $NAME ]; then
