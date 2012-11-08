@@ -26,6 +26,11 @@
 
 FILES="items.txt magic_items.txt dye_colors.txt heads.txt potions.txt configs books spawners"
 
+function error {
+	echo -e "\nFATAL: $1"
+	exit $2
+}
+
 # Figure out the platform
 case `python -c 'import platform;print platform.system()'` in
 	Windows)
@@ -44,8 +49,7 @@ case `python -c 'import platform;print platform.system()'` in
 		OPTS=""
 		;;
 	*)
-		echo 'Unable to determine platform! Aborting!'
-		exit
+		error 'Unable to determine platform! Aborting!' 1
 		;;
 esac
 echo "Platform is $PLATFORM"
@@ -61,16 +65,13 @@ if [ -d mcdungeon-build ]; then
 fi
 
 # Grab a fresh copy of the repo
-git clone --recursive https://github.com/orphu/mcdungeon
+git clone --recursive https://github.com/orphu/mcdungeon || error 'Failed to pull MCDungeon repo.' $?
 # Pick a rev and update pymclevel if we need to
 if [ ${1:+1} ]; then
 	echo "Checking out $1..."
-	cd mcdungeon
-	git checkout --quiet $1
-	if [ $? -ne 0 ]; then
-		exit $?
-	fi
-	git submodule update
+	cd mcdungeon 
+	git checkout --quiet $1 || error 'Failed to checkout branch/tag.' $?
+	git submodule update || error 'Failed to updade pymclevel submodule.' $?
 	cd ..
 fi
 
@@ -106,7 +107,7 @@ if [ -d $NAME ]; then
 fi
 
 # Build it!
-python pyinstaller.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py
+python pyinstaller.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
 mkdir $NAME
