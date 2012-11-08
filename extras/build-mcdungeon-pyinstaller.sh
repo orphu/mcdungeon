@@ -20,9 +20,9 @@
 #	git 
 #	Gitbash from Git for Windows if Windows
 #
-# Copy this script and the favicon.ico file into the pyinstaller folder.
-# Run this script with desired tag. Passing no options will build the 
-# current master HEAD revision. 
+# Copy this script into the pyinstaller folder, then run this script with
+# desired tag. Passing no options will build the current master HEAD rev,
+# which should be the current release version.
 
 FILES="items.txt magic_items.txt dye_colors.txt heads.txt potions.txt configs books spawners"
 
@@ -31,7 +31,7 @@ case `python -c 'import platform;print platform.system()'` in
 	Windows)
 		PLATFORM="win"
 		EXE="mcdungeon.exe"
-		OPTS=" --icon=favicon.ico "
+		OPTS=" --icon=mcdungeon/extras/favicon.ico "
 		;;
 	Darwin)
 		PLATFORM="macosx"
