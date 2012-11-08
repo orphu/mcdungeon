@@ -86,7 +86,7 @@ echo "MCDungeon Version is $VERSION"
 
 # Figure out the machine		
 case `python -c 'import platform;print platform.machine()'` in
-	x86_64)
+	x86_64|AMD64)
 		MACH="64"
 		;;
 	x86)
