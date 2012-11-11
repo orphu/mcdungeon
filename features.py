@@ -572,16 +572,27 @@ class SecretRoom(Blank):
                      (items.byName('bottle o\' enchanting'), 10),
                      (items.byName('glass bottle'), 10)]
 
+            # Chance of random head
+            loothead = [(items.byName('bone'), 100),
+                        (items.byName('skeleton skull'), 10),
+                        (items.byName('wither skeleton skull'), 1),
+                        (items.byName('zombie head'), 1),
+                        (items.byName('head'), 1),
+                        (items.byName('creeper head'), 1)]
+
             i = weighted_choice(lootc)
             loota[7].id = i.value
-            loota[7].data = i.data
+            loota[7].damage = i.data
             loota[7].flag = i.flag
+            i = weighted_choice(loothead)
+            loota[4].id = i.value
+            loota[4].damage = i.data
             sb(o+Vec(5,3,5), materials.Chest)
             self.parent.parent.addchest(o+Vec(5,3,5), loot=loota)
 
             i = weighted_choice(lootc)
             lootb[7].id = i.value
-            lootb[7].data = i.data
+            lootb[7].damage = i.data
             sb(o+Vec(6,3,5), materials.Chest)
             self.parent.parent.addchest(o+Vec(6,3,5), loot=lootb)
 

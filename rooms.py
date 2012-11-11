@@ -2090,6 +2090,14 @@ class Crypt(Basic):
                  (items.byName('bottle o\' enchanting'), 5),
                  (items.byName('eye of ender'), 1)]
 
+        # Chance of random head
+        loothead = [(items.byName('bone'), 100),
+                    (items.byName('skeleton skull'), 10),
+                    (items.byName('wither skeleton skull'), 1),
+                    (items.byName('zombie head'), 1),
+                    (items.byName('head'), 1),
+                    (items.byName('creeper head'), 1)]
+
         # Small sarcophagi
         for zoff in xrange(0, 24, 6):
             ssb(Vec(2,10,1+zoff), materials.Sandstone)
@@ -2109,23 +2117,29 @@ class Crypt(Basic):
             ssb(Vec(2,10,2+zoff), materials.Chest,4)
             i = weighted_choice(lootc)
             loota[7].id = i.value
-            loota[7].data = i.data
+            loota[7].damage = i.data
             loota[7].flag = i.flag
+            i = weighted_choice(loothead)
+            loota[4].id = i.value
+            loota[4].damage = i.data
             self.parent.addchest(o+Vec(2,10,2+zoff), 0, loot=loota)
             i = weighted_choice(lootc)
             loota[7].id = i.value
-            loota[7].data = i.data
+            loota[7].damage = i.data
             loota[7].flag = i.flag
+            i = weighted_choice(loothead)
+            loota[4].id = i.value
+            loota[4].damage = i.data
             self.parent.addchest(o+Vec(13,10,2+zoff), 0, loot=loota)
             ssb(Vec(2,10,3+zoff), materials.Chest,4)
             i = weighted_choice(lootc)
             lootb[7].id = i.value
-            lootb[7].data = i.data
+            lootb[7].damage = i.data
             lootb[7].flag = i.flag
             self.parent.addchest(o+Vec(2,10,3+zoff), 0, loot=lootb)
             i = weighted_choice(lootc)
             lootb[7].id = i.value
-            lootb[7].data = i.data
+            lootb[7].damage = i.data
             lootb[7].flag = i.flag
             self.parent.addchest(o+Vec(13,10,3+zoff), 0, loot=lootb)
 
