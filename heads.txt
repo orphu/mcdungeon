@@ -10,7 +10,9 @@
 # tables. e.g. "Notch's Head".
 #
 Notch
-Jeb
-dinnerbone
+jeb_
+Dinnerbone
+grumm
+jonkagstrom
 orphu
 JiFish
