@@ -522,7 +522,7 @@ class SecretRoom(Blank):
             for s in writing_items:
                 if (random.random() < s[1]):
                     amount = random.randint(1,min(s[2],s[0].maxstack))
-                    deskloot.append(loottable.Loot(len(deskloot),amount,s[0].value,s[0].data,''))
+                    deskloot.append(loottable.Loot(len(deskloot),amount,s[0].value,s[0].data,'',flag=s[0].flag))
             self.parent.parent.addchest(o.trans(5,3,7), loot=deskloot)
         else:
             # a small sepulchure
@@ -575,6 +575,7 @@ class SecretRoom(Blank):
             i = weighted_choice(lootc)
             loota[7].id = i.value
             loota[7].data = i.data
+            loota[7].flag = i.flag
             sb(o+Vec(5,3,5), materials.Chest)
             self.parent.parent.addchest(o+Vec(5,3,5), loot=loota)
 

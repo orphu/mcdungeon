@@ -2110,19 +2110,23 @@ class Crypt(Basic):
             i = weighted_choice(lootc)
             loota[7].id = i.value
             loota[7].data = i.data
+            loota[7].flag = i.flag
             self.parent.addchest(o+Vec(2,10,2+zoff), 0, loot=loota)
             i = weighted_choice(lootc)
             loota[7].id = i.value
             loota[7].data = i.data
+            loota[7].flag = i.flag
             self.parent.addchest(o+Vec(13,10,2+zoff), 0, loot=loota)
             ssb(Vec(2,10,3+zoff), materials.Chest,4)
             i = weighted_choice(lootc)
             lootb[7].id = i.value
             lootb[7].data = i.data
+            lootb[7].flag = i.flag
             self.parent.addchest(o+Vec(2,10,3+zoff), 0, loot=lootb)
             i = weighted_choice(lootc)
             lootb[7].id = i.value
             lootb[7].data = i.data
+            lootb[7].flag = i.flag
             self.parent.addchest(o+Vec(13,10,3+zoff), 0, loot=lootb)
 
             ssb(Vec(2,9,2+zoff), materials.StoneBrickStairs, 3)
