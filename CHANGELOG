@@ -1,3 +1,9 @@
+v0.10.3 - 
+
+   * Fixed bug with blank written books. (JiFish)
+
+   * Heads can appear in sarcophagi. (JiFish)
+
 v0.10.2 - 11/10/2012
 
    * Mob spawners can now pick more difficult mobs by depth. (orphu)
