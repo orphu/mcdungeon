@@ -534,11 +534,11 @@ class Dungeon (object):
 
     def loadrandbooktext(self):
         #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
-        if (os.path.isdir(os.path.join(os.getcwd(),'books')) == False):
+        if (os.path.isdir(os.path.join(sys.path[0],'books')) == False):
             sys.exit("Error: Could not find the books folder!")
         #Make a list of all the txt files in the books directory
         booklist = []
-        for file in os.listdir(os.path.join(os.getcwd(),'books')):
+        for file in os.listdir(os.path.join(sys.path[0],'books')):
             if (file.endswith(".txt")):
                 booklist.append(file);
         #This error should also never trip.
@@ -547,7 +547,7 @@ class Dungeon (object):
         #Prevent unusual characters from being used
         valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
         #Open the book's text file
-        bookfile = open(os.path.join(os.getcwd(), 'books', random.choice(booklist)))
+        bookfile = open(os.path.join(sys.path[0], 'books', random.choice(booklist)))
         bookdata = bookfile.read().splitlines()
         bookfile.close()
         #Create NBT tag
