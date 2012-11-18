@@ -1,3 +1,12 @@
+v0.10.4 -
+
+   * Fixed custom spaners on case sensitive systems. (orphu)
+
+   * Added some additional armed and armored skeletons. (orphu)
+
+   * Fix for books and spawners when run from outside the mcdungeon
+     directory. (orphu)
+
 v0.10.3 - 11/12/2012
 
    * Fixed bug with blank written books. (JiFish)
