@@ -17,7 +17,7 @@ from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
-__version__ = '0.10.3'
+__version__ = '0.10.4'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
