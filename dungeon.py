@@ -461,14 +461,16 @@ class Dungeon (object):
 
 
     def getspawnertags(self, entity):
-        #See if we have an NBT file match
-        if (os.path.isfile(os.path.join(os.getcwd(),'spawners',entity+'.nbt'))):
-            root_tag = nbt.load(filename=os.path.join(os.getcwd(),'spawners',entity+'.nbt'))
+        # See if we have a custom spawner match
+        if entity.lower() in cfg.custom_spawners.keys():
+            entity = cfg.custom_spawners[entity.lower()]
+            root_tag = nbt.load(filename=os.path.join(sys.path[0],'spawners',entity+'.nbt'))
             return root_tag
         else:
             root_tag = nbt.TAG_Compound()
 
-        #Cases where the entity id doesn't match the config
+        # Cases where the entity id doesn't match the config
+        entity = entity.capitalize()
         if (entity == 'Pigzombie'):
             root_tag['EntityId'] = nbt.TAG_String('PigZombie')
         elif (entity == 'Cavespider'):
@@ -477,7 +479,7 @@ class Dungeon (object):
             root_tag['EntityId'] = nbt.TAG_String('LavaSlime')
         elif (entity == 'Witherboss'):
             root_tag['EntityId'] = nbt.TAG_String('WitherBoss')
-        #For everything else the input is the EntityId
+        # For everything else the input is the EntityId
         else:
             root_tag['EntityId'] = nbt.TAG_String(entity)
 
