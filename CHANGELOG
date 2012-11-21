@@ -7,6 +7,8 @@ v0.10.4 -
    * Fix for books and spawners when run from outside the mcdungeon
      directory. (orphu)
 
+   * Secret rooms can contain alchemy labs. (orphu)
+
 v0.10.3 - 11/12/2012
 
    * Fixed bug with blank written books. (JiFish)

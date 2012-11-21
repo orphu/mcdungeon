@@ -6,6 +6,7 @@ import loottable
 import items
 from utils import *
 import perlin
+from pymclevel import nbt
 
 
 class Blank(object):
@@ -437,9 +438,14 @@ class SecretRoom(Blank):
         o = self.parent.loc.trans(2,0,2)
         sb = self.parent.parent.setblock
 
-        roomtype = random.choice(('study', 'sepulchure'))
+        # Pick random contents. 
+        # study is a library with a desk, chest and crafting table.
+        # lab is a library with brewing station, chest, and skull.
+        # sepulchre has a single sarcophagus with chest.
+        # 
+        roomtype = random.choice(('study', 'lab', 'sepulchre'))
 
-        if roomtype == 'study':
+        if roomtype in ['study', 'lab']:
             wmat = materials._wall
             fmat = materials._floor
             cmat = materials._ceiling
@@ -463,7 +469,7 @@ class SecretRoom(Blank):
             sb(p, fmat)
 
         # Pick random contents. Right now there are two possibilities. 
-        if roomtype == 'study':
+        if roomtype in ['study', 'lab']:
             # A secret study
             # Book cases
             for p in iterate_four_walls(o.trans(1,1,1), o.trans(10,1,10),-2):
@@ -488,12 +494,19 @@ class SecretRoom(Blank):
                 (materials.CraftingTable,0),# 3
                 (materials.WallSign,0),     # 4
                 (materials.WoodenStairs,0), # 5
-                (materials.WoodenStairs,6)  # 6
+                (materials.WoodenStairs,6), # 6
+                (materials.WoodenSlab,8)    # 7
             ]
-            template = [
-                [3,1,6,2],
-                [0,4,5,4]
-            ]
+            if roomtype == 'study':
+                template = [
+                    [3,1,6,2],
+                    [0,4,5,4]
+                ]
+            else:
+                template = [
+                    [1,7,6,2],
+                    [4,5,4,0]
+                ]
             oo = o.trans(5,3,4)
             for x in xrange(2):
                 for z in xrange(4):
@@ -501,10 +514,35 @@ class SecretRoom(Blank):
                     sb(p,
                        mats[template[x][z]][0],
                        mats[template[x][z]][1])
-            self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
-            self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
-            self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
-            sb(o.trans(5,2,5), materials.Torch)
+            if roomtype == 'study':
+                self.parent.parent.blocks[o+Vec(6,3,5)].data = 2
+                self.parent.parent.blocks[o+Vec(6,3,6)].data = 0
+                self.parent.parent.blocks[o+Vec(6,3,7)].data = 3
+                sb(o.trans(5,2,5), materials.Torch)
+            else:
+                self.parent.parent.blocks[o+Vec(6,3,4)].data = 2
+                self.parent.parent.blocks[o+Vec(6,3,5)].data = 0
+                self.parent.parent.blocks[o+Vec(6,3,6)].data = 3
+                #
+                sb(o.trans(5,2,4), materials.Head, 1)
+                root_tag = nbt.TAG_Compound()
+                root_tag['id'] = nbt.TAG_String('Skull')
+                root_tag['x'] = nbt.TAG_Int(o.trans(5,2,4).x)
+                root_tag['y'] = nbt.TAG_Int(o.trans(5,2,4).y)
+                root_tag['z'] = nbt.TAG_Int(o.trans(5,2,4).z)
+                root_tag['SkullType'] = nbt.TAG_Byte(random.randint(0,1))
+                root_tag['Rot'] = nbt.TAG_Byte(random.randint(0,15))
+                self.parent.parent.tile_ents[o.trans(5,2,4)] = root_tag
+                #
+                sb(o.trans(5,2,5), materials.BrewingStand)
+                root_tag = nbt.TAG_Compound()
+                root_tag['id'] = nbt.TAG_String('Cauldron')
+                root_tag['x'] = nbt.TAG_Int(o.trans(5,2,5).x)
+                root_tag['y'] = nbt.TAG_Int(o.trans(5,2,5).y)
+                root_tag['z'] = nbt.TAG_Int(o.trans(5,2,5).z)
+                self.parent.parent.tile_ents[o.trans(5,2,5)] = root_tag
+                #
+                sb(o.trans(5,2,6), materials.Torch)
 
             # A chest in a study should have writing supplies :)
             #item, probability, max stack amount
@@ -525,7 +563,7 @@ class SecretRoom(Blank):
                     deskloot.append(loottable.Loot(len(deskloot),amount,s[0].value,s[0].data,'',flag=s[0].flag))
             self.parent.parent.addchest(o.trans(5,3,7), loot=deskloot)
         else:
-            # a small sepulchure
+            # a small sepulchre
             # Torches
             for p in (Vec(2,3,2), Vec(2,3,9),
                       Vec(9,3,2), Vec(9,3,9)):
