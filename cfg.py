@@ -55,6 +55,7 @@ master_mobs = {}
 max_mob_tier = 0
 structure_values = []
 custom_spawners = {}
+spawners_path = 'spawners'
 
 parser = ConfigParser.SafeConfigParser()
 
@@ -84,7 +85,7 @@ def Load(filename = 'default.cfg'):
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
-    max_mob_tier, custom_spawners
+    max_mob_tier, custom_spawners, spawners_path
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -146,10 +147,10 @@ def Load(filename = 'default.cfg'):
     # Load custom spawners
     try:
         if os.path.isdir(os.path.join(sys.path[0],'spawners')):
-            spawners_dir = os.path.join(sys.path[0],'spawners')
+            spawners_path = os.path.join(sys.path[0],'spawners')
         else:
-            spawners_dir = 'spawners'
-        for file in os.listdir(spawners_dir):
+            spawners_path = 'spawners'
+        for file in os.listdir(spawners_path):
             if file.endswith(".nbt"):
                 custom_spawners[file[:-4].lower()] = file[:-4]
         print 'Loaded', len(custom_spawners), 'custom spawners.'

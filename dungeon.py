@@ -464,7 +464,7 @@ class Dungeon (object):
         # See if we have a custom spawner match
         if entity.lower() in cfg.custom_spawners.keys():
             entity = cfg.custom_spawners[entity.lower()]
-            root_tag = nbt.load(filename=os.path.join(sys.path[0],'spawners',entity+'.nbt'))
+            root_tag = nbt.load(filename=os.path.join(cfg.spawners_path,entity+'.nbt'))
             return root_tag
         else:
             root_tag = nbt.TAG_Compound()
