@@ -536,11 +536,15 @@ class Dungeon (object):
 
     def loadrandbooktext(self):
         #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
-        if (os.path.isdir(os.path.join(sys.path[0],'books')) == False):
+        if os.path.isdir(os.path.join(sys.path[0],'books')):
+            book_path = os.path.join(sys.path[0],'books')
+        elif os.path.isdir('books'):
+            book_path = 'books'
+        else:
             sys.exit("Error: Could not find the books folder!")
         #Make a list of all the txt files in the books directory
         booklist = []
-        for file in os.listdir(os.path.join(sys.path[0],'books')):
+        for file in os.listdir(book_path):
             if (file.endswith(".txt")):
                 booklist.append(file);
         #This error should also never trip.

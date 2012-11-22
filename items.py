@@ -274,10 +274,15 @@ def LoadHeads(filename = 'heads.txt'):
 
 def BooksReady():
     #Book directory existance
-    if (os.path.isdir(os.path.join(sys.path[0],'books')) == False):
+    if os.path.isdir(os.path.join(sys.path[0],'books')):
+        book_path = os.path.join(sys.path[0],'books')
+    elif os.path.isdir('books'):
+        book_path = 'books'
+    else:
         return False
+
     #Check for at least one book
-    for file in os.listdir(os.path.join(sys.path[0],'books')):
+    for file in os.listdir(book_path):
         if (file.endswith(".txt")):
             return True
     return False
