@@ -42,3 +42,17 @@ Marlin Saber:Raw Fish,32-5:A mola of efficiency.
 
 # Red Armour
 Flame Armour:Red Leather Chestplate,1-4
+
+# Legendary weapons
+Ulfberht:Iron Sword,34-1,16-2:+VLFBERHT+
+Durendal:Gold Sword,16-5:Legendary sword of Roland.
+Caladbolg:Iron Sword,16-2,19-1:The sword of Fergus mac Roich.
+Dyrnwyn:Iron Sword,20-3:White-Hilt
+Excalibur:Diamond Sword,16-1,19-1,17-1:Sword of Arthur, King of the Britains.
+Fragarach:Iron Sword,16-3:The Answerer
+Gram:Iron Sword,16-3,19-2:Slayer of Dragons
+Harpe:Iron Sword,18-3,17-2:
+Kusanagi:Iron Sword,17-2,18-2,19-2:Sword of the Gathering Clouds of Heaven
+Skofnung:Iron Sword,16-2,17-2,21-2:The best of all swords that have been carried in northern lands
+Tyrfing:Iron Sword,16-2,20-1:The cause of three great evils.
+
