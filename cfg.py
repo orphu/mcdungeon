@@ -144,9 +144,17 @@ def Load(filename = 'default.cfg'):
             max_mob_tier -= 1
 
     # Load custom spawners
-    for file in os.listdir(os.path.join(sys.path[0],'spawners')):
-        if file.endswith(".nbt"):
-            custom_spawners[file[:-4].lower()] = file[:-4]
+    try:
+        if os.path.isdir(os.path.join(sys.path[0],'spawners')):
+            spawners_dir = os.path.join(sys.path[0],'spawners')
+        else:
+            spawners_dir = 'spawners'
+        for file in os.listdir(spawners_dir):
+            if file.endswith(".nbt"):
+                custom_spawners[file[:-4].lower()] = file[:-4]
+        print 'Loaded', len(custom_spawners), 'custom spawners.'
+    except:
+        print 'Could not find spawners direcotry!'
 
     # Process dispensers config
     for d in temp_dispensers:
