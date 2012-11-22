@@ -1,6 +1,6 @@
 v0.10.4 -
 
-   * Fixed custom spaners on case sensitive systems. (orphu)
+   * Fixed custom spawners on case sensitive systems. (orphu)
 
    * Added some additional armed and armored skeletons. (orphu)
 
@@ -10,6 +10,10 @@ v0.10.4 -
    * Secret rooms can contain alchemy labs. (orphu)
 
    * Added some missing tiles for HTML maps (orphu)
+
+   * The default config produces fewer hall piston traps. (orphu)
+
+   * CustomKnight no longer has a chance to drop his gear. (orphu)
 
 v0.10.3 - 11/12/2012
 
