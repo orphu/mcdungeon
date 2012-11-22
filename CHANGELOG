@@ -9,6 +9,8 @@ v0.10.4 -
 
    * Secret rooms can contain alchemy labs. (orphu)
 
+   * Added some missing tiles for HTML maps (orphu)
+
 v0.10.3 - 11/12/2012
 
    * Fixed bug with blank written books. (JiFish)
