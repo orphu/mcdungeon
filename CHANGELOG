@@ -2,7 +2,8 @@ v0.10.4 -
 
    * Fixed custom spawners on case sensitive systems. (orphu)
 
-   * Added some additional armed and armored skeletons. (orphu)
+   * Added some additional armed and armored skeletons, fast zombies, and
+     zombie villagers. (orphu)
 
    * Fix for books and spawners when run from outside the mcdungeon
      directory. (orphu)
