@@ -553,7 +553,7 @@ class Dungeon (object):
         #Prevent unusual characters from being used
         valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
         #Open the book's text file
-        bookfile = open(os.path.join(sys.path[0], 'books', random.choice(booklist)))
+        bookfile = open(os.path.join(book_path, random.choice(booklist)))
         bookdata = bookfile.read().splitlines()
         bookfile.close()
         #Create NBT tag
