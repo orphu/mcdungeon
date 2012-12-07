@@ -924,13 +924,13 @@ class Forge(Blank):
 
         #random anvil (or other...)
         anvil_options = ((9,1),     #New anvil
-                         (10,20),   #Slightly Damged
-                         (11,50),   #Very Damaged
-                         (12,8),    #Empty cauldron
-                         (13,8),    #1/3 cauldron
-                         (14,8),    #2/3 cauldron
-                         (15,8),    #Full cauldron
-                         (1,30))    #Furnace!
+                         (10,15),   #Slightly Damged
+                         (11,30),   #Very Damaged
+                         (12,30),    #Empty cauldron
+                         (13,30),    #1/3 cauldron
+                         (14,30),    #2/3 cauldron
+                         (15,30),    #Full cauldron
+                         (1,50))    #Furnace!
         template[0][0] = weighted_choice(anvil_options)
 
         center = self.parent.canvasCenter()
