@@ -55,4 +55,4 @@ Harpe:Iron Sword,18-3,17-2
 Kusanagi:Iron Sword,17-2,18-2,19-2:Sword of the:Gathering Clouds of Heaven.
 Skofnung:Iron Sword,16-2,17-2,21-2:The best of all swords:that have been carried:in northern lands.
 Tyrfing:Iron Sword,16-2,20-1:The cause of three great evils.
-Axe of Perun:Iron Axe:16-4:An axe formerly wielded:by the Slavic god of:thunder and lightning.
+Axe of Perun:Iron Axe,16-4:An axe formerly wielded:by the Slavic god of:thunder and lightning.
