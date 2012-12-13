@@ -195,9 +195,10 @@ def rollLoot (tier, level):
             enchantments = []
             if item.name.startswith('magic_'):
                 ench_level = 0
-                for e in item.ench.split(','):
-                    k = int(e.split('-')[0])
-                    v = int(e.split('-')[-1])
+                if len(item.ench) > 0:
+                    for e in item.ench.split(','):
+                        k = int(e.split('-')[0])
+                        v = int(e.split('-')[-1])
                     enchantments.append(dict({'id':k, 'lvl':v}))
             elif 'level*' in loot['ench']:
                 ench_level = int(level*float(loot['ench'].split('level*')[-1]))
