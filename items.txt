@@ -412,19 +412,18 @@
 400,Pumpkin Pie,0,64
 # Disks
 #
-2256,Gold Music Disc,0,1
-2257,Green Music Disc,0,1
 2256,Music Disc 13,0,1
 2257,Music Disc cat,0,1
 2258,Music Disc blocks,0,1
-2258,Music Disc chirp,0,1
-2259,Music Disc far,0,1
-2260,Music Disc mall,0,1
-2261,Music Disc mellohi,0,1
-2262,Music Disc stal,0,1
-2263,Music Disc strad,0,1
-2264,Music Disc ward,0,1
-2265,Music Disc 11,0,1
+2259,Music Disc chrip,0,1
+2260,Music Disc far,0,1
+2261,Music Disc mall,0,1
+2262,Music Disc mellohi,0,1
+2263,Music Disc stal,0,1
+2264,Music Disc strad,0,1
+2265,Music Disc ward,0,1
+2266,Music Disc 11,0,1
+2267,Music Disc wait,0,1
 
 # Items with special flags.
 # Do not modify unless you really know what you are doing.
