@@ -56,3 +56,10 @@ Kusanagi:Iron Sword,17-2,18-2,19-2:Sword of the:Gathering Clouds of Heaven.
 Skofnung:Iron Sword,16-2,17-2,21-2:The best of all swords:that have been carried:in northern lands.
 Tyrfing:Iron Sword,16-2,20-1:The cause of three great evils.
 Axe of Perun:Iron Axe,16-4:An axe formerly wielded:by the Slavic god of:thunder and lightning.
+
+# Legendary Armours
+# The Hephaestus collection
+Talaria:White Leather Boots,2-5:Crafted by the God Hephaestus:Winged sandals
+Aegis Breastplate:Gold Chestplate,0-5:Crafted by the God Hephaestus:A hundred tassels of pure:gold hang fluttering from it.
+Eros' Bow:Bow,49-2,51-1:Crafted by the God Hephaestus:Be careful not to prick yourself:with the bow of the god Eros.
+Achilles' Leggings:Diamond Leggings,0-4:Crafted by the God Hephaestus:Not quite as nice as Achilles':shield, but still pretty nice.
