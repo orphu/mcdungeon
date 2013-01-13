@@ -199,7 +199,7 @@ def rollLoot (tier, level):
                     for e in item.ench.split(','):
                         k = int(e.split('-')[0])
                         v = int(e.split('-')[-1])
-                    enchantments.append(dict({'id':k, 'lvl':v}))
+                        enchantments.append(dict({'id':k, 'lvl':v}))
             elif 'level*' in loot['ench']:
                 ench_level = int(level*float(loot['ench'].split('level*')[-1]))
                 ench_level = max(1, ench_level)
