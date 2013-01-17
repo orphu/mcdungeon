@@ -1,9 +1,9 @@
 # Magic Items
-# 
+#
 # These are specific enchanted items that can be included in loot tables.
 # Note that any sort of item/enchantment combo is possible. Not everything
 # works in the game and care should be taken as some combinations may have
-# unexpected results. 
+# unexpected results.
 #
 # You can use the colored armours from dye_colors.txt. Names will be used
 # in-game.
@@ -14,11 +14,14 @@
 # <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...:<lore>:<lore>...
 #
 # Items should be referenced as "magic_<name>" in the loot tables. Make sure
-# all items in the list have unique names. 
+# all items in the list have unique names.
 #
-# Any number of enchantments can be listed. Use enchantment codes listed in 
+# Any number of enchantments can be listed. Use enchantment codes listed in
 # the wiki:
 # http://www.minecraftwiki.net/wiki/Enchant
+#
+# Lore text is limited to 50 characters per line and 10 lines. It is recommended
+# that you check how the lore text looks in-game.
 #
 # Examples:
 
@@ -63,3 +66,49 @@ Talaria:White Leather Boots,2-5:Crafted by the God Hephaestus:Winged sandals
 Aegis Breastplate:Gold Chestplate,0-5:Crafted by the God Hephaestus:A hundred tassels of pure:gold hang fluttering from it.
 Eros' Bow:Bow,49-2,51-1:Crafted by the God Hephaestus:Be careful not to prick yourself:with the bow of the god Eros.
 Achilles' Leggings:Diamond Leggings,0-4:Crafted by the God Hephaestus:Not quite as nice as Achilles':shield, but still pretty nice.
+# Hazmat Suit
+Hazmat Helmet:White Leather Helmet,1-4,34-3:An item from another world.:Part of a complete suit.
+Hazmat Suit:White Leather Chestplate,1-4,34-3:An item from another world.:Part of a complete suit.
+Hazmat Trousers:White Leather Leggings,1-4,34-3:An item from another world.:Part of a complete suit.
+Hazmat Boots:White Leather Boots,1-4,34-3:An item from another world.:Part of a complete suit.
+# Obsidian Suit
+Obsidian Helmet:Black Leather Helmet,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
+Obsidian Chestplate:Black Leather Chestplate,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
+Obsidian Leggings:Black Leather Leggings,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
+Obsidian Boots:Black Leather Boots,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
+# Magnetic Suit
+Magnetic Helm:Yellow Leather Helmet,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
+Magnetic Chestplate:Yellow Leather Chestplate,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
+Magnetic Leggings:Yellow Leather Leggings,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
+Magnetic Shoes:Yellow Leather Boots,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
+# Cactus Suit
+Cactus Helmet:Green Leather Helmet,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
+Cactus Chestplate:Green Leather Chestplate,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
+Cactus Leggings:Green Leather Leggings,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
+Cactus Boots:Green Leather Boots,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
+# Diving Helmet
+Diving Helmet:Orange Leather Helmet,5-3,6-1:An item from another world.
+
+#Enchanted Books
+Book of The High Priestess:Enchanted Book,0-4:- II -
+Book of The Fool:Enchanted Book,1-4:- 0 -
+Book of The Chariot:Enchanted Book,2-4:- VII -
+Book of The Sun:Enchanted Book,3-4:- XIX -
+Book of Temperance:Enchanted Book,4-4:- XIV -
+Book of The Empress:Enchanted Book,5-3:- III -
+Book of The Emperor:Enchanted Book,6-1:- IV -
+Book of Justice:Enchanted Book,7-3:- XI -
+Book of Death:Enchanted Book,16-5:- XIII -
+Book of The Hierophant:Enchanted Book,17-5:- V -
+Book of The Moon:Enchanted Book,18-5:- XVIII -
+Book of Strength:Enchanted Book,19-2:- VIII -
+Book of The Devil:Enchanted Book,20-2:- XV -
+Book of The Hanged Man:Enchanted Book,21-3:- XII -
+Book of The Hermit:Enchanted Book,32-5:- IX -
+Book of The Lovers:Enchanted Book,33-1:- VI -
+Book of The Star:Enchanted Book,34-3:- XVII -
+Book of The Fates:Enchanted Book,35-3:- X -
+Book of The Tower:Enchanted Book,48-5:- XVI -
+Book of Judgement:Enchanted Book,49-2:- XX -
+Book of The Magician:Enchanted Book,50-1:- I -
+Book of The World:Enchanted Book,51-1:- XXI -

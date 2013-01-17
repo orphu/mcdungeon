@@ -600,8 +600,12 @@ class Dungeon (object):
             # Enchantments
             if len(i.enchantments) > 0:
                 item_tag['tag'] = nbt.TAG_Compound()
-                item_tag['tag']['ench'] = nbt.TAG_List()
-                elist = item_tag['tag']['ench']
+                if i.flag == 'ENCH_BOOK':
+                    item_tag['tag']['StoredEnchantments'] = nbt.TAG_List()
+                    elist = item_tag['tag']['StoredEnchantments']
+                else:
+                    item_tag['tag']['ench'] = nbt.TAG_List()
+                    elist = item_tag['tag']['ench']
                 for e in i.enchantments:
                     e_tag = nbt.TAG_Compound()
                     e_tag['id'] = nbt.TAG_Short(e['id'])
@@ -638,7 +642,7 @@ class Dungeon (object):
                     item_tag['tag']['display'] = nbt.TAG_Compound()
                 item_tag['tag']['display']['Lore'] = nbt.TAG_List()
                 loredata = i.lore.split(':')
-                for loretext in loredata[:5]:
+                for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
             #Special flags
             # Dyed
