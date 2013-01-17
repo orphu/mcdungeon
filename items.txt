@@ -216,6 +216,18 @@
 145,Anvil,0,64
 145,Slightly Damaged Anvil,1,64
 145,Very Damaged Anvil,2,64
+146,Trapped Chest,0,64
+147,Weighted Pressure Plate Light,0,64
+148,Weighted Pressure Plate Heavy,0,64
+149,Redstone Comparator Off,0,64
+150,Redstone Comparator On,0,64
+151,Daylight Sensor,0,64
+152,Block of Redstone,0,64
+153,Nether Quartz Ore,0,64
+154,Hopper,0,64
+155,Block of Quartz,0,64
+156,Quartz Stairs,0,64
+157,Activator Rail,0,64
 
 # Items
 #
@@ -410,6 +422,11 @@
 398,Carrot on a Stick,0,1
 399,Nether Star,0,64
 400,Pumpkin Pie,0,64
+401,Firework Rocket,0,64
+402,Firework Star,0,64
+404,Redstone Comparator,0,64
+405,Nether Brick,0,64
+406,Nether Quartz,0,64
 # Disks
 #
 2256,Music Disc 13,0,1
@@ -432,6 +449,7 @@
 299,Random Leather Chestplate,0,1,DYED
 300,Random Leather Leggings,0,1,DYED
 301,Random Leather Boots,0,1,DYED
+403,Enchanted Book,0,1,ENCH_BOOK
 
 # Potions
 # #################

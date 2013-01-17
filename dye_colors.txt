@@ -29,3 +29,4 @@ Blue:0000FF
 Navy:000080
 Fuchsia:FF00FF
 Purple:800080
+Orange:FFA500
