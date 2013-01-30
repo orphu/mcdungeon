@@ -24,7 +24,7 @@
 # desired tag. Passing no options will build the current master HEAD rev,
 # which should be the current release version.
 
-FILES="items.txt magic_items.txt dye_colors.txt heads.txt potions.txt configs books spawners"
+FILES="fortunes.txt items.txt magic_items.txt dye_colors.txt heads.txt potions.txt configs books spawners"
 
 function error {
 	echo -e "\nFATAL: $1"
