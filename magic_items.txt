@@ -14,7 +14,7 @@
 # <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...:<lore>:<lore>...
 #
 # Items should be referenced as "magic_<name>" in the loot tables. Make sure
-# all items in the list have unique names.
+# all items in the list have unique names. Enchantments and lore are optional.
 #
 # Any number of enchantments can be listed. Use enchantment codes listed in
 # the wiki:
@@ -35,9 +35,10 @@ Parachute:Feather,2-5:Warning!:Not responsible for:death due to falling.
 # A Diamond Sword of Smite X named smitten:
 Smitten:Diamond Sword,17-10
 
-# A cookie of fortune V
-# Needs testing
-Fortune Cookie:Cookie,35-5:...in bed.
+# Fortune Cookie
+# Named item. "Random Lore Cookie" is a special case item that has some random lore
+# text. See fortunes.txt for fortune list.
+Fortune Cookie:Random Lore Cookie,
 
 # A really efficient fish
 # This actually works!
@@ -89,7 +90,7 @@ Cactus Boots:Green Leather Boots,7-3,34-3:Crafted from a cactus.:Part of a compl
 # Diving Helmet
 Diving Helmet:Orange Leather Helmet,5-3,6-1:An item from another world.
 
-#Enchanted Books
+# Enchanted Books
 Book of The High Priestess:Enchanted Book,0-4:- II -
 Book of The Fool:Enchanted Book,1-4:- 0 -
 Book of The Chariot:Enchanted Book,2-4:- VII -
