@@ -5,6 +5,7 @@ import os
 import operator
 import random
 from random import *
+import textwrap
 
 import cfg
 import loottable
@@ -569,6 +570,31 @@ class Dungeon (object):
         return outtag
 
 
+    def loadrandfortune(self):
+        fortune = '...in bed.'   #The default
+
+        # Deal with missing fortune file with default
+        if os.path.isfile(os.path.join(sys.path[0],'fortunes.txt')) == False:
+            return fortune
+
+        # Retrieve a random line from a file, reading through the file once
+        # Prevents us from having to load the whole file in to memory
+        forune_file = open(os.path.join(sys.path[0],'fortunes.txt'))
+        lineNum = 0
+        while 1:
+            aLine = forune_file.readline()
+            if not aLine:
+                break
+            if aLine[0] == '#' or aLine == '':
+                continue
+            lineNum = lineNum + 1
+            # How likely is it that this is the last line of the file?
+            if random.uniform(0,lineNum)<1:
+                fortune = aLine.rstrip()
+        forune_file.close()
+        return fortune
+
+
     def addchest(self, loc, tier=-1, loot=[]):
         level = loc.y/self.room_height
         if (tier < 0):
@@ -600,6 +626,7 @@ class Dungeon (object):
             # Enchantments
             if len(i.enchantments) > 0:
                 item_tag['tag'] = nbt.TAG_Compound()
+                # Flag for enchanted books (stores in a different NBT tag)
                 if i.flag == 'ENCH_BOOK':
                     item_tag['tag']['StoredEnchantments'] = nbt.TAG_List()
                     elist = item_tag['tag']['StoredEnchantments']
@@ -632,8 +659,8 @@ class Dungeon (object):
                     item_tag['tag'] = nbt.TAG_Compound()
                 item_tag['tag']['display'] = nbt.TAG_Compound()
                 item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
-            # Lore
-            if i.lore != '':
+            # Lore Text
+            if i.lore != '' or i.flag == 'FORTUNE':
                 try: item_tag['tag']
                 except:
                     item_tag['tag'] = nbt.TAG_Compound()
@@ -641,12 +668,18 @@ class Dungeon (object):
                 except:
                     item_tag['tag']['display'] = nbt.TAG_Compound()
                 item_tag['tag']['display']['Lore'] = nbt.TAG_List()
-                loredata = i.lore.split(':')
-                for loretext in loredata[:10]:
-                    item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
-            #Special flags
+                if i.flag == 'FORTUNE':
+                    i.lore = self.loadrandfortune()
+                    loredata = textwrap.wrap(i.lore,40)
+                    for loretext in loredata[:10]:
+                        item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext))
+                else:    
+                    loredata = i.lore.split(':')
+                    for loretext in loredata[:10]:
+                        item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
+            # Other Special flags
             # Dyed
-            if (i.flag == 'DYED'):
+            if i.flag == 'DYED':
                 try: item_tag['tag']
                 except:
                     item_tag['tag'] = nbt.TAG_Compound()
@@ -658,13 +691,13 @@ class Dungeon (object):
                 else:
                     item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
             # Face on heads
-            if (i.flag == 'HEAD'):
+            if i.flag == 'HEAD':
                 try: item_tag['tag']
                 except:
                     item_tag['tag'] = nbt.TAG_Compound()
                 item_tag['tag']['SkullOwner'] = nbt.TAG_String(i.flagparam)
             # special case for written books
-            if (i.flag == 'WRITTEN'):
+            if i.flag == 'WRITTEN':
                 item_tag['tag'] = self.loadrandbooktext()
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
