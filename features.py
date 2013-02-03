@@ -1196,6 +1196,68 @@ class CircleOfSkulls(Blank):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.setblock(p.up(1), materials.Torch)
 
+class Cell(Blank):
+    _name = 'cell'
+
+
+    def render(self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+
+        sb = self.parent.parent.setblock
+
+        mats = [
+            (materials.Air, 0), # 0
+            (materials._wall, 0), # 1
+            (materials.IronBars, 0) # 2
+        ]
+
+        center = self.parent.canvasCenter()
+
+        o = self.parent.loc.trans(center.x-2,
+                                  self.parent.canvasHeight()-1,
+                                  center.z-2)
+
+        locs = [ o ]
+
+        #if it's a bigroom, add more cells
+        if (self.parent.size.x == 2):
+            locs.extend( [ o.trans(5,0,0), o.trans(-5,0,0) ] )
+
+        if (self.parent.size.z == 2):
+            locs.extend( [ o.trans(0,0,5), o.trans(0,0,-5) ] )
+
+        for loc in locs:
+            #each side has a random chance of being a space, wall, or bars
+            n = random.choice( (0,0,2,2,2,2,1) )
+            e = random.choice( (0,0,2,2,2,2,1) )
+            s = random.choice( (0,0,2,2,2,2,1) )
+            w = random.choice( (0,0,2,2,2,2,1) )
+
+            template = [
+                [1,1,n,n,1,1],
+                [1,0,0,0,0,1],
+                [w,0,0,0,0,e],
+                [w,0,0,0,0,e],
+                [1,0,0,0,0,1],
+                [1,1,s,s,1,1]
+            ]
+
+
+            for x in xrange(6):
+                for z in xrange(6):
+                    p = loc.trans(x,0,z)
+                    sb(p,
+                       mats[template[x][z]][0],
+                       mats[template[x][z]][1])
+                    sb(p.up(1),
+                       mats[template[x][z]][0],
+                       mats[template[x][z]][1])
+                    sb(p.up(2),
+                       materials._wall,
+                       0)
+
+
 # Catalog the features we know about. 
 _features = {}
 # List of classes in this module.
