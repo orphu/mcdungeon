@@ -13,6 +13,7 @@ BLAST_PROTECTION = 3
 PROJECTILE_PROTECTION = 4
 RESPIRATION = 5
 AQUA_AFFINITY = 6
+THORNS = 7
 
 # Weapon enchantments
 SHARPNESS = 16
@@ -43,6 +44,7 @@ _ench_name = {
     PROJECTILE_PROTECTION: 'Projectile Protection',
     RESPIRATION: 'Respiration',
     AQUA_AFFINITY: 'Aqua Affinity',
+    THORNS: 'Thorns',
     SHARPNESS: 'Sharpness',
     SMITE: 'Smite',
     BANE_OF_ARTHROPODS: 'Bane of Arthropods',
@@ -77,6 +79,7 @@ _ench_prob = {
     PROJECTILE_PROTECTION: 5,
     RESPIRATION: 2,
     AQUA_AFFINITY: 2,
+    THORNS: 1,
     SHARPNESS: 10,
     SMITE: 5,
     BANE_OF_ARTHROPODS: 5,
@@ -103,6 +106,7 @@ _ench_level = {
     PROJECTILE_PROTECTION: [(  3, 18),(  9, 24),( 15, 30),( 21, 36),(  0,  0)],
     RESPIRATION:           [( 10, 40),( 20, 50),( 30, 60),(  0,  0),(  0,  0)],
     AQUA_AFFINITY:         [(  1, 41),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
+    THORNS:                [( 10, 60),( 30, 80),( 50,100),(  0,  0),(  0,  0)],
     SHARPNESS:             [(  1, 21),( 17, 37),( 33, 53),( 49, 69),( 65, 85)],
     SMITE:                 [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
     BANE_OF_ARTHROPODS:    [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
@@ -323,6 +327,10 @@ def enchant (item, level, debug=False):
     # Further determine the type
     if 'helmet' in item:
         type = 'helmet'
+    elif 'chestplate' in item:
+        type = 'chestplate'
+    elif 'leggings' in item:
+        type = 'leggings'
     elif 'boots' in item:
         type = 'boots'
 
@@ -340,8 +348,9 @@ def enchant (item, level, debug=False):
         return
 
     # Armors
-    if (type == 'armor' or
-        type == 'helmet' or
+    if (type == 'helmet' or
+        type == 'chestplate' or
+        type == 'leggings' or
         type == 'boots'):
         check_enchantment(PROTECTION, mlevel)
         check_enchantment(FIRE_PROTECTION, mlevel)
@@ -354,6 +363,9 @@ def enchant (item, level, debug=False):
     if type == 'helmet':
         check_enchantment(RESPIRATION, mlevel)
         check_enchantment(AQUA_AFFINITY, mlevel)
+        
+    if type == 'chestplate':
+        check_enchantment(THORNS, mlevel)
 
     # Weapons
     if type == 'weapon':
