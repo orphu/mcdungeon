@@ -106,7 +106,7 @@ if [ -d $NAME ]; then
 	rm -rf $NAME
 fi
 
-# Maker a spec file
+# Make a spec file.
 python utils/Makespec.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
 # Add additional data files.
 sed -i -e '/^pyz/ i\
