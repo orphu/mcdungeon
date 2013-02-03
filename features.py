@@ -1154,6 +1154,47 @@ class Pool(Blank):
             self.parent.parent.setblock(p, materials._floor)
             self.parent.parent.setblock(p.up(1), mat)
 
+class CircleOfSkulls(Blank):
+    _name = 'circleofskulls'
+
+    def render (self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+
+        center = self.parent.canvasCenter()
+        size = random.randint(6,
+                                min(self.parent.canvasWidth(),
+                                    self.parent.canvasLength()) - 1)
+        p0 = Vec(center.x - size/2 + 1,
+                 self.parent.canvasHeight(),
+                 center.z - size/2 + 1) + self.parent.loc
+        p1 = p0.trans(size-1, 0, size-1)
+
+        skulls = (
+            (0, 50), # Plain Skull
+            (1, 1),  # Wither Skull
+        )
+        counter = 0
+        for p in iterate_ellipse(p0, p1):
+            if( (p.x + p.z) % 2 == 0 ):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.setblock(p.up(1), materials.Fence)
+                # Abort if there is no skull here
+                if (random.randint(0,100) < 33):
+                    continue
+                self.parent.parent.setblock(p.up(2), materials.Head,1)
+                root_tag = nbt.TAG_Compound()
+                root_tag['id'] = nbt.TAG_String('Skull')
+                root_tag['x'] = nbt.TAG_Int(p.x)
+                root_tag['y'] = nbt.TAG_Int(p.y-2)
+                root_tag['z'] = nbt.TAG_Int(p.z)
+                root_tag['SkullType'] = nbt.TAG_Byte(weighted_choice(skulls))
+                root_tag['Rot'] = nbt.TAG_Byte(random.randint(0,15))
+                self.parent.parent.tile_ents[p.up(2)] = root_tag
+
+            elif( random.randint(0,100) < 33 ):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.setblock(p.up(1), materials.Torch)
 
 # Catalog the features we know about. 
 _features = {}
