@@ -595,6 +595,73 @@ class Dungeon (object):
         return fortune
 
 
+    def buildItemTag(self, i):
+        item_tag = nbt.TAG_Compound()
+        # Standard stuff
+        item_tag['id'] = nbt.TAG_Short(i.id)
+        item_tag['Damage'] = nbt.TAG_Short(i.damage)
+        # Enchantments
+        if len(i.enchantments) > 0:
+            item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['ench'] = nbt.TAG_List()
+            elist = item_tag['tag']['ench']
+            for e in i.enchantments:
+                e_tag = nbt.TAG_Compound()
+                e_tag['id'] = nbt.TAG_Short(e['id'])
+                e_tag['lvl'] = nbt.TAG_Short(e['lvl'])
+                elist.append(e_tag)
+        # Custom Potion Effects
+        if i.p_effect != '':
+            try: item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
+            elist = item_tag['tag']['CustomPotionEffects']
+            for e in i.p_effect.split(','):
+                id, amp, dur = e.split('-')
+                e_tag = nbt.TAG_Compound()
+                e_tag['Id'] = nbt.TAG_Byte(id)
+                e_tag['Amplifier'] = nbt.TAG_Byte(amp)
+                e_tag['Duration'] = nbt.TAG_Int(dur)
+                elist.append(e_tag)
+        # Naming
+        if i.customname != '':
+            try: item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['display'] = nbt.TAG_Compound()
+            item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
+        # Lore
+        if i.lore != '':
+            try: item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            try: item_tag['tag']['display']
+            except:
+                item_tag['tag']['display'] = nbt.TAG_Compound()
+            item_tag['tag']['display']['Lore'] = nbt.TAG_List()
+            loredata = i.lore.split(':')
+            for loretext in loredata[:5]:
+                item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
+        #Special flags
+        # Dyed
+        if (i.flag == 'DYED'):
+            try: item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            try: item_tag['tag']['display']
+            except:
+                item_tag['tag']['display'] = nbt.TAG_Compound()
+            if i.flagparam == '':
+                item_tag['tag']['display']['color'] = nbt.TAG_Int(random.randint(0, 16777215))
+            else:
+                item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
+        # special case for written books
+        if (i.flag == 'WRITTEN'):
+            item_tag['tag'] = self.loadrandbooktext()
+        return item_tag
+
+
     def addchest(self, loc, tier=-1, loot=[]):
         level = loc.y/self.room_height
         if (tier < 0):
@@ -617,90 +684,16 @@ class Dungeon (object):
         if len(loot) == 0:
             loot = list(loottable.rollLoot(tier, level+1))
         for i in loot:
-            item_tag = nbt.TAG_Compound()
-            # Standard stuff
+            if i.file != '':
+                item_tag = item_tag = nbt.load(i.file)
+            else:
+                item_tag = self.buildItemTag(i)
+            #Set the slot and amount
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
             item_tag['Count'] = nbt.TAG_Byte(i.count)
-            item_tag['id'] = nbt.TAG_Short(i.id)
-            item_tag['Damage'] = nbt.TAG_Short(i.damage)
-            # Enchantments
-            if len(i.enchantments) > 0:
-                item_tag['tag'] = nbt.TAG_Compound()
-                # Flag for enchanted books (stores in a different NBT tag)
-                if i.flag == 'ENCH_BOOK':
-                    item_tag['tag']['StoredEnchantments'] = nbt.TAG_List()
-                    elist = item_tag['tag']['StoredEnchantments']
-                else:
-                    item_tag['tag']['ench'] = nbt.TAG_List()
-                    elist = item_tag['tag']['ench']
-                for e in i.enchantments:
-                    e_tag = nbt.TAG_Compound()
-                    e_tag['id'] = nbt.TAG_Short(e['id'])
-                    e_tag['lvl'] = nbt.TAG_Short(e['lvl'])
-                    elist.append(e_tag)
-            # Custom Potion Effects
-            if i.p_effect != '':
-                try: item_tag['tag']
-                except:
-                    item_tag['tag'] = nbt.TAG_Compound()
-                item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
-                elist = item_tag['tag']['CustomPotionEffects']
-                for e in i.p_effect.split(','):
-                    id, amp, dur = e.split('-')
-                    e_tag = nbt.TAG_Compound()
-                    e_tag['Id'] = nbt.TAG_Byte(id)
-                    e_tag['Amplifier'] = nbt.TAG_Byte(amp)
-                    e_tag['Duration'] = nbt.TAG_Int(dur)
-                    elist.append(e_tag)
-            # Naming
-            if i.customname != '':
-                try: item_tag['tag']
-                except:
-                    item_tag['tag'] = nbt.TAG_Compound()
-                item_tag['tag']['display'] = nbt.TAG_Compound()
-                item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
-            # Lore Text
-            if i.lore != '' or i.flag == 'FORTUNE':
-                try: item_tag['tag']
-                except:
-                    item_tag['tag'] = nbt.TAG_Compound()
-                try: item_tag['tag']['display']
-                except:
-                    item_tag['tag']['display'] = nbt.TAG_Compound()
-                item_tag['tag']['display']['Lore'] = nbt.TAG_List()
-                if i.flag == 'FORTUNE':
-                    i.lore = self.loadrandfortune()
-                    loredata = textwrap.wrap(i.lore,40)
-                    for loretext in loredata[:10]:
-                        item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext))
-                else:    
-                    loredata = i.lore.split(':')
-                    for loretext in loredata[:10]:
-                        item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
-            # Other Special flags
-            # Dyed
-            if i.flag == 'DYED':
-                try: item_tag['tag']
-                except:
-                    item_tag['tag'] = nbt.TAG_Compound()
-                try: item_tag['tag']['display']
-                except:
-                    item_tag['tag']['display'] = nbt.TAG_Compound()
-                if i.flagparam == '':
-                    item_tag['tag']['display']['color'] = nbt.TAG_Int(random.randint(0, 16777215))
-                else:
-                    item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
-            # Face on heads
-            if i.flag == 'HEAD':
-                try: item_tag['tag']
-                except:
-                    item_tag['tag'] = nbt.TAG_Compound()
-                item_tag['tag']['SkullOwner'] = nbt.TAG_String(i.flagparam)
-            # special case for written books
-            if i.flag == 'WRITTEN':
-                item_tag['tag'] = self.loadrandbooktext()
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
+
 
     def addchestitem_tag(self, loc, item_tag):
         '''Add an item to an existing chest'''

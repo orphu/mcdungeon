@@ -6,7 +6,7 @@ _by_id = {}
 
 class ItemInfo (object):
     def __init__(self, name, value, data=0, maxstack=64, ench='', p_effect='',
-                 customname='', flag='', flagparam='', lore=''):
+                 customname='', flag='', flagparam='', lore='', file=''):
         self.name = str(name)
         self.value = int(value)
         self.data = int(data)
@@ -17,10 +17,11 @@ class ItemInfo (object):
         self.flag = str(flag)
         self.flagparam = str(flagparam)
         self.lore = str(lore)
+        self.file = str(file)
 
     # Intentionally not printing lore
     def __str__ (self):
-        return 'Item: %s, ID: %d, Data: %d, MaxStack: %d, Ench: %s, PEff: %s, Name: %s, Flag: %s, FP: %s'%(
+        return 'Item: %s, ID: %d, Data: %d, MaxStack: %d, Ench: %s, PEff: %s, Name: %s, Flag: %s, FP: %s, File: %s'%(
             self.name,
             self.value,
             self.data,
@@ -29,7 +30,8 @@ class ItemInfo (object):
             self.p_effect,
             self.customname,
             self.flag,
-            self.flagparam)
+            self.flagparam,
+            self.file)
 
 
 def LoadItems(filename = 'items.txt'):
@@ -227,49 +229,32 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
     print 'Loaded', items, 'dye colors.'
 
 
-def LoadHeads(filename = 'heads.txt'):
-    # Try to load items from sys.path[0] if we can, 
-    # otherwise default to the cd. 
-    temp = os.path.join(sys.path[0],filename)
-    try:
-        fh = open(temp)
-        fh.close
-        filename = temp
-    except:
-        pass
-    items = 0
-    try:
-        fh = open(filename)
-    except IOError as e:
-        sys.exit(e)
-    fh.close()
-    try:
-        with file(filename) as f:
-            color_txt = f.read()
-    except Exception, e:
-        print "Error reading heads file: ", e;
-    for line in color_txt.split("\n"):
-        try:
-            line = line.strip()
-            if len(line) == 0:
-                continue
-            if line[0] == "#":
-                continue
-
-            flag = 'HEAD'
-            flagparam = line
-            value = _items['head'].value
-            data = _items['head'].data
-
-            name = '%s\'s head' % (line.lower())
-            _items[name] = ItemInfo(name, value, data=data, maxstack=1,
-                                    flag=flag, flagparam=flagparam)
-            #print _items[name]
-            items += 1
-        except Exception, e:
-            print "Error reading line:", e
-            print "Line: ", line
-    print 'Loaded', items, 'heads.'
+def LoadNBTFiles(dirname = 'items'):
+    # Test which path to use. If the path can't be found
+    # just don't load any items.
+    if os.path.isdir(os.path.join(sys.path[0],dirname)):
+        item_path = os.path.join(sys.path[0],dirname)
+    elif os.path.isdir(dirname):
+        item_path = dirname
+    else:
+        print 'Could not find the NBT items folder!';
+        return
+    #Make a list of all the NBT files in the items directory
+    itemlist = []
+    for file in os.listdir(item_path):
+        if (file.endswith(".nbt")):
+            itemlist.append(file);
+    items_count = 0
+    for item in itemlist:
+        # SomeItem.nbt would be referenced in loot as file_some_item
+        name = 'file_'+item[:-4].lower()
+        full_path = os.path.join(item_path, item)
+        # Limitation: There's current no way of making these items
+        # stack. Perhaps a special tag that gets used here and removed?
+        _items[name] = ItemInfo(name, 0, maxstack=1, file = full_path)
+        #print _items[name]
+        items_count += 1
+    print 'Loaded', items_count, 'items from NBT files.'
 
 
 def BooksReady():
@@ -306,5 +291,5 @@ def byID (id):
 LoadItems()
 LoadDyedArmour()
 LoadPotions()
-LoadHeads()
 LoadMagicItems()
+LoadNBTFiles()
