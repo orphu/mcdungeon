@@ -51,6 +51,7 @@
 28,Detector Rail,0,64
 29,Sticky Piston,0,64
 30,Cobweb,0,64
+31,Dead Tall Grass,0,64
 31,Tall Grass,1,64
 31,Fern,2,64
 32,Dead Bush,0,64

@@ -1258,6 +1258,84 @@ class Cell(Blank):
                        0)
 
 
+class Farm(Blank):
+    _name = 'farm'
+
+    def render(self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+
+        sb = self.parent.parent.setblock
+
+        center = self.parent.canvasCenter()
+
+        o = self.parent.loc.trans(center.x-2,
+                                  self.parent.canvasHeight()-1,
+                                  center.z-2)
+
+        locs = [ o ]
+
+        #if it's a bigroom, add more plots
+        if (self.parent.size.x == 2):
+            locs.extend( [ o.trans(5,0,0), o.trans(-5,0,0) ] )
+
+        if (self.parent.size.z == 2):
+            locs.extend( [ o.trans(0,0,5), o.trans(0,0,-5) ] )
+
+        if (self.parent.size.z == 2 and self.parent.size.x == 2 ):
+            locs.extend( [ o.trans(5,0,5), o.trans(-5,0,-5),
+                           o.trans(5,0,-5), o.trans(-5,0,5)] )
+
+        for loc in locs:
+            #choose a random crop. there's a 33% change it'll be a dead bush
+            #i mean good lord, it's in an UNDERGROUND ABANDONED dungeon (:
+            crops = [
+                (materials.Fern, 2),
+                (materials.TallGrass, 1),
+                (materials.DeadBush, 0),
+                (materials.RedMushroom, 0),
+                (materials.BrownMushroom, 0),
+                (materials.NetherWart, 0)
+            ]
+            if( random.randint(0, 100) < 34 ):
+                crop = (materials.DeadBush, 0)
+            else:
+                crop = random.choice(crops)
+
+            #choose an appropriate soil
+            soil = ( materials.Dirt, 0 )
+            if( crop[0] == materials.NetherWart ):
+                soil = (materials.SoulSand,0)
+
+            #torches if it needs it to survive
+            needsLight = 0
+            if( crop[0] == materials.Fern or crop[0] == materials.DeadBush
+                or crop[0] == materials.TallGrass ):
+                needsLight = 1
+
+
+            for x in xrange(6):
+                for z in xrange(6):
+                    p = loc.trans(x,0,z)
+                    if( random.randint(0, 100) < 40 ):
+                        sb(p, crop[0], crop[1])
+
+                    sb(p.down(1), soil[0], soil[1])
+
+                    if( x == 0 or x == 5 or z == 0 or z == 5 ):
+                        sb(p, materials.Fence, 0 )
+
+            if( needsLight == 1 ):
+                sb( loc.trans(0,-1,5), materials.Torch, 5)
+                sb( loc.trans(5,-1,5), materials.Torch, 5)
+                sb( loc.trans(5,-1,0), materials.Torch, 5)
+                sb( loc.trans(0,-1,0), materials.Torch, 5)
+
+            # Add some gates
+            sb(loc.trans(2,0,0), materials.FenceGate, 0)
+            sb(loc.trans(2,0,5), materials.FenceGate, 0)
+
+
 # Catalog the features we know about. 
 _features = {}
 # List of classes in this module.
