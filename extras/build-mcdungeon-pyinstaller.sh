@@ -106,8 +106,19 @@ if [ -d $NAME ]; then
 	rm -rf $NAME
 fi
 
+# Maker a spec file
+python utils/Makespec.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
+# Add additional data files.
+sed -i -e '/^pyz/ i\
+a.datas += [ \
+	("pymclevel/minecraft.yaml", "mcdungeon/pymclevel/minecraft.yaml", "DATA"), \
+	("pymclevel/classic.yaml", "mcdungeon/pymclevel/classic.yaml", "DATA"), \
+	("pymclevel/indev.yaml", "mcdungeon/pymclevel/indev.yaml", "DATA"), \
+	("pymclevel/pocket.yaml", "mcdungeon/pymclevel/pocket.yaml", "DATA"), \
+]
+' mcdungeon-build/mcdungeon.spec
 # Build it!
-python pyinstaller.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py || error 'Pyinstaller build failed.' $?
+python utils/Build.py -y mcdungeon-build/mcdungeon.spec || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
 mkdir $NAME
@@ -125,9 +136,6 @@ case $PLATFORM in
 		cp mcdungeon/extras/launcher.command $NAME/launcher.command
 		;;
 esac
-
-mkdir $NAME/pymclevel
-cp mcdungeon/pymclevel/*yaml $NAME/pymclevel
 
 # Copy over the executable
 cp mcdungeon-build/dist/$EXE $NAME/
