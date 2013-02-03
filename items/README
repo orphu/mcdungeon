@@ -1,0 +1,26 @@
+This folder contains the data for customised items. NBT files in this
+folder can be referenced in loot tables as file_[filename without extension]
+For example, head_notch.nbt would be referenced as file_head_notch.
+See default.cfg for more details.
+
+Each custom item is an NBT file containing the tags required to create
+the inventory item. You may add your own files by editing the defaults
+using an NBT editor (like NBTEdit.) You can also extract the tags from a
+player from from an existing Minecraft level and use that.
+
+Items can be very simple, or potentially a very complex tree of values.
+The most simple example would be a single short tag, called id and
+containing the numerical id of the item.
+
+For more information on the format of the tags see:
+	* http://www.minecraftwiki.net/wiki/Player.dat_Format#Item_structure
+	
+IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
+crash it. Please use this feature with caution.
+
+Packaged Items:
+===============
+- Items starting with "heads_" are the heads of some famous (and not so
+  famous) minecrafters.
+
+Hopefully more to come!
