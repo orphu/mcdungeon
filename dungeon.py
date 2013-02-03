@@ -848,7 +848,9 @@ class Dungeon (object):
                                            stairwell=True, maxsize=maxsize)
                 ps = self.setroom(pos, room)
                 eroom = self.rooms[level_start]
-                feature = features.new('stairwell', eroom)
+                feature = features.new(weighted_choice(cfg.master_stairwells),
+                                       eroom)
+
                 eroom.features.append(feature)
                 feature.placed()
                 roots = {}
@@ -1859,11 +1861,11 @@ class Dungeon (object):
             room = self.rooms[p]
             if room.features[0]._name == 'entrance':
                 continue
-            if room.features[0]._name == 'stairwell':
+            if room.features[0]._is_stairwell:
                 continue
             if p.y < self.levels-1:
                 droom = self.rooms[p.down(1)]
-                if droom.features[0]._name == 'stairwell':
+                if droom.features[0]._is_stairwell:
                     continue
             if room.size != Vec(1,1,1):
                 continue
