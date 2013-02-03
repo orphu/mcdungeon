@@ -11,6 +11,7 @@ from pymclevel import nbt
 
 class Blank(object):
     _name = 'blank'
+    _is_stairwell = False
 
     def __init__ (self, parent):
         self.parent = parent
@@ -104,6 +105,7 @@ class Entrance(Blank):
 
 class Stairwell(Blank):
     _name = 'stairwell'
+    _is_stairwell = True
 
     def render (self):
         if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
@@ -124,6 +126,166 @@ class Stairwell(Blank):
                                                 mat[0])
                     self.parent.parent.setblock(p.trans(0,1,0),
                                                 mat[1])
+
+
+class TripleStairs(Blank):
+    _name = 'triplestairs'
+    _is_stairwell = True
+
+    def render (self):
+        #create a shortcut to the set block fN
+        sb = self.parent.parent.setblock
+
+        center = self.parent.canvasCenter()
+
+        start = self.parent.loc.trans(5,self.parent.parent.room_height-2,5)
+        start = start.trans(0,-6,0)
+
+        #handrail
+        for x in iterate_four_walls(start.trans(-1,-1,-1),start.trans(6,-1,6),0):
+            sb(x, materials.IronBars, 0)
+        sb( start.trans(2,-1,-1) , materials.Air, 0 )
+        sb( start.trans(3,-1,-1) , materials.Air, 0 )
+
+        #add a random deco object at the top
+        decos = ( (materials.Cauldron, 2) ,
+                  (materials.Torch, 0),
+                  (materials.FlowerPot, 10),
+                  (materials.DoubleSlab, 0),
+                  (materials.Air, 0) )
+
+        deco = random.choice(decos)
+
+        sb( start.trans(1,-1,1) , deco[0], deco[1] )
+        sb( start.trans(4,-1,1) , deco[0], deco[1] )
+
+        #using the following materials...
+        mats = [
+            (materials.Air,0), #0
+            (materials.StoneBrick,0), #1
+            (materials.StoneBrickStairs, 6 ), #2 upside down ascending south
+            (materials.StoneBrickStairs, 0 ), #3 ascending east
+            (materials.StoneBrickStairs, 1 ), #4 ascending west
+            (materials.StoneBrickStairs, 3 ), #5 ascending north
+            (materials.StoneBrickStairs, 7 ), #6 upside down ascending north
+            (materials.Torch, 3) #7
+            ]
+
+        #...create the stairs
+        template = [
+            [[ 0, 3, 1, 1, 4, 0],
+             [ 0, 1, 5, 5, 1, 0],
+             [ 0, 7, 0, 0, 7, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 2, 2, 2, 2, 2, 2]],
+
+            [[ 1, 1, 1, 1, 1, 1],
+             [ 5, 6, 1, 1, 6, 5],
+             [ 0, 0, 5, 5, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0]],
+
+            [[ 1, 1, 1, 1, 1, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 5, 0, 1, 1, 0, 5],
+             [ 0, 0, 5, 5, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0]],
+
+            [[ 1, 1, 1, 1, 1, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 5, 0, 1, 1, 0, 5],
+             [ 0, 0, 5, 5, 0, 0],
+             [ 0, 0, 0, 0, 0, 0],
+             [ 0, 0, 0, 0, 0, 0]],
+
+            [[ 1, 1, 1, 1, 1, 1],
+             [ 1, 5, 1, 1, 5, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 5, 0, 1, 1, 0, 5],
+             [ 0, 0, 5, 5, 0, 0],
+             [ 0, 0, 0, 0, 0, 0]],
+
+            [[ 1, 1, 1, 1, 1, 1],
+             [ 1, 1, 1, 1, 1, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 1, 0, 1, 1, 0, 1],
+             [ 5, 0, 1, 1, 0, 5],
+             [ 0, 0, 5, 5, 0, 0]]
+            ]
+        #place the stuff
+        for y in xrange(6):
+            for x in xrange(6):
+                for z in xrange(7):
+                    sb(start.trans(x,y,z),
+                        mats[ template[y][z][x] ][0],
+                        mats[ template[y][z][x] ][1] )
+
+
+class TowerWithLadder(Blank):
+    _name = 'towerwithladder'
+    _is_stairwell = True
+
+    def render (self):
+        #create a shortcut to the set block fN
+        sb = self.parent.parent.setblock
+
+        center = self.parent.canvasCenter()
+
+        start = self.parent.loc.trans(5,self.parent.parent.room_height-2,5)
+        start = start.trans(0,-6,0)
+
+        mats = [
+            (materials.Air,0), #0
+            (materials.StoneBrick,0), #1
+            (materials.Ladder, 3 ), #2 facing south
+            (materials.Ladder, 2 ), #3 facing north
+            (materials.StoneBrickStairs, 6 ), #4 upside down ascending south
+            (materials.StoneBrickStairs, 7 ), #5 upside down ascending north
+            (materials.IronBars, 0 ) #6
+            ]
+
+        template = [
+            [ 0, 1, 1, 1, 1, 0],
+            [ 1, 0, 2, 2, 0, 1],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 0, 1, 6, 6, 1, 0]]
+
+        top = [
+            [ 0, 1, 1, 1, 1, 0],
+            [ 1, 0, 2, 2, 0, 1],
+            [ 5, 0, 0, 0, 0, 5],
+            [ 4, 0, 0, 0, 0, 4],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 0, 1, 1, 1, 1, 0]]
+
+        #place the stuff
+        for y in xrange(2):
+            for x in xrange(6):
+                for z in xrange(6):
+                    sb(start.trans(x,y*6-1,z),
+                       mats[ template[z][x] ][0],
+                       mats[ template[z][x] ][1] )
+                    sb(start.trans(x,y*6-2,z),
+                       mats[ template[z][x] ][0],
+                       mats[ template[z][x] ][1] )
+                    sb(start.trans(x,y*6-3,z),
+                       mats[ top[z][x] ][0],
+                       mats[ top[z][x] ][1] )
+
+        #finish ladder
+        for x in iterate_cube(start.trans(2,0,1), start.trans(3,2,1)):
+            sb(x, materials.Ladder, 3 )
 
 
 class Chasm(Blank):
@@ -345,8 +507,8 @@ class MessHall(Blank):
         for x in xrange(self.parent.size.x):
             for z in xrange(self.parent.size.z):
                 rp = self.parent.pos + Vec(x,0,z)
-                if (self.parent.parent.rooms[rp].features[0]._name not in
-                    ['stairwell', 'blank']):
+                if (self.parent.parent.rooms[rp].features[0]._is_stairwell is False and
+                    self.parent.parent.rooms[rp].features[0]._name is not 'blank'):
                     p = self.parent.loc + Vec(
                         x * self.parent.parent.room_size,
                         self.parent.canvasHeight()-1,

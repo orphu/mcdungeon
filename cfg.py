@@ -45,6 +45,7 @@ mapstore = ''
 master_halls = []
 master_rooms = []
 master_features = []
+master_stairwells = []
 master_floors = []
 master_ruins = [('blank',1)]
 master_entrances = [('squaretowerentrance',1)]
@@ -85,7 +86,7 @@ def Load(filename = 'default.cfg'):
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
-    max_mob_tier, custom_spawners, spawners_path
+    max_mob_tier, custom_spawners, spawners_path, master_stairwells
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -106,6 +107,7 @@ def Load(filename = 'default.cfg'):
     master_halls = parser.items('halls')
     master_rooms = parser.items('rooms')
     master_features = parser.items('features')
+    master_stairwells = parser.items('stairwells')
     master_floors = parser.items('floors')
     temp_dispensers = parser.items('dispensers')
     try:

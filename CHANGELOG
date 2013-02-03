@@ -18,6 +18,10 @@ v0.11.0
 
    * Added fortunes to fortune cookies. (JiFish)
 
+   * Configurable Stairwells . (orphu)
+
+   * Two new stairwells contributed by djchrisblue.
+
 v0.10.4 - 11/22/2012
 
    * Fixed custom spawners on case sensitive systems. (orphu)
