@@ -1295,16 +1295,48 @@ class Farm(Blank):
 
         locs = [ o ]
 
-        #if it's a bigroom, add more plots
-        if (self.parent.size.x == 2):
-            locs.extend( [ o.trans(5,0,0), o.trans(-5,0,0) ] )
+        # If it's a bigroom, add more cells.
+        stairs = self.parent.parent.stairwells
+        p = self.parent.pos
+        y = self.parent.size.y-1
+        # 2x2 rooms N,S,E,W are fine, need to check diagonals.
+        if (self.parent.size.x == 2 and self.parent.size.z == 2):
+            locs.extend( [ o.trans(0,0,-5), o.trans(0,0,5),
+                           o.trans(5,0,0), o.trans(-5,0,0)] )
+            # NW
+            if(p+Vec(0,y,0) not in stairs and
+               p+Vec(0,y+1,0) not in stairs):
+                locs.extend( [ o.trans(-5,0,-5) ] )
+            # NE
+            if(p+Vec(1,y,0) not in stairs and
+               p+Vec(1,y+1,0) not in stairs):
+                locs.extend( [ o.trans(5,0,-5) ] )
+            # SW
+            if(p+Vec(0,y,1) not in stairs and
+               p+Vec(0,y+1,1) not in stairs):
+                locs.extend( [ o.trans(-5,0,5) ] )
+            # SE
+            if(p+Vec(1,y,1) not in stairs and
+               p+Vec(1,y+1,1) not in stairs):
+                locs.extend( [ o.trans(5,0,5) ] )
 
-        if (self.parent.size.z == 2):
-            locs.extend( [ o.trans(0,0,5), o.trans(0,0,-5) ] )
+        # 2x1 rooms need to check for stairwells.
+        elif (self.parent.size.x == 2):
+            if(p+Vec(0,y,0) not in stairs and
+               p+Vec(0,y+1,0) not in stairs):
+                locs.extend( [ o.trans(-5,0,0) ] )
+            if(p+Vec(1,y,0) not in stairs and
+               p+Vec(1,y+1,0) not in stairs):
+                locs.extend( [ o.trans(5,0,0) ] )
 
-        if (self.parent.size.z == 2 and self.parent.size.x == 2 ):
-            locs.extend( [ o.trans(5,0,5), o.trans(-5,0,-5),
-                           o.trans(5,0,-5), o.trans(-5,0,5)] )
+        # 1x2 rooms need to check for stairwells.
+        elif (self.parent.size.z == 2):
+            if(p+Vec(0,y,0) not in stairs and
+               p+Vec(0,y+1,0) not in stairs):
+                locs.extend( [ o.trans(0,0,-5) ] )
+            if(p+Vec(0,y,1) not in stairs and
+               p+Vec(0,y+1,1) not in stairs):
+                locs.extend( [ o.trans(0,0,5) ] )
 
         for loc in locs:
             #choose a random crop. there's a 33% change it'll be a dead bush
