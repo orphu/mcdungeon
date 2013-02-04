@@ -1172,25 +1172,6 @@ def ruinBlocks (p1, p2, height, dungeon, override=False):
             (p.w(1) not in dungeon.blocks or
                  dungeon.blocks[p.w(1)].material == materials.Air)):
             floaters.append(p)
-        #elif (p in dungeon.blocks and
-        #      dungeon.blocks[p].material != materials.Air):
-        #    dungeon.setblock(p, materials.WallSign,0)
-        #    dungeon.addsign(p,
-        #                    'D: '+str(p.down(1) not in dungeon.blocks or
-        #                           dungeon.blocks[p.down(1)].material ==
-        #                           materials.Air),
-        #                    'N: '+str(p.n(1) not in dungeon.blocks or
-        #                           dungeon.blocks[p.n(1)].material ==
-        #                           materials.Air)+
-        #                    ' - S: '+str(p.s(1) not in dungeon.blocks or
-        #                           dungeon.blocks[p.s(1)].material ==
-        #                           materials.Air),
-        #                    'E: '+str(p.e(1) not in dungeon.blocks or
-        #                           dungeon.blocks[p.e(1)].material ==
-        #                           materials.Air)+
-        #                    ' - W: '+str(p.w(1) not in dungeon.blocks or
-        #                           dungeon.blocks[p.w(1)].material ==
-        #                           materials.Air), '')
     for p in floaters:
         dungeon.delblock(p)
 
