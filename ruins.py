@@ -1145,6 +1145,93 @@ class Arches(Blank):
                     ruinBlocks(c1.up(1), c3.up(1), height, self.parent.parent)
 
 
+class HouseFrame(Blank):
+    _name = 'houseframe'
+
+    def render(self):
+        # Use sandstone for deserts
+        if self.parent.parent.biome in [2, 17]:
+            mat = materials.meta_decoratedsandstone
+            stair = materials.SandstoneStairs
+        # Use cobblestone for jungle and swamp
+        elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+            mat = materials.meta_mossycobble
+            stair = materials.StoneStairs
+        # Otherwise use stone brick
+        else:
+            mat = materials.meta_mossystonebrick
+            stair = materials.StoneBrickStairs
+
+        #what direction will the stairs face?
+        E = 0
+        W = 1
+
+        # got the mats. now draw the base. start one higher so it's less buried
+        start = self.loc.trans(3+random.randint(0,2) , -1, 3+random.randint(0,2))
+        for p in iterate_cube(start, start.trans(7,0,7) ):
+            self.parent.parent.setblock(p, mat)
+
+        # now draw the A frame
+        start = start.trans(0,-1,0)
+
+        #will the head be in the south (7) or north (0)
+        head = random.randint(0,1) * 7;
+
+        for p in iterate_cube(start.trans(0,0,head) , start.trans(6,-3,head) ):
+            self.parent.parent.setblock(p, mat)
+
+        for p in iterate_cube(start.trans(1,-4,head), start.trans(5,-4,head) ):
+            self.parent.parent.setblock(p, mat)
+        self.parent.parent.setblock(start.trans(0,-4,head), stair, E)
+        self.parent.parent.setblock(start.trans(6,-4,head), stair, W)
+
+        for p in iterate_cube(start.trans(2,-5,head), start.trans(4,-5,head) ):
+            self.parent.parent.setblock(p, mat)
+        self.parent.parent.setblock(start.trans(1,-5,head), stair, E)
+        self.parent.parent.setblock(start.trans(5,-5,head), stair, W)
+
+        self.parent.parent.setblock(start.trans(2,-6,head), stair, E)
+        self.parent.parent.setblock(start.trans(3,-6,head), mat)
+        self.parent.parent.setblock(start.trans(4,-6,head), stair, W)
+
+        # cut out the window(s)
+        if( random.randint(0,100) < 50 ):
+            #two tall windows
+            self.parent.parent.delblock(start.trans(2,-1,head))
+            self.parent.parent.delblock(start.trans(4,-1,head))
+            self.parent.parent.delblock(start.trans(2,-2,head))
+            self.parent.parent.delblock(start.trans(4,-2,head))
+            self.parent.parent.delblock(start.trans(2,-3,head))
+            self.parent.parent.delblock(start.trans(4,-3,head))
+        else:
+            #one big arch
+            for p in iterate_cube(start.trans(2,0,head), start.trans(4,-2,head) ):
+                self.parent.parent.delblock(p)
+            self.parent.parent.setblock(start.trans(2,-3,head), stair, W+4)
+            self.parent.parent.delblock(start.trans(3,-3,head))
+            self.parent.parent.setblock(start.trans(4,-3,head), stair, E+4)
+
+        # then draw the long wall
+        for p in iterate_cube(start, start.trans(0,0,7) ):
+            self.parent.parent.setblock(p, mat)
+            self.parent.parent.setblock(p.up(1), mat)
+            if( random.randint(0,100) < 50 ):
+                self.parent.parent.setblock(p.up(2), mat)
+
+        # and the corner post opposite
+        for p in iterate_cube(start.trans(7,0,7-head), start.trans(7,-3,7-head) ):
+            self.parent.parent.setblock(p, mat)
+
+        # and maybe some ancient pottery
+        if (random.randint(1,100) < 10 ):
+            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,2), materials.FlowerPot, soft=True)
+            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,3), materials.FlowerPot, soft=True)
+
+        #ruin it! (maybe)
+        if (random.randint(1,100) < 50):
+            ruinBlocks(start, start.trans(7,0,7), 7, self.parent.parent)
+
+
 def ruinBlocks (p1, p2, height, dungeon, override=False):
     pn = perlin.SimplexNoise(256)
     if (override == True or
