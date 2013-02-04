@@ -1336,6 +1336,70 @@ class Farm(Blank):
             sb(loc.trans(2,0,5), materials.FenceGate, 0)
 
 
+class Chapel(Blank):
+    _name = 'chapel'
+
+    decos = ( (materials.Cauldron, 2) ,
+               (materials.Head, 1),
+               (materials.Torch, 0),
+               (materials.Chest, 5),
+               (materials.CraftingTable, 0) )
+
+    def render(self):
+        if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
+            return
+
+        #choose a carpet color
+        carpetColor = random.randint(0,15)
+
+        sb = self.parent.parent.setblock
+
+        center = self.parent.canvasCenter()
+        o = self.parent.loc.trans(center.x,
+                                  self.parent.canvasHeight()-1,
+                                  center.z)
+
+        #pews
+        for x in xrange( -1 * self.parent.canvasWidth()/2 +1 ,
+                         self.parent.canvasWidth()/2 -3, 1):
+            for z in xrange( -1 * self.parent.canvasLength()/2 +1 ,
+                             self.parent.canvasLength()/2 -1 , 1):
+                p = o.trans(x,0,z)
+                if( z == -1 or z == 0 ):
+                    sb(p.down(1),
+                       materials.Wool, carpetColor)
+                elif( x % 2 == 0):
+                    sb(p,
+                      materials.WoodenStairs, 1)
+
+        #carpet continues in front of pews
+        for x in xrange( self.parent.canvasWidth()/2 -3,
+                         self.parent.canvasWidth()/2 , 1):
+            for z in xrange( -1, 1 , 1):
+                p = o.trans(x,0,z)
+                sb(p.down(1),
+                   materials.Wool, carpetColor)
+
+
+        #altar and deco
+        deco = random.choice(self.decos)
+
+        mats = [
+            (materials.Air, 0), # 0
+            deco, # 1
+            (materials.StoneBrickStairs, 6), # 2
+            (materials.StoneBrickStairs, 7) # 3
+        ]
+
+        template = [1,0,2,3,0,1]
+
+        for z in xrange(6):
+                p = o.trans(self.parent.canvasWidth()/2 -1,0, z-3)
+                sb(p,
+                   mats[template[z]][0],
+                   mats[template[z]][1])
+
+
 # Catalog the features we know about. 
 _features = {}
 # List of classes in this module.
