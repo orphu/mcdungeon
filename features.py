@@ -686,13 +686,15 @@ class SecretRoom(Blank):
                 self.parent.parent.blocks[o+Vec(6,3,5)].data = 0
                 self.parent.parent.blocks[o+Vec(6,3,6)].data = 3
                 #
-                sb(o.trans(5,2,4), materials.Head, 1)
+                # Wither skulls are rare
+                SkullType = weighted_choice(((0,30),(1,1)))
+                sb(o.trans(5,2,4), materials.Head, SkullType)
                 root_tag = nbt.TAG_Compound()
                 root_tag['id'] = nbt.TAG_String('Skull')
                 root_tag['x'] = nbt.TAG_Int(o.trans(5,2,4).x)
                 root_tag['y'] = nbt.TAG_Int(o.trans(5,2,4).y)
                 root_tag['z'] = nbt.TAG_Int(o.trans(5,2,4).z)
-                root_tag['SkullType'] = nbt.TAG_Byte(random.randint(0,1))
+                root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
                 root_tag['Rot'] = nbt.TAG_Byte(random.randint(0,15))
                 self.parent.parent.tile_ents[o.trans(5,2,4)] = root_tag
                 #
@@ -1182,13 +1184,14 @@ class CircleOfSkulls(Blank):
                 # Abort if there is no skull here
                 if (random.randint(0,100) < 33):
                     continue
-                self.parent.parent.setblock(p.up(2), materials.Head,1)
+                SkullType = weighted_choice(skulls)
+                self.parent.parent.setblock(p.up(2), materials.Head, SkullType)
                 root_tag = nbt.TAG_Compound()
                 root_tag['id'] = nbt.TAG_String('Skull')
                 root_tag['x'] = nbt.TAG_Int(p.x)
                 root_tag['y'] = nbt.TAG_Int(p.y-2)
                 root_tag['z'] = nbt.TAG_Int(p.z)
-                root_tag['SkullType'] = nbt.TAG_Byte(weighted_choice(skulls))
+                root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
                 root_tag['Rot'] = nbt.TAG_Byte(random.randint(0,15))
                 self.parent.parent.tile_ents[p.up(2)] = root_tag
 
