@@ -158,7 +158,7 @@
 109,Stone Brick Stairs,0,64
 110,Mycelium,0,64
 111,Lily Pad,0,64
-112,Nether Brick,0,64
+112,Nether Brick Block,0,64
 113,Nether Brick Fence,0,64
 114,Nether Brick Stairs,0,64
 115,Nether Wart Block,0,64
