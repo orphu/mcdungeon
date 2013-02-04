@@ -1343,7 +1343,7 @@ class Chapel(Blank):
     _name = 'chapel'
 
     decos = ( (materials.Cauldron, 2) ,
-               (materials.Head, 1),
+               (materials.Head, 0),
                (materials.Torch, 0),
                (materials.Chest, 5),
                (materials.CraftingTable, 0) )
