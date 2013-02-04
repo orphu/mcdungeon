@@ -65,6 +65,7 @@ class Dungeon (object):
         self.zsize = zsize
         self.levels = levels
         self.maze = {}
+        self.stairwells = []
         for x in xrange(self.xsize):
             for y in xrange(self.levels):
                 for z in xrange(self.zsize):
@@ -743,7 +744,7 @@ class Dungeon (object):
     def genrooms(self, args_entrance):
         # Generate the maze used for room and hall placement.
         # stairwells contains the lower half of a stairwell. 
-        stairwells = []
+        self.stairwells = []
         entrance_pos = None
         exit_pos = None
         # The size of our dungeon. Note this is once less in the depth
@@ -797,6 +798,8 @@ class Dungeon (object):
             # The first cell contains an entrance. This is a tower if we are on
             # level 1, otherwise it's a stairwell. 
             if (y == 0):
+                # Add the entrance cell to the stairwells list.
+                self.stairwells.append(Vec(x,y,z))
                 # For all levels except the last level, rooms can be as big as
                 # they want. For the last level it has to be 1x1x1.
                 maxsize = Vec(10,18,10)
@@ -840,7 +843,7 @@ class Dungeon (object):
                 z = p.z
             else:
                 #Any other start cell on a lower level is a stairwell
-                stairwells.append(Vec(x,y,z))
+                self.stairwells.append(Vec(x,y,z))
                 maxsize = Vec(10,18,10)
                 if (y == self.levels-1):
                     maxsize = Vec(1,1,1)

@@ -1223,12 +1223,29 @@ class Cell(Blank):
 
         locs = [ o ]
 
-        #if it's a bigroom, add more cells
-        if (self.parent.size.x == 2):
+        # If it's a bigroom, add more cells.
+        # 2x2 rooms have no conflicts. 
+        if (self.parent.size.x == 2 and self.parent.size.z == 2):
             locs.extend( [ o.trans(5,0,0), o.trans(-5,0,0) ] )
-
-        if (self.parent.size.z == 2):
             locs.extend( [ o.trans(0,0,5), o.trans(0,0,-5) ] )
+
+        # 2x1 rooms need to check for stairwells.
+        elif (self.parent.size.x == 2):
+            if(self.parent.pos + Vec(0,self.parent.size.y,0) not in
+               self.parent.parent.stairwells):
+                locs.extend( [ o.trans(-5,0,0) ] )
+            if(self.parent.pos + Vec(1,self.parent.size.y,0) not in
+               self.parent.parent.stairwells):
+                locs.extend( [ o.trans(5,0,0) ] )
+
+        # 1x2 rooms need to check for stairwells.
+        elif (self.parent.size.z == 2):
+            if(self.parent.pos + Vec(0,self.parent.size.y,0) not in
+               self.parent.parent.stairwells):
+                locs.extend( [ o.trans(0,0,-5) ] )
+            if(self.parent.pos + Vec(0,self.parent.size.y,1) not in
+               self.parent.parent.stairwells):
+                locs.extend( [ o.trans(0,0,5) ] )
 
         for loc in locs:
             #each side has a random chance of being a space, wall, or bars
