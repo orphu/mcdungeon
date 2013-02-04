@@ -1357,7 +1357,7 @@ class Chapel(Blank):
         center = self.parent.canvasCenter()
         o = self.parent.loc.trans(center.x,
                                   self.parent.canvasHeight()-1,
-                                  center.z)
+                                  center.z+1)
 
         #pews
         for x in xrange( -1 * self.parent.canvasWidth()/2 +1 ,
