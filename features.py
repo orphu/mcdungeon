@@ -767,7 +767,7 @@ class SecretRoom(Blank):
                 #
                 # Wither skulls are rare
                 SkullType = weighted_choice(((0,30),(1,1)))
-                sb(o.trans(5,2,4), materials.Head, SkullType)
+                sb(o.trans(5,2,4), materials.Head, 1)
                 root_tag = nbt.TAG_Compound()
                 root_tag['id'] = nbt.TAG_String('Skull')
                 root_tag['x'] = nbt.TAG_Int(o.trans(5,2,4).x)
@@ -1264,7 +1264,7 @@ class CircleOfSkulls(Blank):
                 if (random.randint(0,100) < 33):
                     continue
                 SkullType = weighted_choice(skulls)
-                self.parent.parent.setblock(p.up(2), materials.Head, SkullType)
+                self.parent.parent.setblock(p.up(2), materials.Head, 1)
                 root_tag = nbt.TAG_Compound()
                 root_tag['id'] = nbt.TAG_String('Skull')
                 root_tag['x'] = nbt.TAG_Int(p.x)
@@ -1471,7 +1471,7 @@ class Chapel(Blank):
     _name = 'chapel'
 
     decos = ( (materials.Cauldron, 2) ,
-               (materials.Head, 0),
+               (materials.Head, 1),
                (materials.Torch, 0),
                (materials.Chest, 5),
                (materials.CraftingTable, 0) )
