@@ -22,15 +22,11 @@ v0.11.0
 
    * Two new stairwells contributed by djchrisblue.
 
-   * New Feature: Circle of Skulls (djchrisblue)
-
-   * New Feature: Cell (djchrisblue)
-
-   * New Feature: Farm (djchrisblue)
-
-   * New Feature: Chapel (djchisblue)
-
    * New Ruin: HouseFrame (djchrisblue)
+
+   * New Features: CircleOfSkulls, Cell, Farm, Chapel (djchrisblue)
+
+   * New Feature: ConstructionArea (orphu)
 
    * New Stairwell: Scaffolding (orphu)
 

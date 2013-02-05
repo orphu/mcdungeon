@@ -1530,6 +1530,159 @@ class Chapel(Blank):
                    mats[template[z]][0],
                    mats[template[z]][1])
 
+class ConstructionArea(Blank):
+    _name = 'constructionarea'
+
+    def render(self):
+        if (self.parent.canvasWidth() < 6 or self.parent.canvasLength() < 6):
+            return
+
+        sb = self.parent.parent.setblock
+        gb = self.parent.parent.getblock
+        pn = perlin.SimplexNoise(256)
+        loc = self.parent.loc+Vec(0,-1,0)
+
+        # Replace some wall sections with wooden "rebar"
+        for x in xrange(self.parent.parent.room_size*self.parent.size.x):
+            for z in xrange(self.parent.parent.room_size*self.parent.size.z):
+                for y in xrange(self.parent.parent.room_height*self.parent.size.y-3):
+                    p = self.parent.loc.trans(x,y,z) + Vec(0,1,0)
+                    if (gb(p) == materials._wall and
+                           pn.noise3(p.x/4.0, (p.y+1337)/4.0, p.z/4.0) < 0):
+                        sb(p, materials.Fence)
+                    elif (gb(p) == materials.Torch):
+                        sb(p, materials.Air)
+
+        # Place some random tools and equipment around the room.
+        canvas = set(iterate_points_inside_flat_poly(*self.parent.canvas))
+        area = len(canvas)
+
+        # A few crafting tables
+        num = int(area / 128)+1
+        if num > 0:
+            for x in xrange(num):
+                p = random.choice(list(canvas))
+                canvas.remove(p)
+                sb(p + loc, materials.CraftingTable)
+
+        # Some piles of wall blocks
+        num = int(area / 128)+2
+        if num > 0:
+            for x in xrange(num):
+                p = random.choice(list(canvas))
+                canvas.remove(p)
+                sb(p + loc, materials._wall)
+
+        # Some supply chests
+        num = int(area / 256)+1
+        if num > 0:
+            for x in xrange(num):
+                p = random.choice(list(canvas))
+                canvas.remove(p)
+                sb(p + loc, materials.Chest)
+
+                #item, probability, max stack amount
+                supply_items = [(items.byName('wooden pickaxe'), 1, 1),
+                                (items.byName('stone pickaxe'), .5, 1),
+                                (items.byName('iron pickaxe'), .1, 1),
+                                (items.byName('diamond pickaxe'), .02, 1),
+                                (items.byName('wooden axe'), .8, 1),
+                                (items.byName('stone axe'), .3, 1),
+                                (items.byName('iron axe'), .1, 1),
+                                (items.byName('diamond axe'), .02, 1),
+                                (items.byName('wooden shovel'), .8, 1),
+                                (items.byName('stone shovel'), .3, 1),
+                                (items.byName('iron shovel'), .1, 1),
+                                (items.byName('diamond shovel'), .02, 1),
+                                (items.byName('wooden plank'), .5, 10),
+                                (items.byName('wooden slab'), .5, 10),
+                                (items.byName('fence'), .5, 10),
+                                (items.byName('clock'), .1, 1),
+                                (items.byName('compass'), .1, 1),
+                                (items.byName('stone brick'), 1, 10)]
+                # Generate loot and place chest
+                supplyloot = []
+                for s in supply_items:
+                    if (random.random() < s[1]):
+                        amount = random.randint(1,min(s[2],s[0].maxstack))
+                        supplyloot.append(loottable.Loot(len(supplyloot),amount,s[0].value,s[0].data,'',flag=s[0].flag))
+                self.parent.parent.addchest(p + loc, loot=supplyloot)
+
+        # Rarely, a damaged anvil
+        if random.random() < .1:
+            p = random.choice(list(canvas))
+            canvas.remove(p)
+            sb(p + loc, materials.AnvilVeryDmg, 8)
+
+        # Some random lumber
+        num = int(area / 128)+2
+        trys = 0
+        while (num > 0 and trys < 100):
+            trys += 1
+            p = random.choice(list(canvas))
+            d = random.choice([Vec(1,0,0), Vec(0,0,1)])
+            # Make sure we have room for this log
+            if (p+d not in canvas or
+                p+d*2 not in canvas):
+                continue
+
+            data = 4
+            if d == Vec(0,0,1):
+                data = 8
+            num -= 1
+            canvas.remove(p)
+            canvas.remove(p+d)
+            canvas.remove(p+d*2)
+            sb(p + loc, materials.Wood, data)
+            sb(p + d + loc, materials.Wood, data)
+            sb(p + d*2 + loc, materials.Wood, data)
+            # maybe stack them
+            if (random.random() < .5):
+                p += Vec(0,-1,0)
+                sb(p + loc, materials.Wood, data)
+                sb(p + d + loc, materials.Wood, data)
+                sb(p + d*2 + loc, materials.Wood, data)
+
+        # Scaffolding
+        num = int(area / 128)+1
+        trys = 0
+        while (num > 0 and trys < 100):
+            trys += 1
+            p = random.choice(list(canvas))
+            d = [Vec(1,0,0), Vec(0,0,1), Vec(1,0,1),
+                 Vec(0,0,-1), Vec(1,0,-1),
+                 Vec(0,0,2), Vec(1,0,2),
+                 Vec(2,0,0), Vec(2,0,1),
+                 Vec(-1,0,0), Vec(-1,0,1),
+                 Vec(0,0,0)]
+            # Make sure we have room for this scaffold
+            # Check that all offsets are a subset of the remaining canvas.
+            # The extra offsets are to allow for a one block space near the
+            # scaffold so the fence blocks don't try to connect to anything.
+            # Plus it just looks better to have some spacing. 
+            if (set([p+x for x in d]) <= canvas) is False:
+                continue
+
+            num -= 1
+            canvas.remove(p)
+            canvas.remove(p+d[0])
+            canvas.remove(p+d[1])
+            canvas.remove(p+d[2])
+            sb(p + loc, materials.Fence)
+            sb(p + d[0] + loc, materials.Fence)
+            sb(p + d[1] + loc, materials.Fence)
+            sb(p + d[2] + loc, materials.Fence)
+            p += Vec(0,-1,0)
+            sb(p + loc, materials.Fence)
+            sb(p + d[0] + loc, materials.Fence)
+            sb(p + d[1] + loc, materials.Fence)
+            sb(p + d[2] + loc, materials.Fence)
+            p += Vec(0,-1,0)
+            sb(p + loc, materials.WoodenSlab)
+            sb(p + d[0] + loc, materials.WoodenSlab)
+            sb(p + d[1] + loc, materials.WoodenSlab)
+            sb(p + d[2] + loc, materials.WoodenSlab)
+
 
 # Catalog the features we know about. 
 _features = {}
