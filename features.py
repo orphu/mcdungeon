@@ -288,6 +288,85 @@ class TowerWithLadder(Blank):
             sb(x, materials.Ladder, 3 )
 
 
+class Scaffolding(Blank):
+    _name = 'scaffolding'
+    _is_stairwell = True
+
+    def render (self):
+        #create a shortcut to the set block fN
+        sb = self.parent.parent.setblock
+
+        start = self.parent.loc.trans(5,self.parent.parent.room_height-2,5)
+        start = start.trans(0,-7,0)
+
+        mats = [
+            (materials.Air,0),           #0
+            (materials.Fence,0),         #1
+            (materials.WoodenSlab, 0 ),  #2 
+            (materials.WoodenStairs, 0 ),#3 Acending East 
+            (materials.WoodenStairs, 3 ) #4 Ascending North
+            ]
+
+        template = [
+           [[ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 1],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 1, 1, 1, 1, 1, 1]],
+
+           [[ 0, 0, 0, 0, 2, 2],
+            [ 0, 0, 0, 0, 2, 2],
+            [ 0, 0, 0, 0, 0, 1],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 1, 0, 0, 0, 0, 1],
+            [ 1, 1, 1, 1, 1, 1]],
+
+           [[ 0, 0, 0, 3, 1, 1],
+            [ 0, 0, 0, 3, 1, 1],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1]],
+
+           [[ 2, 2, 3, 1, 1, 1],
+            [ 2, 2, 3, 1, 1, 1],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1]],
+
+           [[ 1, 1, 1, 0, 0, 0],
+            [ 1, 1, 1, 0, 0, 0],
+            [ 4, 4, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1]],
+
+           [[ 1, 1, 1, 0, 0, 0],
+            [ 1, 1, 1, 0, 0, 0],
+            [ 1, 1, 0, 0, 0, 0],
+            [ 4, 4, 0, 0, 0, 0],
+            [ 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1]],
+
+           [[ 1, 1, 1, 0, 0, 0],
+            [ 1, 1, 1, 0, 0, 0],
+            [ 1, 1, 0, 0, 0, 0],
+            [ 1, 1, 0, 0, 0, 0],
+            [ 4, 4, 0, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1]],
+        ]
+
+        #place the stuff
+        for y in xrange(7):
+            for x in xrange(6):
+                for z in xrange(6):
+                    sb(start.trans(x,y,z),
+                       mats[ template[y][z][x] ][0],
+                       mats[ template[y][z][x] ][1] )
+
+
 class Chasm(Blank):
     _name = 'chasm'
     material = materials.Air
