@@ -1050,13 +1050,16 @@ class CircularTower(Blank):
         else:
             mat = materials.meta_mossystonebrick
 
-        c1 = self.loc.trans(3, 0, 3)
-        c3 = c1 + Vec(self.parent.parent.room_size-7,
+        c1 = self.loc
+        c3 = c1 + Vec(self.parent.parent.room_size-2,
                       0,
-                      self.parent.parent.room_size-7)
+                      self.parent.parent.room_size-2)
         # Jitter!
-        c1 += Vec(random.randint(-2, 3), 0, random.randint(-2, 3))
-        c3 += Vec(random.randint(-3, 2), 0, random.randint(-3, 2))
+        scale = random.randint(0, 8)
+        x_jitter = random.randint(0, scale)
+        z_jitter = random.randint(0, scale)
+        c1 += Vec(scale-x_jitter, 0, scale-z_jitter)
+        c3 += Vec(-x_jitter, 0, -z_jitter)
 
         height = int(self.parent.parent.room_height*1.5)
         for p in self.wallsf(c1, c3, height):
