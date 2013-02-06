@@ -1054,6 +1054,10 @@ class CircularTower(Blank):
         c3 = c1 + Vec(self.parent.parent.room_size-7,
                       0,
                       self.parent.parent.room_size-7)
+        # Jitter!
+        c1 += Vec(random.randint(-2, 3), 0, random.randint(-2, 3))
+        c3 += Vec(random.randint(-3, 2), 0, random.randint(-3, 2))
+
         height = int(self.parent.parent.room_height*1.5)
         for p in self.wallsf(c1, c3, height):
             self.parent.parent.setblock(p, mat, hide=True)
