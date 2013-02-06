@@ -1490,13 +1490,56 @@ class Chapel(Blank):
                                   self.parent.canvasHeight()-1,
                                   center.z+1)
 
+        # Adjust size for stairs and entrances.
+        # If it's a bigroom, add more cells.
+        stairs = self.parent.parent.stairwells
+        p = self.parent.pos
+        y = self.parent.size.y-1
+        N_margin = 1
+        S_margin = 1
+        E_margin = 3
+        W_margin = 1
+        carpet_pos = -1
+        # 2x1 rooms we may shrink on X
+        if (self.parent.size.x == 2 and self.parent.size.z == 1):
+            if(p+Vec(0,y,0) in stairs or
+               p+Vec(0,y+1,0) in stairs):
+                W_margin += 8
+            if(p+Vec(1,y,0) in stairs or
+               p+Vec(1,y+1,0) in stairs):
+                E_margin += 8
+        # 1x2 rooms may shrink on Z
+        elif (self.parent.size.x == 1 and self.parent.size.z == 2):
+            if(p+Vec(0,y,0) in stairs or
+               p+Vec(0,y+1,0) in stairs):
+                N_margin += 8
+                carpet_pos += 4
+            if(p+Vec(0,y,1) in stairs or
+               p+Vec(0,y+1,1) in stairs):
+                S_margin += 8
+                carpet_pos -= 4
+        # 2x2 rooms may shrink on Z
+        elif (self.parent.size.z == 2):
+            if(p+Vec(0,y,0) in stairs or
+               p+Vec(0,y+1,0) in stairs or
+               p+Vec(1,y,0) in stairs or
+               p+Vec(1,y+1,0) in stairs):
+                N_margin += 8
+                carpet_pos += 4
+            if(p+Vec(0,y,1) in stairs or
+               p+Vec(0,y+1,1) in stairs or
+               p+Vec(1,y,1) in stairs or
+               p+Vec(1,y+1,1) in stairs):
+                S_margin += 8
+                carpet_pos -= 4
+
         #pews
-        for x in xrange( -1 * self.parent.canvasWidth()/2 +1 ,
-                         self.parent.canvasWidth()/2 -3, 1):
-            for z in xrange( -1 * self.parent.canvasLength()/2 +1 ,
-                             self.parent.canvasLength()/2 -1 , 1):
+        for x in xrange( -1 * self.parent.canvasWidth()/2 + W_margin ,
+                         self.parent.canvasWidth()/2 - E_margin, 1):
+            for z in xrange( -1 * self.parent.canvasLength()/2 + N_margin ,
+                             self.parent.canvasLength()/2 - S_margin , 1):
                 p = o.trans(x,0,z)
-                if( z == -1 or z == 0 ):
+                if( z == carpet_pos or z == carpet_pos+1 ):
                     sb(p.down(1),
                        materials.Wool, carpetColor)
                 elif( x % 2 == 0):
@@ -1504,9 +1547,9 @@ class Chapel(Blank):
                       materials.WoodenStairs, 1)
 
         #carpet continues in front of pews
-        for x in xrange( self.parent.canvasWidth()/2 -3,
-                         self.parent.canvasWidth()/2 , 1):
-            for z in xrange( -1, 1 , 1):
+        for x in xrange( self.parent.canvasWidth()/2 - E_margin,
+                         self.parent.canvasWidth()/2 - E_margin + 3, 1):
+            for z in xrange( carpet_pos, carpet_pos+2 , 1):
                 p = o.trans(x,0,z)
                 sb(p.down(1),
                    materials.Wool, carpetColor)
@@ -1525,7 +1568,7 @@ class Chapel(Blank):
         template = [1,0,2,3,0,1]
 
         for z in xrange(6):
-                p = o.trans(self.parent.canvasWidth()/2 -1,0, z-3)
+                p = o.trans(self.parent.canvasWidth()/2 -1,0, z+carpet_pos-2)
                 sb(p,
                    mats[template[z]][0],
                    mats[template[z]][1])
