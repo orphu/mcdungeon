@@ -1212,11 +1212,19 @@ class Dungeon (object):
                 maxcount += 1
         maxcount = perc * maxcount / 100
         offset = 3 - cfg.torches_position
+        dirs = {
+            '1': Vec(-1,0,0),
+            '2': Vec(1,0,0),
+            '3': Vec(0,0,-1),
+            '4': Vec(0,0,1)
+        }
         for pos, val in self.torches.items():
+            attach_pos = pos.down(offset) + dirs[str(val)]
             if (count < maxcount and
-               pos in self.blocks and
-               self.blocks[pos.down(offset)].material == materials.Air and
-               pos.up(1).y/self.room_height == level):
+                pos in self.blocks and
+                self.blocks[pos.down(offset)].material == materials.Air and
+                self.blocks[attach_pos].material == materials._wall and
+                pos.up(1).y/self.room_height == level):
                 #self.blocks[pos.down(offset)].material = materials.Torch
                 self.setblock(pos.down(offset), materials.Torch, val)
                 count += 1
