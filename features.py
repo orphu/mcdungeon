@@ -1599,6 +1599,32 @@ class ConstructionArea(Blank):
         # Place some random tools and equipment around the room.
         canvas = set(iterate_points_inside_flat_poly(*self.parent.canvas))
         area = len(canvas)
+        y_level = random.choice(list(canvas)).y
+
+        # If it's a big room we may need to mask off areas.
+        stairs = self.parent.parent.stairwells
+        p = self.parent.pos
+        y = self.parent.size.y-1
+        # NW
+        if(p+Vec(0,y,0) in stairs or
+           p+Vec(0,y+1,0) in stairs):
+            canvas = canvas - set(iterate_cube(Vec(0,y_level,0),
+                                               Vec(15,y_level,15)))
+        if(self.parent.size.x == 2):
+            if(p+Vec(1,y,0) in stairs or
+               p+Vec(1,y+1,0) in stairs):
+                canvas = canvas - set(iterate_cube(Vec(16,y_level,0),
+                                                   Vec(32,y_level,15)))
+        if(self.parent.size.z == 2):
+            if(p+Vec(0,y,1) in stairs or
+               p+Vec(0,y+1,1) in stairs):
+                canvas = canvas - set(iterate_cube(Vec(0,y_level,16),
+                                                   Vec(15,y_level,32)))
+        if(self.parent.size.x == 2 and self.parent.size.z == 2):
+            if(p+Vec(1,y,1) in stairs or
+               p+Vec(1,y+1,1) in stairs):
+                canvas = canvas - set(iterate_cube(Vec(16,y_level,32),
+                                                   Vec(16,y_level,32)))
 
         # A few crafting tables
         num = int(area / 128)+1
@@ -1607,6 +1633,7 @@ class ConstructionArea(Blank):
                 p = random.choice(list(canvas))
                 canvas.remove(p)
                 sb(p + loc, materials.CraftingTable)
+                sb(p.down(1) + loc, materials._floor)
 
         # Some piles of wall blocks
         num = int(area / 128)+2
@@ -1615,6 +1642,7 @@ class ConstructionArea(Blank):
                 p = random.choice(list(canvas))
                 canvas.remove(p)
                 sb(p + loc, materials._wall)
+                sb(p.down(1) + loc, materials._floor)
 
         # Some supply chests
         num = int(area / 256)+1
@@ -1623,6 +1651,7 @@ class ConstructionArea(Blank):
                 p = random.choice(list(canvas))
                 canvas.remove(p)
                 sb(p + loc, materials.Chest)
+                sb(p.down(1) + loc, materials._floor)
 
                 #item, probability, max stack amount
                 supply_items = [(items.byName('wooden pickaxe'), 1, 1),
@@ -1656,6 +1685,7 @@ class ConstructionArea(Blank):
             p = random.choice(list(canvas))
             canvas.remove(p)
             sb(p + loc, materials.AnvilVeryDmg, 8)
+            sb(p.down(1) + loc, materials._floor)
 
         # Some random lumber
         num = int(area / 128)+2
@@ -1677,8 +1707,11 @@ class ConstructionArea(Blank):
             canvas.remove(p+d)
             canvas.remove(p+d*2)
             sb(p + loc, materials.Wood, data)
+            sb(p.down(1) + loc, materials._floor)
             sb(p + d + loc, materials.Wood, data)
+            sb(p.down(1) + d + loc, materials._floor)
             sb(p + d*2 + loc, materials.Wood, data)
+            sb(p.down(1) + d*2 + loc, materials._floor)
             # maybe stack them
             if (random.random() < .5):
                 p += Vec(0,-1,0)
@@ -1711,6 +1744,12 @@ class ConstructionArea(Blank):
             canvas.remove(p+d[0])
             canvas.remove(p+d[1])
             canvas.remove(p+d[2])
+            p += Vec(0,1,0)
+            sb(p + loc, materials._floor)
+            sb(p + d[0] + loc, materials._floor)
+            sb(p + d[1] + loc, materials._floor)
+            sb(p + d[2] + loc, materials._floor)
+            p += Vec(0,-1,0)
             sb(p + loc, materials.Fence)
             sb(p + d[0] + loc, materials.Fence)
             sb(p + d[1] + loc, materials.Fence)
