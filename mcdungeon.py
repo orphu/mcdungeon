@@ -331,7 +331,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     dungeonCache = {}
 
     # Scan with overviewer
-    regions = oworld.get_regionset("overworld")
+    regions = oworld.get_regionset(None)
     count = world.chunkCount
     cached = 0
     notcached = 0
@@ -901,7 +901,7 @@ if (cfg.offset is None or cfg.offset is ''):
     pm = pmeter.ProgressMeter()
     pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
-    regions = oworld.get_regionset("overworld")
+    regions = oworld.get_regionset(None)
     chunk_min = None
     chunk_max = None
     for cx, cz, mtime in regions.iterate_chunks():
