@@ -33,7 +33,6 @@ class new:
         except:
             print 'No idcounts.dat file found. Creating a new one...'
             self.idcounts = nbt.TAG_Compound()
-            self.idcounts['map'] = nbt.TAG_Short(-1)
 
         # Load the mcdungeon map ID usage cache
         if (os.path.isfile(os.path.join(self.mapstore, 'mcdungeon_maps'))):
@@ -92,6 +91,10 @@ class new:
         # Find a map id. Look in the available list for old mcdungeon maps
         # that can be reused. If not, bump up the idcount and use that.
         if len(self.mapcache['available']) == 0:
+            # Initialize the map count if it doesn't exist.
+            if 'map' not in self.idcounts:
+                self.idcounts['map'] = nbt.TAG_Short(-1)
+
             self.idcounts['map'].value += 1
             mapid = self.idcounts['map'].value
             self.mapcache['used'][dungeon_key].add(mapid)
