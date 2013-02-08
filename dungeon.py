@@ -300,7 +300,7 @@ class Dungeon (object):
 
         # Calaculate the biome
         biomes = {}
-        rset = self.oworld.get_regionset('overworld')
+        rset = self.oworld.get_regionset(None)
         for chunk in d_chunks:
             cdata = rset.get_chunk(chunk[0],chunk[1])
             key = numpy.argmax(numpy.bincount((cdata['Biomes'].flatten())))
@@ -414,7 +414,7 @@ class Dungeon (object):
 
     def processBiomes(self):
         '''Add vines and snow according to biomes.'''
-        rset = self.oworld.get_regionset('overworld')
+        rset = self.oworld.get_regionset(None)
         r = ov_world.CachedRegionSet(rset, self.caches)
         wp = Vec(self.position.x, 0, self.position.z)
         count = self.xsize*16*self.zsize*16
