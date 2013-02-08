@@ -5,8 +5,10 @@ See default.cfg for more details.
 
 Each custom item is an NBT file containing the tags required to create
 the inventory item. You may add your own files by editing the defaults
-using an NBT editor (like NBTEdit.) You can also extract the tags from a
-player file from an existing Minecraft level and use that.
+using an NBT editor. You can also extract the tags from a player file from
+an existing Minecraft level and use that. NBTExplorer is recommended for
+editing:
+http://www.minecraftforum.net/topic/840677-nbtexplorer-nbt-editor-for-windows-and-mac/
 
 Items can be very simple, or potentially a very complex tree of values.
 The most simple example would be a single short tag, called id and

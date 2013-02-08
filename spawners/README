@@ -4,9 +4,10 @@ for more details.
 
 Each custom spawner is an NBT file containing the tags required to create
 the spawner object. You may add your own files by editing the defaults
-using an NBT editor (like NBTEdit.) It may also be possible to extract
-the tags from an existing spawner in a Minecraft level and use that. (But
-this has not been tested.)
+using an NBT editor. It may also be possible to extract the tags from an
+existing spawner in a Minecraft level and use that. (But this has not been
+tested.) NBTExplorer is recommended for editing:
+http://www.minecraftforum.net/topic/840677-nbtexplorer-nbt-editor-for-windows-and-mac/
 
 Spawners can be very simple, or potentially a very complex tree of values.
 The most simple example would be a single string tag, called EntityId and
