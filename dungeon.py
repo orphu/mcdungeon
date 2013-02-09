@@ -80,6 +80,8 @@ class Dungeon (object):
         self.args = args
         self.heightmap = numpy.zeros((xsize*self.room_size,
                                       zsize*self.room_size))
+        self.dinfo = {}
+        self.dinfo['hard_mode'] = cfg.hard_mode
 
     def printmaze(self, y, cursor=None):
         for z in xrange(self.zsize):
@@ -213,7 +215,7 @@ class Dungeon (object):
         # set. When recording the position, we'll center the dungeon in this
         # area.
         offset = 0
-        if cfg.hard_mode == True:
+        if self.dinfo['hard_mode'] == True:
             offset = 10
         for p, d in sorted_p:
             #if self.args.debug: print 'Checking: ', p
@@ -1990,7 +1992,7 @@ class Dungeon (object):
         changed_chunks = set()
         num_blocks = len(self.blocks)
         # Hard mode
-        if (cfg.hard_mode is True):
+        if (self.dinfo['hard_mode'] is True):
             num = (self.zsize+10) * (self.xsize+10)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Filling in caves:')
