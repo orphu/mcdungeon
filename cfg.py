@@ -26,7 +26,7 @@ secret_door = 'Cobblestone'
 floor = 'Stone'
 ceiling = 'Cobblestone'
 subfloor = 'Bedrock'
-mvportal = ''
+exit_portal = 'False'
 chests = '10'
 spawners = '2'
 arrow_traps = '3'
@@ -41,6 +41,7 @@ secret_rooms = '75'
 silverfish = '0'
 maps = '0'
 mapstore = ''
+portal_exit = Vec(0,0,0)
 
 master_halls = []
 master_rooms = []
@@ -78,7 +79,7 @@ def str2bool(string):
 
 def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
-    floor, ceiling, mvportal, master_halls, master_rooms, master_features, \
+    floor, ceiling, exit_portal, master_halls, master_rooms, master_features, \
     master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
     max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
@@ -196,7 +197,7 @@ def Load(filename = 'default.cfg'):
     subfloor = get('dungeon', 'subfloor', subfloor).lower()
     secret_door = get('dungeon', 'secret_door', secret_door).lower()
 
-    mvportal = get('dungeon', 'mvportal', mvportal)
+    exit_portal = str2bool(get('dungeon', 'exit_portal', exit_portal))
 
     chests = float(get('dungeon', 'chests', chests))
     spawners = float(get('dungeon', 'spawners', spawners))
