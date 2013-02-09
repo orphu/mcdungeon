@@ -377,7 +377,6 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
     for tileEntity in dungeonCache.values():
         info = decodeDungeonInfo(tileEntity)
-        print info
 
         (major, minor, patch) = info['version'].split('.')
         version = float(major+'.'+minor)
