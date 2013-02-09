@@ -82,7 +82,7 @@ class Dungeon (object):
                                       zsize*self.room_size))
         self.dinfo = {}
         self.dinfo['hard_mode'] = cfg.hard_mode
-        #self.dinfo['portal_exit'] = cfg.portal_exit
+        self.dinfo['portal_exit'] = cfg.portal_exit
 
     def printmaze(self, y, cursor=None):
         for z in xrange(self.zsize):

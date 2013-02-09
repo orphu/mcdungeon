@@ -1142,19 +1142,7 @@ class ThroneRoom(Basic):
                     sb(q, materials.Fence)
 
         # Portal
-        if (cfg.mvportal != ''):
-            # Obsidian portal frame.
-            for p in iterate_cube(Vec(6,7,1), Vec(9,11,1)):
-                sb(o+p, materials.Obsidian)
-            # Portal stuff.
-            for p in iterate_cube(Vec(7,8,1), Vec(8,10,1)):
-                sb(o+p, materials.NetherPortal)
-            # Sign.
-            sb(o+Vec(6,9,2), materials.WallSign, 3)
-            self.parent.addsign(o+Vec(6,9,2),
-                                       '[multiverse]',
-                                       cfg.mvportal,
-                                       '','')
+        drawExitPortal(o+Vec(6,7,1), self.parent)
 
         # Cobwebs
         webs = {}
@@ -1249,7 +1237,7 @@ class SpiderLair(Basic):
         outer_cave.add_exit((0,0),  (0,15))
 
         # Portal
-        if (cfg.mvportal != ''):
+        if (cfg.exit_portal != ''):
             inner_cave.add_exit((0,1), (0,4))
 
         # Carve caves
@@ -1335,21 +1323,7 @@ class SpiderLair(Basic):
                 count += 1
 
         # Portal
-        if (cfg.mvportal != ''):
-            o = self.loc
-            sb = self.parent.setblock
-            # Obsidian portal frame.
-            for p in iterate_cube(Vec(1,0,0), Vec(4,4,0)):
-                sb(o+p, materials.Obsidian)
-            # Portal stuff.
-            for p in iterate_cube(Vec(2,1,0), Vec(3,3,0)):
-                sb(o+p, materials.NetherPortal)
-            # Sign.
-            sb(o+Vec(1,2,1), materials.WallSign, 3)
-            self.parent.addsign(o+Vec(1,2,1),
-                                       '[multiverse]',
-                                       cfg.mvportal,
-                                       '', '')
+        drawExitPortal(self.loc+Vec(1,0,0), self.parent)
 
         # Cobwebs
         webs = {}
@@ -1433,22 +1407,10 @@ class PitWithArchers(Basic2x2):
                                   self.c3-Vec(10,-1,10)):
             self.parent.setblock(p, materials.CobblestoneSlab)
         center = self.c1+Vec(14,1,12)
-        if (cfg.mvportal != ''):
-            # Obsidian portal frame.
-            for p in iterate_cube(center.trans(-2,1,0), center.trans(1,-3,0)):
-                self.parent.setblock(p, materials.Obsidian)
-            # Portal stuff.
-            for p in iterate_cube(center.trans(-1,0,0), center.trans(0,-2,0)):
-                self.parent.setblock(p, materials.NetherPortal)
-            # Signs.
-            self.parent.setblock(center.trans(1,-1,-1),
-                                        materials.WallSign)
-            self.parent.blocks[center.trans(1,-1,-1)].data = 3
-            # Create the tile entities for the signs.
-            self.parent.addsign(center.trans(1,-1,-1),
-                                       '[multiverse]',
-                                       cfg.mvportal,
-                                       '', '')
+
+        # Portal
+        drawExitPortal(center.trans(-2,-3,0), self.parent)
+
         # Treasure!
         self.parent.setblock(center.trans(0,0,3),
                                     materials.Chest)
@@ -1698,11 +1660,14 @@ class EndPortal(Basic2x2):
                     sb(o+Vec(0,y+1,x+12), dmat[1])
                     sb(o+Vec(30,y+1,x+12), dmat[1])
 
-        # Treasure!
-        sb(o+Vec(15,sy-2,1), materials.Chest)
-        self.parent.addchest(o+Vec(15,sy-2,1), loottable._maxtier)
+        # Portal
+        drawExitPortal(o+Vec(14,sy-5,1), self.parent)
 
-        # Endermen
+        # Treasure!
+        sb(o+Vec(13,sy-2,2), materials.Chest)
+        self.parent.addchest(o+Vec(13,sy-2,2), loottable._maxtier)
+
+        # Monsters
         sb(o+Vec(0,sy-2,15), materials.Spawner)
         self.parent.addspawner(o+Vec(0,sy-2,15), tier=cfg.max_mob_tier)
         sb(o+Vec(30,sy-2,15), materials.Spawner)
@@ -1863,20 +1828,7 @@ class Arena(Basic2x2):
         self.parent.addspawner(o+Vec(16,sy-1,15), 'Blaze')
 
         # Portal
-        if (cfg.mvportal != ''):
-            # Obsidian portal frame.
-            for p in iterate_cube(Vec(1,sy-7,14), Vec(1,sy-3,17)):
-                sb(p, materials.Obsidian)
-            # Portal stuff.
-            for p in iterate_cube(Vec(1,sy-6,15), Vec(1,sy-4,16)):
-                sb(p, materials.NetherPortal)
-            # Sign.
-            sb(Vec(2,sy-5,17), materials.WallSign, 5)
-            self.parent.addsign(o+Vec(2,sy-5,17),
-                                       '<== Exit',
-                                       '[multiverse]',
-                                       cfg.mvportal,
-                                       '<== Exit')
+        drawExitPortal(o+Vec(2,sy-7,14), self.parent, NS=True)
 
 
 class Crypt(Basic):
@@ -2213,26 +2165,14 @@ class Crypt(Basic):
         # Torches
         ssb(Vec(1,5,30), materials.Torch)
 
+        # Portal
+        drawExitPortal(o+Vec(6,7,1), self.parent)
+
         # Webs
         for p in iterate_cube(o.trans(5,1,5), o.trans(10,1,30)):
             if random.random() < 0.07:
                 for q in iterate_cube(p, p.down(random.randint(0,2))):
                     sb(q, materials.Cobweb)
-
-        # Portal
-        if (cfg.mvportal != ''):
-            # Obsidian portal frame.
-            for p in iterate_cube(Vec(6,7,1), Vec(9,11,1)):
-                sb(o+p, materials.Obsidian)
-            # Portal stuff.
-            for p in iterate_cube(Vec(7,8,1), Vec(8,10,1)):
-                sb(o+p, materials.NetherPortal)
-            # Sign.
-            sb(o+Vec(6,9,2), materials.WallSign, 3)
-            self.parent.addsign(o+Vec(6,9,2),
-                                       '[multiverse]',
-                                       cfg.mvportal,
-                                       '','')
 
         # Vines
         for p in iterate_cube(o+Vec(1,1,1), o+Vec(14,9,30)):
@@ -3133,6 +3073,60 @@ class Corridor(Blank):
                         mat = weighted_choice(ores)
                         self.parent.setblock(x, mat)
                 h += 1
+
+def drawExitPortal(pos, dungeon, NS=False):
+    '''Draw an exit portal given the upper left corner and dungeon reference'''
+    # Skip if this is turned off.
+    if cfg.exit_portal is False:
+        return
+    # If portal exit isn't set, abort.
+    if dungeon.dinfo['portal_exit'] == Vec(0,0,0):
+        print 'WARNING: Skipping exit portal. portal_exit is', dungeon.dinfo['portal_exit']
+        return
+    # are we drawing WE or NS?
+    if NS:
+        x=Vec(0,0,1)
+        y=Vec(0,1,0)
+        z=Vec(1,0,0)
+        sign_dat = 5
+    else:
+        x=Vec(1,0,0)
+        y=Vec(0,1,0)
+        z=Vec(0,0,1)
+        sign_dat = 3
+    # Portal
+    sb = dungeon.setblock
+    # Obsidian portal frame.
+    for p in iterate_cube(pos, pos+x*3+y*4):
+        sb(p, materials.Obsidian)
+    # Air.
+    for p in iterate_cube(pos+x+y, pos+x*2+y*3):
+        sb(p, materials.Air)
+    # Buttons
+    for p in iterate_cube(pos+x+y*3, pos+x*2+y*3):
+        sb(p, materials.StonePressurePlate)
+    # Command blocks
+    for p in [pos+y*4, pos+x*3+y*4]:
+        sb(p, materials.CommandBlock)
+        root_tag = nbt.TAG_Compound()
+        root_tag['id'] = nbt.TAG_String('Control')
+        root_tag['x'] = nbt.TAG_Int(p.x)
+        root_tag['y'] = nbt.TAG_Int(p.y)
+        root_tag['z'] = nbt.TAG_Int(p.z)
+        root_tag['SuccessCount'] = nbt.TAG_Int(0)
+        root_tag['Command'] = nbt.TAG_String('/tp @p[rm=1,r=2,c=1] %d %d %d'%(dungeon.dinfo['portal_exit'].x,
+                                                                              dungeon.dinfo['portal_exit'].y,
+                                                                              dungeon.dinfo['portal_exit'].z))
+
+        dungeon.tile_ents[p] = root_tag
+
+    # Sign.
+    sb(pos+x*3+y*2+z, materials.WallSign, sign_dat)
+    dungeon.addsign(pos+x*3+y*2+z,
+                               'Portal',
+                               'to the',
+                               'Surface',
+                               '')
 
 # Catalog the rooms we know about. 
 _rooms = {}

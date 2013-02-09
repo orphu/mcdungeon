@@ -77,6 +77,11 @@ class EvilRunestones(Blank):
                              cz*16+z-self.parent.parent.position.z)
                     self.parent.parent.setblock(cp, materials.Chest)
                     self.parent.parent.addchest(cp, 0)
+                    # The portal exit point is here
+                    pp = Vec(cp.up(2).x + self.parent.parent.position.x,
+                             self.parent.parent.position.y - cp.up(2).y,
+                             cp.up(2).z + self.parent.parent.position.z)
+                    self.parent.parent.dinfo['portal_exit'] = pp
                     for r in iterate_cube(q.down(2), q.trans(0,height,0)):
                         sb(r, materials.Air)
                     continue
@@ -581,7 +586,11 @@ class StepPyramid(Blank):
         p = c1.trans(30, -29, 30)
         self.parent.parent.setblock(p, materials.Chest)
         self.parent.parent.addchest(p, 0)
-
+        # Portal exit point
+        pp = Vec(p.w(1).x + self.parent.parent.position.x,
+                 self.parent.parent.position.y - c1.y + 29,
+                 p.s(1).z + self.parent.parent.position.z)
+        self.parent.parent.dinfo['portal_exit'] = pp
 
 
 class RoundTowerEntrance(Blank):
@@ -724,6 +733,11 @@ class RoundTowerEntrance(Blank):
         pos = Vec(b1.x, clev, b1.z-1)
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
+        # Portal exit point
+        pp = Vec(pos.w(1).x + self.parent.parent.position.x,
+                 self.parent.parent.position.y - clev,
+                 pos.s(1).z + self.parent.parent.position.z)
+        self.parent.parent.dinfo['portal_exit'] = pp
 
         # Add a few details with upside-down stairs
         N = 2+4 # Data values for a north side stair
@@ -902,6 +916,11 @@ class SquareTowerEntrance(Blank):
         pos = c1.trans(1, 0, 1)
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
+        # Portal exit point
+        pp = Vec(pos.s(2).x + self.parent.parent.position.x,
+                 self.parent.parent.position.y - clev,
+                 pos.s(2).z + self.parent.parent.position.z)
+        self.parent.parent.dinfo['portal_exit'] = pp
 
         # Add a few details with upside-down stairs
         N = 2+4 # Data values for a north side stair

@@ -377,6 +377,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
     for tileEntity in dungeonCache.values():
         info = decodeDungeonInfo(tileEntity)
+        print info
 
         (major, minor, patch) = info['version'].split('.')
         version = float(major+'.'+minor)
@@ -763,6 +764,9 @@ if (args.command == 'regenerate'):
     args.entrance_height = info[4]['entrance_height']
     # Write flag
     args.write = True
+    # Temp workaround for regenerating portals until the generation functions
+    # move into the dungeon class.
+    cfg.portal_exit = info[4]['portal_exit']
     #print 'offset:', cfg.offset
     #print 'size:', args.z, args.x, args.levels
     #print 'bury:', cfg.bury
@@ -1160,6 +1164,8 @@ while args.number is not 0:
         print "Finding secret rooms..."
         dungeon.findsecretrooms()
 
+        dungeon.renderruins()
+
         dungeon.renderrooms()
 
         dungeon.renderhalls()
@@ -1170,8 +1176,6 @@ while args.number is not 0:
 
         print "Rendering hall traps..."
         dungeon.renderhallpistons()
-
-        dungeon.renderruins()
 
         dungeon.processBiomes()
 
