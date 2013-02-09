@@ -350,6 +350,11 @@ def listDungeons(world, oworld, expand_hard_mode=False):
             if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
                 key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                 dungeonCache[key] = tileEntity
+            if (tileEntity['id'] == 'Chest' and
+                'CustomName' in tileEntity and
+                tileEntity['CustomName'] == 'MCDungeon Data Library'):
+                key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                dungeonCache[key] = tileEntity
     pm.set_complete()
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100*cached/world.chunkCount)
@@ -371,32 +376,37 @@ def listDungeons(world, oworld, expand_hard_mode=False):
     )
     output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
     for tileEntity in dungeonCache.values():
-        ver = tileEntity["Text1"][5:]
-        (major, minor, patch) = ver.split('.')
+        info = decodeDungeonInfo(tileEntity)
+
+        (major, minor, patch) = info['version'].split('.')
         version = float(major+'.'+minor)
-        (xsize, zsize, levels) = tileEntity["Text3"].split(',')
+
+        xsize = info['xsize']
+        zsize = info['zsize']
+        levels = info['levels']
         offset = 0
+
         if (expand_hard_mode == True and
-            tileEntity["Text4"].find('H:1') >= 0):
+            info['hard_mode'] is True):
             offset = 5
-        dungeons.append((int(tileEntity["x"])-offset,
-                         int(tileEntity["z"])-offset,
-                         int(xsize)+offset,
-                         int(zsize)+offset,
-                         tileEntity["Text4"],
-                         int(levels),
-                         int(tileEntity["x"]),
-                         int(tileEntity["y"]),
-                         int(tileEntity["z"]),
+        dungeons.append((info["position"].x-offset,
+                         info["position"].z-offset,
+                         xsize+offset,
+                         zsize+offset,
+                         info,
+                         levels,
+                         info["position"].x,
+                         info["position"].y,
+                         info["position"].z,
                          version))
         output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
-         '%s %s'%(int(tileEntity["x"]),int(tileEntity["z"])),
+         '%d %d'%(info["position"].x, info["position"].z),
             time.strftime('%x %H:%M',
-                       time.localtime(int(tileEntity["Text2"]))),
-         ver,
-         '%sx%s'%(xsize, zsize),
-         int(levels),
-         tileEntity["Text4"]
+                       time.localtime(info['timestamp'])),
+         info['version'],
+         '%dx%d'%(xsize, zsize),
+         levels,
+         'Hard Mode' if info['hard_mode'] else 'None'
         )
     output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     if len(dungeons) > 0:
@@ -679,7 +689,7 @@ if (args.command == 'delete'):
                 xsize = e[2]
                 zsize = e[3]
                 # Hard mode. Delete all chunks.
-                if e[4].find('H:1') >= 0:
+                if e[4]['hard_mode'] is True:
                     p[0] -= 5
                     p[1] -= 5
                     xsize += 10
@@ -748,11 +758,9 @@ if (args.command == 'regenerate'):
     # override it from the config
     cfg.hard_mode = False
     # Entrance offset
-    m = re.search('E:(\d+),(\d+)', info[4])
-    args.entrance = [int(m.group(1)), int(m.group(2))]
+    args.entrance = [info[4]['entrance_pos'].x, info[4]['entrance_pos'].z]
     # Entrance height
-    m = re.search('T:(..)', info[4])
-    args.entrance_height = int(m.group(1), 16)
+    args.entrance_height = info[4]['entrance_height']
     # Write flag
     args.write = True
     #print 'offset:', cfg.offset
@@ -1183,22 +1191,8 @@ while args.number is not 0:
         dungeon.placespawners()
 
         # Signature
-        flags = 'H:'
-        if cfg.hard_mode:
-            flags += '1'
-        else:
-            flags += '0'
-        flags += ';E:%d,%d'%(dungeon.entrance_pos.x, dungeon.entrance_pos.z)
-        flags += ';T:%.2x'%dungeon.entrance.height
-        dungeon.setblock(Vec(0,0,0), materials.WallSign, 4, hide=True)
-        dungeon.addsign(Vec(0,0,0),
-                        '[MCD]'+__version__,
-                        str(int(time.time())),
-                        '%d,%d,%d'%(dungeon.xsize,
-                                    dungeon.zsize,
-                                    dungeon.levels),
-                        flags)
-        dungeon.setblock(Vec(1,0,0), materials.Stone, hide=True)
+        dungeon.setblock(Vec(0,0,0), materials.Chest, 0, hide=True)
+        dungeon.tile_ents[Vec(0,0,0)]=encodeDungeonInfo(dungeon, __version__)
 
         # Generate maps
         if (args.write and cfg.maps > 0):
@@ -1209,6 +1203,9 @@ while args.number is not 0:
                     next
                 m = ms.generate_map(dungeon, level)
                 for loc in dungeon.tile_ents.keys():
+                    # Skip the origin
+                    if loc == Vec(0,0,0):
+                        continue
                     ent = dungeon.tile_ents[loc]
                     # Place the map in chests that are one level less than
                     # the map, or in the case of level 1, above ground.

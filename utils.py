@@ -8,7 +8,7 @@ import cPickle
 import time
 from copy import *
 from itertools import *
-from pymclevel import mclevel
+from pymclevel import mclevel, nbt
 
 cache_version = '2'
 
@@ -47,6 +47,8 @@ class Vec(object):
         return Vec(self.x*b, self.y*b, self.z*b)
     def __str__(self):
         return "(%d,%d,%d)" % (self.x,self.y,self.z)
+    def __repr__(self):
+        return self.__str__()
     def __eq__(self, b):
         if type(b) != Vec: return False
         return self.x==b.x and self.y==b.y and self.z==b.z
@@ -650,3 +652,90 @@ def saveChunkCache(cache_path, chunkCache):
         print e
         sys.exit('Failed to write dungeon_scan_version. Check permissions and try again.')
 
+def encodeDungeonInfo(dungeon, version):
+    '''Takes a dungeon object and Returns an NBT structure for a dispenser+book encoding a lot of things to
+    remember about this dungeon.'''
+    # Some old things need to be added.
+    items = dungeon.dinfo
+    items['entrance_pos'] = dungeon.entrance_pos
+    items['entrance_height'] = int(dungeon.entrance.height)
+    items['version'] = version
+    items['xsize'] = dungeon.xsize
+    items['zsize'] = dungeon.zsize
+    items['levels'] = dungeon.levels
+    items['timestamp'] = int(time.time())
+
+    # Create the base tags
+    root_tag = nbt.TAG_Compound()
+    root_tag['id'] = nbt.TAG_String('Chest')
+    root_tag['CustomName'] = nbt.TAG_String('MCDungeon Data Library')
+    root_tag['x'] = nbt.TAG_Int(0)
+    root_tag['y'] = nbt.TAG_Int(0)
+    root_tag['z'] = nbt.TAG_Int(0)
+    inv_tag = nbt.TAG_List()
+    root_tag['Items'] = inv_tag
+
+    # Populate the pages
+    slot = 0
+    page = 0
+    newslot = True
+    for key in items:
+        # Make a new book
+        if newslot == True:
+            if slot >= 27:
+                say.exit('Too many values to store, and not enough slots!')
+            item_tag = nbt.TAG_Compound()
+            inv_tag.append(item_tag)
+            item_tag['Slot'] = nbt.TAG_Byte(slot)
+            item_tag['Count'] = nbt.TAG_Byte(1)
+            item_tag['id'] = nbt.TAG_Short(387)
+            item_tag['Damage'] = nbt.TAG_Short(0)
+            tag_tag = nbt.TAG_Compound()
+            item_tag['tag'] = tag_tag
+            tag_tag['title'] = nbt.TAG_String('MCDungeon Data Volume %d'%(slot+1))
+            tag_tag['author'] = nbt.TAG_String('Various')
+            tag_tag['pages'] = nbt.TAG_List()
+            newslot = False
+            page = 0
+        slot += 1
+        tag_tag['pages'].append(nbt.TAG_String(cPickle.dumps({key: items[key]})))
+        page += 1
+        if page >= 50:
+            newslot = True
+    return root_tag
+
+def decodeDungeonInfo(lib):
+    '''Takes an NBT tag and tries to decode a Chest object containing
+    MCDungeon info. Returns a dictionary full of key=>value pairs'''
+    items = {}
+
+    # Position is always the x,y,z of the entity
+    items['position'] = Vec(int(lib['x']), int(lib['y']), int(lib['z']))
+
+    # Look for legacy sign-based entity.
+    if lib['id'] == "Sign":
+
+        m = re.search('E:(\d+),(\d+)', lib["Text4"])
+        items['entrance_pos'] = Vec(int(m.group(1)), 0, int(m.group(2)))
+        m = re.search('T:(..)', lib["Text4"])
+        items['entrance_height'] = int(m.group(1), 16)
+        items['version'] = lib["Text1"][5:]
+        (items['xsize'], items['zsize'], items['levels']) = [int(x) for x in lib["Text3"].split(',')]
+        items['timestamp'] = int(lib["Text2"])
+        m = re.search('H:(.)', lib["Text4"])
+        items['hard_mode'] = int(m.group(1))
+        return items
+
+    # Check the chest name
+    if ('CustomName' not in lib or
+        lib['CustomName'] != 'MCDungeon Data Library'):
+        sys.exit('Invalid data library NBT.')
+
+    # iterate through the objects in the chest
+    for book in lib['Items']:
+        if (book['id'] != 387 or
+            book['tag']['title'].startswith('MCDungeon Data Volume') is False):
+            continue
+        for page in book['tag']['pages']:
+            items.update(cPickle.loads(str(page)))
+    return items
