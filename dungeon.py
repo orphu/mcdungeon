@@ -82,6 +82,7 @@ class Dungeon (object):
                                       zsize*self.room_size))
         self.dinfo = {}
         self.dinfo['hard_mode'] = cfg.hard_mode
+        #self.dinfo['portal_exit'] = cfg.portal_exit
 
     def printmaze(self, y, cursor=None):
         for z in xrange(self.zsize):
@@ -383,7 +384,10 @@ class Dungeon (object):
                     materials.IronBars, materials.Cobweb, materials.Torch,
                     materials.GlassPane, materials.StoneButton,
                     materials.StoneBrickStairs, materials.StoneStairs,
-                    materials.WoodenStairs]
+                    materials.WoodenStairs, materials.WallSign,
+                    materials.NetherBrickFence, materials.CobblestoneWall,
+                    materials.MossStoneWall, materials.StonePressurePlate,
+                    materials.WoodenPressurePlate, materials.Chest]
         data = 0
         b = self.getblock(pos.s(1))
         if (b != False and b not in noattach):
