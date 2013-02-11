@@ -14,6 +14,10 @@ Items can be very simple, or potentially a very complex tree of values.
 The most simple example would be a single short tag, called id and
 containing the numerical id of the item.
 
+NOTE: The Count tag is used to determine the maximum size of a stack. This is
+the tag which is normally used by minecraft to store how large the stack of
+items you are holding is.
+
 For more information on the format of the tags see:
 	* http://www.minecraftwiki.net/wiki/Player.dat_Format#Item_structure
 	

@@ -1,6 +1,8 @@
 import sys
 import os
 
+from pymclevel import nbt
+
 _items = {}
 _by_id = {}
 
@@ -249,9 +251,19 @@ def LoadNBTFiles(dirname = 'items'):
         # SomeItem.nbt would be referenced in loot as file_some_item
         name = 'file_'+item[:-4].lower()
         full_path = os.path.join(item_path, item)
-        # Limitation: There's current no way of making these items
-        # stack. Perhaps a special tag that gets used here and removed?
-        _items[name] = ItemInfo(name, 0, maxstack=1, file = full_path)
+        # Load the nbt file and do some basic validation
+        try:
+            item_nbt = nbt.load(full_path)
+            item_nbt['id']  #Throws an error if not set
+        except:
+            print item + " is an invalid item! Skipping."
+            continue    #Skip to next item
+        # If the Count tag exists, use it as our maxstack
+        try:
+            stack = item_nbt['Count'].value
+        except:
+            stack = 1
+        _items[name] = ItemInfo(name, 0, maxstack=stack, file = full_path)
         #print _items[name]
         items_count += 1
     print 'Loaded', items_count, 'items from NBT files.'
