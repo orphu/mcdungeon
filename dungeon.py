@@ -695,9 +695,12 @@ class Dungeon (object):
                 item_tag = item_tag = nbt.load(i.file)
             else:
                 item_tag = self.buildItemTag(i)
-            #Set the slot and amount
+            # Set the slot and count
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
-            item_tag['Count'] = nbt.TAG_Byte(i.count)
+            # Keep the count if it was already loaded from an NBT file
+            try: item_tag['Count']
+            except:
+                item_tag['Count'] = nbt.TAG_Byte(i.count)
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 
