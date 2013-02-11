@@ -29,6 +29,7 @@ subfloor = 'Bedrock'
 exit_portal = 'False'
 chests = '10'
 spawners = '2'
+hidden_spawners = 'False'
 arrow_traps = '3'
 sand_traps = '40'
 arrow_trap_defects = '1'
@@ -87,7 +88,8 @@ def Load(filename = 'default.cfg'):
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
-    max_mob_tier, custom_spawners, spawners_path, master_stairwells
+    max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
+    hidden_spawners
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -201,6 +203,7 @@ def Load(filename = 'default.cfg'):
 
     chests = float(get('dungeon', 'chests', chests))
     spawners = float(get('dungeon', 'spawners', spawners))
+    hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',

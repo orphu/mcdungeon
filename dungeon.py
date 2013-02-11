@@ -1330,7 +1330,7 @@ class Dungeon (object):
         # contain a spawners if they have fewer halls.
         candidates = []
         spawners = ceil(cfg.spawners * float(self.xsize * self.zsize) / 10.0)
-        # Blocks we are not allowed to place a chest upon
+        # Blocks we are not allowed to place a spawner upon
         ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
                   44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
                   66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
@@ -1358,21 +1358,40 @@ class Dungeon (object):
             room = self.rooms[locations.pop()]
             points = []
             # Catalog all valid points in the room that can hold a spawner.
-            for point in iterate_points_inside_flat_poly(*room.canvas):
-                point += room.loc
-                if (point not in self.blocks or
-                    point.up(1) not in self.blocks or
-                    point.up(2) not in self.blocks or
-                    point.down(1) not in self.blocks):
-                    continue
-                if(self.blocks[point].material.val not in ignore and
-                   self.blocks[point.up(1)].material.val == 0):
-                    points.append(point)
+            if (cfg.hidden_spawners is False):
+                # Spawners inside rooms
+                for point in iterate_points_inside_flat_poly(*room.canvas):
+                    point += room.loc
+                    if (point not in self.blocks or
+                        point.up(1) not in self.blocks or
+                        point.up(2) not in self.blocks or
+                        point.down(1) not in self.blocks):
+                        continue
+                    if(self.blocks[point].material.val not in ignore and
+                       self.blocks[point.up(1)].material.val == 0):
+                        points.append(point)
+            else:
+                # Hidden spawners, just on the other side of walls.
+                y = room.canvasHeight()
+                for x in xrange(self.room_size):
+                    for z in xrange(self.room_size):
+                        p = room.loc+Vec(x,y,z)
+                        adj = [Vec(1,0,0), Vec(0,0,1),
+                               Vec(-1,0,0), Vec(0,0,-1)]
+                        walls = 0
+                        for q in adj:
+                            if (p+q in self.blocks and
+                                self.getblock(p+q) == materials._wall):
+                                walls += 1
+                        if (p.up(1) not in self.blocks and
+                            walls > 0):
+                            points.append(p)
+
             # Pick a spot, if one exists.
             if (len(points) > 0):
-                point = random.choice(points)
-                self.setblock(point.up(1), materials.Spawner)
-                self.addspawner(point.up(1))
+                point = random.choice(points).up(1)
+                self.setblock(point, materials.Spawner)
+                self.addspawner(point)
                 spawners -= 1
         if (level < self.levels-1):
             self.placespawners(level+1)
