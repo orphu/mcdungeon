@@ -2,6 +2,28 @@ v0.11.0
 
   !! NOTE: This version requires Minecraft 1.5.0 release or higher!
 
+   * Configurable Stairwells. (orphu)
+
+   * Three new Stairwells:
+     TripleStairs and TowerLadder (djchrisblue)
+     Scaffolding (orphu)
+
+   * New Ruin: HouseFrame (djchrisblue)
+
+   * Five new Features:
+     CircleOfSkulls, Cell, Farm, Chapel (djchrisblue)
+     ConstructionArea (orphu)
+
+   * New option: exit_portal. This will create a portal to the surface built
+     with command blocks. Works in vanilla! (orphu)
+
+   * New option: hidden_spawners. This will hide the random spawners behind
+     walls. This is on be default in the hard_mode config. (orphu)
+
+   * Added fireworks as loot. (JiFish)
+
+   * Removed (broken) multiverse support. (orphu)
+
    * Added more orange. (JiFish)
   
    * 1.5 items. (JiFish)
@@ -18,17 +40,13 @@ v0.11.0
 
    * Added fortunes to fortune cookies. (JiFish)
 
-   * Configurable Stairwells . (orphu)
+   * Fixed several map icons. (orphu)
 
-   * Two new stairwells contributed by djchrisblue.
+   * Fixed Nether Brick blocks being air. (orphu)
 
-   * New Ruin: HouseFrame (djchrisblue)
+   * Ruins have more randomness to position and size (djchrisblue, orphu)
 
-   * New Features: CircleOfSkulls, Cell, Farm, Chapel (djchrisblue)
-
-   * New Feature: ConstructionArea (orphu)
-
-   * New Stairwell: Scaffolding (orphu)
+   * Fixed an issue with adding maps to a world with no maps. (orphu)
 
 v0.10.4 - 11/22/2012
 
