@@ -3096,9 +3096,9 @@ def drawExitPortal(pos, dungeon, NS=False):
         sign_dat = 3
     # Portal
     sb = dungeon.setblock
-    # Obsidian portal frame.
+    # Bedrock portal frame.
     for p in iterate_cube(pos, pos+x*3+y*4):
-        sb(p, materials.Obsidian)
+        sb(p, materials.Bedrock)
     # Air.
     for p in iterate_cube(pos+x+y, pos+x*2+y*3):
         sb(p, materials.Air)
