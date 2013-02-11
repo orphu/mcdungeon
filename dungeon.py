@@ -1658,21 +1658,22 @@ class Dungeon (object):
             # First pressure plate
             p1 = pos + sw*-1 + sl*2 + Vec(0,1,0)*3
             self.setblock(p1, materials.StonePressurePlate)
-            c = 0
+            #c = 0
             # The piston section. Repeat this, alternating configurations for
             # the length of the hall minus some space at the end. 
             for i in xrange(0,length):
-                if c == 0:
-                    ptrap[2][1][3] = 'R1'
-                else:
-                    ptrap[2][1][3] = 'P1'
+                # In 1.5 snapshots, repeaters don't power the block they sit on.
+                #if c == 0:
+                #    ptrap[2][1][3] = 'R1'
+                #else:
+                #    ptrap[2][1][3] = 'P1'
+                #c  = (c+1)%2
                 for p in iterate_cube(Vec(0,0,3), Vec(3,5,3)):
                     q = pos + sw*p.x + sl*(p.z+i) + Vec(0,1,0)*p.y
                     block = ptrap[p.y][p.x][p.z]
                     if block is not 'XX':
                         m = mat[block]
                         self.setblock(q, m[0], m[1], hide=True)
-                c  = (c+1)%2
             # The return trigger mechanism.
             for p in iterate_cube(Vec(0,0,4), Vec(3,5,5)):
                 q = pos + sw*p.x + sl*p.z  + sl*(length-1) + Vec(0,1,0)*p.y
