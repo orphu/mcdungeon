@@ -18,7 +18,7 @@ v0.11.0
      with command blocks. Works in vanilla! (orphu)
 
    * New option: hidden_spawners. This will hide the random spawners behind
-     walls. This is on be default in the hard_mode config. (orphu)
+     walls. This is on by default in the hard_mode config. (orphu)
 
    * Added fireworks as loot. (JiFish)
 
