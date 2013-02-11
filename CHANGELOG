@@ -19,6 +19,8 @@ v0.11.0
 
    * New option: hidden_spawners. This will hide the random spawners behind
      walls. This is on by default in the hard_mode config. (orphu)
+     
+   * Removed heads.txt in favour of loading items from NBT files. (JiFish)
 
    * Added fireworks as loot. (JiFish)
 
@@ -36,9 +38,9 @@ v0.11.0
 
    * Anvils are less common in forges. (JiFish)
 
-   * Improvements to lore text. (JiFish)
-
    * Added fortunes to fortune cookies. (JiFish)
+   
+   * Thorns on chestplates in loot. (JiFish)
 
    * Fixed several map icons. (orphu)
 
