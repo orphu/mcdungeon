@@ -528,6 +528,8 @@ class Dungeon (object):
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
+        try: root_tag['Delay']
+        except: root_tag['Delay'] = nbt.TAG_Short(0)
         # Boost Spawners - Only places the tags if they do not already exist
         # Doubles most default settings
         if (cfg.boost_spawners is True):
@@ -541,8 +543,6 @@ class Dungeon (object):
             except: root_tag['MaxSpawnDelay'] = nbt.TAG_Short(400)
             try: root_tag['RequiredPlayerRange']
             except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(32)
-            try: root_tag['Delay']
-            except: root_tag['Delay'] = nbt.TAG_Short(1)
         # Finally give the tag to the entity
         self.tile_ents[loc] = root_tag
 
