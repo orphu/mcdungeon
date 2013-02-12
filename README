@@ -142,10 +142,10 @@ EXAMPLE CONFIGURATIONS
    hard_mode.cfg
 
       Less treasure in upper levels, more confusing dungeon layout
-      (lots of loops) more monster spawners. Creepers are more
-      common. Buffed monster spawners. No maps. It also fills in all
-      the surrounding underground caves so that monsters spawn inside
-      the dungeon much more frequently.
+      (lots of loops) more monster spawners. Hidden spawners. Creepers
+      are more common. Buffed monster spawners. No maps. It also
+      fills in all the surrounding underground caves so that monsters
+      spawn inside the dungeon much more frequently. No exit portals.
 
 CREDITS
 
