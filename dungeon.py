@@ -523,12 +523,27 @@ class Dungeon (object):
             entity = weighted_choice(cfg.master_mobs[tier])
             #print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
         root_tag = self.getspawnertags(entity)
-        #Do generic spawner setup
+        # Do generic spawner setup
         root_tag['id'] = nbt.TAG_String('MobSpawner')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        root_tag['Delay'] = nbt.TAG_Short(0)
+        # Boost Spawners - Only places the tags if they do not already exist
+        # Doubles most default settings
+        if (cfg.boost_spawners is True):
+            try: root_tag['SpawnCount']
+            except: root_tag['SpawnCount'] = nbt.TAG_Short(8)
+            try: root_tag['MaxNearbyEntities']
+            except: root_tag['MaxNearbyEntities'] = nbt.TAG_Short(16)
+            try: root_tag['MinSpawnDelay']
+            except: root_tag['MinSpawnDelay'] = nbt.TAG_Short(100)
+            try: root_tag['MaxSpawnDelay']
+            except: root_tag['MaxSpawnDelay'] = nbt.TAG_Short(400)
+            try: root_tag['RequiredPlayerRange']
+            except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(32)
+            try: root_tag['Delay']
+            except: root_tag['Delay'] = nbt.TAG_Short(1)
+        # Finally give the tag to the entity
         self.tile_ents[loc] = root_tag
 
 
