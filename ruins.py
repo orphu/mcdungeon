@@ -1090,10 +1090,10 @@ class RuinedFane(Blank):
         movedZ = 0
         if self.spos.x > xsize-2:
             self.spos.x -= 1
-            movedX = 1
+            movedX += 1
         if self.spos.z > zsize-3:
-            self.spos.z -= 2
-            movedZ = 1
+            self.spos.z -= 1
+            movedZ += 1
         # Now go through and override the ruins on any chunks we covered to be blank. 
         for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
                               Vec(self.spos.x+1, 0, self.spos.z+2)):
