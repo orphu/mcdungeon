@@ -1054,7 +1054,6 @@ class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
 class RuinedFane(Blank):
     _name = 'ruinedfane'
 
-
     def render (self):
 
         wall = materials.StoneBrick
@@ -1081,7 +1080,7 @@ class RuinedFane(Blank):
             singleSlab = materials.SandstoneSlab
             doubleSlab = materials.ChiseledSandstone
             stair = materials.WoodenStairs
-        
+
         # the fane is 2 chunks by 3 chunks
         # do we need to move it west or north?
         xsize = self.parent.parent.xsize
@@ -1121,7 +1120,7 @@ class RuinedFane(Blank):
         #translate it 4 on the x/z to surround the stairs, translate it more x/z if
         #we had to move the building inside the dungeon boundary
         start = start.trans( 4-16*movedX, 0, 4-32*movedZ )
- 
+
         #clear the inside
         for p in iterate_cube(start.trans(1,0,1), start.trans(22,-9,38) ):
             self.parent.parent.setblock(p, materials.Air )
@@ -1134,14 +1133,14 @@ class RuinedFane(Blank):
         locs = [ start, start.trans(16,0,0), start.trans(0,0,32), start.trans(16,0,32) ]
 
         for loc in locs:
-            
+
             #level one
             for p in iterate_cube(loc, loc.trans(7,0,7) ):
                 self.parent.parent.setblock(p , floor )
 
             for p in iterate_four_walls( loc, loc.trans(7,0,7), 10 ):
                 self.parent.parent.setblock(p, wall)
-            
+
             for p in iterate_cube( loc.down(3), loc.up(10) ):
                 self.parent.parent.setblock(p.trans(1,0,-1), buttress)
                 self.parent.parent.setblock(p.trans(3,0,-1), buttress)
@@ -1168,7 +1167,6 @@ class RuinedFane(Blank):
                 self.parent.parent.setblock( loc.trans(p.x, p.y, p.z), buttressStair, E )
             for p in [ Vec(8,-11,1), Vec(8,-11,3), Vec(8,-11,4), Vec(8,-11,6)]:
                 self.parent.parent.setblock( loc.trans(p.x, p.y, p.z), buttressStair, W )
-                                
 
             #level 2
             for p in iterate_cube( loc.up(11), loc.up(20) ):
@@ -1298,7 +1296,7 @@ class RuinedFane(Blank):
             self.parent.parent.setblock(p, wall)
         for p in iterate_cube(start.trans( 7, -1, 8), start.trans( 16, -1, 8) ):
             self.parent.parent.setblock(p, stair, N)
-            
+
         mats =  [ materials.Air, #0
                   buttress,          #1
                   doubleSlab,  #2
@@ -1346,14 +1344,13 @@ class RuinedFane(Blank):
                 self.parent.parent.delblock(p.trans(0,0,-1))
                 self.parent.parent.delblock(p)
                 self.parent.parent.delblock(p.trans(0,0,1))
-                
 
         #door
         self.parent.parent.delblock(start.trans( 11,-11,38 ) )
         self.parent.parent.delblock(start.trans( 12,-11,38 ) )
         for p in iterate_cube(start.trans( 10, 0, 38 ), start.trans( 13, -10, 38 ) ):
             self.parent.parent.delblock(p)
-                                         
+
         #inner doorways
         locs = [ Vec(5,-1,7), Vec(2+16,-1,7), Vec(7,-1,32+2), Vec(16,-1,32+2) ]
         for loc in locs:
@@ -1374,7 +1371,6 @@ class RuinedFane(Blank):
         for p in iterate_four_walls(estart.trans(5,0,5),
                                     estart.trans(10,0,10),3):
             self.parent.parent.setblock(p, wall)
-
 
 
 ## Other ruins
