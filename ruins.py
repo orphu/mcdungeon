@@ -1060,6 +1060,7 @@ class RuinedFane(Blank):
         buttress = materials.Cobblestone
         buttressStair = materials.StoneStairs
         soil = materials.Dirt
+        topsoil = materials.Grass
         floor = materials.Stone
         singleSlab = materials.StoneSlab
         doubleSlab = materials.DoubleSlab
@@ -1076,6 +1077,7 @@ class RuinedFane(Blank):
             buttress = materials.Sandstone
             buttressStair = materials.SandstoneStairs
             soil = materials.Sand
+            topsoil = materials.Sand
             floor = materials.Stone
             singleSlab = materials.SandstoneSlab
             doubleSlab = materials.ChiseledSandstone
@@ -1092,8 +1094,8 @@ class RuinedFane(Blank):
             self.spos.x -= 1
             movedX += 1
         if self.spos.z > zsize-3:
-            self.spos.z -= 1
-            movedZ += 1
+            self.spos.z -= 2
+            movedZ += 2
         # Now go through and override the ruins on any chunks we covered to be blank. 
         for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
                               Vec(self.spos.x+1, 0, self.spos.z+2)):
@@ -1102,32 +1104,27 @@ class RuinedFane(Blank):
             blank = new('blank', self.parent.parent.rooms[p])
             self.parent.parent.rooms[p].ruins = [blank]
 
-        # Find the low point
-        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
-                              Vec(self.spos.x+1, 0, self.spos.z+2)):
-            cx = (self.parent.parent.position.x>>4) + p.x
-            cz = (self.parent.parent.position.z>>4) + p.z
-            self.depth = min(self.depth,
-                             self.parent.parent.good_chunks[(cx, cz)])
-        self.depth = max(self.depth, 62, self.parent.parent.position.y)
-        self.vtrans = self.depth - self.parent.parent.position.y + 1
-        self.loc = Vec(self.spos.x * self.parent.parent.room_size,
-                       -self.vtrans,
-                       self.spos.z * self.parent.parent.room_size)
-
-        #where to begin
-        start = self.parent.loc.up(self.parent.parent.room_height)
-        #translate it 4 on the x/z to surround the stairs, translate it more x/z if
-        #we had to move the building inside the dungeon boundary
-        start = start.trans( 4-16*movedX, 0, 4-32*movedZ )
+        # where to begin
+        # Floor height at NW corner
+        start = self.parent.loc + Vec(0,self.parent.parent.room_height-3,0)
+        # translate it 4 on the x/z to surround the stairs, translate it more x/z if
+        # we had to move the building inside the dungeon boundary.
+        # Move up to ground level for the entrance.
+        start = start.trans( 4-self.parent.parent.room_size*movedX,
+                             -self.parent.parent.entrance.low_height,
+                             4-self.parent.parent.room_size*movedZ )
 
         #clear the inside
         for p in iterate_cube(start.trans(1,0,1), start.trans(22,-9,38) ):
             self.parent.parent.setblock(p, materials.Air )
         for p in iterate_cube(start.trans(8,-9,1), start.trans(15,-15,38) ):
             self.parent.parent.setblock(p, materials.Air )
-        for p in iterate_cube(start.trans(0,0,0), start.trans(23,3,39) ):
+        for p in iterate_cube(start.trans(0,1,0), start.trans(23,
+                                                              self.parent.loc.y-start.y,
+                                                              39) ):
             self.parent.parent.setblock(p, soil )
+        for p in iterate_cube(start.trans(0,0,0), start.trans(23,0,39) ):
+            self.parent.parent.setblock(p, topsoil )
 
         #make four corner towers
         locs = [ start, start.trans(16,0,0), start.trans(0,0,32), start.trans(16,0,32) ]
@@ -1348,7 +1345,7 @@ class RuinedFane(Blank):
         #door
         self.parent.parent.delblock(start.trans( 11,-11,38 ) )
         self.parent.parent.delblock(start.trans( 12,-11,38 ) )
-        for p in iterate_cube(start.trans( 10, 0, 38 ), start.trans( 13, -10, 38 ) ):
+        for p in iterate_cube(start.trans( 10, -1, 38 ), start.trans( 13, -10, 38 ) ):
             self.parent.parent.delblock(p)
 
         #inner doorways
