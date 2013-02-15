@@ -125,6 +125,7 @@ mkdir $NAME
 for SUBDIR in d $FILES; do
 	cp -r mcdungeon/$SUBDIR $NAME/
 done
+for FILE in `find . -name README`; do mv $FILE $FILE.txt; done
 cp mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
 cp mcdungeon/README $NAME/README.txt
 cp mcdungeon/LICENSE $NAME/LICENSE.txt

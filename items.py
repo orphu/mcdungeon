@@ -280,7 +280,7 @@ def BooksReady():
 
     #Check for at least one book
     for file in os.listdir(book_path):
-        if (file.endswith(".txt")):
+        if (file.endswith("README.txt")):
             return True
     return False
 
