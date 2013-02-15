@@ -286,6 +286,8 @@ def enchant (item, level, debug=False):
           'leggings' in item or
           'boots' in item):
         type = 'armor'
+    elif (item == 'enchanted book'):
+        type = 'book'
 
     enchantability = 1.0
     material = ''
@@ -351,24 +353,29 @@ def enchant (item, level, debug=False):
     if (type == 'helmet' or
         type == 'chestplate' or
         type == 'leggings' or
-        type == 'boots'):
+        type == 'boots' or
+		type == 'book'):
         check_enchantment(PROTECTION, mlevel)
         check_enchantment(FIRE_PROTECTION, mlevel)
         check_enchantment(BLAST_PROTECTION, mlevel)
         check_enchantment(PROJECTILE_PROTECTION, mlevel)
 
-    if type == 'boots':
+    if (type == 'boots' or
+		type == 'book'):
         check_enchantment(FEATHER_FALLING, mlevel)
 
-    if type == 'helmet':
+    if (type == 'helmet' or
+		type == 'book'):
         check_enchantment(RESPIRATION, mlevel)
         check_enchantment(AQUA_AFFINITY, mlevel)
         
-    if type == 'chestplate':
+    if (type == 'chestplate' or
+		type == 'book'):
         check_enchantment(THORNS, mlevel)
 
     # Weapons
-    if type == 'weapon':
+    if (type == 'weapon' or
+		type == 'book'):
         check_enchantment(SHARPNESS, mlevel)
         check_enchantment(SMITE, mlevel)
         check_enchantment(BANE_OF_ARTHROPODS, mlevel)
@@ -377,14 +384,16 @@ def enchant (item, level, debug=False):
         check_enchantment(LOOTING, mlevel)
 
     # Tools
-    if type == 'tool':
+    if (type == 'tool' or
+		type == 'book'):
         check_enchantment(EFFICIENCY, mlevel)
         check_enchantment(SILK_TOUCH, mlevel)
         check_enchantment(UNBREAKING, mlevel)
         check_enchantment(FORTUNE, mlevel)
 
     # Bows
-    if type == 'bow':
+    if (type == 'bow' or
+		type == 'book'):
         check_enchantment(POWER, mlevel)
         check_enchantment(PUNCH, mlevel)
         check_enchantment(FLAME, mlevel)
@@ -409,6 +418,8 @@ def enchant (item, level, debug=False):
         ench = utils.weighted_choice(prob)
         # Add it.
         final[ench] = enchantments[ench]
+        if (type == 'book'):
+            break;
         # Remove it so we don't pick again.
         prob.remove((ench, _ench_prob[ench]))
         # Some enchantments conflict with each other. If we picked one, remove
