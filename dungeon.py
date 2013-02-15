@@ -568,7 +568,7 @@ class Dungeon (object):
         #Make a list of all the txt files in the books directory
         booklist = []
         for file in os.listdir(book_path):
-            if (file.endswith(".txt")):
+            if (file.endswith("README.txt")):
                 booklist.append(file);
         #This error should also never trip.
         if (len(booklist) < 1):
