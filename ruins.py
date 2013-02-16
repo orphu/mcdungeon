@@ -1242,6 +1242,13 @@ class RuinedFane(Blank):
             for p in iterate_cube( loc.trans(2,-31,2), loc.trans( 5 ,-31, 5 )):
                 self.parent.parent.setblock(p, wall)
 
+            # Randomly ruin
+            if random.random() < .50:
+                h = random.randint(0,10)
+                ruinBlocks(loc.trans(0, -25+h, 0), loc.trans(7,-25+h,7), 10+h,
+                           self.parent.parent, aggressive=True)
+
+
         #curtains
         for p in iterate_cube(start.trans( 1,0,8), start.trans( 1,-9, 31 ) ):
             self.parent.parent.setblock(p, wall)
@@ -1576,7 +1583,7 @@ class HouseFrame(Blank):
             ruinBlocks(start, start.trans(7,0,7), 7, self.parent.parent)
 
 
-def ruinBlocks (p1, p2, height, dungeon, override=False):
+def ruinBlocks (p1, p2, height, dungeon, override=False, aggressive=False):
     pn = perlin.SimplexNoise(256)
     if (override == True or
         cfg.ruin_ruins == False):
@@ -1605,6 +1612,16 @@ def ruinBlocks (p1, p2, height, dungeon, override=False):
             floaters.append(p)
     for p in floaters:
         dungeon.delblock(p)
+    # In aggressive mode, we'll cull out anything that is not supported directly
+    # underneath. Usually this breaks the stairs, but looks better for some
+    # structures.
+    if aggressive is True:
+        for p in iterate_cube(p1, p2):
+            for q in xrange(p.y, p.up(height).y, -1):
+                pp = Vec(p.x, q, p.z)
+                if (pp.down(1) not in dungeon.blocks or
+                     dungeon.blocks[pp.down(1)].material == materials.Air):
+                    dungeon.delblock(pp)
 
 
 # Catalog the ruins we know about. 
