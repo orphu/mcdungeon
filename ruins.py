@@ -1328,6 +1328,9 @@ class RuinedFane(Blank):
         self.parent.parent.setblock(loc.trans(1,0,0), materials.Chest,2) #for symmetry's sake (:
         self.parent.parent.addchest(loc, 0)
 
+        # Exit Portal
+        self.parent.parent.dinfo['portal_exit'] = loc.s(10)
+
         #windows
         locs = [ Vec(1,-3,12), Vec(22,-3,12), Vec(1,-3,20), Vec(22,-3,20), Vec(1,-3,28), Vec(22,-3,28) ]
         for loc in locs:
