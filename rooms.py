@@ -3106,6 +3106,11 @@ def drawExitPortal(pos, dungeon, NS=False):
     for p in iterate_cube(pos+x+y*3, pos+x*2+y*3):
         sb(p, materials.StonePressurePlate)
     # Command blocks
+    world_exit = Vec(
+        dungeon.dinfo['portal_exit'].x + dungeon.position.x,
+        dungeon.position.y - dungeon.dinfo['portal_exit'].y,
+        dungeon.dinfo['portal_exit'].z + dungeon.position.z
+    )
     for p in [pos+y*4, pos+x*3+y*4]:
         sb(p, materials.CommandBlock)
         root_tag = nbt.TAG_Compound()
@@ -3114,9 +3119,9 @@ def drawExitPortal(pos, dungeon, NS=False):
         root_tag['y'] = nbt.TAG_Int(p.y)
         root_tag['z'] = nbt.TAG_Int(p.z)
         root_tag['SuccessCount'] = nbt.TAG_Int(0)
-        root_tag['Command'] = nbt.TAG_String('/tp @p[rm=1,r=2,c=1] %d %d %d'%(dungeon.dinfo['portal_exit'].x,
-                                                                              dungeon.dinfo['portal_exit'].y,
-                                                                              dungeon.dinfo['portal_exit'].z))
+        root_tag['Command'] = nbt.TAG_String('/tp @p[rm=1,r=2,c=1] %d %d %d'%(world_exit.x,
+                                                                              world_exit.y,
+                                                                              world_exit.z))
 
         dungeon.tile_ents[p] = root_tag
 
