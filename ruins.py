@@ -587,7 +587,7 @@ class StepPyramid(Blank):
         # Portal exit point
         self.parent.parent.dinfo['portal_exit'] = p+Vec(p.w(1).x,
                                                         c1.y + 29,
-                                                        p.s(1).z1)
+                                                        p.s(1).z)
 
 
 class RoundTowerEntrance(Blank):
