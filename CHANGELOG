@@ -14,12 +14,18 @@ v0.11.0
      CircleOfSkulls, Cell, Farm, Chapel (djchrisblue)
      ConstructionArea (orphu)
 
+   * New Entrance: RuinedFane (djchrisblue)
+
    * New option: exit_portal. This will create a portal to the surface built
      with command blocks. Works in vanilla! (orphu)
 
    * New option: hidden_spawners. This will hide the random spawners behind
      walls. This is on by default in the hard_mode config. (orphu)
      
+   * New option: boost_spawners. This will make spawners spawn faster, spawn
+     more, and activate at longer range. This is on by default in the
+     hard_mode config. (JiFish)
+
    * Support for mods that use high block IDs. (orphu)
 
    * Removed heads.txt in favour of loading items from NBT files. (JiFish)
@@ -32,7 +38,7 @@ v0.11.0
   
    * 1.5 items. (JiFish)
 
-   * Enchanted books (JiFish)
+   * Enchanted books as loot. (JiFish)
 
    * Lots more unique magic books, armor, and an axe. (JiFish)
 
