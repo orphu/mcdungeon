@@ -47,6 +47,7 @@ portal_exit = Vec(0,0,0)
 
 master_halls = []
 master_rooms = []
+master_srooms = []
 master_features = []
 master_stairwells = []
 master_floors = []
@@ -90,7 +91,7 @@ def Load(filename = 'default.cfg'):
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
     max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
-    hidden_spawners, boost_spawners
+    hidden_spawners, master_srooms, boost_spawners
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -110,6 +111,7 @@ def Load(filename = 'default.cfg'):
     # Load master tables from .cfg.
     master_halls = parser.items('halls')
     master_rooms = parser.items('rooms')
+    master_srooms = parser.items('secret rooms')
     master_features = parser.items('features')
     master_stairwells = parser.items('stairwells')
     master_floors = parser.items('floors')
