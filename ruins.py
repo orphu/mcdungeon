@@ -78,10 +78,8 @@ class EvilRunestones(Blank):
                     self.parent.parent.setblock(cp, materials.Chest)
                     self.parent.parent.addchest(cp, 0)
                     # The portal exit point is here
-                    pp = Vec(cp.up(2).x + self.parent.parent.position.x,
-                             self.parent.parent.position.y - cp.up(2).y,
-                             cp.up(2).z + self.parent.parent.position.z)
-                    self.parent.parent.dinfo['portal_exit'] = pp
+                    self.parent.parent.dinfo['portal_exit'] = cp.up(2)
+
                     for r in iterate_cube(q.down(2), q.trans(0,height,0)):
                         sb(r, materials.Air)
                     continue
@@ -587,10 +585,9 @@ class StepPyramid(Blank):
         self.parent.parent.setblock(p, materials.Chest)
         self.parent.parent.addchest(p, 0)
         # Portal exit point
-        pp = Vec(p.w(1).x + self.parent.parent.position.x,
-                 self.parent.parent.position.y - c1.y + 29,
-                 p.s(1).z + self.parent.parent.position.z)
-        self.parent.parent.dinfo['portal_exit'] = pp
+        self.parent.parent.dinfo['portal_exit'] = p+Vec(p.w(1).x,
+                                                        c1.y + 29,
+                                                        p.s(1).z1)
 
 
 class RoundTowerEntrance(Blank):
@@ -734,10 +731,9 @@ class RoundTowerEntrance(Blank):
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
         # Portal exit point
-        pp = Vec(pos.w(1).x + self.parent.parent.position.x,
-                 self.parent.parent.position.y - clev,
-                 pos.s(1).z + self.parent.parent.position.z)
-        self.parent.parent.dinfo['portal_exit'] = pp
+        self.parent.parent.dinfo['portal_exit'] = Vec(pos.w(1).x,
+                                                      clev,
+                                                      pos.s(1).z)
 
         # Add a few details with upside-down stairs
         N = 2+4 # Data values for a north side stair
@@ -917,10 +913,9 @@ class SquareTowerEntrance(Blank):
         self.parent.parent.setblock(pos, materials.Chest)
         self.parent.parent.addchest(pos, 0)
         # Portal exit point
-        pp = Vec(pos.s(2).x + self.parent.parent.position.x,
-                 self.parent.parent.position.y - clev,
-                 pos.s(2).z + self.parent.parent.position.z)
-        self.parent.parent.dinfo['portal_exit'] = pp
+        self.parent.parent.dinfo['portal_exit'] = Vec(pos.s(2).x,
+                                                      clev,
+                                                      pos.s(2).z)
 
         # Add a few details with upside-down stairs
         N = 2+4 # Data values for a north side stair
