@@ -418,6 +418,29 @@ class Dungeon (object):
             pos = pos.down(1)
             b = self.getblock(pos)
 
+    def cobwebs(self, c1, c3):
+        '''Grow cobwebs in a volume. They concentrate at the top, and are more
+        likely to appear in air blocks bound by multiple solid blocks.'''
+        webs = {}
+        top = min(c1.y, c3.y)
+        for p in iterate_cube(c1, c3):
+            if (p not in self.blocks or
+                self.blocks[p].material != materials.Air):
+                continue
+            count = 0
+            chance = 80 - (p.y - top) * 14
+            for q in (Vec(1,0,0), Vec(-1,0,0),
+                      Vec(0,1,0), Vec(0,-1,0),
+                      Vec(0,0,1), Vec(0,0,-1)):
+                if (p+q in self.blocks and
+                    self.blocks[p+q].material != materials.Air and
+                    random.randint(1,100) <= chance):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p,q in webs.items():
+            self.setblock(p, materials.Cobweb)
+
     def processBiomes(self):
         '''Add vines and snow according to biomes.'''
         rset = self.oworld.get_regionset(None)
@@ -1896,14 +1919,14 @@ class Dungeon (object):
 
     def findsecretrooms(self):
         # Secret rooms must satisfy the following...
-        # 1. The room cannot be and entrance, stairwell, or above a stairwell
+        # 1. The room cannot be an entrance, stairwell, or above a stairwell
         # 2. Must be a 1x1x1 room. 
         # 3. Must not be a blank room.
         # 4. Must have exactly one hallway.
         # 5. Must not connect to a corridor.
         # 6. ... That's it. 
         #
-        # If found, the room will have it's feature overridden with SecretRoom
+        # If found, the room will have its feature overridden with SecretRoom
         # the hallway will be reduced to 1 and move away from the edge if 
         # required. 
 
@@ -1963,7 +1986,7 @@ class Dungeon (object):
                 print 'Secret room from',room._name, 'to', room2._name
             # Override this room's feature
             room.features = []
-            room.features.append(features.new('secretroom', room))
+            room.features.append(features.new(weighted_choice(cfg.master_srooms), room))
             room.features[0].placed()
             # override this room's hallway
             offset = room.halls[d].offset
