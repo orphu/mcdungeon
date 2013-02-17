@@ -28,6 +28,7 @@ ceiling = 'Cobblestone'
 subfloor = 'Bedrock'
 exit_portal = 'False'
 chests = '10'
+double_treasure = 'False'
 spawners = '2'
 hidden_spawners = 'False'
 boost_spawners = 'False'
@@ -83,8 +84,8 @@ def str2bool(string):
 def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, exit_portal, master_halls, master_rooms, master_features, \
-    master_floors, chests, spawners, master_mobs, torches_bottom, min_dist, \
-    max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
+    master_floors, chests, double_treasure, spawners, master_mobs, torches_bottom, \
+    min_dist, max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
@@ -205,6 +206,7 @@ def Load(filename = 'default.cfg'):
     exit_portal = str2bool(get('dungeon', 'exit_portal', exit_portal))
 
     chests = float(get('dungeon', 'chests', chests))
+    double_treasure = str2bool(get('dungeon', 'double_treasure', double_treasure))
     spawners = float(get('dungeon', 'spawners', spawners))
     hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
     boost_spawners = str2bool(get('dungeon', 'boost_spawners', boost_spawners))

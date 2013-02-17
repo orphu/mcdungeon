@@ -1122,7 +1122,10 @@ class ThroneRoom(Basic):
         sb(o+Vec(7,7,30), materials.Chest)
         self.parent.addchest(o+Vec(7,7,30), loottable._maxtier)
         sb(o+Vec(8,7,30), materials.Chest)
-        self.parent.addchest(o+Vec(8,7,30), 0)
+        if cfg.double_treasure:
+            self.parent.addchest(o+Vec(8,7,30), loottable._maxtier)
+        else:
+            self.parent.addchest(o+Vec(8,7,30), 0)
 
         # Spawners
         for i in xrange(7):
@@ -1299,10 +1302,14 @@ class SpiderLair(Basic):
             pit_blocks.append(q+Vec(p[0],0,p[1]))
             self.parent.setblock(q+Vec(p[0],pit_depth+1,p[1]), materials.Lava)
         # Chest
-        c = random.choice(pit_blocks)
-        pit_blocks.remove(c)
-        self.parent.setblock(c, materials.Chest)
-        self.parent.addchest(c, loottable._maxtier)
+        num_chests = 1
+        if cfg.double_treasure:
+            num_chests = 2
+        choices = random.sample(pit_blocks,num_chests)
+        for c in choices:
+            pit_blocks.remove(c)
+            self.parent.setblock(c, materials.Chest)
+            self.parent.addchest(c, loottable._maxtier)
         # Spider spawners
         # In the future, maybe spiders will walk on web
         #for x in xrange(3):
@@ -1416,6 +1423,11 @@ class PitWithArchers(Basic2x2):
                                     materials.Chest)
         self.parent.addchest(center.trans(0,0,3),
                                     loottable._maxtier)
+        if cfg.double_treasure:
+            self.parent.setblock(center.trans(1,0,3),
+                                        materials.Chest)
+            self.parent.addchest(center.trans(1,0,3),
+                                        loottable._maxtier)
         # Oh fuck! Skeletons!
         for x in (self.c1+Vec(1,0,1), self.c2+Vec(-1,0,1),
                   self.c3+Vec(-1,0,-1), self.c4+Vec(1,0,-1)):
@@ -1666,6 +1678,9 @@ class EndPortal(Basic2x2):
         # Treasure!
         sb(o+Vec(13,sy-2,2), materials.Chest)
         self.parent.addchest(o+Vec(13,sy-2,2), loottable._maxtier)
+        if cfg.double_treasure:
+            sb(o+Vec(14,sy-2,2), materials.Chest)
+            self.parent.addchest(o+Vec(14,sy-2,2), loottable._maxtier)
 
         # Monsters
         sb(o+Vec(0,sy-2,15), materials.Spawner)
@@ -1821,7 +1836,10 @@ class Arena(Basic2x2):
         sb(o+Vec(15,sy-1,15), materials.Chest)
         self.parent.addchest(o+Vec(15,sy-1,15), loottable._maxtier)
         sb(o+Vec(16,sy-1,16), materials.Chest)
-        self.parent.addchest(o+Vec(16,sy-1,16))
+        if cfg.double_treasure:
+            self.parent.addchest(o+Vec(16,sy-1,16), loottable._maxtier)
+        else:
+            self.parent.addchest(o+Vec(16,sy-1,16))
         sb(o+Vec(15,sy-1,16), materials.Spawner)
         self.parent.addspawner(o+Vec(15,sy-1,16), 'Blaze')
         sb(o+Vec(16,sy-1,15), materials.Spawner)
@@ -2129,7 +2147,10 @@ class Crypt(Basic):
         sb(o+Vec(7,8,29), materials.Chest, 2)
         self.parent.addchest(o+Vec(7,8,29), loottable._maxtier)
         sb(o+Vec(8,8,29), materials.Chest, 2)
-        self.parent.addchest(o+Vec(8,8,29), 0)
+        if cfg.double_treasure:
+            self.parent.addchest(o+Vec(8,8,29), loottable._maxtier)
+        else:
+            self.parent.addchest(o+Vec(8,8,29), 0)
 
         # Statues
         # Legs/body
