@@ -20,3 +20,23 @@ For more information on the format of the tags see:
 	
 IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
 crash it. Please use this feature with caution.
+
+Packaged Spawners:
+==================
+Angrypig: A zombie pigman that has already been aggroed.
+Chargedcreeper: Creeper with the lightning strike charge effect
+CustomKnight: Zombie with full suit of armour and strength
+multi_creeper: Spawns charged creepers 20% of the time.
+               Normal creepers the rest of the time.
+multi_skeleton: Spawns wither skeletons 20% of the time.
+                Normal skeletons the rest of the time.
+multi_zombie: Spawns zombie with strength and speed skeletons 20% of
+              the time. Normal skeletons the rest of the time.
+Skeleton_Armored_Axe_Iron: Skeleton with an iron axe.
+Skeleton_Armored_Sword_Iron: Skeleton with an iron sword.
+Skeleton_Armored_Sword_Leather: Skeleton with an iron sword and
+                                leather armour.
+WitherSkeleton: Wither Skeletons
+Zombie_Fast: Zombie with speed potion effect.
+Zombie_Strong: Zombie with strength potion effect.
+Zombie_Villager: Zombie villiager (like in a siege.)
