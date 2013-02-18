@@ -28,6 +28,9 @@ v0.11.0
      more, and activate at longer range. This is on by default in the
      hard_mode config. (JiFish)
 
+   * New option: double_treasure. Doubles the loot roll in treasure rooms.
+     Mainly for multiplayer. (JiFish)
+
    * Support for mods that use high block IDs. (orphu)
 
    * Removed heads.txt in favour of loading items from NBT files. (JiFish)
