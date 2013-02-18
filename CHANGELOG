@@ -31,6 +31,8 @@ v0.11.0
    * New option: double_treasure. Doubles the loot roll in treasure rooms.
      Mainly for multiplayer. (JiFish)
 
+   * Renamed hard_mode to fill_caves. (orphu)
+
    * Support for mods that use high block IDs. (orphu)
 
    * Removed heads.txt in favour of loading items from NBT files. (JiFish)

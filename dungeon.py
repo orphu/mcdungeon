@@ -82,7 +82,7 @@ class Dungeon (object):
         self.heightmap = numpy.zeros((xsize*self.room_size,
                                       zsize*self.room_size))
         self.dinfo = {}
-        self.dinfo['hard_mode'] = cfg.hard_mode
+        self.dinfo['fill_caves'] = cfg.fill_caves
         self.dinfo['portal_exit'] = cfg.portal_exit
 
     def printmaze(self, y, cursor=None):
@@ -213,11 +213,11 @@ class Dungeon (object):
 
         if self.args.debug: print 'Selecting a location...'
         all_chunks = set(positions.keys())
-        # Offset is hard mode. Expand the size of the dungeon if hard_mode is
+        # Offset is fill caves. Expand the size of the dungeon if fill_caves is
         # set. When recording the position, we'll center the dungeon in this
         # area.
         offset = 0
-        if self.dinfo['hard_mode'] == True:
+        if self.dinfo['fill_caves'] == True:
             offset = 10
         for p, d in sorted_p:
             #if self.args.debug: print 'Checking: ', p
@@ -2067,8 +2067,8 @@ class Dungeon (object):
         '''Write the block buffer to the specified world'''
         changed_chunks = set()
         num_blocks = len(self.blocks)
-        # Hard mode
-        if (self.dinfo['hard_mode'] is True):
+        # Fill caves
+        if (self.dinfo['fill_caves'] is True):
             num = (self.zsize+10) * (self.xsize+10)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Filling in caves:')

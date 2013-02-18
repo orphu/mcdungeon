@@ -320,7 +320,7 @@ def loadWorld(world_name):
 
     return world, oworld
 
-def listDungeons(world, oworld, expand_hard_mode=False):
+def listDungeons(world, oworld, expand_fill_caves=False):
     '''Scan a world for dungeons. Try to cache the results and only look at
     chunks that have changed since the last run.'''
     global cache_path
@@ -386,8 +386,8 @@ def listDungeons(world, oworld, expand_hard_mode=False):
         levels = info['levels']
         offset = 0
 
-        if (expand_hard_mode == True and
-            info['hard_mode'] is True):
+        if (expand_fill_caves == True and
+            info['fill_caves'] is True):
             offset = 5
         dungeons.append((info["position"].x-offset,
                          info["position"].z-offset,
@@ -406,7 +406,7 @@ def listDungeons(world, oworld, expand_hard_mode=False):
          info['version'],
          '%dx%d'%(xsize, zsize),
          levels,
-         'Hard Mode' if info['hard_mode'] else 'None'
+         'Fill Caves' if info['fill_caves'] else 'None'
         )
     output += '+-----------+--------------------------+---------+--------+-------------------+\n'
     if len(dungeons) > 0:
@@ -688,8 +688,8 @@ if (args.command == 'delete'):
             if e[0] == d[0] and e[1] == d[1]:
                 xsize = e[2]
                 zsize = e[3]
-                # Hard mode. Delete all chunks.
-                if e[4]['hard_mode'] is True:
+                # Fill caves. Delete all chunks.
+                if e[4]['fill_caves'] is True:
                     p[0] -= 5
                     p[1] -= 5
                     xsize += 10
@@ -754,9 +754,9 @@ if (args.command == 'regenerate'):
     version = info[9]
     # Don't bury
     cfg.bury = False
-    # Let's not bother with hard mode
+    # Let's not bother with fill caves mode.
     # override it from the config
-    cfg.hard_mode = False
+    cfg.fill_caves = False
     # Entrance offset
     args.entrance = [info[4]['entrance_pos'].x, info[4]['entrance_pos'].z]
     # Entrance height
@@ -769,7 +769,7 @@ if (args.command == 'regenerate'):
     #print 'offset:', cfg.offset
     #print 'size:', args.z, args.x, args.levels
     #print 'bury:', cfg.bury
-    #print 'hard mode:', cfg.hard_mode
+    #print 'fill caves:', cfg.fill_caves
     #print 'entrance:', args.entrance
     # From here, we just go through the add process with the exception that we
     # do not generate ruins.
@@ -1028,7 +1028,7 @@ if (cfg.offset is None or cfg.offset is ''):
     pm.set_complete()
 
     # Find old dungeons
-    old_dungeons = listDungeons(world, oworld, expand_hard_mode=True)
+    old_dungeons = listDungeons(world, oworld, expand_fill_caves=True)
     for d in old_dungeons:
         if args.debug: print 'old dungeon:', d
         p = (d[0]/16, d[1]/16)
@@ -1258,9 +1258,9 @@ while args.number is not 0:
 if (len(dungeons) == 0):
     print 'No dungeons were generated!'
     print 'You may have requested too deep or too large a dungeon, or your '
-    print 'allowed spawn region is too small. If using hard mode, remember '
+    print 'allowed spawn region is too small. If using fill_caves, remember '
     print 'to add 10 chunks in each direction to the size of your dungeon.'
-    print 'Check min_dist, max_dist, and hard_mode settings in your config.'
+    print 'Check min_dist, max_dist, and fill_caves settings in your config.'
     sys.exit(1)
 
 # Relight

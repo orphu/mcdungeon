@@ -36,7 +36,7 @@ arrow_traps = '3'
 sand_traps = '40'
 arrow_trap_defects = '1'
 skeleton_balconies = '25'
-hard_mode = 'False'
+fill_caves = 'False'
 torches_position = 3
 hall_piston_traps = 75
 resetting_hall_pistons = 'True'
@@ -85,7 +85,7 @@ def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, exit_portal, master_halls, master_rooms, master_features, \
     master_floors, chests, double_treasure, spawners, master_mobs, torches_bottom, \
-    min_dist, max_dist, arrow_traps, loops, portcullis_closed, hard_mode, \
+    min_dist, max_dist, arrow_traps, loops, portcullis_closed, fill_caves, \
     portcullis_web, subfloor, torches_position, skeleton_balconies, \
     arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
@@ -226,7 +226,7 @@ def Load(filename = 'default.cfg'):
     sand_traps = int(get('dungeon', 'sand_traps', sand_traps))
     loops = int(get('dungeon', 'loops', loops))
 
-    hard_mode = str2bool(get('dungeon', 'hard_mode', hard_mode))
+    fill_caves = str2bool(get('dungeon', 'fill_caves', fill_caves))
     secret_rooms = int(get('dungeon', 'secret_rooms', secret_rooms))
     silverfish = int(get('dungeon', 'silverfish', silverfish))
     maps = int(get('dungeon', 'maps', maps))
