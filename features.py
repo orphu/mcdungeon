@@ -953,6 +953,16 @@ class SecretStudy(SecretRoom):
             else:
                 sb(self.c1+p, materials.Air)
 
+        # A Clock!
+        sb(self.c1+Vec(2,-3,1), materials._wall)
+        self.parent.parent.addentity(
+            get_entity_other_tags("ItemFrame",
+                                  Pos=self.c1+Vec(2,-3,1),
+                                  Direction="S",
+                                  ItemInfo=items.byName("clock")
+                                 )
+        )
+
         # Lighting
         for p in (Vec(2,-1,2), Vec(2,-1,7),
                   Vec(7,-1,2), Vec(7,-1,7)):

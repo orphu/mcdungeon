@@ -55,6 +55,7 @@ class Dungeon (object):
         self.good_chunks = good_chunks
         self.blocks = {}
         self.tile_ents = {}
+        self.ents = {}
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
@@ -777,6 +778,14 @@ class Dungeon (object):
         item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
         inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
+
+    def addentity(self, root_tag):
+        pos = Vec(
+            root_tag['Pos'][0].value,
+            root_tag['Pos'][1].value,
+            root_tag['Pos'][2].value
+        )
+        self.ents[pos] = root_tag
 
     def setroom(self, coord, room):
         if coord not in self.rooms:
@@ -2106,6 +2115,8 @@ class Dungeon (object):
                                 self.addchest(p, 0)
                     # Empty the tile entities from this chunk
                     chunk.TileEntities.value[:] = []
+                    # Empty the entities from this chunk
+                    chunk.Entities.value[:] = []
                     # Fake some ores. First fill with Stone (id=1) and then pick
                     # some random ones based on known ore distributions to fill
                     # in ores.
@@ -2227,6 +2238,27 @@ class Dungeon (object):
             ent['z'].value = z
             # Place the ent!
             world.addTileEntity(ent)
+        # Copy over entities
+        print 'Creating entities...'
+        num = len(self.ents)
+        for ent in self.ents.values():
+            spin(num)
+            num -= 1
+            # Calculate world coords.
+            x = ent['Pos'][0].value + float(self.position.x)
+            y = float(self.position.y) - ent['Pos'][1].value
+            z = ent['Pos'][2].value + float(self.position.z)
+            # Move this ent to the world coords.
+            ent['Pos'][0].value = x
+            ent['Pos'][1].value = y
+            ent['Pos'][2].value = z
+            # Paintings and ItemFrames need special handling.
+            if ent['id'].value in ('ItemFrame', 'Painting'):
+                ent['TileX'].value += int(self.position.x)
+                ent['TileY'].value = int(self.position.y) - ent['TileY'].value
+                ent['TileZ'].value += int(self.position.z)
+            # Place the ent!
+            world.addEntity(ent)
         # Mark changed chunks so pymclevel knows to recompress/relight them.
         print 'Marking dirty chunks...'
         num = len(changed_chunks)
