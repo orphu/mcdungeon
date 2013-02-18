@@ -1085,17 +1085,23 @@ class SecretAlchemyLab(SecretRoom):
         root_tag['z'] = nbt.TAG_Int(self.c1.trans(4,-2,4).z)
         self.parent.parent.tile_ents[self.c1.trans(4,-2,4)] = root_tag
 
-        # A chest in a study should have writing supplies :)
+        # A chest in an alchemy lab should have brewing supplies :)
         #item, probability, max stack amount
-        writing_items = [(items.byName('written book'), 1, 1),
-                         (items.byName('written book'), 0.3, 1),
-                         (items.byName('written book'), 0.2, 1),
+        writing_items = [(items.byName('glass bottle'), 1, 5),
                          (items.byName('book'), 0.7, 5),
                          (items.byName('paper'), 0.8, 10),
-                         (items.byName('ink sac'), 0.9, 5),
-                         (items.byName('feather'), 0.9, 10),
-                         (items.byName('leather'), 0.4, 5),
-                         (items.byName('apple'), 0.2, 1)]
+                         (items.byName('nether wart'), 0.3, 5),
+                         (items.byName('glowstone dust'), 0.3, 5),
+                         (items.byName('redstone dust'), 0.3, 5),
+                         (items.byName('fermented spider eye'), 0.3, 5),
+                         (items.byName('magma cream'), 0.1, 2),
+                         (items.byName('sugar'), 0.2, 5),
+                         (items.byName('glistering melon'), 0.2, 2),
+                         (items.byName('spider eye'), 0.2, 5),
+                         (items.byName('ghast tear'), 0.2, 2),
+                         (items.byName('blaze powder'), 0.2, 1),
+                         (items.byName('gunpowder'), 0.4, 3),
+                         (items.byName('golden carrot'), 0.2, 1)]
         # Generate desk loot and place chest
         deskloot = []
         for s in writing_items:
