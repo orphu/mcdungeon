@@ -481,6 +481,8 @@ class Arcane(Blank):
                 dun.blocks[p.down(1)].material != materials.Farmland and
                 dun.blocks[p.down(1)].material != materials.SoulSand and
                 dun.blocks[p.down(1)].material != materials.Water and
+                dun.blocks[p.down(1)].material != materials.Lava and
+                dun.blocks[p.down(1)].material != materials.CobblestoneSlab and
                 dun.blocks[p.down(1)].material != materials.StillWater):
                 dun.setblock(p, mat)
         mode = random.choice(['one','boxes', 'conc'])
