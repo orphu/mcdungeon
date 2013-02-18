@@ -1,6 +1,7 @@
 import sys
 import inspect
 
+import items
 import materials
 import cfg
 import perlin
@@ -1326,7 +1327,7 @@ class RuinedFane(Blank):
         for y in xrange(3):
             for x in xrange(8):
                 for z in xrange(6):
-                    p = o.trans(x,-y,z) 
+                    p = o.trans(x,-y,z)
                     self.parent.parent.setblock(p,
                                                mats[template[y][z][x]] )
         # Supply chest
@@ -1337,6 +1338,17 @@ class RuinedFane(Blank):
 
         # Exit Portal
         self.parent.parent.dinfo['portal_exit'] = loc.s(10)
+
+        # Random chance of a villager priest running around in here.
+        if random.random() < .25:
+            self.parent.parent.addentity(
+                get_entity_mob_tags('Villager', Pos=loc.n(1), Profession=2)
+            )
+
+        self.parent.parent.addentity(
+            get_entity_other_tags('Painting', Pos=loc.n(3).up(3), Direction='S',
+                                  Motive='Wither')
+        )
 
         #windows
         locs = [ Vec(1,-3,12), Vec(22,-3,12), Vec(1,-3,20), Vec(22,-3,20), Vec(1,-3,28), Vec(22,-3,28) ]

@@ -291,7 +291,7 @@ def byName (name):
             return _items[name]
         except:
             print 'Unknown item:', name
-            sys.exit(1)
+            return None
 
 
 def byID (id):
@@ -299,7 +299,7 @@ def byID (id):
             return _by_id[id]
         except:
             print 'Unknown item ID:', id
-            sys.exit(1)
+            return None
 
 LoadItems()
 LoadDyedArmour()

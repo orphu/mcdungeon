@@ -739,3 +739,315 @@ def decodeDungeonInfo(lib):
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))
     return items
+
+# Some entity helpers
+def get_entity_base_tags(eid='Chicken', Pos=Vec(0,0,0),
+                         Motion=Vec(0,0,0), Rotation=Vec(0,0,0),
+                         FallDistance=0.0, Fire=-1, Air=300, OnGround=0,
+                         Dimension=0, Invulnerable=0, PortalCooldown=0,
+                         CustomName=''):
+    '''Returns an nbt.TAG_Compound containing tags common to all entities'''
+    root_tag = nbt.TAG_Compound()
+    root_tag['id'] = nbt.TAG_String(eid)
+    root_tag['Pos'] = nbt.TAG_List()
+    root_tag['Pos'].append(nbt.TAG_Double(Pos.x))
+    root_tag['Pos'].append(nbt.TAG_Double(Pos.y))
+    root_tag['Pos'].append(nbt.TAG_Double(Pos.z))
+    root_tag['Motion'] = nbt.TAG_List()
+    root_tag['Motion'].append(nbt.TAG_Double(Motion.x))
+    root_tag['Motion'].append(nbt.TAG_Double(Motion.y))
+    root_tag['Motion'].append(nbt.TAG_Double(Motion.z))
+    root_tag['Rotation'] = nbt.TAG_List()
+    root_tag['Rotation'].append(nbt.TAG_Float(Rotation.y))
+    root_tag['Rotation'].append(nbt.TAG_Float(Rotation.x))
+    root_tag['FallDistance']= nbt.TAG_Float(FallDistance)
+    root_tag['Fire']= nbt.TAG_Short(Fire)
+    root_tag['Air']= nbt.TAG_Short(Air)
+    root_tag['OnGround']= nbt.TAG_Byte(OnGround)
+    root_tag['Dimension']= nbt.TAG_Int(Dimension)
+    root_tag['Invulnerable']= nbt.TAG_Byte(Invulnerable)
+    root_tag['PortalCooldown']= nbt.TAG_Int(PortalCooldown)
+    root_tag['CustomName'] = nbt.TAG_String(CustomName)
+    return root_tag
+
+def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
+                        HurtTime=0, DeathTime=0, CanPickUpLoot=0,
+                        PersistenceRequired =0, CustomNameVisible=0,
+                        InLove=0, Age=0, Owner='', Sitting=0, Size=4,
+                        BatFlags=0, powered=0, ExplosionRadius=3,
+                        Fuse=30, carried=0, carriedData=0, ExplosionPower=1,
+                        CatType=0, Saddle=0, Sheared=0, Color=0,
+                        SkeletonType=0, Invul=0, Angry=0, CollarColor=14,
+                        Profession=5, Riches=0, PlayerCreated=0, IsVillager=0,
+                        IsBaby=0, ConversionTime=-1, Anger=0,
+                        **kwargs):
+    '''Returns an nbt.TAG_Compound for a specific mob id'''
+
+    if Health is None:
+        if eid == 'Chicken':
+            Health = 4
+        elif eid in ('Bat',
+                     'SnowMan'
+                    ):
+            Health = 6
+        elif eid in ('Sheep',
+                     'Silverfish'
+                    ):
+            Health = 8
+        elif eid == 'Wolf':
+            if Owner == '':
+                Health = 8
+            else:
+                Health = 20
+        elif eid in ('Cow',
+                     'MushroomCow',
+                     'Ozelot',
+                     'Pig',
+                     'Squid',
+                     'Ghast'
+                    ):
+            Health = 10
+        elif eid in ('CaveSpider'):
+            Health = 12
+        elif eid in ('Spider'):
+            Health = 16
+        elif eid in ('Villager',
+                     'PigZombie',
+                     'Blaze',
+                     'Creeper',
+                     'Skeleton'
+                    ):
+            Health = 20
+        elif eid == 'Witch':
+            Health = 26
+        elif eid == 'Enderman':
+            Health = 40
+        elif eid in ('Slime',
+                     'LavaSlime'
+                    ):
+            Health = Size*Size
+        elif eid == 'VillagerGolem':
+            Health = 100
+        elif eid == 'EnderDragon':
+            Health = 200
+        elif eid == 'WitherBoss':
+            Health = 300
+        else:
+            Health = 1
+
+    root_tag = get_entity_base_tags(eid, **kwargs)
+    root_tag['Health']= nbt.TAG_Short(Health)
+    root_tag['AttackTime']= nbt.TAG_Short(AttackTime)
+    root_tag['HurtTime']= nbt.TAG_Short(HurtTime)
+    root_tag['DeathTime']= nbt.TAG_Short(DeathTime)
+
+    root_tag['Equipment'] = nbt.TAG_List()
+    root_tag['Equipment'].append(nbt.TAG_Compound())
+    root_tag['Equipment'].append(nbt.TAG_Compound())
+    root_tag['Equipment'].append(nbt.TAG_Compound())
+    root_tag['Equipment'].append(nbt.TAG_Compound())
+    root_tag['Equipment'].append(nbt.TAG_Compound())
+
+    root_tag['DropChances'] = nbt.TAG_List()
+    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+
+    root_tag['CanPickUpLoot']= nbt.TAG_Byte(CanPickUpLoot)
+    root_tag['PersistenceRequired']= nbt.TAG_Byte(PersistenceRequired)
+    root_tag['CustomNameVisible']= nbt.TAG_Byte(CustomNameVisible)
+
+    # Breeders
+    if eid in ('Chicken', 'Cow', 'MushroomCow', 'Ozelot', 'Pig', 'Sheep',
+               'Villager', 'Wolf'):
+        root_tag['InLove']= nbt.TAG_Int(InLove)
+        root_tag['Age']= nbt.TAG_Int(Age)
+
+    # Can be tamed
+    if eid in ('Ozelot', 'Wolf'):
+        root_tag['Owner']= nbt.TAG_String(Owner)
+        root_tag['Sitting']= nbt.TAG_Byte(Sitting)
+
+    # Specific Mobs
+    if eid == 'Bat':
+        root_tag['BatFlags']= nbt.TAG_Byte(BatFlags)
+
+    if eid == 'Creeper':
+        root_tag['powered']= nbt.TAG_Byte(powered)
+        root_tag['ExplosionRadius']= nbt.TAG_Byte(ExplosionRadius)
+        root_tag['Fuse']= nbt.TAG_Short(Fuse)
+
+    if eid == 'Enderman':
+        root_tag['carried']= nbt.TAG_Short(carried)
+        root_tag['carriedData']= nbt.TAG_Short(carriedData)
+
+    if eid == 'Ghast':
+        root_tag['ExplosionPower']= nbt.TAG_Int(ExplosionPower)
+
+    if eid == 'Ozelot':
+        root_tag['CatType']= nbt.TAG_Int(CatType)
+
+    if eid == 'Pig':
+        root_tag['Saddle']= nbt.TAG_Byte(Saddle)
+
+    if eid == 'Sheep':
+        root_tag['Sheared']= nbt.TAG_Byte(Sheared)
+        root_tag['Color']= nbt.TAG_Byte(Color)
+
+    if eid == 'Skeleton':
+        root_tag['SkeletonType']= nbt.TAG_Byte(SkeletonType)
+
+    if eid in ('Slime', 'LavaSlime'):
+        root_tag['Size']= nbt.TAG_Int(Size)
+
+    if eid == 'WitherBoss':
+        root_tag['Invul']= nbt.TAG_Int(Invul)
+
+    if eid == 'Wolf':
+        root_tag['Angry']= nbt.TAG_Byte(Angry)
+        root_tag['CollarColor']= nbt.TAG_Byte(CollarColor)
+
+    if eid == 'Villager':
+        root_tag['Profession']= nbt.TAG_Int(Profession)
+        root_tag['Riches']= nbt.TAG_Int(Riches)
+
+    if eid == 'VillagerGolem':
+        root_tag['PlayerCreated']= nbt.TAG_Byte(PlayerCreated)
+
+    if eid == 'Zombie':
+        root_tag['IsVillager']= nbt.TAG_Byte(IsVillager)
+        root_tag['IsBaby']= nbt.TAG_Byte(IsBaby)
+        root_tag['ConversionTime']= nbt.TAG_Int(ConversionTime)
+
+    if eid == 'PigZombie':
+        root_tag['Anger']= nbt.TAG_Short(Anger)
+
+    return root_tag
+
+def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
+                         Damage=0,
+                        **kwargs):
+    '''Returns an nbt.TAG_Compound for a specific item. ItemInfo should contain
+    an item object from items.'''
+
+    root_tag = get_entity_base_tags(eid, **kwargs)
+
+    # XPOrbs are easy. Otherwise try to create a generic item. This won't work
+    # in every case... some ItemInfo are not viable items, and some require
+    # an extra 'tag' compound tag to work right. 
+    if eid == 'XPOrb':
+        root_tag['Value']= nbt.TAG_Short(Value)
+    elif (eid == "Item" and ItemInfo is not None):
+        root_tag['Item'] = nbt.TAG_Compound()
+        root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
+        root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
+        root_tag['Item']['Count'] = nbt.TAG_Byte(Count)
+
+    return root_tag
+
+def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
+                          ItemDropChance=1.0, ItemRotation=0, Motive='Kebab',
+                          Pos=Vec(0,0,0), Damage=0,
+                        **kwargs):
+    '''Returns an nbt.TAG_Compound for "other" type entities. These include
+    EnderCrystal, EyeOfEnder, ItemFrame, and Painting. Chunk offsets will be
+    calculated. ItemInfo should contain an item object from items.'''
+
+    root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
+
+    # Positioning on these gets tricky. TileX/Y/Z is the block the
+    # painting/ItemFrame is attached to, and Pos is the actual position in the
+    # world. So we need to move Pos slightly according to size of the
+    # Painting/ItemFrame and direction it is facing or Minecraft will complain
+    # and try to move the entity itself. The entity must be centered on the tile
+    # it is attached to on the appropriate face. 
+    # Paintings and frames are 1-4 blocks tall and wide, and 0.0625 blocks thick. 
+    if eid in ('ItemFrame', 'Painting'):
+        # Copy the Pos location to Tile entries.
+        root_tag['TileX']= nbt.TAG_Int(Pos.x)
+        root_tag['TileY']= nbt.TAG_Int(Pos.y)
+        root_tag['TileZ']= nbt.TAG_Int(Pos.z)
+        # Set direction. For convenience we provide letters.
+        dirs = {'N': 2,
+                'S': 0,
+                'E': 3,
+                'W': 1}
+        if Direction in dirs:
+            Direction = dirs[Direction]
+        root_tag['Direction']= nbt.TAG_Byte(Direction)
+
+        # Now, shift Pos appropriately. First we need the size of the entity.
+        # Default is 1x1, and ItemFrames are 1x1.
+        sizes = {
+            'Kebab':         (1,1),
+            'Aztec':         (1,1),
+            'Alban':         (1,1),
+            'Aztec2':        (1,1),
+            'Bomb':          (1,1),
+            'Plant':         (1,1),
+            'Wasteland':     (1,1),
+            'Wanderer':      (1,2),
+            'Graham':        (1,2),
+            'Pool':          (2,1),
+            'Courbet':       (2,1),
+            'Sunset':        (2,1),
+            'Sea':           (2,1),
+            'Creebet':       (2,1),
+            'Match':         (2,2),
+            'Bust':          (2,2),
+            'Stage':         (2,2),
+            'Void':          (2,2),
+            'SkullAndRoses': (2,2),
+            'Wither':        (2,2),
+            'Fighters':      (4,2),
+            'Skeleton':      (4,3),
+            'DonkeyKong':    (4,3),
+            'Pointer':       (4,4),
+            'PigScene':      (4,4),
+            'Flaming Skull': (4,4),
+        }
+        if (eid == 'Painting' and Motive in sizes):
+            width = sizes[Motive][0]
+            height = sizes[Motive][1]
+        else:
+            width = 1
+            height = 1
+
+        # North face
+        if Direction == 2:
+            root_tag['Pos'][0].value += float(width)/2.0
+            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][2].value -= 0.0625
+        # South face
+        elif Direction == 0:
+            root_tag['Pos'][0].value += float(width)/2.0
+            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][2].value += 1.0625
+        # East face
+        elif Direction == 3:
+            root_tag['Pos'][0].value += 1.0625
+            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][2].value += 1 + float(width)/2.0
+        # West face
+        elif Direction == 1:
+            root_tag['Pos'][0].value -= float(width)/2.0
+            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][2].value -= 0.0625
+
+    # Attach an item to the frame (if any)
+    if eid == 'ItemFrame':
+        root_tag['ItemDropChance']= nbt.TAG_Float(ItemDropChance)
+        root_tag['ItemRotation']= nbt.TAG_Byte(ItemRotation)
+        if ItemInfo is not None:
+            root_tag['Item'] = nbt.TAG_Compound()
+            root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
+            root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
+            root_tag['Item']['Count'] = nbt.TAG_Byte(1)
+
+    # Set the painting.
+    if eid == 'Painting':
+        root_tag['Motive']= nbt.TAG_String(Motive)
+
+    return root_tag
