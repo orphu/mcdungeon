@@ -29,9 +29,8 @@ CURRENT FEATURES:
      configurable. Option to place fewer torches as levels go down. Less 
      light == more danger!
 
-   * A "hard mode" that will fill in nearby natural caves in an attempt to
-     concentrate random monster spawns inside the dungeon, add more traps,
-     and place more difficult mobs.
+   * A "fill caves" mode that will fill in nearby natural caves in an attempt
+     to concentrate random monster spawns inside the dungeon.
 
    * Places stairwells between levels, and a random entrance with a
      spiraling staircase. Some entrances have a configurable height so it 

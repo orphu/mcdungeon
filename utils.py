@@ -723,7 +723,7 @@ def decodeDungeonInfo(lib):
         (items['xsize'], items['zsize'], items['levels']) = [int(x) for x in lib["Text3"].split(',')]
         items['timestamp'] = int(lib["Text2"])
         m = re.search('H:(.)', lib["Text4"])
-        items['hard_mode'] = int(m.group(1))
+        items['fill_caves'] = int(m.group(1))
         return items
 
     # Check the chest name
