@@ -927,12 +927,15 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
     return root_tag
 
 def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
-                         Damage=0,
+                         Damage=0, Health=5, Age=0,
                         **kwargs):
     '''Returns an nbt.TAG_Compound for a specific item. ItemInfo should contain
     an item object from items.'''
 
     root_tag = get_entity_base_tags(eid, **kwargs)
+
+    root_tag['Health']= nbt.TAG_Short(Health)
+    root_tag['Age']= nbt.TAG_Short(Age)
 
     # XPOrbs are easy. Otherwise try to create a generic item. This won't work
     # in every case... some ItemInfo are not viable items, and some require
