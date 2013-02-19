@@ -43,13 +43,14 @@ class MazeCell(object):
 
 class Dungeon (object):
     def __init__(self, xsize, zsize, levels, good_chunks, args, world, oworld,
-                 chunk_cache):
+                 chunk_cache, mapstore):
         self.caches = []
         self.caches.append(cache.LRUCache(size=100))
 
         self.world = world
         self.oworld = oworld
         self.chunk_cache = chunk_cache
+        self.mapstore = mapstore
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
         self.good_chunks = good_chunks
@@ -616,6 +617,29 @@ class Dungeon (object):
 
         return outtag
 
+        
+    def loadrandpainting(self):
+        if os.path.isdir(os.path.join(sys.path[0],'paintings')):
+            paint_path = os.path.join(sys.path[0],'paintings')
+        elif os.path.isdir('paintings'):
+            paint_path = 'paintings'
+        else:
+            sys.exit("Error: Could not find the paintings folder!")
+        # Make a list of all the pairs of dat and txt files in the paintings directory
+        paintlist = []
+        for file in os.listdir(paint_path):
+            if str(file.lower()).endswith(".dat"):
+                if os.path.isfile(os.path.join(paint_path,file[:-3]+'txt')):
+                    paintlist.append(file[:-4]);
+        # No paintings? Give a blank map
+        if len(paintlist) == 0:
+            item = nbt.TAG_Compound()
+            item['id'] = nbt.TAG_Short(358)
+            item['Count'] = nbt.TAG_Byte(1)
+            return len
+
+        return self.mapstore.add_painting(random.choice(paintlist))
+
 
     def loadrandfortune(self):
         fortune = '...in bed.'   #The default
@@ -710,6 +734,8 @@ class Dungeon (object):
         # special case for written books
         if (i.flag == 'WRITTEN'):
             item_tag['tag'] = self.loadrandbooktext()
+        if (i.flag == 'PAINT'):
+            item_tag = self.loadrandpainting()
         return item_tag
 
 

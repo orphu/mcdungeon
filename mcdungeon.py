@@ -481,8 +481,8 @@ if (args.command == 'interactive'):
         cfg.Load(args.config)
 
         # Prompt for a mapstore if we need to
-        if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore == None):
-            print '\nThis configuration may generate dungeon maps. If you are'
+        if (cfg.mapstore == '' and args.mapstore == None):
+            print '\nSome configurations may generate dungeon maps. If you are'
             print 'using bukkit/multiverse you need supply the name of your'
             print 'primary world for this to work. You can also provide this'
             print 'in the config file or as a command switch.'
@@ -1092,12 +1092,14 @@ while args.number is not 0:
     dungeon = None
     located = False
 
+    ms = mapstore.new(cfg.mapstore)
+
     if (cfg.offset is not None and cfg.offset is not ''):
         pos = str2Vec(cfg.offset)
         pos.x = pos.x &~15
         pos.z = pos.z &~15
         dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
-                          chunk_cache)
+                          chunk_cache, ms)
         print 'Dungeon size: %d x %d x %d' % (x, z, levels)
         dungeon.position = pos
         if (cfg.bury is False):
@@ -1115,7 +1117,7 @@ while args.number is not 0:
         print "Searching for a suitable location..."
         while (located is False):
             dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
-                              chunk_cache)
+                              chunk_cache, ms)
             located = dungeon.findlocation(world, dungeon_positions)
             if (located is False):
                 adjusted = False
@@ -1200,7 +1202,6 @@ while args.number is not 0:
         # Generate maps
         if (args.write and cfg.maps > 0):
             print "Generating maps..."
-            ms = mapstore.new(cfg.mapstore)
             for level in xrange(1, dungeon.levels+1):
                 if randint(1, 100) > cfg.maps:
                     next
