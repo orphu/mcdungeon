@@ -280,6 +280,11 @@ def enchant (item, level, debug=False):
         type = 'bow'
     elif ('pickaxe' in item or
           'shovel' in item or
+          'shears' in item or
+          'hoe' in item or
+          'fishing rod' in item or
+          'carrot on a stick' in item or
+          'flint and steel' in item or
           'axe' in item):
         type = 'tool'
     elif ('helmet' in item or
@@ -336,6 +341,18 @@ def enchant (item, level, debug=False):
         type = 'leggings'
     elif 'boots' in item:
         type = 'boots'
+    elif 'shears' in item:
+        type = 'shears'
+    elif 'hoe' in item:
+        type = 'hoe'
+    elif 'fishing rod' in item:
+        type = 'fishing rod'
+    elif 'carrot on a stick' in item:
+        type = 'carrot on a stick'
+    elif 'flint and steel' in item:
+        type = 'flint and steel'
+    elif 'axe' in item:
+        type = 'axe'
 
     # Gather a list of possible enchantments and levels
     enchantments = {}
@@ -354,51 +371,80 @@ def enchant (item, level, debug=False):
     if (type == 'helmet' or
         type == 'chestplate' or
         type == 'leggings' or
-        type == 'boots' or
-		type == 'book'):
+        type == 'boots'):
         check_enchantment(PROTECTION, mlevel)
         check_enchantment(FIRE_PROTECTION, mlevel)
         check_enchantment(BLAST_PROTECTION, mlevel)
         check_enchantment(PROJECTILE_PROTECTION, mlevel)
+        check_enchantment(THORNS, mlevel)
+        check_enchantment(UNBREAKING, mlevel)
 
-    if (type == 'boots' or
-		type == 'book'):
+    if (type == 'boots'):
         check_enchantment(FEATHER_FALLING, mlevel)
 
-    if (type == 'helmet' or
-		type == 'book'):
+    if (type == 'helmet'):
         check_enchantment(RESPIRATION, mlevel)
         check_enchantment(AQUA_AFFINITY, mlevel)
 
-    if (type == 'chestplate' or
-		type == 'book'):
-        check_enchantment(THORNS, mlevel)
-
     # Weapons
-    if (type == 'weapon' or
-		type == 'book'):
+    if (type == 'weapon'):
         check_enchantment(SHARPNESS, mlevel)
         check_enchantment(SMITE, mlevel)
         check_enchantment(BANE_OF_ARTHROPODS, mlevel)
         check_enchantment(KNOCKBACK, mlevel)
         check_enchantment(FIRE_ASPECT, mlevel)
         check_enchantment(LOOTING, mlevel)
+        check_enchantment(UNBREAKING, mlevel)
+    if (type == 'axe'):
+        check_enchantment(SHARPNESS, mlevel)
+        check_enchantment(SMITE, mlevel)
+        check_enchantment(BANE_OF_ARTHROPODS, mlevel)
 
     # Tools
     if (type == 'tool' or
-		type == 'book'):
+        type == 'axe'):
         check_enchantment(EFFICIENCY, mlevel)
         check_enchantment(SILK_TOUCH, mlevel)
         check_enchantment(UNBREAKING, mlevel)
         check_enchantment(FORTUNE, mlevel)
+    if (type == 'hoe' or
+		type == 'fishing rod' or
+		type == 'shears' or
+		type == 'flint and steel' or
+        type == 'carrot on a stick'):
+        check_enchantment(UNBREAKING, mlevel)
+    if (type == 'shears'):
+        check_enchantment(EFFICIENCY, mlevel)
+        check_enchantment(SILK_TOUCH, mlevel)
 
     # Bows
-    if (type == 'bow' or
-		type == 'book'):
+    if (type == 'bow'):
+        check_enchantment(UNBREAKING, mlevel)
         check_enchantment(POWER, mlevel)
         check_enchantment(PUNCH, mlevel)
         check_enchantment(FLAME, mlevel)
         check_enchantment(INFINITY, mlevel)
+
+    # Books
+    if (type == 'book'):
+        check_enchantment(PROTECTION, mlevel)
+        check_enchantment(FIRE_PROTECTION, mlevel)
+        check_enchantment(FEATHER_FALLING, mlevel)
+        check_enchantment(BLAST_PROTECTION, mlevel)
+        check_enchantment(PROJECTILE_PROTECTION, mlevel)
+        check_enchantment(RESPIRATION, mlevel)
+        check_enchantment(AQUA_AFFINITY, mlevel)
+        check_enchantment(THORNS, mlevel)
+        check_enchantment(UNBREAKING, mlevel)
+        check_enchantment(SHARPNESS, mlevel)
+        check_enchantment(SMITE, mlevel)
+        check_enchantment(BANE_OF_ARTHROPODS, mlevel)
+        check_enchantment(KNOCKBACK, mlevel)
+        check_enchantment(FIRE_ASPECT, mlevel)
+        check_enchantment(LOOTING, mlevel)
+        check_enchantment(EFFICIENCY, mlevel)
+        check_enchantment(SILK_TOUCH, mlevel)
+        check_enchantment(FORTUNE, mlevel)
 
     # Item did not result in any enchantments
     if len(enchantments) == 0:
