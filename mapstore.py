@@ -15,6 +15,8 @@
 import os
 import sys
 import cPickle
+import shutil
+import hashlib
 
 from numpy import  array, uint8, zeros, fromstring
 
@@ -45,6 +47,23 @@ class new:
         else:
             print 'Mapstore cache not found. Creating new one...'
             self.mapcache = {'used': {}, 'available': set([])}
+            
+        # Generate map hash table
+        self.maphash = {}
+        for file in os.listdir(self.mapstore):
+            if (str(file.lower()).endswith(".dat") and
+                str(file.lower()).startswith("map_")):
+                #Gen hash and extract map ID
+                hash = hashlib.md5(open(os.path.join(self.mapstore,file), 'r').read()).digest()
+                self.maphash[hash] = int(file[4:-4])
+
+        # Store paintings path
+        if os.path.isdir(os.path.join(sys.path[0],'paintings')):
+            self.painting_path = os.path.join(sys.path[0],'paintings')
+        elif os.path.isdir('paintings'):
+            self.painting_path = 'paintings'
+        else:
+            sys.exit("Error: Could not find the paintings folder!")
 
     def update_mapstore(self):
         '''Flushes the idcounts.dat and mcdungeon_maps cache to disk'''
@@ -79,6 +98,52 @@ class new:
             self.update_mapstore()
         else:
             print 'No maps found for dungeon at ', loc
+            
+    def add_painting(self, painting_file):
+        src = os.path.join(self.painting_path,painting_file+'.dat')
+        painting_file_hash = hashlib.md5(open(src, 'r').read()).digest()
+        # Look up file in hashtable
+        if painting_file_hash in self.maphash:
+            mapid = self.maphash[painting_file_hash]
+        else:
+            # Initialize the map count if it doesn't exist.
+            if 'map' not in self.idcounts:
+                self.idcounts['map'] = nbt.TAG_Short(-1)
+            # Increment and return id
+            self.idcounts['map'].value += 1
+            mapid = self.idcounts['map'].value
+            # Copy the map to the data dir
+            dest = os.path.join(self.mapstore, 'map_%d.dat'%(mapid))
+            try:
+                shutil.copy(src,dest)
+            except:
+                sys.exit('Error when placing painting in map directory.')
+            self.maphash[painting_file_hash] = mapid   # Update hashtable
+            self.update_mapstore()
+
+        # Create map item tag
+        item = nbt.TAG_Compound()
+        item['id'] = nbt.TAG_Short(358)
+        item['Damage'] = nbt.TAG_Short(mapid)
+        item['Count'] = nbt.TAG_Byte(1)
+
+        # Fetch the lore text for this map
+        lorefile = open(os.path.join(self.painting_path, painting_file+'.txt'))
+        loredata = lorefile.read().splitlines()
+        lorefile.close()
+        #Create NBT tag
+        valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
+        item['tag'] = nbt.TAG_Compound()
+        item['tag']['display'] = nbt.TAG_Compound()
+        item['tag']['display']['Name'] = nbt.TAG_String(filter(lambda x: x in valid_characters, loredata.pop(0)))
+        item['tag']['display']['Lore'] = nbt.TAG_List()
+        #Slice at 5 lines of 50 chars each
+        for p in loredata[:5]:
+            line = filter(lambda x: x in valid_characters, p)
+            item['tag']['display']['Lore'].append(nbt.TAG_String(line[:50]))
+
+        return item
+
 
     def generate_map(self, dungeon, level):
         '''Generate a new map, save it to disk, flush the cache, and return a
