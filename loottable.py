@@ -4,6 +4,7 @@ import math
 import cfg
 import items
 import utils
+from pymclevel import nbt
 
 # Armor enchantments
 PROTECTION = 0
@@ -368,7 +369,7 @@ def enchant (item, level, debug=False):
 		type == 'book'):
         check_enchantment(RESPIRATION, mlevel)
         check_enchantment(AQUA_AFFINITY, mlevel)
-        
+
     if (type == 'chestplate' or
 		type == 'book'):
         check_enchantment(THORNS, mlevel)
@@ -450,6 +451,15 @@ def enchant (item, level, debug=False):
 
     for k, v in final.items():
         yield dict({'id':k, 'lvl':v})
+
+def enchant_tags (item, level, debug=False):
+    tags = nbt.TAG_List()
+    for ench in  enchant(item, level, debug):
+        e = nbt.TAG_Compound()
+        e['id'] = nbt.TAG_Short(ench['id'])
+        e['lvl'] = nbt.TAG_Short(ench['lvl'])
+        tags.append(e)
+    return tags
 
 def print_enchant(item, level, debug=True):
     for ench in enchant(item, level, debug):
