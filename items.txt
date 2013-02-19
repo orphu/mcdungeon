@@ -87,6 +87,8 @@
 44,Cobblestone Slab,3,64
 44,Brick Slab,4,64
 44,Stone Brick Slab,5,64
+44,Nether Brick Slab,6,64
+44,Quartz Slab,7,64
 45,Brick Block,0,64
 46,TNT,0,64
 47,Bookshelf,0,64
