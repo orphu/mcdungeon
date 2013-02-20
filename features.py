@@ -732,6 +732,9 @@ class SecretRoom(Blank):
         od = (d+2)%4
         length = oroom.hallLength[od]-2
 
+        # Save d for any inherited secret rooms.
+        self.direction = d
+
         # Figure our our deltas. There are 8 possibilities based on direction
         # and offset. Offset will basically mirror across width. 
         # dw = delta width
@@ -1204,6 +1207,239 @@ class SecretSepulchure(SecretRoom):
 
         # Cobwebs
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
+
+
+class SecretArmory(SecretRoom):
+    _name = 'secretarmory'
+
+    def renderSecretPost(self):
+        dungeon = self.parent.parent
+        sb = dungeon.setblock
+        blocks = dungeon.blocks
+
+        # Different ceiling
+        for q in iterate_cube(self.c1.up(4), self.c3.up(4)):
+            sb(q, materials.StoneBrickSlab, 13, hide=True)
+        # Differnt floor
+        for q in iterate_cube(self.c1, self.c3):
+            sb(q, materials.meta_mossystonebrick)
+        # Different walls
+        for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height-2):
+            sb(q, materials.meta_mossystonebrick)
+
+        # Fancy wall coverings
+        for p in iterate_four_walls(Vec(1,-1,1), Vec(8,-1,8),3):
+            sb(self.c1+p, materials.meta_mossycobblewall)
+        for p in iterate_four_walls(Vec(1,-4,1), Vec(8,-4,8),0):
+            sb(self.c1+p, materials.meta_mossystonebrick)
+
+        # Lighting
+        for p in (Vec(1,-2,1), Vec(1,-2,8),
+                  Vec(8,-2,1), Vec(8,-2,8)):
+            sb(self.c1+p, materials.Torch, 5)
+
+        # Thing in the middle
+        for p in iterate_cube(Vec(4,-1,4), Vec(5,-1,5)):
+            sb(self.c1+p, materials.meta_mossycobblewall)
+            sb(self.c1+p.up(3), materials.QuartzBlock, 1, hide=True)
+
+        # Armory alcoves. We want to leave out the ones on the wall with the
+        # hallway. Each entry here stores:
+        # (sign location), sign direction, (frame location), 'frame direction'
+        alcoves = []
+        # North Side
+        if self.direction != 0:
+            alcoves.append([Vec(3,-1,1), 3, Vec(3,-2,0), 'S'])
+            alcoves.append([Vec(6,-1,1), 3, Vec(6,-2,0), 'S'])
+        # East Side
+        if self.direction != 1:
+            alcoves.append([Vec(8,-1,3), 4, Vec(9,-2,3), 'W'])
+            alcoves.append([Vec(8,-1,6), 4, Vec(9,-2,6), 'W'])
+        # South Side
+        if self.direction != 2:
+            alcoves.append([Vec(3,-1,8), 2, Vec(3,-2,9), 'N'])
+            alcoves.append([Vec(6,-1,8), 2, Vec(6,-2,9), 'N'])
+        # West Side
+        if self.direction != 3:
+            alcoves.append([Vec(1,-1,3), 5, Vec(0,-2,3), 'E'])
+            alcoves.append([Vec(1,-1,6), 5, Vec(0,-2,6), 'E'])
+
+        # Now, add a random item to each frame.
+        gear = (
+            ("leather helmet", 16),
+            ("leather chestplate", 16),
+            ("leather leggings", 16),
+            ("leather boots", 16),
+            ("chainmail helmet", 8),
+            ("chainmail chestplate", 8),
+            ("chainmail leggings", 8),
+            ("chainmail boots", 8),
+            ("iron helmet", 4),
+            ("iron chestplate", 4),
+            ("iron leggings", 4),
+            ("iron boots", 4),
+            ("gold helmet", 2),
+            ("gold chestplate", 2),
+            ("gold leggings", 2),
+            ("gold boots", 2),
+            ("diamond helmet", 1),
+            ("diamond chestplate", 1),
+            ("diamond leggings", 1),
+            ("diamond boots", 1),
+            ("bow", 32),
+            ("wooden sword", 32),
+            ("wooden axe", 32),
+            ("stone sword", 16),
+            ("stone axe", 16),
+            ("iron sword", 8),
+            ("iron axe", 8),
+            ("gold sword", 4),
+            ("gold axe", 4),
+            ("diamond sword", 2),
+            ("diamond axe", 2),
+            ("fishing rod", 8),
+            ("carrot on a stick", 8),
+            ("shears", 8)
+        )
+
+        # Names. For now, these are hard coded until JiFish finishes his name
+        # generator.
+        names = [
+            'Nnung',
+            'Gefj',
+            'Urdr',
+            'Vipulhor',
+            'Gefjsa',
+            'Unnaarr',
+            'Ullvelr',
+            'Loki',
+            'Vipul',
+            'Sigmundrul',
+            'Randgsyn',
+            'Rifundr',
+            'Nung',
+            'Hrund',
+            'Heimdallrr',
+            'Freyjalm',
+            'Hristeir',
+            'Heimsj',
+            'Gunt',
+            'Geirah',
+            'Eirav',
+            'Saxnoga',
+            'Sigril',
+            'Sunnafn',
+            'Arkahla',
+            'Sigmundhus',
+            'Delli',
+            'Frigg',
+            'Svanhildot',
+            'Heimdlla',
+            'Hrafnaf',
+            'Stall',
+            'Farmadr',
+            'Farmagnnn',
+            'Blind',
+            'Langbardlt',
+            'Rungikynn',
+            'Brauart',
+            'Sveig',
+            'Friggssh',
+            'Rgynnri',
+            'Hrossh',
+            'Brattrt',
+            'Fnfr',
+            'Bileysv',
+            'Arngndr',
+            'Sigrhtr',
+            'Bestarr',
+            'Irkrval',
+            'Lorr',
+            'Svin',
+            'Augad',
+            'Geig',
+            'Lundrnh',
+            'Stallasvi',
+            'Hangad',
+            'Riggjarud',
+            'Indrhve',
+            'Herjair',
+            'Reyrrri'
+            ]
+        random.shuffle(names)
+
+        for p in alcoves:
+            item = weighted_choice(gear)
+
+            if 'sword' in item:
+                ItemRotation = random.randint(0,3)
+            elif 'axe' in item:
+                ItemRotation = random.choice((0,3))
+            else:
+                ItemRotation = 0
+
+            # Owner's name
+            name = names.pop()
+            # The plaque
+            sb(self.c1+p[0], materials.WallSign, p[1])
+            sb(self.c1+p[0].up(1), materials.Air)
+            dungeon.addsign(self.c1+p[0],
+                            '',
+                            name+"'s",
+                            item.split()[-1],
+                            ''
+                           )
+            # Build the frame tags
+            tags = get_entity_other_tags("ItemFrame",
+                                         Pos=self.c1+p[2],
+                                         Direction=p[3],
+                                         ItemRotation=ItemRotation,
+                                         ItemInfo=items.byName(item))
+            # Name the item
+            tags['Item']['tag'] = nbt.TAG_Compound()
+            tags['Item']['tag']['display'] = nbt.TAG_Compound()
+            tags['Item']['tag']['display']['Name'] = nbt.TAG_String(name+"'s "+item.split()[-1])
+            # Color leather things.
+            if 'leather' in item:
+                tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
+
+            # Place the item frame.
+            dungeon.addentity(tags)
+
+        # Centerpiece
+        item = weighted_choice(gear)
+        name = names.pop()
+        xplevel = 40*(self.c1.y/dungeon.room_height+1)/dungeon.levels
+        tags = get_entity_item_tags("Item",
+                                     Pos=self.c1+Vec(5,-3,5),
+                                     Age=-32768,
+                                     ItemInfo=items.byName(item))
+        tags['Item']['tag'] = nbt.TAG_Compound()
+        tags['Item']['tag']['display'] = nbt.TAG_Compound()
+        tags['Item']['tag']['display']['Name'] = nbt.TAG_String(name+"'s "+item.split()[-1])
+        if 'leather' in item:
+            tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
+        tags['Item']['tag']['ench'] = loottable.enchant_tags(item,
+                                                             random.randint(20,40))
+        dungeon.addentity(tags)
+
+        # DEATH KNIGHT! RRRRRAGH!
+        if random.random() < .50:
+            tags = get_entity_mob_tags("Skeleton",
+                                       Pos=self.c1+Vec(5,-2,5),
+                                       CanPickUpLoot=1,
+                                       CustomNameVisible=1,
+                                       SkeletonType=random.randint(0,1),
+                                       PersistenceRequired=1,
+                                       CustomName=name
+                                      )
+            dungeon.addentity(tags)
+            tags['DropChances'][0].value = 1.0
+            tags['DropChances'][1].value = 1.0
+            tags['DropChances'][2].value = 1.0
+            tags['DropChances'][3].value = 1.0
+            tags['DropChances'][4].value = 1.0
+
 
 class Forge(Blank):
     _name = 'forge'
