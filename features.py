@@ -1420,7 +1420,7 @@ class SecretArmory(SecretRoom):
         if 'leather' in item:
             tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
         tags['Item']['tag']['ench'] = loottable.enchant_tags(item,
-                                                             xplevel
+                                                             xplevel)
         dungeon.addentity(tags)
 
         # DEATH KNIGHT! RRRRRAGH!
