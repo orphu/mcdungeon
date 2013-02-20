@@ -1383,12 +1383,20 @@ class SecretArmory(SecretRoom):
             # The plaque
             sb(self.c1+p[0], materials.WallSign, p[1])
             sb(self.c1+p[0].up(1), materials.Air)
-            dungeon.addsign(self.c1+p[0],
-                            '',
-                            name+"'s",
-                            item.split()[-1],
-                            ''
-                           )
+            if name.endswith("s"):
+                dungeon.addsign(self.c1+p[0],
+                                '',
+                                item.split()[-1].capitalize(),
+                                'of '+name,
+                                ''
+                               )
+            else:
+                dungeon.addsign(self.c1+p[0],
+                                '',
+                                name+"'s",
+                                item.split()[-1],
+                                ''
+                               )
             # Build the frame tags
             tags = get_entity_other_tags("ItemFrame",
                                          Pos=self.c1+p[2],
@@ -1398,7 +1406,11 @@ class SecretArmory(SecretRoom):
             # Name the item
             tags['Item']['tag'] = nbt.TAG_Compound()
             tags['Item']['tag']['display'] = nbt.TAG_Compound()
-            tags['Item']['tag']['display']['Name'] = nbt.TAG_String(name+"'s "+item.split()[-1])
+            if name.endswith("s"):
+                displayname = item.split()[-1].capitalize()+' of '+name
+            else:
+                displayname = name+"'s "+item.split()[-1]
+            tags['Item']['tag']['display']['Name'] = nbt.TAG_String(displayname)
             # Color leather things.
             if 'leather' in item:
                 tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
@@ -1406,38 +1418,87 @@ class SecretArmory(SecretRoom):
             # Place the item frame.
             dungeon.addentity(tags)
 
-        # Centerpiece
-        item = weighted_choice(gear)
-        name = names.pop()
-        xplevel = 40*(self.c1.y/dungeon.room_height+1)/dungeon.levels
-        tags = get_entity_item_tags("Item",
-                                     Pos=self.c1+Vec(5,-3,5),
-                                     Age=-32768,
-                                     ItemInfo=items.byName(item))
-        tags['Item']['tag'] = nbt.TAG_Compound()
-        tags['Item']['tag']['display'] = nbt.TAG_Compound()
-        tags['Item']['tag']['display']['Name'] = nbt.TAG_String(name+"'s "+item.split()[-1])
-        if 'leather' in item:
-            tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
-        tags['Item']['tag']['ench'] = loottable.enchant_tags(item,
-                                                             xplevel)
-        dungeon.addentity(tags)
-
         # DEATH KNIGHT! RRRRRAGH!
+        name = names.pop()
         if random.random() < .50:
+            pos = Vec(3,-2,3)
+            # Always get a weapon
+            while True:
+                item = weighted_choice(gear)
+                if ('bow' in item or
+                    'sword' in item or
+                    'axe' in item):
+                    break
+            # helmet
+            while True:
+                helmet = weighted_choice(gear)
+                if 'helmet' in helmet:
+                    break
+            helmet_tags = nbt.TAG_Compound()
+            helmet_tags['id'] = nbt.TAG_Short(items.byName(helmet).value)
+            # chest
+            while True:
+                chest = weighted_choice(gear)
+                if 'chestplate' in chest:
+                    break
+            chest_tags = nbt.TAG_Compound()
+            chest_tags['id'] = nbt.TAG_Short(items.byName(chest).value)
+            # leggings
+            while True:
+                leggings = weighted_choice(gear)
+                if 'leggings' in leggings:
+                    break
+            leggings_tags = nbt.TAG_Compound()
+            leggings_tags['id'] = nbt.TAG_Short(items.byName(leggings).value)
+            # boots
+            while True:
+                boots = weighted_choice(gear)
+                if 'boots' in boots:
+                    break
+            boots_tags = nbt.TAG_Compound()
+            boots_tags['id'] = nbt.TAG_Short(items.byName(boots).value)
+
             tags = get_entity_mob_tags("Skeleton",
-                                       Pos=self.c1+Vec(5,-2,5),
+                                       Pos=self.c1+pos,
                                        CanPickUpLoot=1,
                                        SkeletonType=random.randint(0,1),
                                        PersistenceRequired=1,
                                        CustomName=name
                                       )
-            dungeon.addentity(tags)
+            tags['Equipment'][1] = boots_tags
+            tags['Equipment'][2] = leggings_tags
+            tags['Equipment'][3] = chest_tags
+            tags['Equipment'][4] = helmet_tags
+
             tags['DropChances'][0].value = 1.0
-            tags['DropChances'][1].value = 1.0
-            tags['DropChances'][2].value = 1.0
-            tags['DropChances'][3].value = 1.0
-            tags['DropChances'][4].value = 1.0
+            tags['DropChances'][1].value = 0.0
+            tags['DropChances'][2].value = 0.0
+            tags['DropChances'][3].value = 0.0
+            tags['DropChances'][4].value = 0.0
+            dungeon.addentity(tags)
+        else:
+            pos = Vec(5,-2,5)
+            item = weighted_choice(gear)
+
+        # Centerpiece
+        if name.endswith("s"):
+            displayname = item.split()[-1].capitalize()+' of '+name
+        else:
+            displayname = name+"'s "+item.split()[-1]
+
+        xplevel = 40*(self.c1.y/dungeon.room_height+1)/dungeon.levels
+        tags = get_entity_item_tags("Item",
+                                     Pos=self.c1+pos.up(1),
+                                     Age=-32768,
+                                     ItemInfo=items.byName(item))
+        tags['Item']['tag'] = nbt.TAG_Compound()
+        tags['Item']['tag']['display'] = nbt.TAG_Compound()
+        tags['Item']['tag']['display']['Name'] = nbt.TAG_String(displayname)
+        if 'leather' in item:
+            tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
+        tags['Item']['tag']['ench'] = loottable.enchant_tags(item,
+                                                             xplevel)
+        dungeon.addentity(tags)
 
 
 class Forge(Blank):
