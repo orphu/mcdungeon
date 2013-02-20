@@ -1428,7 +1428,6 @@ class SecretArmory(SecretRoom):
             tags = get_entity_mob_tags("Skeleton",
                                        Pos=self.c1+Vec(5,-2,5),
                                        CanPickUpLoot=1,
-                                       CustomNameVisible=1,
                                        SkeletonType=random.randint(0,1),
                                        PersistenceRequired=1,
                                        CustomName=name
