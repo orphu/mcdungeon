@@ -37,37 +37,37 @@ v0.11.0
 
    * Custom paintings on maps as loot. (JiFish)
 
+   * Enchanted books as loot. (JiFish)
+
+   * Added fireworks as loot. (JiFish)
+
+   * Lots more unique magic books, armor, and an axe. (JiFish)
+
+   * 1.5 items. (JiFish)
+
+   * Updated 1.5 item enchantments (orphu/JiFish)
+
+   * Ruins have more randomness to position and size (djchrisblue, orphu)
+
    * Renamed hard_mode to fill_caves. (orphu)
 
    * Support for mods that use high block IDs. (orphu)
 
    * Removed heads.txt in favour of loading items from NBT files. (JiFish)
 
-   * Added fireworks as loot. (JiFish)
-
    * Removed (broken) multiverse support. (orphu)
 
    * Added more orange. (JiFish)
   
-   * 1.5 items. (JiFish)
-
-   * Enchanted books as loot. (JiFish)
-
-   * Lots more unique magic books, armor, and an axe. (JiFish)
-
    * Fixed old music disc names. (JiFish)
 
    * Anvils are less common in forges. (JiFish)
 
    * Added fortunes to fortune cookies. (JiFish)
    
-   * Thorns on chestplates in loot. (JiFish)
-
-   * Fixed several map icons. (orphu)
+   * Fixed many map icons. (orphu)
 
    * Fixed Nether Brick blocks being air. (orphu)
-
-   * Ruins have more randomness to position and size (djchrisblue, orphu)
 
    * Fixed an issue with adding maps to a world with no maps. (orphu)
 
