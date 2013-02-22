@@ -1501,6 +1501,165 @@ class SecretArmory(SecretRoom):
         dungeon.addentity(tags)
 
 
+class SecretEnchantingLibrary(SecretRoom):
+    _name = 'secretenchantinglibrary'
+
+    def renderSecretPost(self):
+        dungeon = self.parent.parent
+        sb = dungeon.setblock
+        blocks = dungeon.blocks
+
+        # We need to expand the room one block so we can center the enchanting
+        # table. We'll do this one block "back" and one block "right" of the
+        # entrance. We also need a frame of reference for the back left corner
+        # (bl) and vectors for crossing the room (rt) and (fw) so we can draw
+        # everything relative to the hallway orientation.
+        # Hall on North side
+        if self.direction == 0:
+            self.c1 = self.c1.w(1)
+            self.c3 = self.c3.s(1)
+            bl = self.c3
+            rt = Vec(-1,0,0)
+            fw = Vec(0,0,-1)
+            chests = (4, 2, 5)
+        # Hall on East side
+        if self.direction == 1:
+            self.c1 = self.c1.n(1)
+            self.c1 = self.c1.w(1)
+            bl = Vec(self.c1.x, self.c1.y, self.c3.z)
+            rt = Vec(0,0,-1)
+            fw = Vec(1,0,0)
+            chests = (4, 1, 3)
+        # Hall on South side
+        if self.direction == 2:
+            self.c1 = self.c1.n(1)
+            self.c3 = self.c3.e(1)
+            bl = self.c1
+            rt = Vec(1,0,0)
+            fw = Vec(0,0,1)
+            chests = (5, 3, 4)
+        # Hall on West Side
+        if self.direction == 3:
+            self.c3 = self.c3.e(1)
+            self.c3 = self.c3.s(1)
+            bl = Vec(self.c3.x, self.c1.y, self.c1.z)
+            rt = Vec(0,0,1)
+            fw = Vec(-1,0,0)
+            chests = (3, 4, 2)
+
+        # Reform the room (again)
+        for q in iterate_cube(self.c1.up(1), self.c3.up(3)):
+            sb(q, materials.Air)
+        for q in iterate_cube(self.c1.up(4), self.c3.up(4)):
+            sb(q, materials.StoneBrickSlab, 13, hide=True)
+        for q in iterate_cube(self.c1, self.c3):
+            sb(q, materials.CircleStoneBrick)
+        for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height-2):
+            sb(q, materials.meta_mossystonebrick)
+
+        # Fancy carpet
+        mats = [
+            materials.BlackWool.data,
+            materials.GrayWool.data,
+            materials.LightGrayWool.data,
+            materials.OrangeWool.data,
+        ]
+        # Random stripe color (skip white, grays, and black)
+        mats[3] = random.randint(1,6) + random.randint(0,1)*8
+
+        template = (
+            (1,3,3,1,3,1,3,3,1),
+            (3,3,2,0,2,0,2,3,3),
+            (3,2,0,2,0,2,0,2,3),
+            (1,0,2,0,2,0,2,0,1),
+            (3,2,0,2,0,2,0,2,3),
+            (1,0,2,0,2,0,2,0,1),
+            (3,2,0,2,0,2,0,2,3),
+            (3,3,2,0,2,0,2,3,3),
+            (1,3,3,3,3,3,3,3,1)
+        )
+        for x in xrange(9):
+            for z in xrange(9):
+                if template[z][x] != 1:
+                    p = bl+rt*(x+1)+fw*(z+1)
+                    sb(p,
+                       materials.PinkWool,
+                       mats[template[z][x]])
+                # Columns
+                else:
+                    p = bl+rt*(x+1)+fw*(z+1)
+                    sb(p.up(1), materials.CobblestoneWall)
+                    sb(p.up(2), materials.CobblestoneWall)
+                    sb(p.up(3), materials.CobblestoneWall)
+                    sb(p.up(4), materials.meta_mossystonebrick)
+
+        # Lighting
+        for p in (Vec(1,-4,1), Vec(1,-4,9),
+                  Vec(9,-4,1), Vec(9,-4,9),
+                  Vec(5, -4, 5)):
+            sb(self.c1+p, materials.RedStoneLampOn, hide=True)
+            sb(self.c1+p.up(1), materials.RedStoneBlock, hide=True)
+
+        # The book cases
+        levs = int( self.c1.y/dungeon.room_height)+1
+        spots = [
+            Vec(5,2,3), Vec(5,1,3),
+            Vec(3,2,6), Vec(3,1,6),
+            Vec(4,2,3), Vec(4,1,3),
+            Vec(3,2,4), Vec(3,1,4),
+            Vec(3,2,5), Vec(3,1,5)
+        ]
+        mat = materials.Bookshelf
+        while len(spots) > 0:
+            if levs < 1:
+                mat = materials.WoodPlanks
+            levs -= 1
+            s = spots.pop()
+            p = (bl+rt*s.x+fw*s.z).up(s.y)
+            sb(p, mat)
+            p = (bl+rt*10-rt*s.x+fw*s.z).up(s.y)
+            sb(p, mat)
+
+        # Enchanting table
+        p = self.c1+Vec(5,-1,5)
+        sb(p, materials.EnchantmentTable)
+        tags = nbt.TAG_Compound()
+        tags['id'] = nbt.TAG_String('EnchantTable')
+        tags['x'] = nbt.TAG_Int(p.x)
+        tags['y'] = nbt.TAG_Int(p.y)
+        tags['z'] = nbt.TAG_Int(p.z)
+        dungeon.tile_ents[p] = tags
+
+        # Loot chests
+        p = (bl+rt*1+fw*5).up(1)
+        sb(p, materials.Chest, chests[0])
+        tags = nbt.TAG_Compound()
+        dungeon.addchest(p)
+        p = (bl+rt*9+fw*5).up(1)
+        sb(p, materials.Chest, chests[2])
+        tags = nbt.TAG_Compound()
+        dungeon.addchest(p)
+
+        # Ender chest
+        p = (bl+rt*5+fw*1).up(1)
+        sb(p, materials.EnderChest, chests[1])
+        tags = nbt.TAG_Compound()
+        tags['id'] = nbt.TAG_String('EnderChest')
+        tags['x'] = nbt.TAG_Int(p.x)
+        tags['y'] = nbt.TAG_Int(p.y)
+        tags['z'] = nbt.TAG_Int(p.z)
+        dungeon.tile_ents[p] = tags
+
+        # She's a witch!
+        tags = get_entity_mob_tags("Witch",
+                                   Pos=self.c1+Vec(5,-2,5)+fw*2,
+                                   PersistenceRequired=1,
+                                   CustomName='Circe', # Temporary until #104
+                                   CanPickUpLoot=1
+                                  )
+        dungeon.addentity(tags)
+
+
 class Forge(Blank):
     _name = 'forge'
 
