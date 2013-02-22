@@ -123,23 +123,23 @@ python utils/Build.py -y mcdungeon-build/mcdungeon.spec || error 'Pyinstaller bu
 # Copy over support files
 mkdir $NAME
 for SUBDIR in d $FILES; do
-	cp -r mcdungeon/$SUBDIR $NAME/
+	cp -vr mcdungeon/$SUBDIR $NAME/
 done
-for FILE in `find $NAME -name README`; do mv $FILE $FILE.txt; done
-cp mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
-cp mcdungeon/README $NAME/README.txt
-cp mcdungeon/LICENSE $NAME/LICENSE.txt
+for FILE in `find $NAME -name README`; do mv -v $FILE $FILE.txt; done
+cp -v mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
+cp -v mcdungeon/README $NAME/README.txt
+cp -v mcdungeon/LICENSE $NAME/LICENSE.txt
 case $PLATFORM in
 	win)
-		cp mcdungeon/extras/launcher.bat $NAME/lancher.bat
+		cp -v mcdungeon/extras/launcher.bat $NAME/lancher.bat
 		;;
 	macosx)
-		cp mcdungeon/extras/launcher.command $NAME/launcher.command
+		cp -v mcdungeon/extras/launcher.command $NAME/launcher.command
 		;;
 esac
 
 # Copy over the executable
-cp mcdungeon-build/dist/$EXE $NAME/
+cp -v mcdungeon-build/dist/$EXE $NAME/
 
 echo -e "\nDone!"
 echo "Look in $NAME"
