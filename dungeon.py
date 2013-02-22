@@ -56,7 +56,7 @@ class Dungeon (object):
         self.good_chunks = good_chunks
         self.blocks = {}
         self.tile_ents = {}
-        self.ents = {}
+        self.ents = []
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
@@ -806,12 +806,7 @@ class Dungeon (object):
         self.tile_ents[loc] = root_tag
 
     def addentity(self, root_tag):
-        pos = Vec(
-            root_tag['Pos'][0].value,
-            root_tag['Pos'][1].value,
-            root_tag['Pos'][2].value
-        )
-        self.ents[pos] = root_tag
+        self.ents.append(root_tag)
 
     def setroom(self, coord, room):
         if coord not in self.rooms:
@@ -2267,7 +2262,7 @@ class Dungeon (object):
         # Copy over entities
         print 'Creating entities...'
         num = len(self.ents)
-        for ent in self.ents.values():
+        for ent in self.ents:
             spin(num)
             num -= 1
             # Calculate world coords.
