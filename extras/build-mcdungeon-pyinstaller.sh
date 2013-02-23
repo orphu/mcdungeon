@@ -123,7 +123,8 @@ python utils/Build.py -y mcdungeon-build/mcdungeon.spec || error 'Pyinstaller bu
 # Copy over support files
 mkdir $NAME
 for SUBDIR in d $FILES; do
-	cp -vr mcdungeon/$SUBDIR $NAME/
+	echo "Copying $SUBDIR..."
+	cp -r mcdungeon/$SUBDIR $NAME/
 done
 for FILE in `find $NAME -name README`; do mv -v $FILE $FILE.txt; done
 cp -v mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
