@@ -1124,28 +1124,43 @@ class SecretSepulchure(SecretRoom):
     def renderSecretPost(self):
         sb = self.parent.parent.setblock
         blocks = self.parent.parent.blocks
+        dungeon = self.parent.parent
+
+        # We also a frame of reference for the back left corner
+        # (bl) and vectors for crossing the room (rt) and (fw) so we can draw
+        # everything relative to the hallway orientation.
+        # Hall on North side
+        if self.direction == 0:
+            bl = self.c3
+            rt = Vec(-1,0,0)
+            fw = Vec(0,0,-1)
+            st_d = (1, 0, 3, 2)
+            chest = 2
+        # Hall on East side
+        if self.direction == 1:
+            bl = Vec(self.c1.x, self.c1.y, self.c3.z)
+            rt = Vec(0,0,-1)
+            fw = Vec(1,0,0)
+            st_d = (3, 2, 0, 1)
+            chest = 5
+        # Hall on South side
+        if self.direction == 2:
+            bl = self.c1
+            rt = Vec(1,0,0)
+            fw = Vec(0,0,1)
+            st_d = (0, 1, 2, 3)
+            chest = 3
+        # Hall on West Side
+        if self.direction == 3:
+            bl = Vec(self.c3.x, self.c1.y, self.c1.z)
+            rt = Vec(0,0,1)
+            fw = Vec(-1,0,0)
+            st_d = (2, 3, 1, 0)
+            chest = 4
 
         # Different walls
         for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height-2):
             sb(q, materials.meta_mossystonebrick)
-
-        # Lighting
-        for p in (Vec(1,-1,1), Vec(1,-1,8),
-                  Vec(8,-1,1), Vec(8,-1,8)):
-            sb(self.c1+p, materials.Fence)
-            sb(self.c1+p.up(1), materials.Torch, 5)
-
-        # Sarcophagus
-        for p in iterate_cube(self.c1.trans(2,-1,4), self.c1.trans(7,-1,6)):
-            sb(p, materials.Sandstone)
-        sb(self.c1+Vec(2,-1,4), materials.SandstoneSlab)
-        sb(self.c1+Vec(2,-1,6), materials.SandstoneSlab)
-        sb(self.c1+Vec(7,-1,4), materials.SandstoneSlab)
-        sb(self.c1+Vec(7,-1,6), materials.SandstoneSlab)
-        sb(self.c1+Vec(3,-2,5), materials.StoneBrick)
-        sb(self.c1+Vec(4,-2,5), materials.StoneBrickSlab)
-        sb(self.c1+Vec(5,-2,5), materials.StoneBrickSlab)
-        sb(self.c1+Vec(6,-2,5), materials.StoneBrickStairs, 0)
 
         # Loot for the sarcophagus.
         loota = []
@@ -1191,14 +1206,81 @@ class SecretSepulchure(SecretRoom):
         i = weighted_choice(loothead)
         loota[4].id = i.value
         loota[4].damage = i.data
-        sb(self.c1+Vec(4,-1,5), materials.Chest)
-        self.parent.parent.addchest(self.c1+Vec(4,-1,5), loot=loota)
 
         i = weighted_choice(lootc)
         lootb[7].id = i.value
         lootb[7].damage = i.data
-        sb(self.c1+Vec(5,-1,5), materials.Chest)
-        self.parent.parent.addchest(self.c1+Vec(5,-1,5), loot=lootb)
+        # Swap the contents if East or South
+        if self.direction in (0,1):
+            loota, lootb = lootb, loota
+
+        # Sarcophagus
+        mats = (
+            (materials.Air, 0),
+            (materials.Sandstone, 0),
+            (materials.SandstoneSlab, 0),
+            (materials.StoneBrickStairs, st_d[1]),
+            (materials.Chest, chest),
+            (materials.StoneBrick, 0),
+            (materials.StoneBrickSlab, 0),
+        )
+        template = ((
+            (2,1,1,2),
+            (1,4,4,1),
+            (2,1,1,2)
+            ),(
+            (0,0,0,0),
+            (3,6,6,5),
+            (0,0,0,0)
+            )
+        )
+        for y in xrange(2):
+            for x in xrange(4):
+                for z in xrange(3):
+                    p = bl+rt*(x+3)+fw*(z+2)+Vec(0,-1,0)*(y+1)
+                    sb(p,
+                       mats[template[y][z][x]][0],
+                       mats[template[y][z][x]][1])
+                    if template[y][z][x] == 4:
+                        if x == 1:
+                            dungeon.addchest(p, loot=loota)
+                        else:
+                            dungeon.addchest(p, loot=lootb)
+
+        # Snaaaaaake! It's a snaaaaaaaake!
+        mats = (
+            (materials.Air, 0),
+            (materials.Torch, 5),
+            (materials.Sandstone, 2),
+            (materials.SandstoneStairs, st_d[2]),
+            (materials.SandstoneStairs, st_d[3]),
+            (materials.SandstoneStairs, st_d[2]+4),
+            (materials.SandstoneStairs, st_d[3]+4),
+            (materials.SandstoneSlab, 0),
+        )
+        template = (
+            (1,0,6,5,2),
+            (6,0,5,0,0),
+            (4,7,3,0,0),
+        )
+        for y in xrange(3):
+            for z in xrange(5):
+                p = bl+rt+fw*(z+1)+Vec(0,1,0)*(-3+y)
+                sb(p,
+                   mats[template[y][z]][0],
+                   mats[template[y][z]][1])
+                sb(p+rt*7,
+                   mats[template[y][z]][0],
+                   mats[template[y][z]][1])
+
+        # Buttons for eyes
+        for p in (Vec(2,-3,5), Vec(7,-3,5)):
+            q =bl+rt*p.x+fw*p.z+Vec(0,1,0)*p.y
+            if p.x == 2:
+                d = st_d[0]+1
+            else:
+                d = st_d[1]+1
+            sb(q, materials.StoneButton, d)
 
         #Vines
         for p in iterate_cube(self.c1.up(4), self.c3):
