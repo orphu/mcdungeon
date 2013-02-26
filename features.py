@@ -1136,6 +1136,7 @@ class SecretSepulchure(SecretRoom):
             fw = Vec(0,0,-1)
             st_d = (1, 0, 3, 2)
             chest = 2
+            gems = ('W', 'E')
         # Hall on East side
         if self.direction == 1:
             bl = Vec(self.c1.x, self.c1.y, self.c3.z)
@@ -1143,6 +1144,7 @@ class SecretSepulchure(SecretRoom):
             fw = Vec(1,0,0)
             st_d = (3, 2, 0, 1)
             chest = 5
+            gems = ('N', 'S')
         # Hall on South side
         if self.direction == 2:
             bl = self.c1
@@ -1150,6 +1152,7 @@ class SecretSepulchure(SecretRoom):
             fw = Vec(0,0,1)
             st_d = (0, 1, 2, 3)
             chest = 3
+            gems = ('E', 'W')
         # Hall on West Side
         if self.direction == 3:
             bl = Vec(self.c3.x, self.c1.y, self.c1.z)
@@ -1157,6 +1160,7 @@ class SecretSepulchure(SecretRoom):
             fw = Vec(-1,0,0)
             st_d = (2, 3, 1, 0)
             chest = 4
+            gems = ('S', 'N')
 
         # Different walls
         for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height-2):
@@ -1273,14 +1277,20 @@ class SecretSepulchure(SecretRoom):
                    mats[template[y][z]][0],
                    mats[template[y][z]][1])
 
-        # Buttons for eyes
-        for p in (Vec(2,-3,5), Vec(7,-3,5)):
+        # Lootable gems for eyes
+        loot = weighted_choice((("emerald", 10),
+                                ("diamond", 1)))
+        for p in (Vec(1,-3,5), Vec(8,-3,5)):
             q =bl+rt*p.x+fw*p.z+Vec(0,1,0)*p.y
-            if p.x == 2:
-                d = st_d[0]+1
+            if p.x <= 5:
+                d = gems[0]
             else:
-                d = st_d[1]+1
-            sb(q, materials.StoneButton, d)
+                d = gems[1]
+            tags = get_entity_other_tags("ItemFrame",
+                                         ItemInfo=items.byName(loot),
+                                         Pos=q,
+                                         Direction=d)
+            dungeon.addentity(tags)
 
         #Vines
         for p in iterate_cube(self.c1.up(4), self.c3):
