@@ -2092,7 +2092,8 @@ class Crypt(Basic):
             i = weighted_choice(loothead)
             loota[4].id = i.value
             loota[4].damage = i.data
-            self.parent.addchest(o+Vec(2,10,2+zoff), 0, loot=loota)
+            tomb_name = 'Here lies '+self.parent.namegen.genname()
+            self.parent.addchest(o+Vec(2,10,2+zoff), 0, loot=loota, name=tomb_name)
             i = weighted_choice(lootc)
             loota[7].id = i.value
             loota[7].damage = i.data
@@ -2100,7 +2101,8 @@ class Crypt(Basic):
             i = weighted_choice(loothead)
             loota[4].id = i.value
             loota[4].damage = i.data
-            self.parent.addchest(o+Vec(13,10,2+zoff), 0, loot=loota)
+            tomb_name = 'Here lies '+self.parent.namegen.genname()
+            self.parent.addchest(o+Vec(13,10,2+zoff), 0, loot=loota, name=tomb_name)
             ssb(Vec(2,10,3+zoff), materials.Chest,4)
             i = weighted_choice(lootc)
             lootb[7].id = i.value
@@ -2144,8 +2146,9 @@ class Crypt(Basic):
         sb(o+Vec(9,7,29), materials.StoneBrickStairs, 0)
 
         # Chest. Maxtier plus a level zero.
+        tomb_name = self.parent.namegen.genroyalname()
         sb(o+Vec(7,8,29), materials.Chest, 2)
-        self.parent.addchest(o+Vec(7,8,29), loottable._maxtier)
+        self.parent.addchest(o+Vec(7,8,29), loottable._maxtier, name=tomb_name)
         sb(o+Vec(8,8,29), materials.Chest, 2)
         if cfg.double_treasure:
             self.parent.addchest(o+Vec(8,8,29), loottable._maxtier)
