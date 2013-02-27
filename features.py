@@ -1238,6 +1238,7 @@ class SecretSepulchure(SecretRoom):
             (0,0,0,0)
             )
         )
+        tomb_name = 'Here lies '+self.parent.parent.namegen.genname()
         for y in xrange(2):
             for x in xrange(4):
                 for z in xrange(3):
@@ -1247,7 +1248,7 @@ class SecretSepulchure(SecretRoom):
                        mats[template[y][z][x]][1])
                     if template[y][z][x] == 4:
                         if x == 1:
-                            dungeon.addchest(p, loot=loota)
+                            dungeon.addchest(p, loot=loota, name=tomb_name)
                         else:
                             dungeon.addchest(p, loot=lootb)
 

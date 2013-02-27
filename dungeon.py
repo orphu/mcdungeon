@@ -743,7 +743,7 @@ class Dungeon (object):
         return item_tag
 
 
-    def addchest(self, loc, tier=-1, loot=[]):
+    def addchest(self, loc, tier=-1, loot=[], name=''):
         level = loc.y/self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -760,6 +760,8 @@ class Dungeon (object):
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
+        if (name != ''):
+            root_tag['CustomName'] = nbt.TAG_String(name)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         if len(loot) == 0:
