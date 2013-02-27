@@ -1394,72 +1394,6 @@ class SecretArmory(SecretRoom):
             ("shears", 8)
         )
 
-        # Names. For now, these are hard coded until JiFish finishes his name
-        # generator.
-        names = [
-            'Nnung',
-            'Gefj',
-            'Urdr',
-            'Vipulhor',
-            'Gefjsa',
-            'Unnaarr',
-            'Ullvelr',
-            'Loki',
-            'Vipul',
-            'Sigmundrul',
-            'Randgsyn',
-            'Rifundr',
-            'Nung',
-            'Hrund',
-            'Heimdallrr',
-            'Freyjalm',
-            'Hristeir',
-            'Heimsj',
-            'Gunt',
-            'Geirah',
-            'Eirav',
-            'Saxnoga',
-            'Sigril',
-            'Sunnafn',
-            'Arkahla',
-            'Sigmundhus',
-            'Delli',
-            'Frigg',
-            'Svanhildot',
-            'Heimdlla',
-            'Hrafnaf',
-            'Stall',
-            'Farmadr',
-            'Farmagnnn',
-            'Blind',
-            'Langbardlt',
-            'Rungikynn',
-            'Brauart',
-            'Sveig',
-            'Friggssh',
-            'Rgynnri',
-            'Hrossh',
-            'Brattrt',
-            'Fnfr',
-            'Bileysv',
-            'Arngndr',
-            'Sigrhtr',
-            'Bestarr',
-            'Irkrval',
-            'Lorr',
-            'Svin',
-            'Augad',
-            'Geig',
-            'Lundrnh',
-            'Stallasvi',
-            'Hangad',
-            'Riggjarud',
-            'Indrhve',
-            'Herjair',
-            'Reyrrri'
-            ]
-        random.shuffle(names)
-
         for p in alcoves:
             item = weighted_choice(gear)
 
@@ -1471,7 +1405,7 @@ class SecretArmory(SecretRoom):
                 ItemRotation = 0
 
             # Owner's name
-            name = names.pop()
+            name = self.parent.parent.namegen.genname()
             # The plaque
             sb(self.c1+p[0], materials.WallSign, p[1])
             sb(self.c1+p[0].up(1), materials.Air)
@@ -1511,7 +1445,7 @@ class SecretArmory(SecretRoom):
             dungeon.addentity(tags)
 
         # DEATH KNIGHT! RRRRRAGH!
-        name = names.pop()
+        name = self.parent.parent.namegen.genname()
         if random.random() < .50:
             pos = Vec(3,-2,3)
             # Always get a weapon
