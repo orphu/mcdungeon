@@ -16,6 +16,7 @@ import floors
 import features
 import ruins
 import pmeter
+import namegenerator
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
@@ -315,6 +316,9 @@ class Dungeon (object):
                 biomes[key] = 1
             self.biome = max(biomes, key=lambda k: biomes[k])
         if self.args.debug: print 'Biome: ', self.biome
+        
+        # Now we know the biome, we can setup a name generator
+        self.namegen = namegenerator.namegenerator(self.biome)
 
         depth = world.Height
         for chunk in d_chunks:
