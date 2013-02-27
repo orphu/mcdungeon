@@ -563,7 +563,7 @@ class Dungeon (object):
         # Doubles most default settings
         if (cfg.boost_spawners is True):
             try: root_tag['SpawnCount']
-            except: root_tag['SpawnCount'] = nbt.TAG_Short(8)
+            except: root_tag['SpawnCount'] = nbt.TAG_Short(6)
             try: root_tag['MaxNearbyEntities']
             except: root_tag['MaxNearbyEntities'] = nbt.TAG_Short(16)
             try: root_tag['MinSpawnDelay']
