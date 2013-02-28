@@ -1406,7 +1406,7 @@ class SecretArmory(SecretRoom):
                 ItemRotation = 0
 
             # Owner's name
-            name = self.parent.parent.namegen.genname()
+            name = dungeon.namegen.genname()
             # The plaque
             sb(self.c1+p[0], materials.WallSign, p[1])
             sb(self.c1+p[0].up(1), materials.Air)
@@ -1446,8 +1446,8 @@ class SecretArmory(SecretRoom):
             dungeon.addentity(tags)
 
         # DEATH KNIGHT! RRRRRAGH!
-        name = self.parent.parent.namegen.genname()
-        if random.random() < .50:
+        name = dungeon.namegen.genname()
+        if random.random() < .80:
             pos = Vec(3,-2,3)
             # Always get a weapon
             while True:
@@ -1456,6 +1456,31 @@ class SecretArmory(SecretRoom):
                     'sword' in item or
                     'axe' in item):
                     break
+            # Place some lore
+            words = random.choice([
+                "...some say the corpse of {name} still wanders these halls "\
+                "clutching his enchanted {item} in his moldering hands...",
+                "...Beware! For {name} cheats death to this day...",
+                "...I can feel the presence of the {item}... So close. It "\
+                "calls my name! {name}! {name}!",
+                "...They shall never hold the {item}. I will carry it with "\
+                "me, even in death! -{name}",
+                "...My guide, {name}, seems strangely calm in this horrible "\
+                "place. As if he has been here before..."
+            ])
+            words = words.format(name=name, item=item.split()[-1])
+            note = nbt.TAG_Compound()
+            note['id'] = nbt.TAG_Short(items.byName("written book").value)
+            note['Damage'] = nbt.TAG_Short(0)
+            note['Count'] = nbt.TAG_Byte(1)
+            note['tag'] = nbt.TAG_Compound()
+            note['tag']['title'] = nbt.TAG_String("A torn note")
+            note['tag']['author'] = nbt.TAG_String("Unknown")
+            note['tag']['pages'] = nbt.TAG_List()
+            note['tag']['pages'].append(nbt.TAG_String(words))
+            max_lev = (self.c1.y//dungeon.room_height)+1
+            dungeon.addplaceditem(note, max_lev=max_lev)
+
             # helmet
             while True:
                 helmet = weighted_choice(gear)

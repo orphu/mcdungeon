@@ -1202,24 +1202,10 @@ while args.number is not 0:
         # Generate maps
         if (args.write and cfg.maps > 0):
             print "Generating maps..."
-            for level in xrange(1, dungeon.levels+1):
-                if randint(1, 100) > cfg.maps:
-                    next
-                m = ms.generate_map(dungeon, level)
-                for loc in dungeon.tile_ents.keys():
-                    # Skip the origin
-                    if loc == Vec(0,0,0):
-                        continue
-                    ent = dungeon.tile_ents[loc]
-                    # Place the map in chests that are one level less than
-                    # the map, or in the case of level 1, above ground.
-                    if (ent['id'].value == 'Chest' and
-                        (loc.y//dungeon.room_height == level-2 or
-                        (loc.y < 0 and level == 1))):
-                        if not dungeon.addchestitem_tag(loc, m):
-                            print 'WARNING: Unable to add map to chest'
-                        else:
-                            break
+            dungeon.generatemaps()
+
+        print "Placing special items..."
+        dungeon.placeitems()
 
         # Write the changes to the world.
         dungeon.applychanges(world)

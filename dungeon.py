@@ -58,6 +58,7 @@ class Dungeon (object):
         self.blocks = {}
         self.tile_ents = {}
         self.ents = []
+        self.placed_items = []
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
@@ -2089,6 +2090,35 @@ class Dungeon (object):
         if (high_height + self.entrance.u >= world.Height):
             self.entrance.u = world.Height - 3 - high_height
 
+    def generatemaps(self):
+        for level in xrange(1, self.levels+1):
+            if randint(1, 100) > cfg.maps:
+                next
+            m = self.mapstore.generate_map(self, level)
+            self.addplaceditem(m, max_lev=level-1)
+
+    def addplaceditem(self, item_tags, min_lev=-100, max_lev=100):
+        self.placed_items.append({
+            'item': item_tags,
+            'min_lev': min_lev,
+            'max_lev':  max_lev
+        })
+
+    def placeitems(self):
+        for item in self.placed_items:
+            ents = self.tile_ents.keys()
+            random.shuffle(ents)
+            for loc in ents:
+                ent = self.tile_ents[loc]
+                if (repr(loc) == repr(Vec(0,0,0)) or
+                    ent['id'].value != 'Chest'):
+                    next
+                if (loc.y//self.room_height >= item['min_lev']-1 and
+                    loc.y//self.room_height <= item['max_lev']-1):
+                    if not self.addchestitem_tag(loc, item['item']):
+                        print 'WARNING: Unable to add item to chest!'
+                    else:
+                        break
 
     def applychanges(self, world):
         '''Write the block buffer to the specified world'''
