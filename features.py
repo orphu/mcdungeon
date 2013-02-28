@@ -70,38 +70,6 @@ class Entrance(Blank):
                                                     floor(float(p.y)/2.0),
                                                     p.z),
                                         mat, mat.data+(p.y%2)*8)
-        # Signs
-        locs = [
-            (Vec(-1,-2, 0),4),
-            (Vec(-1,-1, 0),4),
-            (Vec(-1,-2, 5),4),
-            (Vec(-1,-1, 5),4),
-            (Vec( 0,-2,-1),2),
-            (Vec( 0,-1,-1),2),
-            (Vec( 0,-2, 6),3),
-            (Vec( 0,-1, 6),3),
-            (Vec( 5,-2,-1),2),
-            (Vec( 5,-1,-1),2),
-            (Vec( 5,-2, 6),3),
-            (Vec( 5,-1, 6),3),
-            (Vec( 6,-2, 0),5),
-            (Vec( 6,-1, 0),5),
-            (Vec( 6,-2, 5),5),
-            (Vec( 6,-1, 5),5)
-               ]
-        random.shuffle(locs)
-        signs = self.parent.parent.signs
-        random.shuffle(signs)
-        while (len(locs) >0 and len(signs) >0):
-            loc = locs.pop()
-            sign = signs.pop()
-            self.parent.parent.setblock(wstart+loc[0],
-                                        materials.WallSign, loc[1])
-            self.parent.parent.addsign(wstart+loc[0],
-                                       sign['s1'],
-                                       sign['s2'],
-                                       sign['s3'],
-                                       sign['s4'])
 
 
 class Stairwell(Blank):
