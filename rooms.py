@@ -780,13 +780,19 @@ class CellBlock(Basic2x2):
                             'Cell Block',
                             str(self.combo),
                             '--==+==--')
-        self.parent.signs.append({
-            's1': 'Level '+str(self.pos.y+1),
-            's2': '',
-            's3': ctext1,
-            's4': ctext2+'  ',
-                            })
-        #print 'Cell block: '+str(self.combo)+'\n',ctext1+'\n',' '+ctext2+'\n'
+        note = nbt.TAG_Compound()
+        note['id'] = nbt.TAG_Short(items.byName("written book").value)
+        note['Damage'] = nbt.TAG_Short(0)
+        note['Count'] = nbt.TAG_Byte(1)
+        note['tag'] = nbt.TAG_Compound()
+        note['tag']['title'] = nbt.TAG_String("Cell Combination")
+        note['tag']['author'] = nbt.TAG_String("Unknown")
+        note['tag']['pages'] = nbt.TAG_List()
+        words = "Level: "+str(self.pos.y+1)+"\n\n"+ctext1+"\n"+ctext2
+        note['tag']['pages'].append(nbt.TAG_String(words))
+        max_lev = (self.c1.y//self.parent.room_height)
+        self.parent.addplaceditem(note, max_lev=max_lev)
+
         # Inner bus
         for p in iterate_four_walls(self.c1+Vec(9, 1,9),
                                  self.c3-Vec(9,-1,9),0):

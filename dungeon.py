@@ -62,7 +62,6 @@ class Dungeon (object):
         self.torches = {}
         self.doors = {}
         self.portcullises = {}
-        self.signs = []
         self.entrance = None
         self.entrance_pos = Vec(0,0,0)
         self.xsize = xsize
@@ -2115,9 +2114,7 @@ class Dungeon (object):
                     next
                 if (loc.y//self.room_height >= item['min_lev']-1 and
                     loc.y//self.room_height <= item['max_lev']-1):
-                    if not self.addchestitem_tag(loc, item['item']):
-                        print 'WARNING: Unable to add item to chest!'
-                    else:
+                    if self.addchestitem_tag(loc, item['item']):
                         break
 
     def applychanges(self, world):
