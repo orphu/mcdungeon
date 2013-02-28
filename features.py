@@ -1442,7 +1442,7 @@ class SecretArmory(SecretRoom):
             note['Damage'] = nbt.TAG_Short(0)
             note['Count'] = nbt.TAG_Byte(1)
             note['tag'] = nbt.TAG_Compound()
-            note['tag']['title'] = nbt.TAG_String("A torn note")
+            note['tag']['title'] = nbt.TAG_String("A torn page")
             note['tag']['author'] = nbt.TAG_String("Unknown")
             note['tag']['pages'] = nbt.TAG_List()
             note['tag']['pages'].append(nbt.TAG_String(words))
