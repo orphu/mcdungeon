@@ -24,7 +24,7 @@
 # desired tag. Passing no options will build the current master HEAD rev,
 # which should be the current release version.
 
-FILES="fortunes.txt items.txt magic_items.txt dye_colors.txt potions.txt configs books spawners items paintings names"
+FILES="README.txt LICENSE.txt CHANGELOG.txt fortunes.txt items.txt magic_items.txt dye_colors.txt potions.txt configs books spawners items paintings names"
 
 function error {
 	echo -e "\nFATAL: $1"
@@ -80,7 +80,7 @@ if [ ${1:+1} ]; then
 	VERSION=$1
 else
 	# FIXME - boy this is ugly
-	VERSION=`grep ^__version__ mcdungeon/mcdungeon.py | cut -d\' -f2`
+	VERSION=$(grep ^__version__ mcdungeon/mcdungeon.py | cut -d\' -f2)
 	VERSION="v${VERSION}"
 fi
 echo "MCDungeon Version is $VERSION"
@@ -126,10 +126,7 @@ for SUBDIR in d $FILES; do
 	echo "Copying $SUBDIR..."
 	cp -r mcdungeon/$SUBDIR $NAME/
 done
-for FILE in `find $NAME -name README`; do mv -v $FILE $FILE.txt; done
-cp -v mcdungeon/CHANGELOG $NAME/CHANGELOG.txt
-cp -v mcdungeon/README $NAME/README.txt
-cp -v mcdungeon/LICENSE $NAME/LICENSE.txt
+
 case $PLATFORM in
 	win)
 		cp -v mcdungeon/extras/launcher.bat $NAME/lancher.bat
