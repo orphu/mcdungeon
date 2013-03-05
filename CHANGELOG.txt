@@ -75,6 +75,8 @@ v0.11.0
 
    * Fixed an issue with adding maps to a world with no maps. (orphu)
 
+   * CellBlock signs are now written books hidden around the dungeon. (orphu)
+
 v0.10.4 - 11/22/2012
 
    * Fixed custom spawners on case sensitive systems. (orphu)
