@@ -1,13 +1,15 @@
-import random
+import code
+from copy import *
+import cPickle
+from itertools import *
 import math
+import numpy
+import os
+import random
 import re
 import sys
-import os
-import numpy
-import cPickle
 import time
-from copy import *
-from itertools import *
+
 from pymclevel import mclevel, nbt
 
 cache_version = '2'
@@ -1054,3 +1056,20 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
         root_tag['Motive']= nbt.TAG_String(Motive)
 
     return root_tag
+
+def DebugBreakpoint(banner="Debugger started (CTRL-D to quit)"):
+    '''Drop to the python console for some debugging'''
+
+    # use exception trick to pick up the current frame
+    try:
+        raise None
+    except:
+        frame = sys.exc_info()[2].tb_frame.f_back
+
+    # evaluate commands in current namespace
+    namespace = frame.f_globals.copy()
+    namespace.update(frame.f_locals)
+
+    print "START DEBUG"
+    code.interact(banner=banner, local=namespace)
+    print "END DEBUG"
