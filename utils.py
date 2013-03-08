@@ -748,13 +748,17 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0,0,0),
                          FallDistance=0.0, Fire=-1, Air=300, OnGround=0,
                          Dimension=0, Invulnerable=0, PortalCooldown=0,
                          CustomName=''):
+    # Convert Vec types so we can use either
+    if type(Pos) is Vec:
+        Pos = (Pos.x, Pos.y, Pos.z)
+
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String(eid)
     root_tag['Pos'] = nbt.TAG_List()
-    root_tag['Pos'].append(nbt.TAG_Double(Pos.x))
-    root_tag['Pos'].append(nbt.TAG_Double(Pos.y))
-    root_tag['Pos'].append(nbt.TAG_Double(Pos.z))
+    root_tag['Pos'].append(nbt.TAG_Double(Pos[0]))
+    root_tag['Pos'].append(nbt.TAG_Double(Pos[1]))
+    root_tag['Pos'].append(nbt.TAG_Double(Pos[2]))
     root_tag['Motion'] = nbt.TAG_List()
     root_tag['Motion'].append(nbt.TAG_Double(Motion.x))
     root_tag['Motion'].append(nbt.TAG_Double(Motion.y))
@@ -960,6 +964,10 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     EnderCrystal, EyeOfEnder, ItemFrame, and Painting. Chunk offsets will be
     calculated. ItemInfo should contain an item object from items.'''
 
+    # Convert Vec types so we can use either
+    if type(Pos) is Vec:
+        Pos = (Pos.x, Pos.y, Pos.z)
+
     root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
@@ -971,9 +979,9 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     # Paintings and frames are 1-4 blocks tall and wide, and 0.0625 blocks thick. 
     if eid in ('ItemFrame', 'Painting'):
         # Copy the Pos location to Tile entries.
-        root_tag['TileX']= nbt.TAG_Int(Pos.x)
-        root_tag['TileY']= nbt.TAG_Int(Pos.y)
-        root_tag['TileZ']= nbt.TAG_Int(Pos.z)
+        root_tag['TileX']= nbt.TAG_Int(Pos[0])
+        root_tag['TileY']= nbt.TAG_Int(Pos[1])
+        root_tag['TileZ']= nbt.TAG_Int(Pos[2])
         # Set direction. For convenience we provide letters.
         dirs = {'N': 2,
                 'S': 0,
