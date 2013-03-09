@@ -351,7 +351,7 @@ def enchant (item, level, debug=False):
         type = 'carrot on a stick'
     elif 'flint and steel' in item:
         type = 'flint and steel'
-    elif 'axe' in item:
+    elif 'axe' in item and 'pickaxe' not in item:
         type = 'axe'
 
     # Gather a list of possible enchantments and levels
