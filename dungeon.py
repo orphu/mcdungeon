@@ -576,7 +576,6 @@ class Dungeon (object):
         if (cfg.SpawnRequiredPlayerRange != 0):
             try: root_tag['RequiredPlayerRange']
             except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(cfg.SpawnRequiredPlayerRange)
-        print root_tag
         # Finally give the tag to the entity
         self.tile_ents[loc] = root_tag
 
