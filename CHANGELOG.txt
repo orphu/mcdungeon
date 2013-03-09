@@ -28,9 +28,9 @@ v0.11.0
    * New option: hidden_spawners. This will hide the random spawners behind
      walls. This is on by default in the hard_mode config. (orphu)
      
-   * New option: boost_spawners. This will make spawners spawn faster, spawn
-     more, and activate at longer range. This is on by default in the
-     hard_mode config. (JiFish)
+   * New options: SpawnCount, SpawnMaxNearbyEntities, SpawnMinDelay,
+     SpawnMaxDelay, SpawnRequiredPlayerRange allow greater control over
+     spawners. (JiFish)
 
    * New option: double_treasure. Doubles the loot roll in treasure rooms.
      Mainly for multiplayer. (JiFish)
