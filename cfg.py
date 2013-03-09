@@ -31,7 +31,11 @@ chests = '10'
 double_treasure = 'False'
 spawners = '2'
 hidden_spawners = 'False'
-boost_spawners = 'False'
+SpawnCount = 0
+SpawnMaxNearbyEntities = 0
+SpawnMinDelay = 0
+SpawnMaxDelay = 0
+SpawnRequiredPlayerRange = 0
 arrow_traps = '3'
 sand_traps = '40'
 arrow_trap_defects = '1'
@@ -92,7 +96,8 @@ def Load(filename = 'default.cfg'):
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
     max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
-    hidden_spawners, master_srooms, boost_spawners
+    hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
+    SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -209,7 +214,11 @@ def Load(filename = 'default.cfg'):
     double_treasure = str2bool(get('dungeon', 'double_treasure', double_treasure))
     spawners = float(get('dungeon', 'spawners', spawners))
     hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
-    boost_spawners = str2bool(get('dungeon', 'boost_spawners', boost_spawners))
+    SpawnCount = int(get('dungeon', 'SpawnCount', SpawnCount))
+    SpawnMaxNearbyEntities = int(get('dungeon', 'SpawnMaxNearbyEntities', SpawnMaxNearbyEntities))
+    SpawnMinDelay = int(get('dungeon', 'SpawnMinDelay', SpawnMinDelay))
+    SpawnMaxDelay = int(get('dungeon', 'SpawnMaxDelay', SpawnMaxDelay))
+    SpawnRequiredPlayerRange = int(get('dungeon', 'SpawnRequiredPlayerRange', SpawnRequiredPlayerRange))
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',
