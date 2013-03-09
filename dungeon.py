@@ -710,8 +710,8 @@ class Dungeon (object):
                 item_tag['tag'] = nbt.TAG_Compound()
             item_tag['tag']['display'] = nbt.TAG_Compound()
             item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
-        # Lore
-        if i.lore != '':
+        # Lore Text
+        if i.lore != '' or i.flag == 'FORTUNE':
             try: item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
@@ -719,9 +719,15 @@ class Dungeon (object):
             except:
                 item_tag['tag']['display'] = nbt.TAG_Compound()
             item_tag['tag']['display']['Lore'] = nbt.TAG_List()
-            loredata = i.lore.split(':')
-            for loretext in loredata[:5]:
-                item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
+            if i.flag == 'FORTUNE':
+                i.lore = self.loadrandfortune()
+                loredata = textwrap.wrap(i.lore,40)
+                for loretext in loredata[:10]:
+                    item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext))
+            else:
+                loredata = i.lore.split(':')
+                for loretext in loredata[:10]:
+                    item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
         #Special flags
         # Dyed
         if (i.flag == 'DYED'):
