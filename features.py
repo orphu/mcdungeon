@@ -966,7 +966,15 @@ class SecretStudy(SecretRoom):
         self.parent.parent.blocks[self.c1+Vec(5,-1,4)].data = 2
         self.parent.parent.blocks[self.c1+Vec(5,-1,5)].data = 0
         self.parent.parent.blocks[self.c1+Vec(5,-1,6)].data = 3
-        sb(self.c1.trans(4,-2,4), materials.Torch)
+        
+        if (random.random() < 0.1):
+            sb(self.c1.trans(4,-2,4), materials.Cake, random.randrange(0,6))
+        elif (random.random() < 0.4):
+            sb(self.c1.trans(4,-2,4), materials.FlowerPot, random.randrange(1,12))
+        else:
+            sb(self.c1.trans(4,-2,4), materials.Torch)
+        
+        
 
         # A chest in a study should have writing supplies :)
         #item, probability, max stack amount
