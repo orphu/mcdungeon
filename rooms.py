@@ -2655,10 +2655,6 @@ class Pit(Blank):
         # Ceiling
         for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
-        # Lava streams from ceiling
-        if (self.toLava == True and self.sandpit == False):
-            p = self.loc + random_point_inside_flat_poly(*self.canvas)
-            self.parent.setblock(p.up(4), materials.Lava)
         # Floor with no subfloor if this is a sand pit
         if (self.sandpit == True):
             for x in self.floor_func(self.c1.trans(0,0,0),
