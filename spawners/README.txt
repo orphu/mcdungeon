@@ -28,6 +28,7 @@ Chargedcreeper: Creeper with the lightning strike charge effect
 CustomKnight: Zombie with full suit of armour and strength
 multi_creeper: Spawns charged creepers 20% of the time.
                Normal creepers the rest of the time.
+multi_monster: Equal random chance of Zombie, Skeleton, Creeper or spider.
 multi_skeleton: Spawns wither skeletons 20% of the time.
                 Normal skeletons the rest of the time.
 multi_zombie: Spawns zombie with strength and speed skeletons 20% of
