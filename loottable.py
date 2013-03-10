@@ -449,6 +449,10 @@ def enchant (item, level, debug=False):
         check_enchantment(EFFICIENCY, mlevel)
         check_enchantment(SILK_TOUCH, mlevel)
         check_enchantment(FORTUNE, mlevel)
+        check_enchantment(POWER, mlevel)
+        check_enchantment(PUNCH, mlevel)
+        check_enchantment(FLAME, mlevel)
+        check_enchantment(INFINITY, mlevel)
 
     # Item did not result in any enchantments
     if len(enchantments) == 0:
