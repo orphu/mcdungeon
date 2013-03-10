@@ -47,7 +47,7 @@ class new:
         else:
             print 'Mapstore cache not found. Creating new one...'
             self.mapcache = {'used': {}, 'available': set([])}
-            
+
         # Generate map hash table
         self.maphash = {}
         for file in os.listdir(self.mapstore):
@@ -98,7 +98,7 @@ class new:
             self.update_mapstore()
         else:
             print 'No maps found for dungeon at ', loc
-            
+
     def add_painting(self, painting_file):
         src = os.path.join(self.painting_path,painting_file+'.dat')
         painting_file_hash = hashlib.md5(open(src, 'r').read()).digest()
@@ -297,5 +297,8 @@ class new:
         item['id'] = nbt.TAG_Short(358)
         item['Damage'] = nbt.TAG_Short(mapid)
         item['Count'] = nbt.TAG_Byte(1)
+        item['tag'] = nbt.TAG_Compound()
+        item['tag']['display'] = nbt.TAG_Compound()
+        item['tag']['display']['Name'] = nbt.TAG_String("Dungeon Level {l}".format(l=level))
 
         return item
