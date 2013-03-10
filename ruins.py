@@ -1587,8 +1587,8 @@ class HouseFrame(Blank):
 
         # and maybe some ancient pottery
         if (random.randint(1,100) < 10 ):
-            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,2), materials.FlowerPot, soft=True)
-            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,3), materials.FlowerPot, soft=True)
+            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,2), materials.FlowerPot, 10, soft=True)
+            self.parent.parent.setblock(start.trans(2+random.randint(0,3),0,3), materials.FlowerPot, 10, soft=True)
 
         #ruin it! (maybe)
         if (random.randint(1,100) < 50):
