@@ -175,9 +175,6 @@ def Load ():
             chance, minmax, enchant = [x.strip() for x in line[1].split(',')]
             minimum = minmax.split('-')[0]
             maximum = minmax.split('-')[-1]
-            if enchant is not '0':
-                minimum = 1
-                maximum = 1
 
             ilist = []
             for i in line[0].split(','):
@@ -220,9 +217,6 @@ def rollLoot (tier, level):
                 except:
                     ench_level = 0
 
-            if ench_level > 0:
-                enchantments = list(enchant(item.name, ench_level))
-
             while (amount > 0):
                 if (amount > item.maxstack):
                     thisamount = item.maxstack
@@ -231,6 +225,10 @@ def rollLoot (tier, level):
                     thisamount = amount
                     amount = 0
                 if (slot < 27):
+                    # Roll the enchantments after creating the stack
+                    # This way each stack gets different enchantments
+                    if ench_level > 0:
+                        enchantments = list(enchant(item.name, ench_level))
                     thisloot = Loot(slot,
                                     thisamount,
                                     item.value,
