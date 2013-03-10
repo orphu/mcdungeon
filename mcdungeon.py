@@ -1251,7 +1251,7 @@ if (len(dungeons) == 0):
 # Relight
 if (args.write is True and args.skiprelight is False):
     class myHandler(object):
-        _curr = 34
+        _curr = 28
         _count = 0
         def __init__(self):
             self.pm = pmeter.ProgressMeter()
@@ -1259,10 +1259,9 @@ if (args.write is True and args.skiprelight is False):
             #self.pm.update_left(self._curr)
 
         def write(self, buff=''):
-            #self._count += 1
-            #print self._count
-            self._curr -= 1
-            self.pm.update_left(self._curr)
+            if 'Pass' in buff:
+                self._curr -= 1
+                self.pm.update_left(self._curr)
 
         def flush(self):
             pass
