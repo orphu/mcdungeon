@@ -217,10 +217,16 @@ def rollLoot (tier, level):
                 except:
                     ench_level = 0
 
+            # Always treat enchantment items as stacks of 1
+            if ench_level > 0:
+                maxstack = 1
+            else:
+                maxstack = item.maxstack
+
             while (amount > 0):
-                if (amount > item.maxstack):
-                    thisamount = item.maxstack
-                    amount -= item.maxstack
+                if (amount > maxstack):
+                    thisamount = maxstack
+                    amount -= maxstack
                 else:
                     thisamount = amount
                     amount = 0
