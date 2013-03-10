@@ -976,15 +976,13 @@ if (cfg.offset is None or cfg.offset is ''):
                     i = 0
                     y = 0
                     while (t == False and y < world.Height//16):
-                        if y in b:
-                            x = (b[y][:] == mats[i])
-                            t = x.any()
-                            i += 1
-                        if i >= len(mats):
+                        if (y not in b or i >= len(mats)):
                             y += 1
                             i = 0
                         else:
-                            y += 1
+                            x = (b[y][:] == mats[i])
+                            t = x.any()
+                            i += 1
                     if t == True:
                         chunk_cache[key][0] = 'S'
                         continue
