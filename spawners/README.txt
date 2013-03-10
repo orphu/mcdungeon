@@ -15,9 +15,9 @@ containing the EntityId of the mob you want to spawn. The Id, x, y and z
 tags are unnecessary as they are added by MCDungeon.
 
 For more information on the format of the tags see:
-	* http://www.minecraftwiki.net/wiki/Chunk_format#Tile_Entity_Format
-	* http://www.minecraftwiki.net/wiki/Chunk_format#Mobs
-	
+    * http://www.minecraftwiki.net/wiki/Chunk_format#Tile_Entity_Format
+    * http://www.minecraftwiki.net/wiki/Chunk_format#Mobs
+
 IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
 crash it. Please use this feature with caution.
 

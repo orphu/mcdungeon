@@ -19,8 +19,8 @@ the tag which is normally used by minecraft to store how large the stack of
 items you are holding is.
 
 For more information on the format of the tags see:
-	* http://www.minecraftwiki.net/wiki/Player.dat_Format#Item_structure
-	
+    * http://www.minecraftwiki.net/wiki/Player.dat_Format#Item_structure
+
 IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
 crash it. Please use this feature with caution.
 
