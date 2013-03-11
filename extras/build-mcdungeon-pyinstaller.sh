@@ -121,10 +121,10 @@ a.datas += [ \
 python utils/Build.py -y mcdungeon-build/mcdungeon.spec || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
-mkdir $NAME
+mkdir -p $NAME/bin
 for SUBDIR in d $FILES; do
 	echo "Copying $SUBDIR..."
-	cp -r mcdungeon/$SUBDIR $NAME/
+	cp -r mcdungeon/$SUBDIR $NAME/bin/
 done
 
 case $PLATFORM in
@@ -136,8 +136,13 @@ case $PLATFORM in
 		;;
 esac
 
+# Move a few things out of the bin directory
+for F in README.txt CHANGELOG.txt LICENSE.txt; do
+	mv -v $NAME/bin/$F $NAME/$F
+done
+
 # Copy over the executable
-cp -v mcdungeon-build/dist/$EXE $NAME/
+cp -v mcdungeon-build/dist/$EXE $NAME/bin/
 
 echo -e "\nDone!"
 echo "Look in $NAME"
