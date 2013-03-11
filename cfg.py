@@ -29,6 +29,7 @@ subfloor = 'Bedrock'
 exit_portal = 'False'
 chests = '10'
 double_treasure = 'False'
+enchant_system = 'Normal'
 spawners = '2'
 hidden_spawners = 'False'
 SpawnCount = 0
@@ -88,10 +89,10 @@ def str2bool(string):
 def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
     floor, ceiling, exit_portal, master_halls, master_rooms, master_features, \
-    master_floors, chests, double_treasure, spawners, master_mobs, torches_bottom, \
-    min_dist, max_dist, arrow_traps, loops, portcullis_closed, fill_caves, \
-    portcullis_web, subfloor, torches_position, skeleton_balconies, \
-    arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
+    master_floors, chests, double_treasure, enchant_system, spawners, \
+    master_mobs, torches_bottom, min_dist, max_dist, arrow_traps, loops, \
+    portcullis_closed, fill_caves, portcullis_web, subfloor, torches_position, \
+    skeleton_balconies, arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
@@ -212,6 +213,7 @@ def Load(filename = 'default.cfg'):
 
     chests = float(get('dungeon', 'chests', chests))
     double_treasure = str2bool(get('dungeon', 'double_treasure', double_treasure))
+    enchant_system = get('dungeon', 'enchant_system', enchant_system).lower()
     spawners = float(get('dungeon', 'spawners', spawners))
     hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
     SpawnCount = int(get('dungeon', 'SpawnCount', SpawnCount))
