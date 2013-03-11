@@ -124,6 +124,79 @@ _ench_level = {
     INFINITY:              [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)]
 }
 
+# Enchantment valid items tables
+# Normal: Anything possible in vanilla
+_ench_items_normal = {
+    # Enchantment
+    PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
+    FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
+    FEATHER_FALLING:       ['book','boots'],
+    BLAST_PROTECTION:      ['book','helmet','chestplate','leggings','boots'],
+    PROJECTILE_PROTECTION: ['book','helmet','chestplate','leggings','boots'],
+    RESPIRATION:           ['book','helmet'],
+    AQUA_AFFINITY:         ['book','helmet'],
+    THORNS:                ['book','helmet','chestplate','leggings','boots'],
+    SHARPNESS:             ['book','sword','axe'],
+    SMITE:                 ['book','sword','axe'],
+    BANE_OF_ARTHROPODS:    ['book','sword','axe'],
+    KNOCKBACK:             ['book','sword'],
+    FIRE_ASPECT:           ['book','sword'],
+    LOOTING:               ['book','sword'],
+    EFFICIENCY:            ['book','tool','axe','shears'],
+    SILK_TOUCH:            ['book','tool','axe','shears'],
+    UNBREAKING:            ['book','helmet','chestplate','leggings','boots',
+                            'sword','tool','axe','bow','hoe','fishing rod',
+                            'shears','flint and steel','carrot on a stick'],
+    FORTUNE:               ['book','tool','axe'],
+    POWER:                 ['book','bow'],
+    PUNCH:                 ['book','bow'],
+    FLAME:                 ['book','bow'],
+    INFINITY:              ['book','bow']
+}
+
+# Classic: Anything possible using only an enchanting table
+_ench_items_classic = {
+    # Enchantment
+    PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
+    FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
+    FEATHER_FALLING:       ['book','boots'],
+    BLAST_PROTECTION:      ['book','helmet','chestplate','leggings','boots'],
+    PROJECTILE_PROTECTION: ['book','helmet','chestplate','leggings','boots'],
+    RESPIRATION:           ['book','helmet'],
+    AQUA_AFFINITY:         ['book','helmet'],
+    THORNS:                ['book','chestplate'],
+    SHARPNESS:             ['book','sword'],
+    SMITE:                 ['book','sword'],
+    BANE_OF_ARTHROPODS:    ['book','sword'],
+    KNOCKBACK:             ['book','sword'],
+    FIRE_ASPECT:           ['book','sword'],
+    LOOTING:               ['book','sword'],
+    EFFICIENCY:            ['book','tool','axe'],
+    SILK_TOUCH:            ['book','tool','axe'],
+    UNBREAKING:            ['book','tool','axe'],
+    FORTUNE:               ['book','tool','axe'],
+    POWER:                 ['book','bow'],
+    PUNCH:                 ['book','bow'],
+    FLAME:                 ['book','bow'],
+    INFINITY:              ['book','bow']
+}
+
+# Extended: As normal, but with additional weapon effects on items that
+# lose durability when attacked with
+_ench_items_extended = _ench_items_normal.copy()
+for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
+    _ench_items_extended[i] = ['book','sword','axe','tool']
+
+# Zistonian: Weapon effects on any kind of item
+_ench_items_zistonian = _ench_items_normal.copy()
+for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
+    _ench_items_zistonian[i] = ['any']
+
+# Anything: Complete madness! Anything on anything.
+_ench_items_anything = {}
+for (enchant, name) in _ench_name.items():
+    _ench_items_anything[enchant] = ['any']
+
 _maxtier = -1
 _master_loot = {}
 
@@ -279,7 +352,7 @@ def enchant (item, level, debug=False):
     # Determine what type of item we are dealing with
     type = 'none'
     if 'sword' in item:
-        type = 'weapon'
+        type = 'sword'
     elif 'bow' in item:
         type = 'bow'
     elif ('pickaxe' in item or
@@ -371,88 +444,23 @@ def enchant (item, level, debug=False):
                 return
         return
 
-    # Armors
-    if (type == 'helmet' or
-        type == 'chestplate' or
-        type == 'leggings' or
-        type == 'boots'):
-        check_enchantment(PROTECTION, mlevel)
-        check_enchantment(FIRE_PROTECTION, mlevel)
-        check_enchantment(BLAST_PROTECTION, mlevel)
-        check_enchantment(PROJECTILE_PROTECTION, mlevel)
-        check_enchantment(THORNS, mlevel)
-        check_enchantment(UNBREAKING, mlevel)
+    if (cfg.enchant_system == 'classic'):
+        item_filter = _ench_items_classic
+    elif (cfg.enchant_system == 'extended'):
+        item_filter = _ench_items_extended
+    elif (cfg.enchant_system == 'zistonian'):
+        item_filter = _ench_items_zistonian
+    elif (cfg.enchant_system == 'anything'):
+        item_filter = _ench_items_anything
+    else:   # normal and catch anything else
+        item_filter = _ench_items_normal
 
-    if (type == 'boots'):
-        check_enchantment(FEATHER_FALLING, mlevel)
-
-    if (type == 'helmet'):
-        check_enchantment(RESPIRATION, mlevel)
-        check_enchantment(AQUA_AFFINITY, mlevel)
-
-    # Weapons
-    if (type == 'weapon'):
-        check_enchantment(SHARPNESS, mlevel)
-        check_enchantment(SMITE, mlevel)
-        check_enchantment(BANE_OF_ARTHROPODS, mlevel)
-        check_enchantment(KNOCKBACK, mlevel)
-        check_enchantment(FIRE_ASPECT, mlevel)
-        check_enchantment(LOOTING, mlevel)
-        check_enchantment(UNBREAKING, mlevel)
-    if (type == 'axe'):
-        check_enchantment(SHARPNESS, mlevel)
-        check_enchantment(SMITE, mlevel)
-        check_enchantment(BANE_OF_ARTHROPODS, mlevel)
-
-    # Tools
-    if (type == 'tool' or
-        type == 'axe'):
-        check_enchantment(EFFICIENCY, mlevel)
-        check_enchantment(SILK_TOUCH, mlevel)
-        check_enchantment(UNBREAKING, mlevel)
-        check_enchantment(FORTUNE, mlevel)
-    if (type == 'hoe' or
-		type == 'fishing rod' or
-		type == 'shears' or
-		type == 'flint and steel' or
-        type == 'carrot on a stick'):
-        check_enchantment(UNBREAKING, mlevel)
-    if (type == 'shears'):
-        check_enchantment(EFFICIENCY, mlevel)
-        check_enchantment(SILK_TOUCH, mlevel)
-
-    # Bows
-    if (type == 'bow'):
-        check_enchantment(UNBREAKING, mlevel)
-        check_enchantment(POWER, mlevel)
-        check_enchantment(PUNCH, mlevel)
-        check_enchantment(FLAME, mlevel)
-        check_enchantment(INFINITY, mlevel)
-
-    # Books
-    if (type == 'book'):
-        check_enchantment(PROTECTION, mlevel)
-        check_enchantment(FIRE_PROTECTION, mlevel)
-        check_enchantment(FEATHER_FALLING, mlevel)
-        check_enchantment(BLAST_PROTECTION, mlevel)
-        check_enchantment(PROJECTILE_PROTECTION, mlevel)
-        check_enchantment(RESPIRATION, mlevel)
-        check_enchantment(AQUA_AFFINITY, mlevel)
-        check_enchantment(THORNS, mlevel)
-        check_enchantment(UNBREAKING, mlevel)
-        check_enchantment(SHARPNESS, mlevel)
-        check_enchantment(SMITE, mlevel)
-        check_enchantment(BANE_OF_ARTHROPODS, mlevel)
-        check_enchantment(KNOCKBACK, mlevel)
-        check_enchantment(FIRE_ASPECT, mlevel)
-        check_enchantment(LOOTING, mlevel)
-        check_enchantment(EFFICIENCY, mlevel)
-        check_enchantment(SILK_TOUCH, mlevel)
-        check_enchantment(FORTUNE, mlevel)
-        check_enchantment(POWER, mlevel)
-        check_enchantment(PUNCH, mlevel)
-        check_enchantment(FLAME, mlevel)
-        check_enchantment(INFINITY, mlevel)
+    # Loop through every enchantment and do check_enchantment if there
+    # is a match for the item type
+    for (enchant, name) in _ench_name.items():
+        if (item_filter[enchant][0] == 'any' or
+            type in item_filter[enchant]):
+            check_enchantment(enchant, mlevel)
 
     # Item did not result in any enchantments
     if len(enchantments) == 0:
