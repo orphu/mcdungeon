@@ -125,8 +125,8 @@ _ench_level = {
 }
 
 # Enchantment valid items tables
-# Normal: Anything possible in vanilla
-_ench_items_normal = {
+# table+book: All legal enchants achieved with tables and books.
+_ench_items_table_book = {
     # Enchantment
     PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
     FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
@@ -154,8 +154,8 @@ _ench_items_normal = {
     INFINITY:              ['book','bow']
 }
 
-# Classic: Anything possible using only an enchanting table
-_ench_items_classic = {
+# Table: Only enchants that can be achieved with an enchanting table.
+_ench_items_table = {
     # Enchantment
     PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
     FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
@@ -181,16 +181,17 @@ _ench_items_classic = {
     INFINITY:              ['book','bow']
 }
 
-# Extended: As normal, but with additional weapon effects on items that
-# lose durability when attacked with
-_ench_items_extended = _ench_items_normal.copy()
+# Extended: As normal, but all weapon enchants can appear on axes,
+#           pickaxes and shovels
+_ench_items_extended = _ench_items_table_book.copy()
 for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
     _ench_items_extended[i] = ['book','sword','axe','tool']
 
-# Zistonian: Weapon effects on any kind of item
-_ench_items_zistonian = _ench_items_normal.copy()
+# Zistonian: As extended, but all weapon enchants can appear on all
+# normally non-enchantable items
+_ench_items_zistonian = _ench_items_extended.copy()
 for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
-    _ench_items_zistonian[i] = ['any']
+    _ench_items_zistonian[i] = ['book','sword','axe','tool','none']
 
 # Anything: Complete madness! Anything on anything.
 _ench_items_anything = {}
@@ -353,7 +354,7 @@ def enchant (item, level, debug=False):
     type = 'none'
     if 'sword' in item:
         type = 'sword'
-    elif 'bow' in item:
+    elif 'bow' in item and 'bowl' not in item:
         type = 'bow'
     elif ('pickaxe' in item or
           'shovel' in item or
@@ -444,16 +445,16 @@ def enchant (item, level, debug=False):
                 return
         return
 
-    if (cfg.enchant_system == 'classic'):
-        item_filter = _ench_items_classic
+    if (cfg.enchant_system == 'table'):
+        item_filter = _ench_items_table
     elif (cfg.enchant_system == 'extended'):
         item_filter = _ench_items_extended
     elif (cfg.enchant_system == 'zistonian'):
         item_filter = _ench_items_zistonian
     elif (cfg.enchant_system == 'anything'):
         item_filter = _ench_items_anything
-    else:   # normal and catch anything else
-        item_filter = _ench_items_normal
+    else:   # "table+book" and catch anything else
+        item_filter = _ench_items_table_book
 
     # Loop through every enchantment and do check_enchantment if there
     # is a match for the item type
