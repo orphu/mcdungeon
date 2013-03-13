@@ -1,4 +1,4 @@
-v0.11.0 
+v0.11.0 - 03/13/2013
 
   !! NOTE: This version requires Minecraft 1.5.0 release or higher!
 
@@ -27,13 +27,16 @@ v0.11.0
 
    * New option: hidden_spawners. This will hide the random spawners behind
      walls. This is on by default in the hard_mode config. (orphu)
-     
+
    * New options: SpawnCount, SpawnMaxNearbyEntities, SpawnMinDelay,
      SpawnMaxDelay, SpawnRequiredPlayerRange allow greater control over
      spawners. (JiFish)
 
    * New option: double_treasure. Doubles the loot roll in treasure rooms.
      Mainly for multiplayer. (JiFish)
+
+   * New option: enchant_system. Controls which enchantments can show up on
+     enchanted items. See default.cfg for detail. (JiFish)
 
    * Themed name generator for various things in the dungeon. (JiFish)
 
@@ -62,20 +65,35 @@ v0.11.0
    * Removed (broken) multiverse support. (orphu)
 
    * Added more orange. (JiFish)
-  
+
    * Fixed old music disc names. (JiFish)
 
    * Anvils are less common in forges. (JiFish)
 
    * Added fortunes to fortune cookies. (JiFish)
-   
+
    * Fixed many map icons. (orphu)
 
+   * Fixed Nether Brick blocks being air. (orphu)
+
+                                                                                                                                                                                               3,20          Top
    * Fixed Nether Brick blocks being air. (orphu)
 
    * Fixed an issue with adding maps to a world with no maps. (orphu)
 
    * CellBlock signs are now written books hidden around the dungeon. (orphu)
+
+   * Fixed a bug with structure detection that caused it to miss some
+     mines and villages. (orphu)
+
+   * Fixed a bug with the relight progress bar counting too high. (orphu)
+
+   * Removed lava streams in pit rooms. (orphu)
+
+   * Maps now have a display name. (orphu)
+
+   * Enchanted loot now honors the amount field (JiFish)
+
 
 v0.10.4 - 11/22/2012
 
