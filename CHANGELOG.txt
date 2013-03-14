@@ -76,9 +76,6 @@ v0.11.0 - 03/13/2013
 
    * Fixed Nether Brick blocks being air. (orphu)
 
-                                                                                                                                                                                               3,20          Top
-   * Fixed Nether Brick blocks being air. (orphu)
-
    * Fixed an issue with adding maps to a world with no maps. (orphu)
 
    * CellBlock signs are now written books hidden around the dungeon. (orphu)
