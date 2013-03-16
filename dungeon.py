@@ -316,7 +316,7 @@ class Dungeon (object):
                 biomes[key] = 1
             self.biome = max(biomes, key=lambda k: biomes[k])
         if self.args.debug: print 'Biome: ', self.biome
-        
+
         # Now we know the biome, we can setup a name generator
         self.namegen = namegenerator.namegenerator(self.biome)
 
@@ -327,6 +327,7 @@ class Dungeon (object):
                 self.good_chunks[chunk] = d1
             else:
                 d1 = self.good_chunks[chunk]
+            d1 -= 2
             if manual == False:
                 if (d1 < min_depth):
                     print 'Selected area is too shallow to bury dungeon.'
