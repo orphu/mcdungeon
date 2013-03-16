@@ -1,6 +1,7 @@
 v0.11.1
 
-   * ???
+   * Fixed dungeons being a little too shallow, especially on flat
+     worlds. (orphu)
 
 v0.11.0 - 03/13/2013
 
