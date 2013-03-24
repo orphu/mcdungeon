@@ -1682,7 +1682,7 @@ class SecretEnchantingLibrary(SecretRoom):
         tags = get_entity_mob_tags("Witch",
                                    Pos=self.c1+Vec(5,-2,5)+fw*2,
                                    PersistenceRequired=1,
-                                   CustomName='Circe', # Temporary until #104
+                                   CustomName=self.parent.parent.namegen.genname()
                                    CanPickUpLoot=1
                                   )
         dungeon.addentity(tags)
