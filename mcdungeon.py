@@ -765,7 +765,7 @@ if (args.command == 'regenerate'):
     args.write = True
     # Temp workaround for regenerating portals until the generation functions
     # move into the dungeon class.
-    cfg.portal_exit = info[4]['portal_exit']
+    cfg.portal_exit = info[4].get('portal_exit', Vec(0,0,0))
     #print 'offset:', cfg.offset
     #print 'size:', args.z, args.x, args.levels
     #print 'bury:', cfg.bury
