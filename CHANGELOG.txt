@@ -1,5 +1,10 @@
 v0.11.1
 
+   * Witches now have a themed name. (JiFish)
+
+   * Fixed a bug when trying to regnerate dungeons created with older
+     versions. (orphu)
+	
    * Fixed dungeons being a little too shallow, especially on flat
      worlds. (orphu)
 
