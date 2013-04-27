@@ -1380,6 +1380,28 @@ class SecretArmory(SecretRoom):
                 ItemRotation = random.choice((0,3))
             else:
                 ItemRotation = 0
+                
+            # Spice things up with some synonyms
+            if 'sword' in item:
+                item_name = random.choice(('sword','blade','claymore',
+                                           'cutlas','sabre','scimtar'))
+            elif 'pickaxe' in item:
+                item_name = random.choice(('pickaxe','pickax','pick'))
+            elif 'axe' in item:
+                item_name = random.choice(('ax','axe','hatchet'))
+            elif 'shears' in item:
+                item_name = random.choice(('shears','clippers','scissors'))
+            elif 'fishing rod' in item:
+                item_name = random.choice(('fishing rod','fishing pole','rod'))
+            elif 'chestplate' in item:
+                item_name = random.choice(('chestplate','tunic','vest',
+                                           'mail','plate'))
+            elif 'helmet' in item:
+                item_name = random.choice(('helmet','hat','helm','headgear'))
+            elif 'boots' in item:
+                item_name = random.choice(('boots','shoes'))
+            else:
+                item_name = item.split()[-1]
 
             # Owner's name
             name = dungeon.namegen.genname()
@@ -1389,7 +1411,7 @@ class SecretArmory(SecretRoom):
             if name.endswith("s"):
                 dungeon.addsign(self.c1+p[0],
                                 '',
-                                item.split()[-1].capitalize(),
+                                item_name.capitalize(),
                                 'of '+name,
                                 ''
                                )
@@ -1397,7 +1419,7 @@ class SecretArmory(SecretRoom):
                 dungeon.addsign(self.c1+p[0],
                                 '',
                                 name+"'s",
-                                item.split()[-1],
+                                item_name,
                                 ''
                                )
             # Build the frame tags
@@ -1410,9 +1432,9 @@ class SecretArmory(SecretRoom):
             tags['Item']['tag'] = nbt.TAG_Compound()
             tags['Item']['tag']['display'] = nbt.TAG_Compound()
             if name.endswith("s"):
-                displayname = item.split()[-1].capitalize()+' of '+name
+                displayname = item_name.capitalize()+' of '+name
             else:
-                displayname = name+"'s "+item.split()[-1]
+                displayname = name+"'s "+item_name
             tags['Item']['tag']['display']['Name'] = nbt.TAG_String(displayname)
             # Color leather things.
             if 'leather' in item:
