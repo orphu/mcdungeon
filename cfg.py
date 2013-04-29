@@ -38,6 +38,7 @@ SpawnMinDelay = 0
 SpawnMaxDelay = 0
 SpawnRequiredPlayerRange = 0
 arrow_traps = '3'
+chest_traps = '3'
 sand_traps = '40'
 arrow_trap_defects = '1'
 skeleton_balconies = '25'
@@ -62,6 +63,8 @@ master_entrances = [('squaretowerentrance',1)]
 master_treasure = [('pitwitharchers',1)]
 master_dispensers = []
 lookup_dispensers = {}
+master_chest_traps = []
+lookup_chest_traps = {}
 master_mobs = {}
 max_mob_tier = 0
 structure_values = []
@@ -98,7 +101,8 @@ def Load(filename = 'default.cfg'):
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
     max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
     hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
-    SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange
+    SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange, chest_traps, \
+    master_chest_traps
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -123,6 +127,7 @@ def Load(filename = 'default.cfg'):
     master_stairwells = parser.items('stairwells')
     master_floors = parser.items('floors')
     temp_dispensers = parser.items('dispensers')
+    temp_chest_traps = parser.items('chest_traps')
     try:
         master_ruins = parser.items('ruins')
     except:
@@ -179,6 +184,13 @@ def Load(filename = 'default.cfg'):
         lookup_dispensers[name]= (prob, number)
         master_dispensers.append((name, prob))
 
+    # Process chest_traps config
+    for d in temp_chest_traps:
+        (prob, number) = d[1].split(',')
+        name = d[0].lower()
+        lookup_chest_traps[name]= (prob, number)
+        master_chest_traps.append((name, prob))
+
     # Load other config options
     offset = get('dungeon', 'offset', offset)
     bury = str2bool(get('dungeon', 'force_bury', bury))
@@ -226,6 +238,7 @@ def Load(filename = 'default.cfg'):
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',
                                      maximize_distance))
     arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
+    chest_traps = int(get('dungeon', 'chest_traps', chest_traps))
     arrow_trap_defects = int(get('dungeon', 'arrow_trap_defects',
                                  arrow_trap_defects))
     hall_piston_traps = int(get('dungeon', 'hall_piston_traps',

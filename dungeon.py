@@ -804,9 +804,16 @@ class Dungeon (object):
         root_tag['Items'].append(item_tag)
         return True
 
-    def addtrap(self, loc, name=None):
+    def addchesttrap(self, loc, name=None, count=None):
+        name = weighted_choice(cfg.master_chest_traps)
+        count = int(cfg.lookup_chest_traps[name][1])
+        self.addtrap(loc, name=name, count=count)
+    
+    def addtrap(self, loc, name=None, count=None):
         if name == None:
             name = weighted_choice(cfg.master_dispensers)
+        if count == None:
+            count = int(cfg.lookup_dispensers[name][1])
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Trap')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -816,7 +823,7 @@ class Dungeon (object):
         root_tag['Items'] = inv_tag
         item_tag = nbt.TAG_Compound()
         item_tag['Slot'] = nbt.TAG_Byte(0)
-        item_tag['Count'] = nbt.TAG_Byte(int(cfg.lookup_dispensers[name][1]))
+        item_tag['Count'] = nbt.TAG_Byte(count)
         item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
         item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
         inv_tag.append(item_tag)
@@ -1403,7 +1410,14 @@ class Dungeon (object):
             # Pick a spot, if one exists.
             if (len(points) > 0):
                 point = random.choice(points)
-                self.setblock(point.up(1), materials.Chest)
+                # Decide if we are a trap
+                if (randint(1,100) <= cfg.chest_traps):
+                    self.setblock(point.up(1), materials.TrappedChest)
+                    self.setblock(point, materials.Dispenser, 1)
+                    self.addchesttrap(point)
+                else:
+                    self.setblock(point.up(1), materials.Chest)
+                # Add the chest entity either way
                 self.addchest(point.up(1))
                 chests -= 1
         if (level < self.levels-1):
