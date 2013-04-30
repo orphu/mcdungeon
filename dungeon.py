@@ -560,23 +560,35 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         try: root_tag['Delay']
         except: root_tag['Delay'] = nbt.TAG_Short(0)
-        # Custom spawner settings, if provided in the cfg
-        # Don't overwrite tags from NBT files
-        if (cfg.SpawnCount != 0):
+        # Calculate spawner tags from config
+        if tier == cfg.max_mob_tier:
+            SpawnCount = cfg.treasure_SpawnCount
+            SpawnMaxNearbyEntities = cfg.treasure_SpawnMaxNearbyEntities
+            SpawnMinDelay = cfg.treasure_SpawnMinDelay
+            SpawnMaxDelay = cfg.treasure_SpawnMaxDelay
+            SpawnRequiredPlayerRange = cfg.treasure_SpawnRequiredPlayerRange
+        else:
+            SpawnCount = cfg.SpawnCount
+            SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities
+            SpawnMinDelay = cfg.SpawnMinDelay
+            SpawnMaxDelay = cfg.SpawnMaxDelay
+            SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
+        # But don't overwrite tags from NBT files
+        if (SpawnCount != 0):
             try: root_tag['SpawnCount']
-            except: root_tag['SpawnCount'] = nbt.TAG_Short(cfg.SpawnCount)
-        if (cfg.SpawnMaxNearbyEntities != 0):
+            except: root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
+        if (SpawnMaxNearbyEntities != 0):
             try: root_tag['MaxNearbyEntities']
-            except: root_tag['MaxNearbyEntities'] = nbt.TAG_Short(cfg.SpawnMaxNearbyEntities)
-        if (cfg.SpawnMinDelay != 0):
+            except: root_tag['MaxNearbyEntities'] = nbt.TAG_Short(SpawnMaxNearbyEntities)
+        if (SpawnMinDelay != 0):
             try: root_tag['MinSpawnDelay']
-            except: root_tag['MinSpawnDelay'] = nbt.TAG_Short(cfg.SpawnMinDelay)
-        if (cfg.SpawnMaxDelay != 0):
+            except: root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
+        if (SpawnMaxDelay != 0):
             try: root_tag['MaxSpawnDelay']
-            except: root_tag['MaxSpawnDelay'] = nbt.TAG_Short(cfg.SpawnMaxDelay)
-        if (cfg.SpawnRequiredPlayerRange != 0):
+            except: root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
+        if (SpawnRequiredPlayerRange != 0):
             try: root_tag['RequiredPlayerRange']
-            except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(cfg.SpawnRequiredPlayerRange)
+            except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(SpawnRequiredPlayerRange)
         # Finally give the tag to the entity
         self.tile_ents[loc] = root_tag
 

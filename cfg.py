@@ -37,6 +37,11 @@ SpawnMaxNearbyEntities = 0
 SpawnMinDelay = 0
 SpawnMaxDelay = 0
 SpawnRequiredPlayerRange = 0
+treasure_SpawnCount = 0
+treasure_SpawnMaxNearbyEntities = 0
+treasure_SpawnMinDelay = 0
+treasure_SpawnMaxDelay = 0
+treasure_SpawnRequiredPlayerRange = 0
 arrow_traps = '3'
 chest_traps = '3'
 sand_traps = '40'
@@ -102,7 +107,8 @@ def Load(filename = 'default.cfg'):
     max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
     hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
     SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange, chest_traps, \
-    master_chest_traps
+    master_chest_traps, treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
+    treasure_SpawnMinDelay, treasure_SpawnMaxDelay, treasure_SpawnRequiredPlayerRange
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -229,10 +235,22 @@ def Load(filename = 'default.cfg'):
     spawners = float(get('dungeon', 'spawners', spawners))
     hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
     SpawnCount = int(get('dungeon', 'SpawnCount', SpawnCount))
-    SpawnMaxNearbyEntities = int(get('dungeon', 'SpawnMaxNearbyEntities', SpawnMaxNearbyEntities))
+    SpawnMaxNearbyEntities = int(get('dungeon', 'SpawnMaxNearbyEntities',
+                                                 SpawnMaxNearbyEntities))
     SpawnMinDelay = int(get('dungeon', 'SpawnMinDelay', SpawnMinDelay))
     SpawnMaxDelay = int(get('dungeon', 'SpawnMaxDelay', SpawnMaxDelay))
-    SpawnRequiredPlayerRange = int(get('dungeon', 'SpawnRequiredPlayerRange', SpawnRequiredPlayerRange))
+    SpawnRequiredPlayerRange = int(get('dungeon', 'SpawnRequiredPlayerRange',
+                                                   SpawnRequiredPlayerRange))
+    # These fall back to the above when not set
+    treasure_SpawnCount = int(get('dungeon', 'treasure_SpawnCount', SpawnCount))
+    treasure_SpawnMaxNearbyEntities = int(get('dungeon', 'treasure_SpawnMaxNearbyEntities',
+                                                          SpawnMaxNearbyEntities))
+    treasure_SpawnMinDelay = int(get('dungeon', 'treasure_SpawnMinDelay',
+                                                 SpawnMinDelay))
+    treasure_SpawnMaxDelay = int(get('dungeon', 'treasure_SpawnMaxDelay',
+                                                 SpawnMaxDelay))
+    treasure_SpawnRequiredPlayerRange = int(get('dungeon', 'treasure_SpawnRequiredPlayerRange',
+                                                SpawnRequiredPlayerRange))
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',
