@@ -663,15 +663,16 @@ class Dungeon (object):
 
 
     def loadrandfortune(self):
-        fortune = '...in bed.'   #The default
-
-        # Deal with missing fortune file with default
-        if os.path.isfile(os.path.join(sys.path[0],'fortunes.txt')) == False:
-            return fortune
+        if os.path.isfile(os.path.join(sys.path[0],'fortunes.txt')):
+            forune_path = os.path.join(sys.path[0],'fortunes.txt')
+        elif os.path.isfile('fortunes.txt'):
+            forune_path = 'fortunes.txt'
+        else:
+            return '...in bed.'     #Fortune file not found
 
         # Retrieve a random line from a file, reading through the file once
         # Prevents us from having to load the whole file in to memory
-        forune_file = open(os.path.join(sys.path[0],'fortunes.txt'))
+        forune_file = open(forune_path)
         lineNum = 0
         while 1:
             aLine = forune_file.readline()
