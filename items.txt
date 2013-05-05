@@ -451,7 +451,7 @@
 299,Random Leather Chestplate,0,1,DYED
 300,Random Leather Leggings,0,1,DYED
 301,Random Leather Boots,0,1,DYED
-357,Random Lore Cookie,0,1,FORTUNE
+357,Fortune Cookie,0,1,FORTUNE
 358,Custom Painting,0,1,PAINT
 387,Written Book,0,1,WRITTEN
 403,Enchanted Book,0,1,ENCH_BOOK

@@ -738,6 +738,7 @@ class Dungeon (object):
                 item_tag['tag']['display'] = nbt.TAG_Compound()
             item_tag['tag']['display']['Lore'] = nbt.TAG_List()
             if i.flag == 'FORTUNE':
+                item_tag['tag']['display']['Name'] = nbt.TAG_String('Fortune Cookie')
                 i.lore = self.loadrandfortune()
                 loredata = textwrap.wrap(i.lore,40)
                 for loretext in loredata[:10]:

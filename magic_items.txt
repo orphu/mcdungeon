@@ -35,11 +35,6 @@ Parachute:Feather,2-5:Warning!:Not responsible for:death due to falling.
 # A Diamond Sword of Smite X named smitten:
 Smitten:Diamond Sword,17-10
 
-# Fortune Cookie
-# Named item. "Random Lore Cookie" is a special case item that has some random lore
-# text. See fortunes.txt for fortune list.
-Fortune Cookie:Random Lore Cookie,
-
 # A really efficient fish
 # This actually works!
 Marlin Saber:Raw Fish,32-5:A mola of efficiency.
