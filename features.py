@@ -1380,7 +1380,7 @@ class SecretArmory(SecretRoom):
                 ItemRotation = random.choice((0,3))
             else:
                 ItemRotation = 0
-                
+
             # Spice things up with some synonyms
             if 'sword' in item:
                 item_name = random.choice(('sword','blade','claymore',
@@ -1445,7 +1445,10 @@ class SecretArmory(SecretRoom):
 
         # DEATH KNIGHT! RRRRRAGH!
         name = dungeon.namegen.genname()
-        if random.random() < .80:
+        # For now, always create a death knight. The item by itself disappears
+        # too quickly. 
+        #if random.random() < .80:
+        if True:
             pos = Vec(3,-2,3)
             # Always get a weapon
             while True:
