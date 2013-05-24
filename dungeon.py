@@ -99,6 +99,7 @@ class Dungeon (object):
         self.dinfo = {}
         self.dinfo['fill_caves'] = cfg.fill_caves
         self.dinfo['portal_exit'] = cfg.portal_exit
+        self.dinfo['dungeon_name'] = cfg.dungeon_name
 
 
     def generate(self, cache_path, version):
@@ -200,6 +201,8 @@ class Dungeon (object):
                 self.setentrance()
             else:
                 self.entrance.height = self.args.entrance_height
+            self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner)
+            print self.dungeon_name
             print "Finding secret rooms..."
             self.findsecretrooms()
             self.renderruins()
@@ -510,6 +513,8 @@ class Dungeon (object):
 
         # Now we know the biome, we can setup a name generator
         self.namegen = namegenerator.namegenerator(self.biome)
+        self.owner = self.namegen.genroyalname()
+        print self.owner
 
         depth = self.world.Height
         for chunk in d_chunks:
@@ -1499,6 +1504,7 @@ class Dungeon (object):
                 if pos == self.entrance.parent.pos:
                     ruin = ruins.new(weighted_choice(cfg.master_entrances),
                                  self.rooms[pos])
+                    ruin.nameDungeon()
                 else:
                     ruin = ruins.new(weighted_choice(cfg.master_ruins),
                                  self.rooms[pos])

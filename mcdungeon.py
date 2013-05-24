@@ -778,6 +778,7 @@ if (args.command == 'regenerate'):
         args.entrance = [d[4]['entrance_pos'].x, d[4]['entrance_pos'].z]
         args.entrance_height = d[4]['entrance_height']
         cfg.portal_exit = d[4].get('portal_exit', Vec(0,0,0))
+        cfg.dungeon_name = d[4].get('dungeon_name', 'Dungeon')
 
         print 'Regenerating dungeon at', cfg.offset, '...'
         dungeon = Dungeon(args,

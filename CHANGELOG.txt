@@ -1,5 +1,8 @@
 v0.11.1
 
+   * Dungeons will be given an owner and dungeon name that will be
+     used to name maps and special locations in the dungeons.
+
    * Witches now have a themed name. (JiFish)
 
    * More paintings (JiFish)

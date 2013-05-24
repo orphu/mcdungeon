@@ -10,6 +10,19 @@ from utils import *
 
 class Blank(object):
     _name = 'blank'
+    _dnamesA = (None,
+                None,
+                'Ruined',
+                'Rotting',
+                'Evil'
+               )
+    _dnamesB = ('Dungeon',
+                'Tomb of {owner}',
+                'Keep',
+                'Temple',
+                'Temple to {owner}',
+                'Fortress',
+               )
 
     def __init__ (self, parent):
         self.parent = parent
@@ -28,6 +41,16 @@ class Blank(object):
                        -self.vtrans,
                        self.pos.z * self.parent.parent.room_size)
         self.setData()
+
+    def nameDungeon(self):
+        # Name this place
+        a = random.choice(self._dnamesA)
+        b = random.choice(self._dnamesB)
+        if a is not None:
+            name = a+" "+b
+        else:
+            name = b
+        self.parent.parent.dinfo['dungeon_name'] = name
 
     def setData (self):
         pass

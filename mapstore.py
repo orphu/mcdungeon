@@ -299,6 +299,8 @@ class new:
         item['Count'] = nbt.TAG_Byte(1)
         item['tag'] = nbt.TAG_Compound()
         item['tag']['display'] = nbt.TAG_Compound()
-        item['tag']['display']['Name'] = nbt.TAG_String("Dungeon Level {l}".format(l=level))
+        name = dungeon.dungeon_name + ' Lv {l}'
+        item['tag']['display']['Name'] = nbt.TAG_String(name.format(l=level))
+        print item['tag']['display']['Name'].value
 
         return item

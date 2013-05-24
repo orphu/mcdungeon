@@ -2152,7 +2152,7 @@ class Crypt(Basic):
         sb(o+Vec(9,7,29), materials.StoneBrickStairs, 0)
 
         # Chest. Maxtier plus a level zero.
-        tomb_name = self.parent.namegen.genroyalname()
+        tomb_name = self.parent.owner
         sb(o+Vec(7,8,29), materials.Chest, 2)
         self.parent.addchest(o+Vec(7,8,29), loottable._maxtier, name=tomb_name)
         sb(o+Vec(8,8,29), materials.Chest, 2)

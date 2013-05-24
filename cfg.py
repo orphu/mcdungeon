@@ -56,6 +56,7 @@ silverfish = '0'
 maps = '0'
 mapstore = ''
 portal_exit = Vec(0,0,0)
+dungeon_name = None
 
 master_halls = []
 master_rooms = []
