@@ -932,6 +932,10 @@ if (cfg.offset is None or cfg.offset is ''):
     for cx, cz, mtime in regions.iterate_chunks():
         cc += 1
         pm.update(cc)
+        # Flush the cache periodically.
+        if notcached % 200 == 0:
+            saveChunkCache(cache_path, chunk_cache)
+
         if args.spawn is not None:
             sx = args.spawn[0]
             sz = args.spawn[1]
