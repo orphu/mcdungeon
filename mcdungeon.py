@@ -224,12 +224,12 @@ parser_regen.add_argument('world',
 parser_regen.add_argument('-d', '--dungeon',
                     metavar=('X', 'Z'),
                     nargs=2,
-                    required=True,
-                    dest='dungeon',
+                    action='append',
+                    dest='dungeons',
                     type=int,
                     help='The X Z coordinates of a dungeon to regenerate. \
                         NOTE: These will be rounded to the nearest chunk. \
-                        Only one dungeon at a time can be specified.')
+                        Multiple -d flags can be specified.')
 parser_regen.add_argument('-c', '--config',
                     dest='config',
                     metavar='CFGFILE',
@@ -262,10 +262,10 @@ parser_regen.add_argument('--mapstore',
                     dest='mapstore',
                     metavar='PATH',
                     help='Provide an alternate world to store maps.')
-#parser_regen.add_argument('-a', '--all',
-#                    dest='all',
-#                    action='store_true',
-#                    help='Regenerate all known dungeons. Overrides -d.')
+parser_regen.add_argument('-a', '--all',
+                    dest='all',
+                    action='store_true',
+                    help='Regenerate all known dungeons. Overrides -d.')
 
 
 # Parse the args
@@ -304,7 +304,7 @@ def loadWorld(world_name):
     print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
                                                             world.chunkCount,
                                                             world.Height)
-    # Create the mcdungeon cahce dir if needed. 
+    # Create the mcdungeon cache dir if needed. 
     cache_path = os.path.join(world_name, cfg.cache_dir)
     if os.path.exists(cache_path) is False:
         os.makedirs(cache_path)
@@ -342,19 +342,20 @@ def listDungeons(world, oworld, expand_fill_caves=False):
         count -= 1
         pm.update_left(count)
         key = '%s,%s' % (cx*16, cz*16)
-        if cmtime < mtime and key not in dungeonCacheOld:
+        if (cmtime > mtime or key in dungeonCacheOld):
+            notcached += 1
+            for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
+                if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
+                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    dungeonCache[key] = tileEntity
+                if (tileEntity['id'] == 'Chest' and
+                    'CustomName' in tileEntity and
+                    tileEntity['CustomName'] == 'MCDungeon Data Library'):
+                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    dungeonCache[key] = tileEntity
+        else:
             cached += 1
             continue
-        notcached += 1
-        for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
-            if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
-                key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
-                dungeonCache[key] = tileEntity
-            if (tileEntity['id'] == 'Chest' and
-                'CustomName' in tileEntity and
-                tileEntity['CustomName'] == 'MCDungeon Data Library'):
-                key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
-                dungeonCache[key] = tileEntity
     pm.set_complete()
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100*cached/world.chunkCount)
@@ -554,21 +555,25 @@ if (args.command == 'interactive'):
         if (cfg.mapstore == ''):
             cfg.mapstore = args.world
 
-        args.dungeon = None
+        args.dungeons = []
+        args.all = False
         world, oworld = loadWorld(args.world)
         dlist = listDungeons(world, oworld)
         if len(dlist) == 0:
             sys.exit()
         print 'Choose a dungeon to regenerate:\n-------------------------------\n'
+        print '\t[a] Regenerate ALL dungeons in this map.'
         for i in xrange(len(dlist)):
             print '\t[%d] Dungeon at %d %d.'%(i+1,
                                               dlist[i][0],
                                               dlist[i][1])
-        while (args.dungeon == None):
+        while (args.all == False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
-            if d.isdigit() and int(d) > 0 and int(d) <= len(dlist):
+            if d == 'a':
+                args.all = True
+            elif d.isdigit() and int(d) > 0 and int(d) <= len(dlist):
                 d = int(d)
-                args.dungeon = [dlist[d-1][0], dlist[d-1][1]]
+                args.dungeons = [dlist[d-1][0], dlist[d-1][1]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
@@ -718,136 +723,142 @@ if (args.command == 'delete'):
 
 # Regenerate mode
 if (args.command == 'regenerate'):
+    # Check to make sure the user specified what they want to do.
+    if args.dungeons == [] and args.all == False:
+        print 'You must specify either --all or at least one -d option when ' \
+                'regnerating dungeons.'
+        sys.exit(1)
     # Get a list of known dungeons and their size.
-    dlist = listDungeons(world, oworld)
+    if dungeons == []:
+        dungeons = listDungeons(world, oworld)
     # No dungeons. Exit.
-    if len(dlist) == 0:
+    if len(dungeons) == 0:
         sys.exit()
-    # A list of existing dungeon positions for convenience.
-    info = None
-    # Find our dungeon
-    d = args.dungeon
-    for e in dlist:
-        if (d[0] == e[0] and d[1] == e[1]):
-            info = e
-    if info == None:
-        sys.exit('Unable to locate dungeon at %d %d.'%(d[0], d[1]))
+    # Populate a list of dungeons to regenerate.
+    # If --all was specified, populate the regen lst will contain all known
+    # dungeons.
+    to_regen = []
+    if args.all == True:
+        for d in dungeons:
+            to_regen.append(d)
+    else:
+        for d in dungeons:
+            for argd in args.dungeons:
+                if (d[0], d[1]) == (argd[0], argd[1]):
+                    to_regen.append(d)
 
-    # Delete the existing maps for this dungeon so they can be recycled.
-    ms = mapstore.new(cfg.mapstore)
-    ms.delete_maps('%s,%s'%(d[0], d[1]))
+    if len(to_regen) == 0:
+        print 'Unable to locate specified dungeons!'
+        sys.exit(1)
 
-    # Build out our parameters
-    # Just build one dungeon
+    # We'll need caches and map stores
+    dungeon_cache, dmtime = loadDungeonCache(cache_path)
+    chunk_cache, cmtime = loadChunkCache(cache_path)
+    map_store = mapstore.new(cfg.mapstore)
+    loottable.Load()
+
+    # Set/override some common parameters
     args.number = 1
-    # No seed
     args.seed = None
-    # size and levels
-    args.x = str(info[2])
-    args.z = str(info[3])
-    args.levels = str(info[5])
-    # Location
-    cfg.offset = '%d %d %d'%(info[6], info[7], info[8])
     args.offset = None
-    args.bury = None
-    # Version 
-    version = info[9]
-    # Don't bury
-    cfg.bury = False
-    # Let's not bother with fill caves mode.
-    # override it from the config
+    args.bury = False
     cfg.fill_caves = False
-    # Entrance offset
-    args.entrance = [info[4]['entrance_pos'].x, info[4]['entrance_pos'].z]
-    # Entrance height
-    args.entrance_height = info[4]['entrance_height']
-    # Write flag
     args.write = True
-    # Temp workaround for regenerating portals until the generation functions
-    # move into the dungeon class.
-    cfg.portal_exit = info[4].get('portal_exit', Vec(0,0,0))
-    #print 'offset:', cfg.offset
-    #print 'size:', args.z, args.x, args.levels
-    #print 'bury:', cfg.bury
-    #print 'fill caves:', cfg.fill_caves
-    #print 'entrance:', args.entrance
-    # From here, we just go through the add process with the exception that we
-    # do not generate ruins.
-    print 'Regenerating dungeon at', cfg.offset, '...'
+
+    # Now go through each dungeon
+    for d in to_regen:
+        # Delete the existing maps for this dungeon so they can be recycled.
+        map_store.delete_maps('%s,%s'%(d[0], d[1]))
+
+        # Set some parameters for this specific dungeon
+        cfg.min_x = cfg.max_x = d[2]
+        cfg.min_z = cfg.max_z = d[3]
+        cfg.min_levels = cfg.max_levels = d[5]
+        cfg.offset = '%d %d %d'%(d[6], d[7], d[8])
+        args.entrance = [d[4]['entrance_pos'].x, d[4]['entrance_pos'].z]
+        args.entrance_height = d[4]['entrance_height']
+        cfg.portal_exit = d[4].get('portal_exit', Vec(0,0,0))
+
+        print 'Regenerating dungeon at', cfg.offset, '...'
+        dungeon = Dungeon(args,
+                          world,
+                          oworld,
+                          chunk_cache,
+                          dungeon_cache,
+                          good_chunks,
+                          map_store)
+        result = dungeon.generate(cache_path, __version__)
+        if result is False:
+            print 'Failed to regenerate dungeon! Aborting!'
+            sys.ext(1)
+    sys.exit()
 
 
-# Everything below is add/regen mode
+# Validate size settings
+cfg.min_x = 4
+cfg.max_x = cfg.max_dist - cfg.min_dist
+cfg.min_z = 4
+cfg.max_z = cfg.max_dist - cfg.min_dist
+cfg.min_levels = 1
+cfg.max_levels = 8
 
-# Load lewts
-loottable.Load()
-
-# Parse out the sizes
-min_x = 4
-max_x = cfg.max_dist - cfg.min_dist
-min_z = 4
-max_z = cfg.max_dist - cfg.min_dist
-min_levels = 1
-max_levels = 8
+# Range for X
+result = re.search('(\d+)-(\d+)', args.x)
+if (result):
+    cfg.min_x = int(result.group(1))
+    cfg.max_x = int(result.group(2))
+    if (cfg.min_x > cfg.max_x):
+        sys.exit('Minimum X must be equal or less than maximum X.')
+else:
+    try:
+        cfg.min_x = int(args.x)
+        cfg.max_x = int(args.x)
+    except ValueError:
+        sys.exit('X doesn\'t appear to be an integer!')
+if (cfg.min_x < 4):
+    sys.exit('Minimum X must be equal or greater than 4.')
 
 # Range for Z
 result = re.search('(\d+)-(\d+)', args.z)
 if (result):
-    min_z = int(result.group(1))
-    max_z = int(result.group(2))
-    args.z = -1
-    if (min_z > max_z):
+    cfg.min_z = int(result.group(1))
+    cfg.max_z = int(result.group(2))
+    if (cfg.min_z > cfg.max_z):
         sys.exit('Minimum Z must be equal or less than maximum Z.')
-    if (min_z < 4):
-        sys.exit('Minimum Z must be equal or greater than 4.')
-# Range for X
-result = re.search('(\d+)-(\d+)', args.x)
-if (result):
-    min_x = int(result.group(1))
-    max_x = int(result.group(2))
-    args.x = -1
-    if (min_x > max_x):
-        sys.exit('Minimum X must be equal or less than maximum X.')
-    if (min_x < 4):
-        sys.exit('Minimum X must be equal or greater than 4.')
+else:
+    try:
+        cfg.min_z = int(args.z)
+        cfg.max_z = int(args.z)
+    except ValueError:
+        sys.exit('Z doesn\'t appear to be an integer!')
+if (cfg.min_z < 4):
+    sys.exit('Minimum Z must be equal or greater than 4.')
+
 # Range for Levels
 result = re.search('(\d+)-(\d+)', args.levels)
 if (result):
-    min_levels = int(result.group(1))
-    max_levels = int(result.group(2))
-    args.levels = -1
-    if (min_levels > max_levels):
+    cfg.min_levels = int(result.group(1))
+    cfg.max_levels = int(result.group(2))
+    if (cfg.min_levels > cfg.max_levels):
         sys.exit('Minimum levels must be equal or less than maximum levels.')
-    if (min_levels < 1):
-        sys.exit('Minimum levels must be equal or greater than 1.')
-    if (max_levels > 42):
-        sys.exit('Maximum levels must be equal or less than 42.')
-elif int(args.levels) > 0:
-    min_levels = int(args.levels)
-    max_levels = int(args.levels)
+else:
+    try:
+        cfg.min_levels = int(args.levels)
+        cfg.max_levels = int(args.levels)
+    except ValueError:
+        sys.exit('Levels doesn\'t appear to be an integer!')
+if (cfg.min_levels < 1):
+    sys.exit('Minimum levels must be equal or greater than 1.')
+if (cfg.max_levels > 42):
+    sys.exit('Maximum levels must be equal or less than 42.')
 
-try:
-    args.z = int(args.z)
-except ValueError:
-    sys.exit('Z doesn\'t appear to be an integer!')
-try:
-    args.x = int(args.x)
-except ValueError:
-    sys.exit('X doesn\'t appear to be an integer!')
-try:
-    args.levels = int(args.levels)
-except ValueError:
-    sys.exit('Levels doesn\'t appear to be an integer!')
+# Everything below is add/regen mode
 
-if (args.z < 4 and args.z >= 0):
-    sys.exit('Too few rooms in Z direction. (%d) Try >= 4.'%(args.z))
-if (args.x < 4 and args.x >= 0):
-    sys.exit('Too few rooms in X direction. (%d) Try >= 4.'%(args.x))
-if (args.levels == 0 or args.levels > 42):
-    sys.exit('Invalid number of levels. (%d) Try between 1 and 42.'%(args.levels))
-
+# Override bury
 if (args.bury is not None):
     cfg.bury = args.bury
 
+# Override offset
 if (args.offset is not None):
     cfg.offset = '%d, %d, %d' % (args.offset[0],
                                  args.offset[1],
@@ -878,18 +889,21 @@ if (args.number is not 1):
         args.seed = None
 
 
+# Load lewts
+loottable.Load()
+
 print "MCDungeon",__version__,"startup complete. "
 
 if args.debug == True:
     print 'Z:', args.z
-    print '   ', min_z
-    print '   ', max_z
+    print '   ', cfg.min_z
+    print '   ', cfg.max_z
     print 'X:', args.x
-    print '   ', min_x
-    print '   ', max_x
+    print '   ', cfg.min_x
+    print '   ', cfg.max_x
     print 'L:', args.levels
-    print '   ', min_levels
-    print '   ', max_levels
+    print '   ', cfg.min_levels
+    print '   ', cfg.max_levels
 
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
@@ -1073,174 +1087,31 @@ if (cfg.offset is None or cfg.offset is ''):
                                              100*cached/(notcached+cached))
 
 
-# Load the cache for updates later.
-dungeonCache, mtime = loadDungeonCache(cache_path)
-while args.number is not 0:
-    # Define our dungeon.
-    x = args.x
-    z = args.z
-    levels = args.levels
-    if (args.z < 0):
-        z = randint(min_z, max_z)
-    if (args.x < 0):
-        x = randint(min_x, max_x)
-    if (args.levels < 0):
-        levels = randint(min_levels, max_levels)
+# Load the dungeon cache for updates later.
+dungeon_cache, mtime = loadDungeonCache(cache_path)
+# Create a map store
+map_store = mapstore.new(cfg.mapstore)
 
-    dungeon = None
-    located = False
+# Gnerate dungeons!
+count = 0
+result = True
+while (result is True and
+       (count < args.number or
+        args.number == -1)
+      ):
+    dungeon = Dungeon(args,
+                      world,
+                      oworld,
+                      chunk_cache,
+                      dungeon_cache,
+                      good_chunks,
+                      map_store)
+    result = dungeon.generate(cache_path, __version__)
+    if result:
+        count += 1
+    del(dungeon)
 
-    ms = mapstore.new(cfg.mapstore)
-
-    if (cfg.offset is not None and cfg.offset is not ''):
-        pos = str2Vec(cfg.offset)
-        pos.x = pos.x &~15
-        pos.z = pos.z &~15
-        dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
-                          chunk_cache, ms)
-        print 'Dungeon size: %d x %d x %d' % (x, z, levels)
-        dungeon.position = pos
-        if (cfg.bury is False):
-            located = dungeon.bury(world, manual=True)
-            located = True
-        else:
-            located = dungeon.bury(world)
-            if (located == False):
-                print 'Unable to bury a dungeon of requested depth at', pos
-                print 'Try fewer levels, or a smaller size, or another location.'
-                sys.exit(1)
-        print "Location set to: ", dungeon.position
-
-    else:
-        print "Searching for a suitable location..."
-        while (located is False):
-            dungeon = Dungeon(x, z, levels, good_chunks, args, world, oworld,
-                              chunk_cache, ms)
-            located = dungeon.findlocation(world, dungeon_positions)
-            if (located is False):
-                adjusted = False
-                if (args.x < 0 and x > min_x):
-                    x -= 1
-                    adjusted = True
-                if (args.z < 0 and z > min_z):
-                    z -= 1
-                    adjusted = True
-                if (adjusted is False and
-                    args.levels < 0 and
-                    levels > min_levels):
-                    levels -= 1
-                    adjusted = True
-                if (adjusted is False):
-                    print 'Unable to place any more dungeons.'
-                    break
-            else:
-                print 'Dungeon size: %d x %d x %d' % (x, z, levels)
-                print "Location: ", dungeon.position
-    if (located is True):
-        if (args.seed is not None):
-            seed(args.seed)
-            print 'Seed:',args.seed
-
-        print "Generating rooms..."
-        dungeon.genrooms(args.entrance)
-
-        print "Generating halls..."
-        dungeon.genhalls()
-
-        print "Generating floors..."
-        dungeon.genfloors()
-
-        print "Generating features..."
-        dungeon.genfeatures()
-
-        if args.command != 'regenerate':
-            print "Generating ruins..."
-            dungeon.genruins(world)
-            dungeon.setentrance(world)
-        else:
-            dungeon.entrance.height = args.entrance_height
-
-        print "Finding secret rooms..."
-        dungeon.findsecretrooms()
-
-        dungeon.renderruins()
-
-        dungeon.renderrooms()
-
-        dungeon.renderhalls()
-
-        dungeon.renderfloors()
-
-        dungeon.renderfeatures()
-
-        print "Rendering hall traps..."
-        dungeon.renderhallpistons()
-
-        dungeon.processBiomes()
-
-        print "Placing doors..."
-        dungeon.placedoors(cfg.doors)
-
-        print "Placing portcullises..."
-        dungeon.placeportcullises(cfg.portcullises)
-
-        print "Placing torches..."
-        dungeon.placetorches()
-
-        print "Placing chests..."
-        dungeon.placechests()
-
-        print "Placing spawners..."
-        dungeon.placespawners()
-
-        # Signature
-        dungeon.setblock(Vec(0,0,0), materials.Chest, 0, hide=True)
-        dungeon.tile_ents[Vec(0,0,0)]=encodeDungeonInfo(dungeon, __version__)
-
-        # Generate maps
-        if (args.write and cfg.maps > 0):
-            print "Generating maps..."
-            dungeon.generatemaps()
-
-        print "Placing special items..."
-        dungeon.placeitems()
-
-        # Write the changes to the world.
-        dungeon.applychanges(world)
-
-        # Output an html version.
-        if (args.html is not None):
-            dungeon.outputhtml(args.html, args.force)
-
-        # Output a slice of the dungeon to the terminal if requested.
-        if (args.term is not None):
-            dungeon.outputterminal(args.term)
-
-        start = dungeon.position
-        end = Vec(start.x + dungeon.xsize * dungeon.room_size - 1,
-          start.y - dungeon.levels * dungeon.room_height + 1,
-          start.z + dungeon.zsize * dungeon.room_size - 1)
-        dungeon_positions[Vec(start.x>>4,
-                             0,
-                             start.z>>4)] = start
-        dungeons.append('Dungeon %d (%d x %d x %d): %s to %s' %
-                        (len(dungeons)+1,
-                         x,
-                         z,
-                         levels,
-                         str(start),
-                         str(end)))
-        total_rooms += (x * z * levels)
-
-        # Update the cache
-        key = '%s,%s' % (dungeon.position.x, dungeon.position.z)
-        dungeonCache[key] = 1
-
-    args.number -= 1
-    if (located is False):
-        args.number = 0
-
-if (len(dungeons) == 0):
+if (count == 0):
     print 'No dungeons were generated!'
     print 'You may have requested too deep or too large a dungeon, or your '
     print 'allowed spawn region is too small. If using fill_caves, remember '
@@ -1248,47 +1119,4 @@ if (len(dungeons) == 0):
     print 'Check min_dist, max_dist, and fill_caves settings in your config.'
     sys.exit(1)
 
-# Relight
-if (args.write is True and args.skiprelight is False):
-    class myHandler(object):
-        _curr = 28
-        _count = 0
-        def __init__(self):
-            self.pm = pmeter.ProgressMeter()
-            self.pm.init(self._curr, label='Relighting chunks:')
-            #self.pm.update_left(self._curr)
-
-        def write(self, buff=''):
-            if 'Pass' in buff:
-                self._curr -= 1
-                self.pm.update_left(self._curr)
-
-        def flush(self):
-            pass
-
-        def done(self):
-            self.pm.set_complete()
-
-    # This is super ugly but, dammit, I want progress bars!
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
-    h = myHandler()
-    logging.basicConfig(stream=h, level=logging.INFO)
-    world.generateLights()
-    h.done()
-    logging.getLogger().level = logging.CRITICAL
-    for handler in logging.root.handlers[:]:
-        logging.root.removeHandler(handler)
-
-print 'Placed', len(dungeons), 'dungeons!'
-for d in dungeons:
-    print d
-print 'Total rooms:', total_rooms
-
-# Save the world.
-if (args.write is True):
-    print "Saving..."
-    world.saveInPlace()
-    saveDungeonCache(cache_path, dungeonCache)
-else:
-    print "Map NOT saved! This was a dry run. Use --write to enable saving."
+print 'Placed', count, 'dungeons!'

@@ -6,6 +6,7 @@ import operator
 import random
 from random import *
 import textwrap
+import logging
 
 import cfg
 import loottable
@@ -42,19 +43,44 @@ class MazeCell(object):
         self.depth = 0
         self.state = 0
 
+class RelightHandler(object):
+    _curr = 28
+    _count = 0
+    def __init__(self):
+        self.pm = pmeter.ProgressMeter()
+        self.pm.init(self._curr, label='Relighting chunks:')
+
+    def write(self, buff=''):
+        if 'Pass' in buff:
+            self._curr -= 1
+            self.pm.update_left(self._curr)
+
+    def flush(self):
+        pass
+
+    def done(self):
+        self.pm.set_complete()
+
 class Dungeon (object):
-    def __init__(self, xsize, zsize, levels, good_chunks, args, world, oworld,
-                 chunk_cache, mapstore):
+    def __init__(self,
+                 args,
+                 world,
+                 oworld,
+                 chunk_cache,
+                 dungeon_cache,
+                 good_chunks,
+                 mapstore):
         self.caches = []
         self.caches.append(cache.LRUCache(size=100))
 
         self.world = world
         self.oworld = oworld
         self.chunk_cache = chunk_cache
+        self.dungeon_cache = dungeon_cache
+        self.good_chunks = good_chunks
         self.mapstore = mapstore
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
-        self.good_chunks = good_chunks
         self.blocks = {}
         self.tile_ents = {}
         self.ents = []
@@ -64,28 +90,190 @@ class Dungeon (object):
         self.portcullises = {}
         self.entrance = None
         self.entrance_pos = Vec(0,0,0)
-        self.xsize = xsize
-        self.zsize = zsize
-        self.levels = levels
         self.maze = {}
         self.stairwells = []
-        for x in xrange(self.xsize):
-            for y in xrange(self.levels):
-                for z in xrange(self.zsize):
-                    self.maze[Vec(x,y,z)] = MazeCell(Vec(x,y,z))
-        self.halls = [ [ [ [None, None, None, None] for z in
-                         xrange(self.zsize) ] for y in
-                       xrange(self.levels) ] for x in
-                     xrange(self.xsize) ]
         self.room_size = 16
         self.room_height = 6
         self.position = Vec(0,0,0)
         self.args = args
-        self.heightmap = numpy.zeros((xsize*self.room_size,
-                                      zsize*self.room_size))
         self.dinfo = {}
         self.dinfo['fill_caves'] = cfg.fill_caves
         self.dinfo['portal_exit'] = cfg.portal_exit
+
+
+    def generate(self, cache_path, version):
+        '''Generate a dungeon'''
+        # Pick a starting size.
+        self.xsize = randint(cfg.min_x, cfg.max_x)
+        self.zsize = randint(cfg.min_z, cfg.max_z)
+        self.levels = randint(cfg.min_levels, cfg.max_levels)
+
+        located = False
+        result = False
+        # Find a location, if we can.
+        # Manual location
+        if cfg.offset is not '':
+            print 'Dungeon size: {0} x {1} x {2}'.format(self.xsize,
+                                                         self.zsize,
+                                                         self.levels)
+
+            self.position = str2Vec(cfg.offset)
+            self.position.x = self.position.x &~15
+            self.position.z = self.position.z &~15
+            # Bury it if we need to
+            located = self.bury(manual=bool(cfg.bury==False))
+            if (located == False):
+                print 'Unable to bury a dungeon of requested depth at', self.position
+                print 'Try fewer levels, or a smaller size, or another location.'
+                sys.exit(1)
+            print "Location set to: ", self.position
+        # Search for a location.
+        else:
+            print "Searching for a suitable location..."
+            while (located is False):
+                located = self.findlocation()
+                if (located is False):
+                    # Scale. Start with the largest axis and work down.
+                    adjusted = False
+                    while (adjusted is False and
+                           (self.xsize > cfg.min_x or
+                            self.zsize > cfg.min_z or
+                            self.levels > cfg.min_levels)
+                          ):
+                        if (self.xsize >= self.zsize and
+                            self.xsize >= self.levels and
+                            self.xsize > cfg.min_x):
+                            self.xsize -= 1
+                            adjusted = True
+                        if (adjusted == False and
+                            self.zsize >= self.xsize and
+                            self.zsize >= self.levels and
+                            self.zsize > cfg.min_z):
+                            self.zsize -= 1
+                            adjusted = True
+                        if (adjusted == False and
+                            self.levels+3 >= self.xsize and
+                            self.levels+3 >= self.zsize and
+                            self.levels > cfg.min_levels):
+                            self.levels -= 1
+                            adjusted = True
+
+                    if (adjusted is False):
+                        print 'Unable to place any more dungeons.'
+                        break
+                else:
+                    print 'Dungeon size: {0} x {1} x {2}'.format(self.xsize,
+                                                                 self.zsize,
+                                                                 self.levels)
+                    print "Location: ", self.position
+        # Generate!
+        if (located is True):
+            # We have a final size, so let's initialize some things.
+            for x in xrange(self.xsize):
+                 for y in xrange(self.levels):
+                     for z in xrange(self.zsize):
+                         self.maze[Vec(x,y,z)] = MazeCell(Vec(x,y,z))
+            self.halls = [ [ [ [None, None, None, None] for z in
+                             xrange(self.zsize) ] for y in
+                           xrange(self.levels) ] for x in
+                         xrange(self.xsize) ]
+
+            self.heightmap = numpy.zeros((self.xsize*self.room_size,
+                                          self.zsize*self.room_size))
+
+            # Set the seed if requested.
+            if (self.args.seed is not None):
+                seed(self.args.seed)
+                print 'Seed:',self.args.seed
+
+            print "Generating rooms..."
+            self.genrooms()
+            print "Generating halls..."
+            self.genhalls()
+            print "Generating floors..."
+            self.genfloors()
+            print "Generating features..."
+            self.genfeatures()
+            if self.args.command != 'regenerate':
+                print "Generating ruins..."
+                self.genruins()
+                self.setentrance()
+            else:
+                self.entrance.height = self.args.entrance_height
+            print "Finding secret rooms..."
+            self.findsecretrooms()
+            self.renderruins()
+            self.renderrooms()
+            self.renderhalls()
+            self.renderfloors()
+            self.renderfeatures()
+            print "Rendering hall traps..."
+            self.renderhallpistons()
+            self.processBiomes()
+            print "Placing doors..."
+            self.placedoors(cfg.doors)
+            print "Placing portcullises..."
+            self.placeportcullises()
+            print "Placing torches..."
+            self.placetorches()
+            print "Placing chests..."
+            self.placechests()
+            print "Placing spawners..."
+            self.placespawners()
+
+            # Signature
+            self.setblock(Vec(0,0,0), materials.Chest, 0, hide=True)
+            self.tile_ents[Vec(0,0,0)]=encodeDungeonInfo(self,
+                                                         version)
+            # Add to the dungeon cache.
+            key = key = '%s,%s' % (
+                self.position.x,
+                self.position.z,
+            )
+            #self.dungeon_cache[key] = self.tile_ents[Vec(0,0,0)]
+            self.dungeon_cache[key] = 1
+
+            # Generate maps
+            if (self.args.write and cfg.maps > 0):
+                print "Generating maps..."
+                self.generatemaps()
+            print "Placing special items..."
+            self.placeitems()
+
+            # copy results to the world
+            self.applychanges()
+
+            # Relight these chunks.
+            if (self.args.write is True and self.args.skiprelight is False):
+                # Super ugly, but does progress bars for lighting.
+                for handler in logging.root.handlers[:]:
+                    logging.root.removeHandler(handler)
+                h = RelightHandler()
+                logging.basicConfig(stream=h, level=logging.INFO)
+                self.world.generateLights()
+                h.done()
+                logging.getLogger().level = logging.CRITICAL
+                for handler in logging.root.handlers[:]:
+                    logging.root.removeHandler(handler)
+
+            # Saving here allows us to pick up where we left off if we stop.
+            if (self.args.write is True):
+                print "Saving..."
+                self.world.saveInPlace()
+                saveDungeonCache(cache_path, self.dungeon_cache)
+                saveChunkCache(cache_path, self.chunk_cache)
+            else:
+                print "Skipping save! (--write disabled)"
+
+            if (self.args.html is not None):
+                self.outputhtml()
+
+            if (self.args.term is not None):
+                self.outputterminal()
+
+            result = True
+
+        return result
 
     def printmaze(self, y, cursor=None):
         for z in xrange(self.zsize):
@@ -189,21 +377,24 @@ class Dungeon (object):
         return False
 
 
-    def findlocation(self, world, dungeon_locations):
+    def findlocation(self):
         positions = {}
         sorted_p = []
+        world = self.world
         if self.args.debug: print 'Filtering for depth...'
         for key, value in self.good_chunks.iteritems():
             if value >= (self.levels+1)*self.room_height:
                 positions[key] = value
 
-        if (cfg.maximize_distance == True and len(dungeon_locations) > 0):
+        if (cfg.maximize_distance == True and len(self.dungeon_cache) > 0):
             if self.args.debug: print 'Marking distances...'
             for key in positions.keys():
                 d = 2^64
                 chunk = Vec(key[0], 0, key[1])
-                for dungeon in dungeon_locations:
-                    d = min(d, (dungeon - chunk).mag2d())
+                for dungeon in self.dungeon_cache:
+                    (x, z) = dungeon.split(",")
+                    dpos = Vec(int(x)>>4, 0, int(z)>>4)
+                    d = min(d, (dpos - chunk).mag2d())
                 positions[key] = d
 
             sorted_p = sorted(positions.iteritems(),
@@ -234,7 +425,7 @@ class Dungeon (object):
                                     (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
                 self.worldmap(world, positions)
-                return self.bury(world)
+                return self.bury()
         return False
 
     def worldmap(self, world, positions):
@@ -293,7 +484,7 @@ class Dungeon (object):
             print
 
 
-    def bury(self, world, manual=False):
+    def bury(self, manual=False):
         if self.args.debug: print 'Burying dungeon...'
         min_depth = (self.levels+1)*self.room_height
 
@@ -320,10 +511,10 @@ class Dungeon (object):
         # Now we know the biome, we can setup a name generator
         self.namegen = namegenerator.namegenerator(self.biome)
 
-        depth = world.Height
+        depth = self.world.Height
         for chunk in d_chunks:
             if (chunk not in self.good_chunks):
-                d1 = findChunkDepth(Vec(chunk[0], 0, chunk[1]), world)
+                d1 = findChunkDepth(Vec(chunk[0], 0, chunk[1]), self.world)
                 self.good_chunks[chunk] = d1
             else:
                 d1 = self.good_chunks[chunk]
@@ -332,7 +523,7 @@ class Dungeon (object):
                 if (d1 < min_depth):
                     print 'Selected area is too shallow to bury dungeon.'
                     return False
-                elif (d1 > world.Height - 27):
+                elif (d1 > self.world.Height - 27):
                     print 'Selected area is too high to hold dungeon. ', d1
                     return False
 
@@ -638,7 +829,7 @@ class Dungeon (object):
 
         return outtag
 
-        
+
     def loadrandpainting(self):
         if os.path.isdir(os.path.join(sys.path[0],'paintings')):
             paint_path = os.path.join(sys.path[0],'paintings')
@@ -822,7 +1013,7 @@ class Dungeon (object):
         name = weighted_choice(cfg.master_chest_traps)
         count = int(cfg.lookup_chest_traps[name][1])
         self.addtrap(loc, name=name, count=count)
-    
+
     def addtrap(self, loc, name=None, count=None):
         if name == None:
             name = weighted_choice(cfg.master_dispensers)
@@ -858,7 +1049,7 @@ class Dungeon (object):
         print
         sys.exit()
 
-    def genrooms(self, args_entrance):
+    def genrooms(self):
         # Generate the maze used for room and hall placement.
         # stairwells contains the lower half of a stairwell. 
         self.stairwells = []
@@ -891,9 +1082,9 @@ class Dungeon (object):
 
         # Start in a random location on level 1, unless the -e
         # options was used. 
-        if (args_entrance is not None):
-            x = args_entrance[0]
-            z = args_entrance[1]
+        if (self.args.entrance is not None):
+            x = self.args.entrance[0]
+            z = self.args.entrance[1]
         else:
             x = random.randint(0, self.xsize-1)
             z = random.randint(0, self.zsize-1)
@@ -1301,7 +1492,7 @@ class Dungeon (object):
                 self.rooms[pos].features.append(feature)
                 feature.placed()
 
-    def genruins(self, world):
+    def genruins(self):
         for pos in self.rooms:
             if (pos.y == 0 and
                 len(self.rooms[pos].ruins) == 0):
@@ -1312,7 +1503,7 @@ class Dungeon (object):
                     ruin = ruins.new(weighted_choice(cfg.master_ruins),
                                  self.rooms[pos])
                 self.rooms[pos].ruins.append(ruin)
-                ruin.placed(world)
+                ruin.placed(self.world)
 
     def placetorches(self, level=0):
         '''Place a proportion of the torches where possible'''
@@ -1512,10 +1703,10 @@ class Dungeon (object):
             self.placespawners(level+1)
 
 
-    def placeportcullises(self, perc):
+    def placeportcullises(self):
         '''Place a proportion of the portcullises where possible'''
         count = 0
-        maxcount = perc * len(self.portcullises) / 100
+        maxcount = cfg.portcullises * len(self.portcullises) / 100
         for pos, portcullis in self.portcullises.items():
             if (count < maxcount):
                 for dpos, val in portcullis.portcullises.items():
@@ -1881,9 +2072,10 @@ class Dungeon (object):
                 x.render()
         self.pm.set_complete()
 
-    def outputterminal(self, floor):
+    def outputterminal(self):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
+        floor = args.term
         layer = (floor-1)*self.room_height
         for z in xrange(self.zsize*self.room_size):
             for x in xrange(self.xsize*self.room_size):
@@ -1908,9 +2100,11 @@ class Dungeon (object):
             print
 
 
-    def outputhtml(self, basename, force):
+    def outputhtml(self):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
+        basename = args.html
+        force = args.force
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
@@ -2081,7 +2275,7 @@ class Dungeon (object):
             room2.halls[od] = halls.new('single', room2, od, offset)
 
 
-    def setentrance(self, world):
+    def setentrance(self):
         if self.args.debug: print 'Extending entrance to the surface...'
         wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
                    self.position.y - self.entrance.parent.loc.y,
@@ -2089,7 +2283,7 @@ class Dungeon (object):
         if self.args.debug: print '   World coord:',wcoord
         baseheight = wcoord.y + 2 # plenum + floor
         #newheight = baseheight
-        low_height = world.Height
+        low_height = self.world.Height
         high_height = baseheight
         if self.args.debug: print '   Base height:',baseheight
         # List of blocks to ignore.
@@ -2098,7 +2292,7 @@ class Dungeon (object):
                   59,63,64,65,66,68,70,71,72,75,76,
                   77,81,83,85,86,90,91,92,93,94, 99, 100, 103, 104, 105, 106,
                   111, 127)
-        chunk = world.getChunk(wcoord.x>>4, wcoord.z>>4)
+        chunk = self.world.getChunk(wcoord.x>>4, wcoord.z>>4)
         for x in xrange(wcoord.x+4, wcoord.x+12):
             for z in xrange(wcoord.z+4, wcoord.z+12):
                 xInChunk = x & 0xf
@@ -2125,8 +2319,8 @@ class Dungeon (object):
             self.entrance.high_height += high_height - baseheight
         self.entrance.u = int(cfg.tower*self.entrance.u)
         # Check the upper bounds of the tower
-        if (high_height + self.entrance.u >= world.Height):
-            self.entrance.u = world.Height - 3 - high_height
+        if (high_height + self.entrance.u >= self.world.Height):
+            self.entrance.u = self.world.Height - 3 - high_height
 
     def generatemaps(self):
         for level in xrange(1, self.levels+1):
@@ -2156,8 +2350,9 @@ class Dungeon (object):
                     if self.addchestitem_tag(loc, item['item']):
                         break
 
-    def applychanges(self, world):
+    def applychanges(self):
         '''Write the block buffer to the specified world'''
+        world = self.world
         changed_chunks = set()
         num_blocks = len(self.blocks)
         # Fill caves

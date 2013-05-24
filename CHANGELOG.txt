@@ -2,7 +2,31 @@ v0.11.1
 
    * Witches now have a themed name. (JiFish)
 
-   * Fixed a bug when trying to regnerate dungeons created with older
+   * More paintings (JiFish)
+
+   * Special spawners settings for treasure rooms allow for a more
+     challenging end game. (JiFish)
+
+   * Option to regenerate all known dungeons on a map. (orphu)
+
+   * More variation to item names in armories. (JiFish)
+
+   * Completed dungeons are now relit and saved immediately. You can
+     stop the generation process and pick it up again later. (orphu)
+
+   * maximize_distance now takes old dungeons into account. (orphu)
+
+   * Improved packing of dungeons when generating as many as
+     possible. Dungeons will be more cube shaped instead of deep and
+     skinny. (orphu)
+
+   * Removed skulls from chapels (JiFish)
+  
+   * Fixed a potential bug in fortune loading. (JiFish)
+
+   * Removed unreliable treasure item in armories. (orphu)
+
+   * Fixed a bug when trying to regenerate dungeons created with older
      versions. (orphu)
 	
    * Fixed dungeons being a little too shallow, especially on flat
