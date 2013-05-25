@@ -10,18 +10,24 @@ from utils import *
 
 class Blank(object):
     _name = 'blank'
-    _dnamesA = (None,
-                None,
-                'Ruined',
-                'Rotting',
-                'Evil'
+    _dnamesA = (
+                ('', 30),
+                ('Evil ', 10),
+                ('Forsaken ', 10),
+                ('Rotting ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Sunken ', 10),
                )
-    _dnamesB = ('Dungeon',
-                'Tomb of {owner}',
-                'Keep',
-                'Temple',
-                'Temple to {owner}',
-                'Fortress',
+    _dnamesB = (
+                ('Dungeon', 2),
+                ('Fortress', 2),
+                ('Keep', 2),
+                ('Mines', 2),
+                ('Temple', 1),
+                ('Temple to {owner}', 1),
+                ('Tomb', 1),
+                ('Tomb of {owner}', 1),
                )
 
     def __init__ (self, parent):
@@ -44,12 +50,7 @@ class Blank(object):
 
     def nameDungeon(self):
         # Name this place
-        a = random.choice(self._dnamesA)
-        b = random.choice(self._dnamesB)
-        if a is not None:
-            name = a+" "+b
-        else:
-            name = b
+        name = weighted_choice(self._dnamesA) + weighted_choice(self._dnamesB)
         self.parent.parent.dinfo['dungeon_name'] = name
 
     def setData (self):

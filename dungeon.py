@@ -202,7 +202,7 @@ class Dungeon (object):
             else:
                 self.entrance.height = self.args.entrance_height
             self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner)
-            print self.dungeon_name
+            print "Dungeon name:", self.dungeon_name
             print "Finding secret rooms..."
             self.findsecretrooms()
             self.renderruins()
