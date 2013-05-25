@@ -20,14 +20,15 @@ class Blank(object):
                 ('Sunken ', 10),
                )
     _dnamesB = (
+                ('Cairn', 2),
                 ('Dungeon', 2),
                 ('Fortress', 2),
                 ('Keep', 2),
                 ('Mines', 2),
                 ('Temple', 1),
-                ('Temple to {owner}', 1),
+                ('Temple to {owner}', 2),
                 ('Tomb', 1),
-                ('Tomb of {owner}', 1),
+                ('Tomb of {owner}', 2),
                )
 
     def __init__ (self, parent):
@@ -61,6 +62,23 @@ class Blank(object):
 
 class EvilRunestones(Blank):
     _name = 'evilrunestones'
+    _dnamesA = (
+                ('Chaos ', 10),
+                ('Evil ', 10),
+                ('Forsaken ', 10),
+                ('Nether ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Standing ', 10),
+                ('Sunken ', 10),
+               )
+    _dnamesB = (
+                ('Gates', 2),
+                ('Pillars', 2),
+                ('Runestones', 2),
+                ('Stones', 2),
+                ('Teeth', 2),
+               )
 
     def render(self):
         # For most of this one, we render directly to the chunk structure.
@@ -155,6 +173,22 @@ class EvilRunestones(Blank):
 
 class StepPyramid(Blank):
     _name = 'steppyramid'
+    _dnamesA = (
+                ('', 25),
+                ('Forsaken ', 10),
+                ('Rotting ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Sunken ', 10),
+               )
+    _dnamesB = (
+                ('Pyramid', 1),
+                ('Pyramid of {owner}', 2),
+                ('Tomb', 1),
+                ('Tomb of {owner}', 2),
+                ('Temple', 1),
+                ('Temple to {owner}', 2),
+               )
 
     def setData(self):
         # The StepPyramid will be 4x4 chunks.
@@ -621,6 +655,26 @@ class RoundTowerEntrance(Blank):
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
     _biome = True
+    _dnamesA = (
+                ('', 30),
+                ('Evil ', 10),
+                ('Forsaken ', 10),
+                ('Rotting ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Sunken ', 10),
+               )
+    _dnamesB = (
+                ('Cairn', 2),
+                ('Dungeon', 2),
+                ('Fortress', 2),
+                ('Keep', 2),
+                ('Mines', 2),
+                ('Tomb', 1),
+                ('Tomb of {owner}', 2),
+                ('Tower', 1),
+                ('Tower of {owner}', 2),
+               )
 
     def render (self):
         # adjust to biomes if needed
@@ -803,6 +857,26 @@ class SquareTowerEntrance(Blank):
     _stair = materials.StoneBrickStairs
     _support = materials.StoneBrickStairs
     _biome = True
+    _dnamesA = (
+                ('', 30),
+                ('Evil ', 10),
+                ('Forsaken ', 10),
+                ('Rotting ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Sunken ', 10),
+               )
+    _dnamesB = (
+                ('Cairn', 2),
+                ('Dungeon', 2),
+                ('Fortress', 2),
+                ('Keep', 2),
+                ('Mines', 2),
+                ('Tomb', 1),
+                ('Tomb of {owner}', 2),
+                ('Tower', 1),
+                ('Tower of {owner}', 2),
+               )
 
     def render (self):
         # adjust to biomes if needed
@@ -1073,6 +1147,27 @@ class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
 
 class RuinedFane(Blank):
     _name = 'ruinedfane'
+    _dnamesA = (
+                ('', 30),
+                ('Evil ', 10),
+                ('Forsaken ', 10),
+                ('Rotting ', 10),
+                ('Ruined ', 10),
+                ('Shadow ', 10),
+                ('Sunken ', 10),
+               )
+    _dnamesB = (
+                ('Cairn', 2),
+                ('Cathedral', 2),
+                ('Dungeon', 2),
+                ('Fane', 2),
+                ('Fortress', 2),
+                ('Keep', 2),
+                ('Temple', 1),
+                ('Temple of {owner}', 2),
+                ('Tomb', 1),
+                ('Tomb of {owner}', 2),
+               )
 
     def render (self):
 
