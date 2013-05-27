@@ -49,10 +49,11 @@ class Blank(object):
                        self.pos.z * self.parent.parent.room_size)
         self.setData()
 
+    @classmethod
     def nameDungeon(self):
         # Name this place
         name = weighted_choice(self._dnamesA) + weighted_choice(self._dnamesB)
-        self.parent.parent.dinfo['dungeon_name'] = name
+        return name
 
     def setData (self):
         pass

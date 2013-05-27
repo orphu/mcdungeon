@@ -202,6 +202,7 @@ class Dungeon (object):
             else:
                 self.entrance.height = self.args.entrance_height
             self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner)
+            self.dinfo['full_name'] = self.dungeon_name
             print "Dungeon name:", self.dungeon_name
             print "Finding secret rooms..."
             self.findsecretrooms()
@@ -1504,7 +1505,7 @@ class Dungeon (object):
                 if pos == self.entrance.parent.pos:
                     ruin = ruins.new(weighted_choice(cfg.master_entrances),
                                  self.rooms[pos])
-                    ruin.nameDungeon()
+                    self.dinfo['dungeon_name'] = ruin.nameDungeon()
                 else:
                     ruin = ruins.new(weighted_choice(cfg.master_ruins),
                                  self.rooms[pos])

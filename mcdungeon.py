@@ -276,6 +276,7 @@ import loottable
 from dungeon import *
 from utils import *
 import mapstore
+import ruins
 
 def loadWorld(world_name):
     '''Attempt to load a world file. Look in the literal path first, then look
@@ -366,16 +367,16 @@ def listDungeons(world, oworld, expand_fill_caves=False):
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
-    output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
-    output += '| %9s | %14s | %7s | %7s | %6s | %17s |\n' % (
-        'Position',
+    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
+    output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
+        'Pos',
         'Date/Time',
-        'Version',
+        'Ver',
         'Size',
-        'Levels',
-        'Options'
+        'Lv',
+        'Name'
     )
-    output += '+-----------+----------------+---------+---------+--------+-------------------+\n'
+    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
     for tileEntity in dungeonCache.values():
         info = decodeDungeonInfo(tileEntity)
 
@@ -400,16 +401,17 @@ def listDungeons(world, oworld, expand_fill_caves=False):
                          info["position"].y,
                          info["position"].z,
                          version))
-        output += '| %9s | %14s | %7s | %7s | %6d | %17s |\n' % (
-         '%d %d'%(info["position"].x, info["position"].z),
-            time.strftime('%x %H:%M',
-                       time.localtime(info['timestamp'])),
-         info['version'],
-         '%dx%d'%(xsize, zsize),
-         levels,
-         'Fill Caves' if info['fill_caves'] else 'None'
+        output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
+                  '%d %d'%(info["position"].x,
+                  info["position"].z),
+                  time.strftime('%x %H:%M',
+                  time.localtime(info['timestamp'])),
+                  info['version'],
+                  '%dx%d'%(xsize, zsize),
+                  levels,
+                  info.get('full_name', 'Dungeon')[:23]
         )
-    output += '+-----------+--------------------------+---------+--------+-------------------+\n'
+    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
     if len(dungeons) > 0:
         print output
     else:
@@ -778,7 +780,7 @@ if (args.command == 'regenerate'):
         args.entrance = [d[4]['entrance_pos'].x, d[4]['entrance_pos'].z]
         args.entrance_height = d[4]['entrance_height']
         cfg.portal_exit = d[4].get('portal_exit', Vec(0,0,0))
-        cfg.dungeon_name = d[4].get('dungeon_name', 'Dungeon')
+        cfg.dungeon_name = d[4].get('dungeon_name', ruins.Blank.nameDungeon())
 
         print 'Regenerating dungeon at', cfg.offset, '...'
         dungeon = Dungeon(args,
