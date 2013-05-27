@@ -1,8 +1,9 @@
-import sys
-import os
-import materials
 import ConfigParser
+import os
+from pprint import pprint
+import sys
 
+import materials
 from utils import *
 
 cache_dir = 'mcdungeon_cache'
@@ -65,7 +66,7 @@ master_features = []
 master_stairwells = []
 master_floors = []
 master_ruins = [('blank',1)]
-master_entrances = [('squaretowerentrance',1)]
+master_entrances = {}
 master_treasure = [('pitwitharchers',1)]
 master_dispensers = []
 lookup_dispensers = {}
@@ -140,13 +141,23 @@ def Load(filename = 'default.cfg'):
     except:
         print 'WARNING: No ruins section found in config. Using default.'
     try:
-        master_entrances = parser.items('entrances')
-    except:
-        print 'WARNING: No entrances section found in config. Using default.'
-    try:
         master_treasure = parser.items('treasure rooms')
     except:
         print 'WARNING: No treasure rooms section found in config. Using default.'
+
+    # Load per-biome entrances.
+    # First, the default
+    try:
+        default_entrances = parser.items('entrances')
+    except:
+        default_entrances = [('SquareTowerEntrance', 10)]
+    # 23 biomes as of Minecraft 1.5
+    for d in xrange(0,23):
+        section = 'entrances.{0}'.format(d)
+        try:
+            master_entrances[d] = parser.items(section)
+        except:
+            master_entrances[d] = default_entrances
 
     # Load the mob spawner tables
     max_mob_tier = 0

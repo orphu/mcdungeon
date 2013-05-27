@@ -1,5 +1,7 @@
 v0.11.1
 
+   * Per-biome entrance configurations. (orphu)
+
    * Configurable trapped chests. (JiFish)
 
    * Dungeons will be given an owner and dungeon name that will be
