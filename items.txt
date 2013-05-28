@@ -231,6 +231,42 @@
 155,Block of Quartz,0,64
 156,Quartz Stairs,0,64
 157,Activator Rail,0,64
+158,Dropper,0,64
+159,White Stained Clay,0,64
+159,Orange Stained Clay,1,64
+159,Magenta Stained Clay,2,64
+159,Light Blue Stained Clay,3,64
+159,Yellow Stained Clay,4,64
+159,Light Green Stained Clay,5,64
+159,Pink Stained Clay,6,64
+159,Gray Stained Clay,7,64
+159,Light Gray Stained Clay,8,64
+159,Cyan Stained Clay,9,64
+159,Purple Stained Clay,10,64
+159,Blue Stained Clay,11,64
+159,Brown Stained Clay,12,64
+159,Dark Green Stained Clay,13,64
+159,Red Stained Clay,14,64
+159,Black Stained Clay,15,64
+170,Hay Block,0,64
+171,White Carpet,0,64
+171,Orange Carpet,1,64
+171,Magenta Carpet,2,64
+171,Light Blue Carpet,3,64
+171,Yellow Carpet,4,64
+171,Light Green Carpet,5,64
+171,Pink Carpet,6,64
+171,Gray Carpet,7,64
+171,Light Gray Carpet,8,64
+171,Cyan Carpet,9,64
+171,Purple Carpet,10,64
+171,Blue Carpet,11,64
+171,Brown Carpet,12,64
+171,Dark Green Carpet,13,64
+171,Red Carpet,14,64
+171,Black Carpet,15,64
+172,Hardened Clay,0,64
+173,Block of Coal,0,64
 
 # Items
 #
@@ -391,6 +427,7 @@
 383,Spawn Creeper,50,64
 383,Spawn Enderman,58,64
 383,Spawn Ghast,56,64
+383,Spawn Horse,100,64
 383,Spawn Magma Cube,62,64
 383,Spawn Mooshroom,96,64
 383,Spawn Ocelot,98,64
@@ -430,6 +467,13 @@
 404,Redstone Comparator,0,64
 405,Nether Brick,0,64
 406,Nether Quartz,0,64
+407,Minecart with TNT,0,1
+408,Minecart with Hopper,0,1
+417,Iron Horse Armor,0,1
+418,Gold Horse Armor,0,1
+419,Diamond Horse Armor,0,1
+420,Lead,0,64
+421,Name Tag,0,64
 # Disks
 #
 2256,Music Disc 13,0,1
