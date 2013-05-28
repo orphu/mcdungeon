@@ -191,6 +191,7 @@ BirchSlab = Material('Birch Slab', 'd',RED)
 JungleSlab = Material('Jungle Slab', 'd',RED)
 WoodenStairs = Material('Wooden Stairs', 'L',RED)
 Wool = Material('Wool', 'W',GREY)
+StainedClay = Material('White Stained Clay', 'C',GREY)
 
 # Wools
 OrangeWool = Material('Orange Wool', 'W', YELLOW)

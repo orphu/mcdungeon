@@ -103,13 +103,14 @@ class CheckerRug(Blank):
         (12,13), # brown  / dark green
         (15,13), # black  / dark green
         )
+    mat = materials.Wool
     def render (self):
         if (sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         color = random.choice(self.colors)
         for x in iterate_points_inside_flat_poly(*self.parent.canvas):
             self.parent.parent.setblock(x+self.parent.loc,
-                                        materials.Wool)
+                                        self.mat)
             if ((x.x+x.z)&1 == 1):
                 self.parent.parent.blocks[x+self.parent.loc].data = color[0]
             else:
@@ -134,6 +135,17 @@ class CheckerRug(Blank):
 class BrokenCheckerRug(CheckerRug):
     _name = 'brokencheckerrug'
     ruin = True
+
+
+class CheckerClay(CheckerRug):
+    _name = 'checkerclay'
+    mat = materials.StainedClay
+
+
+class BrokenCheckerClay(CheckerRug):
+    _name = 'brokencheckerclay'
+    ruin = True
+    mat = materials.StainedClay
 
 
 class DoubleSlab(Blank):
