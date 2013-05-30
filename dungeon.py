@@ -202,7 +202,13 @@ class Dungeon (object):
                 self.setentrance()
             else:
                 self.entrance.height = self.args.entrance_height
-            self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner)
+            # Name this place
+            if self.owner.endswith("s"):
+                owners = self.owner+"'"
+            else:
+                owners = self.owner+"'s"
+            self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner,
+                                              owners=owners)
             self.dinfo['full_name'] = self.dungeon_name
             print "Dungeon name:", self.dungeon_name
             print "Finding secret rooms..."

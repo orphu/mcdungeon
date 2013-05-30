@@ -11,24 +11,38 @@ from utils import *
 class Blank(object):
     _name = 'blank'
     _dnamesA = (
-                ('', 30),
+                ('', 50),
+                ('Accursed ', 10),
+                ('Ancient ', 10),
+                ('Black ', 10),
                 ('Evil ', 10),
+                ('Forbidden ', 10),
+                ('Forgotten ', 10),
                 ('Forsaken ', 10),
+                ('Hidden ', 10),
+                ('Lost ', 10),
                 ('Rotting ', 10),
                 ('Ruined ', 10),
                 ('Shadow ', 10),
                 ('Sunken ', 10),
                )
     _dnamesB = (
-                ('Cairn', 2),
-                ('Dungeon', 2),
-                ('Fortress', 2),
-                ('Keep', 2),
-                ('Mines', 2),
-                ('Temple', 1),
-                ('Temple to {owner}', 2),
-                ('Tomb', 1),
-                ('Tomb of {owner}', 2),
+                ('{A}Catacombs', 3),
+                ('{A}Dungeon', 3),
+                ('{A}Fortress', 1),
+                ('{{owners}} Fortress', 1),
+                ('Fortress of {{owner}}', 1),
+                ('{{owners}} Hall', 3),
+                ('{A}Keep', 1),
+                ('{{owners}} Keep', 1),
+                ('{A}Mines', 3),
+                ('{A}Ruins', 3),
+                ('{A}Temple', 1),
+                ('{{owners}} Temple', 1),
+                ('Temple to {{owner}}', 1),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
                )
 
     def __init__ (self, parent):
@@ -52,7 +66,8 @@ class Blank(object):
     @classmethod
     def nameDungeon(self):
         # Name this place
-        name = weighted_choice(self._dnamesA) + weighted_choice(self._dnamesB)
+        A = weighted_choice(self._dnamesA)
+        name = weighted_choice(self._dnamesB).format(A=A)
         return name
 
     def setData (self):
@@ -63,22 +78,12 @@ class Blank(object):
 
 class EvilRunestones(Blank):
     _name = 'evilrunestones'
-    _dnamesA = (
-                ('Chaos ', 10),
-                ('Evil ', 10),
-                ('Forsaken ', 10),
-                ('Nether ', 10),
-                ('Ruined ', 10),
-                ('Shadow ', 10),
-                ('Standing ', 10),
-                ('Sunken ', 10),
-               )
     _dnamesB = (
-                ('Gates', 2),
-                ('Pillars', 2),
-                ('Runestones', 2),
-                ('Stones', 2),
-                ('Teeth', 2),
+                ('{A}Gates', 2),
+                ('{A}Pillars', 2),
+                ('{A}Runestones', 2),
+                ('{A}Stones', 2),
+                ('{A}Teeth', 2),
                )
 
     def render(self):
@@ -174,21 +179,18 @@ class EvilRunestones(Blank):
 
 class StepPyramid(Blank):
     _name = 'steppyramid'
-    _dnamesA = (
-                ('', 25),
-                ('Forsaken ', 10),
-                ('Rotting ', 10),
-                ('Ruined ', 10),
-                ('Shadow ', 10),
-                ('Sunken ', 10),
-               )
     _dnamesB = (
-                ('Pyramid', 1),
-                ('Pyramid of {owner}', 2),
-                ('Tomb', 1),
-                ('Tomb of {owner}', 2),
-                ('Temple', 1),
-                ('Temple to {owner}', 2),
+                ('{A}Catacombs', 3),
+                ('{A}Ruins', 3),
+                ('{A}Temple', 1),
+                ('{{owners}} Temple', 1),
+                ('Temple to {{owner}}', 1),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
+                ('{A}Pyramid', 1),
+                ('{{owners}} Pyramid', 1),
+                ('Pyramid of {{owner}}', 1),
                )
 
     def setData(self):
@@ -656,25 +658,23 @@ class RoundTowerEntrance(Blank):
     _mat = materials.meta_mossystonebrick
     _stair = materials.StoneBrickStairs
     _biome = True
-    _dnamesA = (
-                ('', 30),
-                ('Evil ', 10),
-                ('Forsaken ', 10),
-                ('Rotting ', 10),
-                ('Ruined ', 10),
-                ('Shadow ', 10),
-                ('Sunken ', 10),
-               )
     _dnamesB = (
-                ('Cairn', 2),
-                ('Dungeon', 2),
-                ('Fortress', 2),
-                ('Keep', 2),
-                ('Mines', 2),
-                ('Tomb', 1),
-                ('Tomb of {owner}', 2),
-                ('Tower', 1),
-                ('Tower of {owner}', 2),
+                ('{A}Catacombs', 3),
+                ('{A}Dungeon', 3),
+                ('{A}Fortress', 1),
+                ('{{owners}} Fortress', 1),
+                ('Fortress of {{owner}}', 1),
+                ('{{owners}} Hall', 3),
+                ('{A}Keep', 1),
+                ('{{owners}} Keep', 1),
+                ('{A}Mines', 3),
+                ('{A}Ruins', 3),
+                ('{A}Tower', 3),
+                ('{{owners}} Tower', 3),
+                ('Tower to {{owner}}', 3),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
                )
 
     def render (self):
@@ -858,25 +858,23 @@ class SquareTowerEntrance(Blank):
     _stair = materials.StoneBrickStairs
     _support = materials.StoneBrickStairs
     _biome = True
-    _dnamesA = (
-                ('', 30),
-                ('Evil ', 10),
-                ('Forsaken ', 10),
-                ('Rotting ', 10),
-                ('Ruined ', 10),
-                ('Shadow ', 10),
-                ('Sunken ', 10),
-               )
     _dnamesB = (
-                ('Cairn', 2),
-                ('Dungeon', 2),
-                ('Fortress', 2),
-                ('Keep', 2),
-                ('Mines', 2),
-                ('Tomb', 1),
-                ('Tomb of {owner}', 2),
-                ('Tower', 1),
-                ('Tower of {owner}', 2),
+                ('{A}Catacombs', 3),
+                ('{A}Dungeon', 3),
+                ('{A}Fortress', 1),
+                ('{{owners}} Fortress', 1),
+                ('Fortress of {{owner}}', 1),
+                ('{{owners}} Hall', 3),
+                ('{A}Keep', 1),
+                ('{{owners}} Keep', 1),
+                ('{A}Mines', 3),
+                ('{A}Ruins', 3),
+                ('{A}Tower', 3),
+                ('{{owners}} Tower', 3),
+                ('Tower to {{owner}}', 3),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
                )
 
     def render (self):
@@ -1148,26 +1146,22 @@ class RuinedRoundTowerEntranceStoneBrick(RoundTowerEntrance):
 
 class RuinedFane(Blank):
     _name = 'ruinedfane'
-    _dnamesA = (
-                ('', 30),
-                ('Evil ', 10),
-                ('Forsaken ', 10),
-                ('Rotting ', 10),
-                ('Ruined ', 10),
-                ('Shadow ', 10),
-                ('Sunken ', 10),
-               )
     _dnamesB = (
-                ('Cairn', 2),
-                ('Cathedral', 2),
-                ('Dungeon', 2),
-                ('Fane', 2),
-                ('Fortress', 2),
-                ('Keep', 2),
-                ('Temple', 1),
-                ('Temple of {owner}', 2),
-                ('Tomb', 1),
-                ('Tomb of {owner}', 2),
+                ('{A}Catacombs', 3),
+                ('{A}Fortress', 1),
+                ('{{owners}} Fortress', 1),
+                ('Fortress of {{owner}}', 1),
+                ('{{owners}} Hall', 3),
+                ('{A}Keep', 1),
+                ('{{owners}} Keep', 1),
+                ('{A}Fane', 3),
+                ('{A}Ruins', 3),
+                ('{A}Temple', 1),
+                ('{{owners}} Temple', 1),
+                ('Temple to {{owner}}', 1),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
                )
 
     def render (self):
