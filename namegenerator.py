@@ -7,32 +7,31 @@ from namegen import namegen
 class namegenerator:
     def __init__(self, biomeid):
         # Get theme from biome id
-        theme = self.gettheme(biomeid)
-        print theme
+        self.theme = self.gettheme(biomeid)
         # Choose DICT based on theme
-        if (theme == 'egyptian'):
+        if (self.theme == 'egyptian'):
             dict = 'egyptian.txt'
             self.titles = ['Pharaoh','High Priest','Vizier']
-        elif (theme == 'norse'):
+        elif (self.theme == 'norse'):
             dict = 'norse.txt'
             self.titles = ['King','Queen','Jarl','Hojfruen']
-        elif (theme == 'saxon'):
+        elif (self.theme == 'saxon'):
             dict = 'saxon.txt'
             self.titles = ['King','Queen', 'Elder']
-        elif (theme == 'elven'):
+        elif (self.theme == 'elven'):
             dict = 'elven.txt'
             self.titles = ['King','Queen','Lord','Lady']
-        elif (theme == 'mayan'):
+        elif (self.theme == 'mayan'):
             dict = 'mayan.txt'
             self.titles = ['Tepal','Ajaw']
-        elif (theme == 'welsh'):
+        elif (self.theme == 'welsh'):
             dict = 'welsh.txt'
             self.titles = ['Y Brenin','Y Frenhines']
-        elif (theme == 'greek'):
+        elif (self.theme == 'greek'):
             dict = 'greek.txt'
             self.titles = ['King','Queen','Strategos',
                            'Tyrant','Archon']
-        elif (theme == 'roman'):
+        elif (self.theme == 'roman'):
             dict = 'roman.txt'
             self.titles = ['Emperor','Empress', 'Praetor',
                            'Prefect', 'Consul', 'Magister']

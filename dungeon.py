@@ -188,6 +188,12 @@ class Dungeon (object):
                 seed(self.args.seed)
                 print 'Seed:',self.args.seed
 
+            # Now we know the biome, we can setup a name generator
+            self.namegen = namegenerator.namegenerator(self.biome)
+            print 'Theme:', self.namegen.theme
+            self.owner = self.namegen.genroyalname()
+            print 'Owner:', self.owner
+
             print "Generating rooms..."
             self.genrooms()
             print "Generating halls..."
@@ -518,11 +524,6 @@ class Dungeon (object):
                 biomes[key] = 1
             self.biome = max(biomes, key=lambda k: biomes[k])
         if self.args.debug: print 'Biome: ', self.biome
-
-        # Now we know the biome, we can setup a name generator
-        self.namegen = namegenerator.namegenerator(self.biome)
-        self.owner = self.namegen.genroyalname()
-        print self.owner
 
         depth = self.world.Height
         for chunk in d_chunks:

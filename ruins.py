@@ -11,23 +11,38 @@ from utils import *
 class Blank(object):
     _name = 'blank'
     _dnamesA = (
-                ('', 50),
+                ('', 40),
                 ('Accursed ', 10),
                 ('Ancient ', 10),
                 ('Black ', 10),
+                ('Cursed ', 10),
+                ('Decayed ', 10),
+                ('Deep ', 10),
+                ('Dire ', 10),
                 ('Evil ', 10),
                 ('Forbidden ', 10),
                 ('Forgotten ', 10),
                 ('Forsaken ', 10),
+                ('Grey ', 10),
+                ('Grizzly ', 10),
+                ('Haunted ', 10),
                 ('Hidden ', 10),
+                ('Infernal ', 10),
                 ('Lost ', 10),
+                ('Misty ', 10),
+                ('Mysterious ', 10),
                 ('Rotting ', 10),
                 ('Ruined ', 10),
                 ('Shadow ', 10),
                 ('Sunken ', 10),
+                ('Wailing ', 10),
+                ('Whispering ', 10),
                )
     _dnamesB = (
                 ('{A}Catacombs', 3),
+                ('{A}Crypt', 1),
+                ('{{owners}} Crypt', 1),
+                ('Crypt of {{owner}}', 1),
                 ('{A}Dungeon', 3),
                 ('{A}Fortress', 1),
                 ('{{owners}} Fortress', 1),
@@ -81,6 +96,7 @@ class EvilRunestones(Blank):
     _dnamesB = (
                 ('{A}Gates', 2),
                 ('{A}Pillars', 2),
+                ('{A}Pit', 2),
                 ('{A}Runestones', 2),
                 ('{A}Stones', 2),
                 ('{A}Teeth', 2),
@@ -660,6 +676,9 @@ class RoundTowerEntrance(Blank):
     _biome = True
     _dnamesB = (
                 ('{A}Catacombs', 3),
+                ('{A}Crypt', 1),
+                ('{{owners}} Crypt', 1),
+                ('Crypt of {{owner}}', 1),
                 ('{A}Dungeon', 3),
                 ('{A}Fortress', 1),
                 ('{{owners}} Fortress', 1),
@@ -860,6 +879,9 @@ class SquareTowerEntrance(Blank):
     _biome = True
     _dnamesB = (
                 ('{A}Catacombs', 3),
+                ('{A}Crypt', 1),
+                ('{{owners}} Crypt', 1),
+                ('Crypt of {{owner}}', 1),
                 ('{A}Dungeon', 3),
                 ('{A}Fortress', 1),
                 ('{{owners}} Fortress', 1),
@@ -1148,6 +1170,9 @@ class RuinedFane(Blank):
     _name = 'ruinedfane'
     _dnamesB = (
                 ('{A}Catacombs', 3),
+                ('{A}Crypt', 1),
+                ('{{owners}} Crypt', 1),
+                ('Crypt of {{owner}}', 1),
                 ('{A}Fortress', 1),
                 ('{{owners}} Fortress', 1),
                 ('Fortress of {{owner}}', 1),
