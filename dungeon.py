@@ -1591,6 +1591,14 @@ class Dungeon (object):
                   86, 88, 90, 91, 92, 93, 94, 95, 96, 101, 102, 103, 104, 105,
                   106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
                   120)
+        # Blocks we shouldn't place trapped chests on
+        trapped_ignore = (materials.WoodenSlab.val,
+                          materials.SpruceSlab.val,
+                          materials.BirchSlab.val,
+                          materials.JungleSlab.val,
+                          materials.StoneBrickSlab.val,
+                          materials.StoneSlab.val,
+                          materials.SandstoneSlab.val)
         for room in self.rooms:
             # Only consider rooms on this level
             if (self.rooms[room].pos.y != level):
@@ -1631,7 +1639,8 @@ class Dungeon (object):
             if (len(points) > 0):
                 point = random.choice(points)
                 # Decide if we are a trap
-                if (randint(1,100) <= cfg.chest_traps):
+                if (randint(1,100) <= cfg.chest_traps and
+                    self.blocks[point].material.val not in trapped_ignore):
                     self.setblock(point.up(1), materials.TrappedChest)
                     self.setblock(point, materials.Dispenser, 1)
                     self.addchesttrap(point)
