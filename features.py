@@ -1347,14 +1347,17 @@ class SecretArmory(SecretRoom):
             ("iron chestplate", 4),
             ("iron leggings", 4),
             ("iron boots", 4),
+            ("iron horse armor", 4),
             ("gold helmet", 2),
             ("gold chestplate", 2),
             ("gold leggings", 2),
             ("gold boots", 2),
+            ("gold horse armor", 2),
             ("diamond helmet", 1),
             ("diamond chestplate", 1),
             ("diamond leggings", 1),
             ("diamond boots", 1),
+            ("diamond horse armor", 1),
             ("bow", 32),
             ("wooden sword", 32),
             ("wooden axe", 32),
@@ -1368,7 +1371,8 @@ class SecretArmory(SecretRoom):
             ("diamond axe", 2),
             ("fishing rod", 8),
             ("carrot on a stick", 8),
-            ("shears", 8)
+            ("shears", 8),
+            ("name tag", 8)
         )
 
         for p in alcoves:
@@ -1400,6 +1404,10 @@ class SecretArmory(SecretRoom):
                 item_name = random.choice(('helmet','hat','helm','headgear'))
             elif 'boots' in item:
                 item_name = random.choice(('boots','shoes'))
+            elif "name tag" in item:
+                item_name = random.choice(('name tag','tag','dog tags'))
+            elif "horse armor" in item:
+                item_name = random.choice(('horse armor','barding'))
             else:
                 item_name = item.split()[-1]
 
@@ -1431,13 +1439,15 @@ class SecretArmory(SecretRoom):
             # Name the item
             tags['Item']['tag'] = nbt.TAG_Compound()
             tags['Item']['tag']['display'] = nbt.TAG_Compound()
-            if name.endswith("s"):
+            if (item == 'name tag'):    # Special case, tags should just have the name
+                displayname = name
+            elif name.endswith("s"):
                 displayname = item_name.capitalize()+' of '+name
             else:
                 displayname = name+"'s "+item_name
             tags['Item']['tag']['display']['Name'] = nbt.TAG_String(displayname)
             # Color leather things.
-            if 'leather' in item:
+            if 'leather' in item and 'horse' not in item:
                 tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
 
             # Place the item frame.
@@ -1547,7 +1557,7 @@ class SecretArmory(SecretRoom):
         tags['Item']['tag'] = nbt.TAG_Compound()
         tags['Item']['tag']['display'] = nbt.TAG_Compound()
         tags['Item']['tag']['display']['Name'] = nbt.TAG_String(displayname)
-        if 'leather' in item:
+        if 'leather' in item and 'horse' not in item:
             tags['Item']['tag']['display']['color'] = nbt.TAG_Int(random.randrange(16777215))
         tags['Item']['tag']['ench'] = loottable.enchant_tags(item,
                                                              xplevel)
