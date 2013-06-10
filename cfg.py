@@ -193,7 +193,7 @@ def Load(filename = 'default.cfg'):
                 custom_spawners[file[:-4].lower()] = file[:-4]
         print 'Loaded', len(custom_spawners), 'custom spawners.'
     except:
-        print 'Could not find spawners direcotry!'
+        print 'Could not find spawners directory!'
 
     # Process dispensers config
     for d in temp_dispensers:
