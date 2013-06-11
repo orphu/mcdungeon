@@ -1,9 +1,10 @@
 import sys
 import inspect
 
+import cave_factory
+import cfg
 import items
 import materials
-import cfg
 import perlin
 from utils import *
 
@@ -1524,6 +1525,298 @@ class RuinedFane(Blank):
         for p in iterate_four_walls(estart.trans(5,0,5),
                                     estart.trans(10,0,10),3):
             self.parent.parent.setblock(p, wall)
+
+class Barrow(Blank):
+    _name = 'barrow'
+    _earth = materials.Dirt
+    _grass = materials.Grass
+    _floor = materials.meta_mossycobble
+    _stones = materials.CircleStoneBrick
+    _tallgrass = materials.TallGrass
+
+    _dnamesB = (
+                ('{A}Cairn', 1),
+                ('{{owners}} Cairn', 1),
+                ('Cairn of {{owner}}', 1),
+                ('{A}Barrow', 1),
+                ('{{owners}} Barrow', 2),
+                ('Barrow of {{owner}}', 2),
+                ('{A}Kurgan', 1),
+                ('{{owners}} Kurgan', 1),
+                ('Kurgan of {{owner}}', 1),
+                ('{A}Henge', 1),
+                ('{A}Menhir', 1),
+                ('{A}Stones', 1),
+                ('{A}Tomb', 1),
+                ('{{owners}} Tomb', 1),
+                ('Tomb of {{owner}}', 1),
+                ('{A}Tumulus', 1),
+                ('{{owners}} Tumulus', 2),
+                ('Tumulus of {{owner}}', 2),
+               )
+
+    def setData (self):
+        # Desert
+        if self.parent.parent.biome in [2, 17]:
+            self._earth = materials.Sandstone
+            self._grass = materials.Sandstone
+            self._stones = materials.ChiseledSandstone
+            self._tallgrass = materials.Air
+        # Swamps, rivers, and jungles
+        elif self.parent.parent.biome in [6, 7, 11, 21, 22]:
+            self._earth = materials.Dirt
+            self._grass = materials.Grass
+            self._stones = materials.CircleStoneBrick
+            self._tallgrass = materials.TallGrass
+
+        # The Dolmen will be 2x2 chunks.
+        # Figure out if we have to move West or North to fit.
+        xsize = self.parent.parent.xsize
+        zsize = self.parent.parent.zsize
+        self.spos = copy(self.pos)
+        while self.spos.x > xsize-2:
+            self.spos.x -= 1
+        while self.spos.z > zsize-2:
+            self.spos.z -= 1
+        # Now go through and override the ruins on any chunks we cover
+        # to be blank. 
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+1, 0, self.spos.z+1)):
+            if p == self.pos:
+                continue
+            blank = new('blank', self.parent.parent.rooms[p])
+            self.parent.parent.rooms[p].ruins = [blank]
+        # Find the high/low points in this region
+        self.low = 1024
+        self.high = 0
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+1, 0, self.spos.z+1)):
+            cx = (self.parent.parent.position.x>>4) + p.x
+            cz = (self.parent.parent.position.z>>4) + p.z
+            (a, b) = findChunkDepths(Vec(cx, 0, cz),
+                                          self.parent.parent.world)
+            self.low = min(self.low, a)
+            self.high = max(self.high, b)
+        self.depth = self.low
+        self.depth = max(self.depth, self.parent.parent.position.y)
+        self.vtrans = self.depth - self.parent.parent.position.y
+        self.loc = Vec(self.spos.x * self.parent.parent.room_size,
+                       -self.vtrans,
+                       self.spos.z * self.parent.parent.room_size)
+
+    def render(self):
+        sb = self.parent.parent.setblock
+        c1 = self.loc
+        c3 = self.loc + Vec(self.parent.parent.room_size*2-1,
+                            0,
+                            self.parent.parent.room_size*2-1)
+
+        # Mound
+        height = max(self.high - self.low + 2, 6)
+        for z in xrange(32):
+            for x in xrange(32):
+                x1 = (x - 16)/16.0
+                z1 = (z - 16)/16.0
+                if math.sqrt(x1*x1+z1*z1) > 1:
+                    continue
+                y = math.sqrt(abs(1.0-x1*x1-z1*z1))
+                for yy in xrange(int(y*height)):
+                    sb(c1+Vec(x,-yy,z), self._earth)
+                sb(c1+Vec(x,0,z), self._floor)
+                sb(c1+Vec(x,-y*height,z), self._grass)
+
+        # Standing stones
+        for p in iterate_ellipse(c1+Vec(8,0,8), c3-Vec(8,0,8)):
+            if (random.randint(0,100) < 80):
+                continue
+            for y in xrange(1, int(height)+4):
+                sb(p.up(y), self._stones)
+
+        # Hollow it out.
+        air = []
+        blocks = self.parent.parent.blocks
+        for x in xrange(32):
+            for z in xrange(32):
+                for y in xrange(1, 5):
+                    p = c1+Vec(x,-y,z)
+                    if (p in blocks and
+                        x is not 16 and
+                        z is not 16 and
+                        p.up(1) in blocks and
+                        p.n(1) in blocks and
+                        p.s(1) in blocks and
+                        p.w(1) in blocks and
+                        p.e(1) in blocks):
+                        air.append(p)
+        for p in air:
+            sb(p, materials.Air)
+
+        # A way in.
+        for x in xrange(15,18):
+            for z in xrange(15,18):
+                for y in xrange(1, int(height)+1):
+                    p = c1+Vec(x,-y,z)
+                    sb(p, materials.Air)
+        for x in xrange(15,18):
+            for z in xrange(15,18):
+                for y in xrange(1, int(height)+1):
+                    p = c1+Vec(x,-y,z)
+                    self.parent.parent.vines(p, grow=True)
+
+        # More vines
+        for x in xrange(32):
+            for z in xrange(32):
+                for y in xrange(int(height), int(height)+4):
+                    if (random.randint(0,100) < 30):
+                        p = c1+Vec(x,-y,z)
+                        self.parent.parent.vines(p, grow=True)
+        # Coffins
+        def ssb(p, m, d):
+            if (p in blocks and
+                (blocks[p].material == self._earth or
+                 blocks[p].material == materials.Air)
+                ):
+                sb(p, m, d)
+        def addnameplate(p, name):
+            if (p in blocks and
+                blocks[p].material == materials.WallSign):
+                self.parent.parent.addsign(p,
+                                           '',
+                                           name,
+                                           '',
+                                           '')
+
+        matsE = {
+            'W': (materials.WoodPlanks, random.randint(0,3)),
+            '-': (materials.StoneBrickSlab, 5+8),
+            '_': (materials.StoneBrickSlab, 5),
+            '1': (materials.StoneBrickStairs, 0+4),
+            '2': (materials.StoneBrickStairs, 1+4),
+            '3': (materials.StoneBrickStairs, 1),
+            '4': (materials.StoneBrickStairs, 0),
+            '#': (materials.meta_mossystonebrick, 0),
+            '*': (materials.Air, 0),
+        }
+        matsW = {
+            'W': (materials.WoodPlanks, random.randint(0,3)),
+            '-': (materials.StoneBrickSlab, 5+8),
+            '_': (materials.StoneBrickSlab, 5),
+            '1': (materials.StoneBrickStairs, 1+4),
+            '2': (materials.StoneBrickStairs, 0+4),
+            '3': (materials.StoneBrickStairs, 0),
+            '4': (materials.StoneBrickStairs, 1),
+            '#': (materials.meta_mossystonebrick, 0),
+            '*': (materials.Air, 0),
+        }
+        matsN = {
+            'W': (materials.WoodPlanks, random.randint(0,3)),
+            '-': (materials.StoneBrickSlab, 5+8),
+            '_': (materials.StoneBrickSlab, 5),
+            '1': (materials.StoneBrickStairs, 2+4),
+            '2': (materials.StoneBrickStairs, 3+4),
+            '3': (materials.StoneBrickStairs, 3),
+            '4': (materials.StoneBrickStairs, 2),
+            '#': (materials.meta_mossystonebrick, 0),
+            '*': (materials.Air, 0),
+        }
+        matsS = {
+            'W': (materials.WoodPlanks, random.randint(0,3)),
+            '-': (materials.StoneBrickSlab, 5+8),
+            '_': (materials.StoneBrickSlab, 5),
+            '1': (materials.StoneBrickStairs, 3+4),
+            '2': (materials.StoneBrickStairs, 2+4),
+            '3': (materials.StoneBrickStairs, 2),
+            '4': (materials.StoneBrickStairs, 3),
+            '#': (materials.meta_mossystonebrick, 0),
+            '*': (materials.Air, 0),
+        }
+        mid = (('2', '-', '-', '-', '1', '#'),
+               ('3', 'W', 'W', 'W', '4', '#'))
+        out = (('2', '-', '-', '-', '1', '#'),
+               ('3', '_', '*', '_', '4', '#'))
+        for x in xrange(3, 16):
+            for y in xrange(4):
+                p = c1+Vec(16,-4,16)+Vec(x,y,0)
+                ssb(p, matsE[mid[y%2][(x-3)%6]][0], matsE[mid[y%2][(x-3)%6]][1])
+                ssb(p.n(1), matsE[out[y%2][(x-3)%6]][0], matsE[out[y%2][(x-3)%6]][1])
+                ssb(p.s(1), matsE[out[y%2][(x-3)%6]][0], matsE[out[y%2][(x-3)%6]][1])
+
+                p = c1+Vec(16,-4,16)+Vec(-x,y,0)
+                ssb(p, matsW[mid[y%2][(x-3)%6]][0], matsW[mid[y%2][(x-3)%6]][1])
+                ssb(p.n(1), matsW[out[y%2][(x-3)%6]][0], matsW[out[y%2][(x-3)%6]][1])
+                ssb(p.s(1), matsW[out[y%2][(x-3)%6]][0], matsW[out[y%2][(x-3)%6]][1])
+
+                p = c1+Vec(16,-4,16)+Vec(0,y,x)
+                ssb(p, matsN[mid[y%2][(x-3)%6]][0], matsN[mid[y%2][(x-3)%6]][1])
+                ssb(p.e(1), matsN[out[y%2][(x-3)%6]][0], matsN[out[y%2][(x-3)%6]][1])
+                ssb(p.w(1), matsN[out[y%2][(x-3)%6]][0], matsN[out[y%2][(x-3)%6]][1])
+
+                p = c1+Vec(16,-4,16)+Vec(0,y,-x)
+                ssb(p, matsS[mid[y%2][(x-3)%6]][0], matsS[mid[y%2][(x-3)%6]][1])
+                ssb(p.e(1), matsS[out[y%2][(x-3)%6]][0], matsS[out[y%2][(x-3)%6]][1])
+                ssb(p.w(1), matsS[out[y%2][(x-3)%6]][0], matsS[out[y%2][(x-3)%6]][1])
+
+                # Signs
+                if ((x+1)%6 == 0 and
+                    y%2 == 1):
+                    p = c1+Vec(16,-4,16)+Vec(x,y,0)
+                    name = self.parent.parent.namegen.genname()
+                    ssb(p.n(1), materials.StoneBrickStairs, 3)
+                    ssb(p.n(2), materials.WallSign, 2)
+                    addnameplate(p.n(2), name)
+                    ssb(p.s(1), materials.StoneBrickStairs, 2)
+                    ssb(p.s(2), materials.WallSign, 3)
+                    addnameplate(p.s(2), name)
+
+                    p = c1+Vec(16,-4,16)+Vec(-x,y,0)
+                    name = self.parent.parent.namegen.genname()
+                    ssb(p.n(1), materials.StoneBrickStairs, 3)
+                    ssb(p.n(2), materials.WallSign, 2)
+                    addnameplate(p.n(2), name)
+                    ssb(p.s(1), materials.StoneBrickStairs, 2)
+                    ssb(p.s(2), materials.WallSign, 3)
+                    addnameplate(p.s(2), name)
+
+                    p = c1+Vec(16,-4,16)+Vec(0,y,x)
+                    name = self.parent.parent.namegen.genname()
+                    ssb(p.e(1), materials.StoneBrickStairs, 0)
+                    ssb(p.e(2), materials.WallSign, 5)
+                    addnameplate(p.e(2), name)
+                    ssb(p.w(1), materials.StoneBrickStairs, 1)
+                    ssb(p.w(2), materials.WallSign, 4)
+                    addnameplate(p.w(2), name)
+
+                    p = c1+Vec(16,-4,16)+Vec(0,y,-x)
+                    name = self.parent.parent.namegen.genname()
+                    ssb(p.e(1), materials.StoneBrickStairs, 0)
+                    ssb(p.e(2), materials.WallSign, 5)
+                    addnameplate(p.e(2), name)
+                    ssb(p.w(1), materials.StoneBrickStairs, 1)
+                    ssb(p.w(2), materials.WallSign, 4)
+                    addnameplate(p.w(2), name)
+
+        # Grass
+        for x in xrange(32):
+            for z in xrange(32):
+                for y in xrange(1, int(height)+1):
+                    if (random.randint(0,100) < 80):
+                        continue
+                    p = c1+Vec(x,-y,z)
+                    if (p not in blocks and
+                        p.down(1) in blocks and
+                        blocks[p.down(1)].material == self._grass):
+                        sb(p, self._tallgrass, soft=True)
+
+        # Stairwell height
+        self.parent.parent.entrance.height = abs(-c1.y-2)+5
+
+        # Supply chest
+        loc = c1+Vec(14, -int(height), 14)
+        sb(loc, materials.Chest,2)
+        self.parent.parent.addchest(loc, 0)
+
+        # Exit Portal
+        self.parent.parent.dinfo['portal_exit'] = c1+Vec(16, -1, 16)
 
 
 ## Other ruins
