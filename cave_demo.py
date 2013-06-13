@@ -42,8 +42,11 @@ cave.add_exit((31,offset), (31,offset+width))
 width = randrange(1,5)
 offset = randrange(1, 32-width)
 cave.add_exit((offset, 31), (offset+width, 31))
-# Cabe!
-cave.gen_map()
+# Cave!
+cave.gen_map(mode='room')
+cave.print_map()
+# Resize
+cave.resize_map(48, 48)
 cave.print_map()
 
 #del(cave)

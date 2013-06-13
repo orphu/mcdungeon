@@ -31,6 +31,26 @@ class new:
         self.__ds = DisjointSet()
         self.__cpt = (int(self.__length/2),int(self.__width/2))
 
+    def resize_map(self, new_length, new_width, center=True):
+        new_map = [[WALL for i in xrange(new_width)]
+                   for j in xrange(new_length)]
+        ox = int(new_width/2.0-self.__width/2.0+0.5)
+        oy = int(new_length/2.0-self.__length/2.0+0.5)
+        for i in xrange(self.__width):
+            for j in xrange(self.__length):
+                x2 = ox + i
+                y2 = oy + j
+                if (x2 >= 0 and
+                    y2 >= 0 and
+                    x2 < new_width and
+                    y2 < new_width):
+                    new_map[x2][y2] = self.__map[i][j]
+        self.__map = new_map
+        self.__length = new_length
+        self.__width = new_width
+        self.__exits = []
+        self.__cpt = (int(self.__length/2),int(self.__width/2))
+
     def print_map(self):
         for c in xrange(0,self.__width):
             for r in xrange(0,self.__length):
