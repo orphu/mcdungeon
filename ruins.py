@@ -1823,7 +1823,7 @@ class Oasis(Blank):
     _name = 'oasis'
     _dnamesB = (
                 ('Oasis', 1),
-                ('{A} Oasis', 1),
+                ('{A}Oasis', 1),
                )
 
     def setData (self):
