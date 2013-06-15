@@ -2,6 +2,8 @@ v0.12.0
 
    * New Entrance: Barrow (orphu)
 
+   * New Entrance: Oasis (orphu)
+
    * Per-biome entrance configurations. (orphu)
 
    * Configurable trapped chests. (JiFish)

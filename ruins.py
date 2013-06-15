@@ -1819,6 +1819,185 @@ class Barrow(Blank):
         self.parent.parent.dinfo['portal_exit'] = c1+Vec(16, -1, 16)
 
 
+class Oasis(Blank):
+    _name = 'oasis'
+    _dnamesB = (
+                ('Oasis', 1),
+                ('{A} Oasis', 1),
+               )
+
+    def setData (self):
+        # The Oasis will be 3x3 chunks.
+        # Figure out if we have to move West or North to fit.
+        xsize = self.parent.parent.xsize
+        zsize = self.parent.parent.zsize
+        self.spos = copy(self.pos)
+        while self.spos.x > xsize-3:
+            self.spos.x -= 1
+        while self.spos.z > zsize-3:
+            self.spos.z -= 1
+        # Now go through and override the ruins on any chunks we cover
+        # to be blank. 
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+2, 0, self.spos.z+2)):
+            if p == self.pos:
+                continue
+            blank = new('blank', self.parent.parent.rooms[p])
+            self.parent.parent.rooms[p].ruins = [blank]
+        # Find the high/low points in this region
+        self.low = 1024
+        self.high = 0
+        for p in iterate_cube(Vec(self.spos.x, 0, self.spos.z),
+                              Vec(self.spos.x+1, 0, self.spos.z+1)):
+            cx = (self.parent.parent.position.x>>4) + p.x
+            cz = (self.parent.parent.position.z>>4) + p.z
+            (a, b) = findChunkDepths(Vec(cx, 0, cz),
+                                          self.parent.parent.world)
+            self.low = min(self.low, a)
+            self.high = max(self.high, b)
+        self.depth = self.low+1
+        self.depth = max(self.depth, self.parent.parent.position.y)
+        self.vtrans = self.depth - self.parent.parent.position.y
+        self.loc = Vec(self.spos.x * self.parent.parent.room_size,
+                       -self.vtrans,
+                       self.spos.z * self.parent.parent.room_size)
+
+    def render(self):
+        sb = self.parent.parent.setblock
+        c1 = self.loc
+        c3 = self.loc + Vec(self.parent.parent.room_size*3-1,
+                            0,
+                            self.parent.parent.room_size*3-1)
+
+        # Cave shape for the water
+        pond = cave_factory.new(32, 32)
+        pond.resize_map(48, 48)
+        # Add the area of the stairwell as an exit.
+        x1 = (self.pos.x - self.spos.x)*16+5
+        y1 = (self.pos.z - self.spos.z)*16+5
+        stairwell = []
+        for p in xrange(y1, y1+6):
+            pond.add_exit((p, x1), (p, x1+5))
+            for x in xrange(6):
+                stairwell.append(c1+Vec(x1+x,0,p))
+        pond.gen_map(mode=random.choice(('default', 'room')))
+
+        # The water
+        for p in pond.iterate_map(cave_factory.FLOOR):
+            q = c1+Vec(p[0], 0, p[1])
+            sb(q.down(1), materials.Sandstone)
+            sb(q, materials.Water)
+
+        # A couple of passes with grass.
+        # First band is where reeds might grow. 
+        reeds = []
+        for p in pond.iterate_walls():
+            q = c1+Vec(p[0], 0, p[1])
+            reeds.append(q)
+            sb(q, materials.Grass)
+        # Second pass is where palms may grow.
+        pond.reduce_map()
+        palms = []
+        for p in pond.iterate_walls():
+            q = c1+Vec(p[0], 0, p[1])
+            palms.append(q)
+            sb(q, materials.Grass)
+        pond.reduce_map()
+
+        # Now progressively clear out space above.
+        # Now add air.
+        for h in xrange(1, self.high-self.low+10):
+            for p in pond.iterate_map(cave_factory.FLOOR):
+                q = c1+Vec(p[0], -h, p[1])
+                sb(q, materials.Air)
+            pond.reduce_map()
+
+        # Reeds
+        notchest = []
+        for p in reeds:
+            if p in stairwell:
+                continue
+            if random.randint(1,100) <= 10:
+                notchest.append(p)
+                sb(p.up(1), materials.SugarCaneBlock)
+                sb(p.up(2), materials.SugarCaneBlock)
+                sb(p.up(3), materials.SugarCaneBlock)
+            elif random.randint(1,100) <= 50:
+                sb(p.up(1), materials.TallGrass, random.randint(0,2))
+
+        # Palms
+        for p in palms:
+            if p in stairwell or p in reeds:
+                continue
+            if random.randint(1,100) <= 10:
+                notchest.append(p)
+                h = random.randint(4,8)
+                # Fronds
+                sb(p.up(h+1), materials.JungleLeaves)
+                sb(p.up(h).n(1), materials.JungleLeaves)
+                sb(p.up(h).s(1), materials.JungleLeaves)
+                sb(p.up(h).e(1), materials.JungleLeaves)
+                sb(p.up(h).w(1), materials.JungleLeaves)
+                if random.randint(1,100) <= 50:
+                    sb(p.up(h).n(2), materials.JungleLeaves)
+                    sb(p.up(h).s(2), materials.JungleLeaves)
+                    sb(p.up(h).e(2), materials.JungleLeaves)
+                    sb(p.up(h).w(2), materials.JungleLeaves)
+                # Trunk
+                for q in iterate_cube(p.up(1), p.up(h)):
+                    sb(q, materials.Jungle)
+            elif random.randint(1,100) <= 60:
+                sb(p.up(1), materials.TallGrass, random.randint(0,2))
+
+        # Draw a little cistern around the stairwell.
+        mats = [
+            materials.HardenedClay,
+            materials.WhiteStainedClay,
+            materials.OrangeStainedClay,
+            materials.YellowStainedClay,
+            materials.LightGrayStainedClay,
+        ]
+        random.shuffle(mats)
+        st = c1 + Vec((self.pos.x - self.spos.x)*16+5,
+                      -1,
+                      (self.pos.z - self.spos.z)*16+5)
+        for p in iterate_cube(st, st.up(4)):
+            sb(p, mats[0])
+            sb(p.trans(5,0,0), mats[0])
+            sb(p.trans(0,0,5), mats[0])
+            sb(p.trans(5,0,5), mats[0])
+        sb(st.trans(1,-3,0), mats[0])
+        sb(st.trans(4,-3,0), mats[0])
+        sb(st.trans(1,-3,5), mats[0])
+        sb(st.trans(4,-3,5), mats[0])
+        sb(st.trans(0,-3,1), mats[0])
+        sb(st.trans(0,-3,4), mats[0])
+        sb(st.trans(5,-3,1), mats[0])
+        sb(st.trans(5,-3,4), mats[0])
+        for p in iterate_cube(st.trans(1,-4,0), st.trans(4,-4,0)):
+            sb(p, mats[1])
+            sb(p.s(5), mats[1])
+        for p in iterate_cube(st.trans(0,-4,1), st.trans(0,-4,4)):
+            sb(p, mats[1])
+            sb(p.e(5), mats[1])
+        for p in iterate_four_walls(st.trans(1,-5,1), st.trans(4,-5,4),0):
+            sb(p, mats[2])
+        for p in iterate_four_walls(st.trans(2,-6,2), st.trans(3,-6,3),0):
+            sb(p, mats[3])
+
+        # Stairwell height
+        self.parent.parent.entrance.height = abs(-c1.y-2)+5
+
+        # Supply chest
+        loc = random.choice(list((set(reeds) & set(palms)) - set(notchest)))
+        sb(loc.up(1), materials.Chest,2)
+        self.parent.parent.addchest(loc.up(1), 0)
+
+        # Exit Portal
+        self.parent.parent.dinfo['portal_exit'] = c1+Vec(24, -3, 24)
+
+
+
 ## Other ruins
 
 class CircularTower(Blank):
