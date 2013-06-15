@@ -82,7 +82,7 @@ class new:
                 pt1[0] >= self.__width or
                 pt1[1] < 0 or
                 pt1[1] >= self.__length):
-                print 'WARN: Exit out of range',pt1
+                sys.exit('WARN: Exit out of range', pt1)
             else:
                 self.__exits.append(pt1)
             pt1 = (pt1[0] + cmp(pt2[0], pt1[0]),
