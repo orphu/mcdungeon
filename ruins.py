@@ -1559,7 +1559,7 @@ class Barrow(Blank):
         # Desert
         if self.parent.parent.biome in [2, 17]:
             self._earth = materials.Sandstone
-            self._grass = materials.Sandstone
+            self._grass = materials.SmoothSandstone
             self._stones = materials.ChiseledSandstone
             self._tallgrass = materials.Air
         # Swamps, rivers, and jungles
