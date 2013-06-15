@@ -924,6 +924,7 @@ if (cfg.offset is None or cfg.offset is ''):
                    ['          Structures', 0],
                    ['         High Chunks', 0],
                    ['          Low Chunks', 0],
+                   ['              Rivers', 0],
                    ['         Good Chunks', 0]
                 ]
     pm = pmeter.ProgressMeter()
@@ -974,11 +975,22 @@ if (cfg.offset is None or cfg.offset is ''):
             chunk = regions.get_chunk(cx, cz)
             while chunk_cache[key][0] is None:
                 # Unpopulated
-                if (chunk['TerrainPopulated'] is not 1):
-                    chunk_cache[key][0] = 'U'
-                    continue
+                # Disabled for now... this doesn't work reliably, and in 1.6 the
+                # flag doesn't appear to get cleared. 
+                #if (chunk['TerrainPopulated'] is not 1):
+                #    chunk_cache[key][0] = 'U'
+                #    continue
                 # Biomes
-                chunk_cache[key][1] = numpy.argmax(numpy.bincount((chunk['Biomes'].flatten())))
+                biomes = chunk['Biomes'].flatten()
+                # Exclude chunks that are 20% river.
+                if (biomes == 7).sum() > 50:
+                    chunk_cache[key][0] = 'R'
+                    chunk_cache[key][1] = 7
+                    continue
+                if (biomes == 11).sum() > 50:
+                    chunk_cache[key][0] = 'R'
+                    chunk_cache[key][1] = 11
+                chunk_cache[key][1] = numpy.argmax(numpy.bincount((biomes)))
                 # Exclude Oceans
                 if chunk_cache[key][1] in [0, 10]:
                     chunk_cache[key][0] = 'O'
@@ -1041,8 +1053,10 @@ if (cfg.offset is None or cfg.offset is ''):
             chunk_stats[5][1] += 1
         elif  chunk_cache[key][0] == 'L':
             chunk_stats[6][1] += 1
-        else:
+        elif  chunk_cache[key][0] == 'R':
             chunk_stats[7][1] += 1
+        else:
+            chunk_stats[8][1] += 1
             good_chunks[(cx, cz)] = chunk_cache[key][2]
     pm.set_complete()
 
@@ -1058,7 +1072,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     key = '%s,%s' % (p[0]+x,p[1]+z)
                     chunk_cache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
-                    chunk_stats[7][1] -= 1
+                    chunk_stats[8][1] -= 1
 
     # Funky little chunk map
     if args.debug:
@@ -1069,6 +1083,8 @@ if (cfg.offset is None or cfg.offset is ''):
                     if chunk_cache[key][0] == 'U':
                         sys.stdout.write(materials.RED)
                     if chunk_cache[key][0] == 'O':
+                        sys.stdout.write(materials.BLUE)
+                    if chunk_cache[key][0] == 'R':
                         sys.stdout.write(materials.BLUE)
                     if chunk_cache[key][0] == 'S':
                         sys.stdout.write(materials.DGREY)

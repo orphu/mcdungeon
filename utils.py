@@ -12,7 +12,7 @@ import time
 
 from pymclevel import mclevel, nbt
 
-cache_version = '3'
+cache_version = '4'
 
 def floor(n):
     return int(n)
