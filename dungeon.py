@@ -862,7 +862,7 @@ class Dungeon (object):
             item = nbt.TAG_Compound()
             item['id'] = nbt.TAG_Short(358)
             item['Count'] = nbt.TAG_Byte(1)
-            return len
+            return item
 
         return self.mapstore.add_painting(random.choice(paintlist))
 
