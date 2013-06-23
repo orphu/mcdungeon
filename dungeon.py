@@ -2127,8 +2127,8 @@ class Dungeon (object):
     def outputhtml(self):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
-        basename = args.html
-        force = args.force
+        basename = self.args.html
+        force = self.args.force
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
