@@ -2099,7 +2099,7 @@ class Dungeon (object):
     def outputterminal(self):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
-        floor = args.term
+        floor = self.args.term
         layer = (floor-1)*self.room_height
         for z in xrange(self.zsize*self.room_size):
             for x in xrange(self.xsize*self.room_size):
