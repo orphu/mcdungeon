@@ -217,7 +217,8 @@ class new:
                         colors[x+z*128] = 10
                     elif mat == materials.Spawner:
                         colors[x+z*128] = 48
-                    elif mat == materials.Chest:
+                    elif (mat == materials.Chest or
+                         mat == materials.TrappedChest):
                         colors[x+z*128] = 42
                     else:
                         colors[x+z*128] = 54
