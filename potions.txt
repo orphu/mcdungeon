@@ -27,8 +27,24 @@ Potion of Raw Chaos:0,7-22-1
 
 # Basic potions that are normally unobtainable
 Potion of Haste:8193,3-0-3600
-Potion of Dullness:8194,4-0-4800
+Potion of Dullness:8194,4-0-1800
 Potion of Leaping:8197,8-0-3600
 Potion of Resistance:8198,11-0-3600
 Potion of Water Breathing:8206,13-0-3600
-Potion of Hunger:8201,17-0-4800
+Potion of Blindness:8202,15-0-1800
+Potion of Hunger:8201,17-0-1800
+Potion of Decay:8204,20-0-1800
+Potion of Boosting:8196,21-0-900
+Potion of Absorption:8194,22-0-900
+
+# Level II versions
+Potion of Haste II:8193,3-1-1800
+Potion of Dullness II:8194,4-1-900
+Potion of Leaping II:8197,8-1-1800
+Potion of Resistance II:8198,11-1-1800
+Potion of Water Breathing II:8206,13-1-1800
+Potion of Blindness II:8202,15-1-900
+Potion of Hunger II:8201,17-1-900
+Potion of Decay II:8204,20-1-900
+Potion of Boosting II:8196,21-1-450
+Potion of Absorption II:8194,22-1-450
