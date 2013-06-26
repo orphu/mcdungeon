@@ -809,22 +809,26 @@ class Dungeon (object):
 
 
     def loadrandbooktext(self):
-        #This error should never trip. The loot generator shouldn't ask for books if the folder is empty
-        if os.path.isdir(os.path.join(sys.path[0],'books')):
-            book_path = os.path.join(sys.path[0],'books')
-        elif os.path.isdir('books'):
-            book_path = 'books'
+        if os.path.isdir(os.path.join(sys.path[0],cfg.dir_books)):
+            book_path = os.path.join(sys.path[0],cfg.dir_books)
+        elif os.path.isdir(cfg.dir_books):
+            book_path = cfg.dir_books
         else:
-            sys.exit("Error: Could not find the books folder!")
+            book_path = ''
         #Make a list of all the txt files in the books directory
         booklist = []
-        for file in os.listdir(book_path):
-            if (str(file.lower()).endswith(".txt") and
-                file.lower() is not "readme.txt"):
-                booklist.append(file);
-        #This error should also never trip.
-        if (len(booklist) < 1):
-            sys.exit("Error: There should be at least one book in the book folder")
+        if book_path != '':
+            for file in os.listdir(book_path):
+                if (str(file.lower()).endswith(".txt") and
+                    file.lower() is not "readme.txt"):
+                    booklist.append(file)
+        item = nbt.TAG_Compound()
+        item['id'] = nbt.TAG_Short(387)
+        item['Count'] = nbt.TAG_Byte(1)
+        # No books? Give a book and quill instead
+        if len(booklist) == 0:
+            item['id'] = nbt.TAG_Short(386)
+            return item
         #Prevent unusual characters from being used
         valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
         #Open the book's text file
@@ -832,35 +836,36 @@ class Dungeon (object):
         bookdata = bookfile.read().splitlines()
         bookfile.close()
         #Create NBT tag
-        outtag = nbt.TAG_Compound()
-        outtag['author'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
-        outtag['title'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
-        outtag["pages"] = nbt.TAG_List()
+        item['tag'] = nbt.TAG_Compound()
+        item['tag']['author'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
+        item['tag']['title'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
+        item['tag']["pages"] = nbt.TAG_List()
         #Slice the pages at 50 and the page text at 256 to match minecraft limits
         for p in bookdata[:50]:
             page = filter(lambda x: x in valid_characters, p)
-            outtag["pages"].append(nbt.TAG_String(page[:256]))
+            item['tag']["pages"].append(nbt.TAG_String(page[:256]))
 
-        return outtag
+        return item
 
 
     def loadrandpainting(self):
-        if os.path.isdir(os.path.join(sys.path[0],'paintings')):
-            paint_path = os.path.join(sys.path[0],'paintings')
-        elif os.path.isdir('paintings'):
-            paint_path = 'paintings'
+        if os.path.isdir(os.path.join(sys.path[0],cfg.dir_paintings)):
+            paint_path = os.path.join(sys.path[0],cfg.dir_paintings)
+        elif os.path.isdir(cfg.dir_paintings):
+            paint_path = cfg.dir_paintings
         else:
-            sys.exit("Error: Could not find the paintings folder!")
+            paint_path = ''
         # Make a list of all the pairs of dat and txt files in the paintings directory
         paintlist = []
-        for file in os.listdir(paint_path):
-            if str(file.lower()).endswith(".dat"):
-                if os.path.isfile(os.path.join(paint_path,file[:-3]+'txt')):
-                    paintlist.append(file[:-4]);
-        # No paintings? Give a blank map
+        if paint_path != '':
+            for file in os.listdir(paint_path):
+                if str(file.lower()).endswith(".dat"):
+                    if os.path.isfile(os.path.join(paint_path,file[:-3]+'txt')):
+                        paintlist.append(file[:-4])
+        # No paintings? Give a blank map (ID: 395)
         if len(paintlist) == 0:
             item = nbt.TAG_Compound()
-            item['id'] = nbt.TAG_Short(358)
+            item['id'] = nbt.TAG_Short(395)
             item['Count'] = nbt.TAG_Byte(1)
             return item
 
@@ -868,10 +873,10 @@ class Dungeon (object):
 
 
     def loadrandfortune(self):
-        if os.path.isfile(os.path.join(sys.path[0],'fortunes.txt')):
-            forune_path = os.path.join(sys.path[0],'fortunes.txt')
-        elif os.path.isfile('fortunes.txt'):
-            forune_path = 'fortunes.txt'
+        if os.path.isfile(os.path.join(sys.path[0],cfg.file_fortunes)):
+            forune_path = os.path.join(sys.path[0],cfg.file_fortunes)
+        elif os.path.isfile(cfg.file_fortunes):
+            forune_path = cfg.file_fortunes
         else:
             return '...in bed.'     #Fortune file not found
 
@@ -952,7 +957,6 @@ class Dungeon (object):
                 loredata = i.lore.split(':')
                 for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
-        #Special flags
         # Dyed
         if (i.flag == 'DYED'):
             try: item_tag['tag']
@@ -965,9 +969,9 @@ class Dungeon (object):
                 item_tag['tag']['display']['color'] = nbt.TAG_Int(random.randint(0, 16777215))
             else:
                 item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
-        # special case for written books
+        # special cases for written books and paintings
         if (i.flag == 'WRITTEN'):
-            item_tag['tag'] = self.loadrandbooktext()
+            item_tag = self.loadrandbooktext()
         if (i.flag == 'PAINT'):
             item_tag = self.loadrandpainting()
         return item_tag

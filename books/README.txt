@@ -1,6 +1,6 @@
 This folder contains the data for written books. Whenever MCDungeon creates
 a written book as loot, a random text will be selected from this folder. If
-there are no files, an unwritten book will be substituted.
+there are no files, a book and quill will be substituted.
 
 The default books provided are public domain works sourced from Project
 Gutenberg (http://www.gutenberg.org/)

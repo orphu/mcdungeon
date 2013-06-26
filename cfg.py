@@ -2,6 +2,7 @@ import ConfigParser
 import os
 from pprint import pprint
 import sys
+import items
 
 import materials
 from utils import *
@@ -78,6 +79,14 @@ structure_values = []
 custom_spawners = {}
 spawners_path = 'spawners'
 
+file_extra_items = ''
+file_dyes = 'dye_colors.txt'
+file_potions = 'potions.txt'
+file_magic_items = 'magic_items.txt'
+file_fortunes = 'fortunes.txt'
+dir_paintings = 'paintings'
+dir_books = 'books'
+
 parser = ConfigParser.SafeConfigParser()
 
 def get(section, var, default):
@@ -95,6 +104,20 @@ def str2bool(string):
         string == '0'):
         return False
     return True
+    
+def isDir(folder):
+    if os.path.isdir(os.path.join(sys.path[0],folder)):
+        return True
+    elif os.path.isdir(folder):
+        return True
+    return False
+    
+def isFile(file):
+    if os.path.isfile(os.path.join(sys.path[0],file)):
+        return True
+    elif os.path.isfile(file):
+        return True
+    return False
 
 def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
@@ -110,7 +133,9 @@ def Load(filename = 'default.cfg'):
     hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
     SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange, chest_traps, \
     master_chest_traps, treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
-    treasure_SpawnMinDelay, treasure_SpawnMaxDelay, treasure_SpawnRequiredPlayerRange
+    treasure_SpawnMinDelay, treasure_SpawnMaxDelay, treasure_SpawnRequiredPlayerRange, \
+    file_extra_items, file_dyes, file_potions, file_magic_items, file_fortunes, \
+    dir_paintings, dir_books
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -126,6 +151,31 @@ def Load(filename = 'default.cfg'):
     except Exception, e:
         print "Failed to read config file!"
         sys.exit(e.message)
+        
+    # Load the various extra file locations
+    file_extra_items = get('locations', 'file_extra_items', file_extra_items)
+    file_dyes = get('locations', 'file_dyes', file_dyes)
+    file_potions = get('locations', 'file_potions', file_potions)
+    file_magic_items = get('locations', 'file_magic_items', file_magic_items)
+    file_fortunes = get('locations', 'file_fortunes', file_fortunes)
+    dir_paintings = get('locations', 'dir_paintings', dir_paintings)
+    dir_books = get('locations', 'dir_books', dir_books)
+    
+    # These are not used until actual generation begins, so check they are
+    # good now. Just shows warnings.
+    if isFile(file_fortunes) == False:
+            print "Warning: fortune file '"+file_fortunes+"' not found."
+    if isDir(dir_paintings) == False:
+            print "Warning: paintings directory '"+dir_paintings+"' not found."
+    if isDir(dir_books) == False:
+            print "Warning: books directory '"+dir_books+"' not found."
+
+    # Only vanilla items have been loaded so far, we can now load the rest
+    if file_extra_items != '':
+        items.LoadItems(file_extra_items)
+    items.LoadDyedArmour(file_dyes)
+    items.LoadPotions(file_potions)
+    items.LoadMagicItems(file_magic_items)
 
     # Load master tables from .cfg.
     master_halls = parser.items('halls')
