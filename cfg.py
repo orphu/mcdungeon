@@ -77,7 +77,6 @@ master_mobs = {}
 max_mob_tier = 0
 structure_values = []
 custom_spawners = {}
-spawners_path = 'spawners'
 
 file_extra_items = ''
 file_dyes = 'dye_colors.txt'
@@ -86,6 +85,9 @@ file_magic_items = 'magic_items.txt'
 file_fortunes = 'fortunes.txt'
 dir_paintings = 'paintings'
 dir_books = 'books'
+dir_extra_spawners = ''
+dir_extra_items = ''
+
 
 parser = ConfigParser.SafeConfigParser()
 
@@ -96,6 +98,18 @@ def get(section, var, default):
     except:
         return default
     return temp
+    
+def getPath(section, var, default):
+    global parser
+    try:
+        temp = parser.get(section, var)
+    except:
+        return default
+    # Convert backslashes to forward slahes, normpath will then convert
+    # them to the OS directory seperator
+    temp.replace('\\','/')
+    # Paths other than the default are relative to the config folder
+    return os.path.join('configs',os.path.normpath(temp))
 
 def str2bool(string):
     if (string.lower() is False or
@@ -118,6 +132,19 @@ def isFile(file):
     elif os.path.isfile(file):
         return True
     return False
+    
+def LoadSpawners(path = 'spawners'):
+    global custom_spawners
+    try:
+        if os.path.isdir(os.path.join(sys.path[0],path)):
+            spawners_path = os.path.join(sys.path[0],path)
+        else:
+            spawners_path = path
+        for file in os.listdir(spawners_path):
+            if file.endswith(".nbt"):
+                custom_spawners[file[:-4].lower()] = os.path.join(spawners_path,file)
+    except:
+        print 'Could not find spawners directory!'
 
 def Load(filename = 'default.cfg'):
     global parser, offset, tower, doors, portcullises, torches_top, wall, \
@@ -129,13 +156,13 @@ def Load(filename = 'default.cfg'):
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
     structure_values, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
-    max_mob_tier, custom_spawners, spawners_path, master_stairwells, \
+    max_mob_tier, custom_spawners, master_stairwells, \
     hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
     SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange, chest_traps, \
     master_chest_traps, treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
     treasure_SpawnMinDelay, treasure_SpawnMaxDelay, treasure_SpawnRequiredPlayerRange, \
     file_extra_items, file_dyes, file_potions, file_magic_items, file_fortunes, \
-    dir_paintings, dir_books
+    dir_paintings, dir_books, dir_extra_spawners, dir_extra_items \
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -153,29 +180,47 @@ def Load(filename = 'default.cfg'):
         sys.exit(e.message)
         
     # Load the various extra file locations
-    file_extra_items = get('locations', 'file_extra_items', file_extra_items)
-    file_dyes = get('locations', 'file_dyes', file_dyes)
-    file_potions = get('locations', 'file_potions', file_potions)
-    file_magic_items = get('locations', 'file_magic_items', file_magic_items)
-    file_fortunes = get('locations', 'file_fortunes', file_fortunes)
-    dir_paintings = get('locations', 'dir_paintings', dir_paintings)
-    dir_books = get('locations', 'dir_books', dir_books)
+    file_extra_items = getPath('locations', 'file_extra_items', file_extra_items)
+    file_dyes = getPath('locations', 'file_dyes', file_dyes)
+    file_potions = getPath('locations', 'file_potions', file_potions)
+    file_magic_items = getPath('locations', 'file_magic_items', file_magic_items)
+    file_fortunes = getPath('locations', 'file_fortunes', file_fortunes)
+    dir_paintings = getPath('locations', 'dir_paintings', dir_paintings)
+    dir_books = getPath('locations', 'dir_books', dir_books)
+    dir_extra_spawners = getPath('locations', 'dir_extra_spawners', dir_extra_spawners)
+    dir_extra_items = getPath('locations', 'dir_extra_items', dir_extra_items)
     
     # These are not used until actual generation begins, so check they are
-    # good now. Just shows warnings.
+    # good now.
     if isFile(file_fortunes) == False:
             print "Warning: fortune file '"+file_fortunes+"' not found."
     if isDir(dir_paintings) == False:
             print "Warning: paintings directory '"+dir_paintings+"' not found."
     if isDir(dir_books) == False:
             print "Warning: books directory '"+dir_books+"' not found."
+    if dir_extra_spawners != '':
+        if isDir(dir_extra_spawners) == False:
+            print "Warning: extra spawners directory '"+dir_extra_spawners+"' not found."
+            dir_extra_spawners = ''
+    if dir_extra_items != '':
+        if isDir(dir_extra_items) == False:
+            print "Warning: extra items directory '"+dir_extra_items+"' not found."
+            dir_extra_items = ''
 
     # Only vanilla items have been loaded so far, we can now load the rest
     if file_extra_items != '':
         items.LoadItems(file_extra_items)
+    if dir_extra_items != '':
+        items.LoadNBTFiles(dir_extra_items)
     items.LoadDyedArmour(file_dyes)
     items.LoadPotions(file_potions)
     items.LoadMagicItems(file_magic_items)
+
+    LoadSpawners()
+    if dir_extra_spawners != '':
+        LoadSpawners(dir_extra_spawners)
+    if len(custom_spawners) > 0:
+        print 'Loaded', len(custom_spawners), 'custom spawners.'
 
     # Load master tables from .cfg.
     master_halls = parser.items('halls')
@@ -231,19 +276,6 @@ def Load(filename = 'default.cfg'):
         except:
             temp_mobs = []
             max_mob_tier -= 1
-
-    # Load custom spawners
-    try:
-        if os.path.isdir(os.path.join(sys.path[0],'spawners')):
-            spawners_path = os.path.join(sys.path[0],'spawners')
-        else:
-            spawners_path = 'spawners'
-        for file in os.listdir(spawners_path):
-            if file.endswith(".nbt"):
-                custom_spawners[file[:-4].lower()] = file[:-4]
-        print 'Loaded', len(custom_spawners), 'custom spawners.'
-    except:
-        print 'Could not find spawners directory!'
 
     # Process dispensers config
     for d in temp_dispensers:
