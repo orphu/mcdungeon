@@ -17,7 +17,7 @@ from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
-__version__ = '0.12.0'
+__version__ = '0.12.1'
 __version_info__ = tuple([ num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -575,7 +575,7 @@ if (args.command == 'interactive'):
                 args.all = True
             elif d.isdigit() and int(d) > 0 and int(d) <= len(dlist):
                 d = int(d)
-                args.dungeons = [dlist[d-1][0], dlist[d-1][1]]
+                args.dungeons = [[dlist[d-1][0], dlist[d-1][1]]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
