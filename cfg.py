@@ -67,6 +67,7 @@ master_features = []
 master_stairwells = []
 master_floors = []
 master_ruins = [('blank',1)]
+default_entrances = []
 master_entrances = {}
 master_treasure = [('pitwitharchers',1)]
 master_dispensers = []
@@ -154,7 +155,7 @@ def Load(filename = 'default.cfg'):
     portcullis_closed, fill_caves, portcullis_web, subfloor, torches_position, \
     skeleton_balconies, arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
     maximize_distance, hall_piston_traps, resetting_hall_pistons, \
-    structure_values, master_entrances, master_treasure, secret_rooms, \
+    structure_values, default_entrances, master_entrances, master_treasure, secret_rooms, \
     secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
     max_mob_tier, custom_spawners, master_stairwells, \
     hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
@@ -246,13 +247,12 @@ def Load(filename = 'default.cfg'):
         default_entrances = parser.items('entrances')
     except:
         default_entrances = [('SquareTowerEntrance', 10)]
-    # 23 biomes as of Minecraft 1.5
-    for d in xrange(0,23):
-        section = 'entrances.{0}'.format(d)
-        try:
-            master_entrances[d] = parser.items(section)
-        except:
-            master_entrances[d] = default_entrances
+    # Try to find any biome specific entrance definitions.
+    entrancematch = re.compile('entrances.(\d+)')
+    for name in parser.sections():
+        match = entrancematch.search(name)
+        if match:
+            master_entrances[int(match.group(1))] = parser.items(name)
 
     # Load the mob spawner tables
     max_mob_tier = 0
