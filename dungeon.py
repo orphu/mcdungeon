@@ -1511,8 +1511,12 @@ class Dungeon (object):
             if (pos.y == 0 and
                 len(self.rooms[pos].ruins) == 0):
                 if pos == self.entrance.parent.pos:
-                    ruin = ruins.new(weighted_choice(cfg.master_entrances[self.biome]),
-                                     self.rooms[pos])
+                    try:
+                        ruin = ruins.new(weighted_choice(cfg.master_entrances[self.biome]),
+                                         self.rooms[pos])
+                    except KeyError:
+                        ruin = ruins.new(weighted_choice(cfg.default_entrances),
+                                         self.rooms[pos])
                     self.dinfo['dungeon_name'] = ruin.nameDungeon()
                 else:
                     ruin = ruins.new(weighted_choice(cfg.master_ruins),
