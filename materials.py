@@ -217,6 +217,24 @@ DarkGreenWool = Material('Dark Green Wool', 'W', GREEN)
 RedWool = Material('Red Wool', 'W', RED)
 BlackWool = Material('Black Wool', 'W', DGREY)
 
+# Wool Carpets
+WhiteCarpet = Material('White Carpet', 'W', GREY)
+OrangeCarpet = Material('Orange Carpet', 'W', YELLOW)
+MagentaCarpet = Material('Magenta Carpet', 'W', BPURPLE)
+LightBlueCarpet = Material('Light Blue Carpet', 'W', CYAN)
+YellowCarpet = Material('Yellow Carpet', 'W', BYELLOW)
+LightGreenCarpet = Material('Light Green Carpet', 'W', BGREEN)
+PinkCarpet = Material('Pink Carpet', 'W', RED)
+GrayCarpet = Material('Gray Carpet', 'W', DGREY)
+LightGrayCarpet = Material('Light Gray Carpet', 'W', GREY)
+CyanCarpet = Material('Cyan Carpet', 'W', BCYAN)
+PurpleCarpet = Material('Purple Carpet', 'W', PURPLE)
+BlueCarpet = Material('Blue Carpet', 'W', BLUE)
+BrownCarpet = Material('Brown Carpet', 'W', RED)
+DarkGreenCarpet = Material('Dark Green Carpet', 'W', GREEN)
+RedCarpet = Material('Red Carpet', 'W', RED)
+BlackCarpet = Material('Black Carpet', 'W', DGREY)
+
 #Clays
 WhiteStainedClay = StainedClay
 OrangeStainedClay = Material('Orange Stained Clay', 'C',YELLOW)

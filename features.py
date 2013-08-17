@@ -2073,8 +2073,9 @@ class Chapel(Blank):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
 
-        #choose a carpet color
-        carpetColor = random.randint(0,15)
+        # Choose a carpet color
+        # (Exclude some of the gaudier colours, e.g. pinks)
+        carpetColor = random.choice([0,1,3,7,8,9,10,11,12,13,14,15])
 
         sb = self.parent.parent.setblock
 
@@ -2135,6 +2136,7 @@ class Chapel(Blank):
                 if( z == carpet_pos or z == carpet_pos+1 ):
                     sb(p.down(1),
                        materials.Wool, carpetColor)
+                    sb(p, materials.WhiteCarpet, carpetColor)
                 elif( x % 2 == 0):
                     sb(p,
                       materials.WoodenStairs, 1)
@@ -2146,6 +2148,7 @@ class Chapel(Blank):
                 p = o.trans(x,0,z)
                 sb(p.down(1),
                    materials.Wool, carpetColor)
+                sb(p, materials.WhiteCarpet, carpetColor)
 
 
         #altar and deco
