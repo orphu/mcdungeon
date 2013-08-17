@@ -5,8 +5,12 @@ this folder. If there are no files, a blank map will be substituted.
 You can add them to your loot tables with the special item "Custom Painting"
 
 The default paintings provided are public domain works sourced from
-Wikipedia (http://en.wikipedia.org/) There are also two custom made guides,
-one for brewing and one for building circles.
+Wikipedia (http://en.wikipedia.org/)
+The font used for the Latin letters is "Aldor'ath Serif."
+(http://thegeef.deviantart.com/art/Aldor-ath-Serif-Font-116025791)
+
+There are also two custom made guides, one for brewing and one for building
+circles.
 
 You may add your own paintings using the following guide:
 
