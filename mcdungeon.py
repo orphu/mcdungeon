@@ -491,8 +491,22 @@ if (args.command == 'interactive'):
             print 'in the config file or as a command switch.'
             print '\n(if you don\'t use bukkit, just hit enter)'
             cfg.mapstore = raw_input('Name of primary bukkit world: ')
+            
+        # Prompt for max_dist
+        print '\nEnter the maximum distance (in chunks) from spawn to place'
+        print 'dungeons. Take care to pick a value that matches your needs.'
+        print 'If this value is too high and you add few dungeons, they'
+        print 'may be hard to find. If this value is too low and you'
+        print 'add many dungeons, they will not cover much of the map.\n'
+        input_max_dist = raw_input('Max Distance (leave blank for config value, '+str(cfg.max_dist)+'): ')
+        if (input_max_dist != ''):
+            try:
+                cfg.max_dist  = int(input_max_dist)
+            except ValueError:
+                sys.exit('You must enter an integer.')
 
         m = cfg.max_dist - cfg.min_dist
+
         print '\nEnter the size of the dungeon(s) in chunks from West to East. (X size)'
         print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
         args.x = raw_input('X size: ')
