@@ -1006,7 +1006,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunk_cache[key][1] = 11
                 chunk_cache[key][1] = numpy.argmax(numpy.bincount((biomes)))
                 # Exclude Oceans
-                if chunk_cache[key][1] in [0, 10]:
+                if chunk_cache[key][1] in [0, 10, 24]:
                     chunk_cache[key][0] = 'O'
                     continue
                 # Now the heavy stuff
