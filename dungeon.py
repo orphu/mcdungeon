@@ -668,8 +668,15 @@ class Dungeon (object):
             cz = (p.z+wp.z)//16
             chunk = r.get_chunk(cx,cz)
             biome = chunk['Biomes'][p.x%16][p.z%16]
-            # Vines in swamp, jungle, and jungle hills
-            if biome in [6, 21, 22]:
+            # Vines 
+            if biome in (6,     # Swampland
+                         134,   # Swampland M
+                         21,    # Jungle
+                         149,   # Jungle M
+                         22,    # Jungle Hills
+                         23,    # Jungle Edge
+                         151,   # Jungle Edge M
+                        ):
                 h = 0
                 try:
                     h = min(self.heightmap[p.x-1][p.z], h)
@@ -693,9 +700,17 @@ class Dungeon (object):
                                       Vec(p.x,0,p.z)):
                     if random.randint(1,100)<20:
                         self.vines(q, grow=True)
-            # Snow in taiga, frozen ocean, frozen river, ice plains, ice
-            # mountains, taiga hills
-            if biome in [5, 10, 11, 12, 13, 19]:
+            # Snow 
+            if biome in (10,    # Frozen Ocean 
+                         11,    # Frozen River
+                         12,    # Ice Plains
+                         140,   # Ice Plains Spikes
+                         13,    # Ice Mountains
+                         26,    # Cold Beach
+                         30,    # Cold Taiga
+                         158,   # Cold Taiga M
+                         31,    # Cold Taiga Hills
+                        ):
                 h = self.heightmap[p.x][p.z]
                 if (h < 0):
                     self.snow(Vec(p.x, h-1, p.z), limit=abs(h-1))
