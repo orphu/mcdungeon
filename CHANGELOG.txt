@@ -1,8 +1,26 @@
+v0.13.0 -
+
+  !! NOTE: This version requires Minecraft 1.7.0 release or higher!
+
+   * Changed config layout to make distributing themed configs easier. (JiFish)
+
+   * Improved carpets in chapels. (JiFish)
+
+   * Added more paintings. (JiFish)
+
+   * Interactive mode will now prompt for max_distance value to help avoid confusion for new users. (JiFish)
+
+v0.12.2 - 08/17/2013
+
+   * Fixed crash when encounting unknown biomes. (orphu)
+
 v0.12.1 - 07/08/2013
 
-   * Fixed error regenerating dungeons in interactive mode.
+   * Fixed error regenerating dungeons in interactive mode. (orphu)
 
 v0.12.0 - 07/02/2013
+
+  !! NOTE: This version requires Minecraft 1.6.0 release or higher!
 
    * New Entrance: Barrow (orphu)
 
