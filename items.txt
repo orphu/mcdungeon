@@ -10,6 +10,8 @@
 1,Stone,0,64
 2,Grass,0,64
 3,Dirt,0,64
+3,No Grass Dirt,1,64
+3,Podzol,2,64
 4,Cobblestone,0,64
 5,Wooden Plank,0,64
 5,Spruce Plank,1,64
@@ -74,7 +76,15 @@
 35,Red Wool,14,64
 35,Black Wool,15,64
 37,Yellow Flower,0,64
-38,Red Rose,0,64
+38,Poppy,0,64
+38,Blue Orchid,1,64
+38,Allium,2,64
+38,Azure Bluet,3,64
+38,Red Tulip,4,64
+38,Orange Tulip,5,64
+38,White Tulip,6,64
+38,Pink Tulip,7,64
+38,Oxeye Daisy,8,64
 39,Brown Mushroom,0,64
 40,Red Mushroom,0,64
 41,Gold Block,0,64
@@ -145,6 +155,9 @@
 97,Silverfish Stone,0,64
 97,Silverfish Cobblestone,1,64
 97,Silverfish Stone Brick,2,64
+97,Silverfish Mossy Stone Brick,3,64
+97,Silverfish Cracked Stone Brick,4,64
+97,Silverfish Chiseled Stone Brick,5,64
 98,Stone Brick,0,64
 98,Mossy Stone Brick,1,64
 98,Cracked Stone Brick,2,64
@@ -199,7 +212,7 @@
 139,Cobblestone Wall,0,64
 139,Moss Stone Wall,1,64
 140,Flower Pot Block,0,64
-140,Potted Rose,1,64
+140,Potted Poppy,1,64
 140,Potted Dandelion,2,64
 140,Potted Oak Sapling,3,64
 140,Potted Spruce Sapling,4,64
@@ -267,6 +280,13 @@
 171,Black Carpet,15,64
 172,Hardened Clay,0,64
 173,Block of Coal,0,64
+174,Packed Ice,0,64
+175,Sunflower,0,64
+175,Lilac,1,64
+175,Double Fern,2,64
+175,Double Tall Grass,3,64
+175,Rose Bush,4,64
+175,Peony,5,64
 
 # Items
 #
@@ -366,7 +386,11 @@
 347,Clock,0,1
 348,Glowstone Dust,0,64
 349,Raw Fish,0,64
+349,Raw Salmon,1,64
+349,Clownfish,2,64
+349,Pufferfish,3,64
 350,Cooked Fish,0,64
+350,Cooked Salmon,1,64
 351,Ink Sac,0,64
 351,Rose Red,1,64
 351,Cactus Green,2,64
@@ -543,6 +567,8 @@
 373,Splash Potion of Harming,16396,1
 373,Potion of Harming II,8236,1
 373,Splash Potion of Harming II,16428,1
+373,Potion of Water Breathing,8205,1
+373,Splash Potion of Water Breathing,16397,1
 # Extended Positive Potions
 373,Extended Potion of Regeneration,8257,1
 373,Extended Splash Potion of Regeneration,16449,1
@@ -566,6 +592,8 @@
 373,Extended Splash Potion of Night Vision,32758,1
 373,Extended Potion of Invisibility,8270,1
 373,Extended Splash Potion of Invisibility,32766,1
+373,Extended Potion of Water Breathing,8269,1
+373,Extended Splash Potion of Water Breathing,16461,1
 # Extended Negative Potions
 373,Extended Potion of Poison,8260,1
 373,Extended Splash Potion of Poison,16452,1
