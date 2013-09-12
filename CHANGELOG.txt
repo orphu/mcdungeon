@@ -2,13 +2,17 @@ v0.13.0 -
 
   !! NOTE: This version requires Minecraft 1.7.0 release or higher!
 
+   * Interactive mode will now prompt for max_distance value to help avoid confusion for new users. (JiFish)
+
    * Changed config layout to make distributing themed configs easier. (JiFish)
 
    * Improved carpets in chapels. (JiFish)
 
    * Added more paintings. (JiFish)
 
-   * Interactive mode will now prompt for max_distance value to help avoid confusion for new users. (JiFish)
+   * Added/Updated 1.7 items and blocks (JiFish)
+
+   * Updated biome related functions to support 1.7 biomes. (orphu)
 
 v0.12.2 - 08/17/2013
 
