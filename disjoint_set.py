@@ -4,6 +4,7 @@
 # Borrowed from:
 # http://pixelenvy.ca/wa/ca_cave.html
 
+
 class DisjointSet:
     size = 0
 
@@ -37,7 +38,7 @@ class DisjointSet:
             root = self.find(j)
 
             if root > 0:
-                if sets.has_key(root):
+                if root in sets:
                     list = sets[root]
                     list.append(j)
 
@@ -49,8 +50,7 @@ class DisjointSet:
 
     def dump(self):
         sets = self.split_sets()
-        for k,v in sets.items():
+        for k, v in sets.items():
             print k
             for l in v:
-                print '\t',l
-
+                print '\t', l

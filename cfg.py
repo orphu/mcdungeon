@@ -1,11 +1,12 @@
 import ConfigParser
+from copy import copy
 import os
-from pprint import pprint
+import re
 import sys
-import items
 
+import items
 import materials
-from utils import *
+from utils import Vec
 
 cache_dir = 'mcdungeon_cache'
 
@@ -57,7 +58,7 @@ secret_rooms = '75'
 silverfish = '0'
 maps = '0'
 mapstore = ''
-portal_exit = Vec(0,0,0)
+portal_exit = Vec(0, 0, 0)
 dungeon_name = None
 
 master_halls = []
@@ -66,10 +67,10 @@ master_srooms = []
 master_features = []
 master_stairwells = []
 master_floors = []
-master_ruins = [('blank',1)]
+master_ruins = [('blank', 1)]
 default_entrances = []
 master_entrances = {}
-master_treasure = [('pitwitharchers',1)]
+master_treasure = [('pitwitharchers', 1)]
 master_dispensers = []
 lookup_dispensers = {}
 master_chest_traps = []
@@ -92,6 +93,7 @@ dir_extra_items = ''
 
 parser = ConfigParser.SafeConfigParser()
 
+
 def get(section, var, default):
     global parser
     try:
@@ -99,7 +101,8 @@ def get(section, var, default):
     except:
         return default
     return temp
-    
+
+
 def getPath(section, var, default):
     global parser
     try:
@@ -108,63 +111,75 @@ def getPath(section, var, default):
         return default
     # Convert backslashes to forward slahes, normpath will then convert
     # them to the OS directory seperator
-    temp.replace('\\','/')
+    temp.replace('\\', '/')
     # Paths other than the default are relative to the config folder
-    return os.path.join('configs',os.path.normpath(temp))
+    return os.path.join('configs', os.path.normpath(temp))
+
 
 def str2bool(string):
-    if (string.lower() is False or
+    if (
+        string.lower() is False or
         string.lower() == 'false' or
         string.lower() == 'no' or
-        string == '0'):
+        string == '0'
+    ):
         return False
     return True
-    
+
+
 def isDir(folder):
-    if os.path.isdir(os.path.join(sys.path[0],folder)):
+    if os.path.isdir(os.path.join(sys.path[0], folder)):
         return True
     elif os.path.isdir(folder):
         return True
     return False
-    
+
+
 def isFile(file):
-    if os.path.isfile(os.path.join(sys.path[0],file)):
+    if os.path.isfile(os.path.join(sys.path[0], file)):
         return True
     elif os.path.isfile(file):
         return True
     return False
-    
-def LoadSpawners(path = 'spawners'):
+
+
+def LoadSpawners(path='spawners'):
     global custom_spawners
     try:
-        if os.path.isdir(os.path.join(sys.path[0],path)):
-            spawners_path = os.path.join(sys.path[0],path)
+        if os.path.isdir(os.path.join(sys.path[0], path)):
+            spawners_path = os.path.join(sys.path[0], path)
         else:
             spawners_path = path
         for file in os.listdir(spawners_path):
             if file.endswith(".nbt"):
-                custom_spawners[file[:-4].lower()] = os.path.join(spawners_path,file)
+                custom_spawners[file[:-4].lower()] = os.path.join(
+                    spawners_path,
+                    file
+                )
     except:
         print 'Could not find spawners directory!'
 
-def Load(filename = 'default.cfg'):
-    global parser, offset, tower, doors, portcullises, torches_top, wall, \
-    floor, ceiling, exit_portal, master_halls, master_rooms, master_features, \
-    master_floors, chests, double_treasure, enchant_system, spawners, \
-    master_mobs, torches_bottom, min_dist, max_dist, arrow_traps, loops, \
-    portcullis_closed, fill_caves, portcullis_web, subfloor, torches_position, \
-    skeleton_balconies, arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
-    maximize_distance, hall_piston_traps, resetting_hall_pistons, \
-    structure_values, default_entrances, master_entrances, master_treasure, secret_rooms, \
-    secret_door, silverfish, bury, master_dispensers, maps, mapstore, \
-    max_mob_tier, custom_spawners, master_stairwells, \
-    hidden_spawners, master_srooms, SpawnCount, SpawnMaxNearbyEntities, \
-    SpawnMinDelay, SpawnMaxDelay, SpawnRequiredPlayerRange, chest_traps, \
-    master_chest_traps, treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
-    treasure_SpawnMinDelay, treasure_SpawnMaxDelay, treasure_SpawnRequiredPlayerRange, \
-    file_extra_items, file_dyes, file_potions, file_magic_items, file_fortunes, \
-    dir_paintings, dir_books, dir_extra_spawners, dir_extra_items \
 
+def Load(filename='default.cfg'):
+    global parser, offset, tower, doors, portcullises, torches_top, wall, \
+        floor, ceiling, exit_portal, master_halls, master_rooms, \
+        master_features, master_floors, chests, double_treasure, \
+        enchant_system, spawners, master_mobs, torches_bottom, min_dist, \
+        max_dist, arrow_traps, loops, portcullis_closed, fill_caves, \
+        portcullis_web, subfloor, torches_position, skeleton_balconies, \
+        arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
+        maximize_distance, hall_piston_traps, resetting_hall_pistons, \
+        structure_values, default_entrances, master_entrances, \
+        master_treasure, secret_rooms, secret_door, silverfish, bury, \
+        master_dispensers, maps, mapstore, max_mob_tier, custom_spawners, \
+        master_stairwells, hidden_spawners, master_srooms, SpawnCount, \
+        SpawnMaxNearbyEntities, SpawnMinDelay, SpawnMaxDelay, \
+        SpawnRequiredPlayerRange, chest_traps, master_chest_traps, \
+        treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
+        treasure_SpawnMinDelay, treasure_SpawnMaxDelay, \
+        treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
+        file_potions, file_magic_items, file_fortunes, dir_paintings, \
+        dir_books, dir_extra_spawners, dir_extra_items
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
         fh = open(temp)
@@ -179,33 +194,43 @@ def Load(filename = 'default.cfg'):
     except Exception, e:
         print "Failed to read config file!"
         sys.exit(e.message)
-        
+
     # Load the various extra file locations
-    file_extra_items = getPath('locations', 'file_extra_items', file_extra_items)
+    file_extra_items = getPath('locations',
+                               'file_extra_items',
+                               file_extra_items)
     file_dyes = getPath('locations', 'file_dyes', file_dyes)
     file_potions = getPath('locations', 'file_potions', file_potions)
-    file_magic_items = getPath('locations', 'file_magic_items', file_magic_items)
+    file_magic_items = getPath('locations',
+                               'file_magic_items',
+                               file_magic_items)
     file_fortunes = getPath('locations', 'file_fortunes', file_fortunes)
     dir_paintings = getPath('locations', 'dir_paintings', dir_paintings)
     dir_books = getPath('locations', 'dir_books', dir_books)
-    dir_extra_spawners = getPath('locations', 'dir_extra_spawners', dir_extra_spawners)
+    dir_extra_spawners = getPath('locations',
+                                 'dir_extra_spawners',
+                                 dir_extra_spawners)
     dir_extra_items = getPath('locations', 'dir_extra_items', dir_extra_items)
-    
+
     # These are not used until actual generation begins, so check they are
     # good now.
-    if isFile(file_fortunes) == False:
+    if isFile(file_fortunes) is False:
             print "Warning: fortune file '"+file_fortunes+"' not found."
-    if isDir(dir_paintings) == False:
+    if isDir(dir_paintings) is False:
             print "Warning: paintings directory '"+dir_paintings+"' not found."
-    if isDir(dir_books) == False:
+    if isDir(dir_books) is False:
             print "Warning: books directory '"+dir_books+"' not found."
     if dir_extra_spawners != '':
-        if isDir(dir_extra_spawners) == False:
-            print "Warning: extra spawners directory '"+dir_extra_spawners+"' not found."
+        if isDir(dir_extra_spawners) is False:
+            print "Warning: extra spawners directory '" +\
+                  dir_extra_spawners +\
+                  "' not found."
             dir_extra_spawners = ''
     if dir_extra_items != '':
-        if isDir(dir_extra_items) == False:
-            print "Warning: extra items directory '"+dir_extra_items+"' not found."
+        if isDir(dir_extra_items) is False:
+            print "Warning: extra items directory '" +\
+                  dir_extra_items +\
+                  "' not found."
             dir_extra_items = ''
 
     # Only vanilla items have been loaded so far, we can now load the rest
@@ -239,7 +264,8 @@ def Load(filename = 'default.cfg'):
     try:
         master_treasure = parser.items('treasure rooms')
     except:
-        print 'WARNING: No treasure rooms section found in config. Using default.'
+        print 'WARNING: No treasure rooms section found in config. '\
+              ' Using default.'
 
     # Load per-biome entrances.
     # First, the default
@@ -281,14 +307,14 @@ def Load(filename = 'default.cfg'):
     for d in temp_dispensers:
         (prob, number) = d[1].split(',')
         name = d[0].lower()
-        lookup_dispensers[name]= (prob, number)
+        lookup_dispensers[name] = (prob, number)
         master_dispensers.append((name, prob))
 
     # Process chest_traps config
     for d in temp_chest_traps:
         (prob, number) = d[1].split(',')
         name = d[0].lower()
-        lookup_chest_traps[name]= (prob, number)
+        lookup_chest_traps[name] = (prob, number)
         master_chest_traps.append((name, prob))
 
     # Load other config options
@@ -312,8 +338,8 @@ def Load(filename = 'default.cfg'):
                              'torches_bottom',
                              torches_bottom))
     torches_position = int(get('dungeon',
-                             'torches_position',
-                             torches_position))
+                               'torches_position',
+                               torches_position))
 
     wall = get('dungeon', 'wall', wall).lower()
     ceiling = get('dungeon', 'ceiling', ceiling).lower()
@@ -324,27 +350,43 @@ def Load(filename = 'default.cfg'):
     exit_portal = str2bool(get('dungeon', 'exit_portal', exit_portal))
 
     chests = float(get('dungeon', 'chests', chests))
-    double_treasure = str2bool(get('dungeon', 'double_treasure', double_treasure))
+    double_treasure = str2bool(get('dungeon',
+                                   'double_treasure',
+                                   double_treasure))
     enchant_system = get('dungeon', 'enchant_system', enchant_system).lower()
     spawners = float(get('dungeon', 'spawners', spawners))
-    hidden_spawners = str2bool(get('dungeon', 'hidden_spawners', hidden_spawners))
+    hidden_spawners = str2bool(get('dungeon',
+                                   'hidden_spawners',
+                                   hidden_spawners))
     SpawnCount = int(get('dungeon', 'SpawnCount', SpawnCount))
-    SpawnMaxNearbyEntities = int(get('dungeon', 'SpawnMaxNearbyEntities',
-                                                 SpawnMaxNearbyEntities))
+    SpawnMaxNearbyEntities = int(get('dungeon',
+                                     'SpawnMaxNearbyEntities',
+                                     SpawnMaxNearbyEntities))
     SpawnMinDelay = int(get('dungeon', 'SpawnMinDelay', SpawnMinDelay))
     SpawnMaxDelay = int(get('dungeon', 'SpawnMaxDelay', SpawnMaxDelay))
-    SpawnRequiredPlayerRange = int(get('dungeon', 'SpawnRequiredPlayerRange',
-                                                   SpawnRequiredPlayerRange))
+    SpawnRequiredPlayerRange = int(get('dungeon',
+                                       'SpawnRequiredPlayerRange',
+                                       SpawnRequiredPlayerRange))
     # These fall back to the above when not set
-    treasure_SpawnCount = int(get('dungeon', 'treasure_SpawnCount', SpawnCount))
-    treasure_SpawnMaxNearbyEntities = int(get('dungeon', 'treasure_SpawnMaxNearbyEntities',
-                                                          SpawnMaxNearbyEntities))
-    treasure_SpawnMinDelay = int(get('dungeon', 'treasure_SpawnMinDelay',
-                                                 SpawnMinDelay))
-    treasure_SpawnMaxDelay = int(get('dungeon', 'treasure_SpawnMaxDelay',
-                                                 SpawnMaxDelay))
-    treasure_SpawnRequiredPlayerRange = int(get('dungeon', 'treasure_SpawnRequiredPlayerRange',
-                                                SpawnRequiredPlayerRange))
+    treasure_SpawnCount = int(get('dungeon',
+                                  'treasure_SpawnCount',
+                                  SpawnCount))
+    treasure_SpawnMaxNearbyEntities = int(get(
+        'dungeon',
+        'treasure_SpawnMaxNearbyEntities',
+        SpawnMaxNearbyEntities)
+    )
+    treasure_SpawnMinDelay = int(get('dungeon',
+                                     'treasure_SpawnMinDelay',
+                                     SpawnMinDelay))
+    treasure_SpawnMaxDelay = int(get('dungeon',
+                                     'treasure_SpawnMaxDelay',
+                                     SpawnMaxDelay))
+    treasure_SpawnRequiredPlayerRange = int(get(
+        'dungeon',
+        'treasure_SpawnRequiredPlayerRange',
+        SpawnRequiredPlayerRange)
+    )
     min_dist = int(get('dungeon', 'min_dist', min_dist))
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',
@@ -355,8 +397,9 @@ def Load(filename = 'default.cfg'):
                                  arrow_trap_defects))
     hall_piston_traps = int(get('dungeon', 'hall_piston_traps',
                                 hall_piston_traps))
-    resetting_hall_pistons = str2bool(get('dungeon', 'resetting_hall_pistons',
-                                resetting_hall_pistons))
+    resetting_hall_pistons = str2bool(get('dungeon',
+                                          'resetting_hall_pistons',
+                                          resetting_hall_pistons))
     skeleton_balconies = int(get('dungeon', 'skeleton_balconies',
                                  skeleton_balconies))
     sand_traps = int(get('dungeon', 'sand_traps', sand_traps))
@@ -369,7 +412,8 @@ def Load(filename = 'default.cfg'):
     mapstore = get('dungeon', 'mapstore', mapstore)
 
     if (tower < 1.0):
-        sys.exit('The tower height parameter is too small. This should be >= 1.0. Check the cfg file.')
+        sys.exit('The tower height parameter is too small. This should be '
+                 ' >= 1.0. Check the cfg file.')
 
     if (chests < 0.0 or chests > 10.0):
         sys.exit('Chests should be between 0 and 10. Check the cfg file.')
@@ -382,7 +426,7 @@ def Load(filename = 'default.cfg'):
 
     # Set the wall, ceiling, and floor materials
     for name, val in materials.__dict__.items():
-        if (isinstance(val, materials.Material) == True):
+        if isinstance(val, materials.Material):
             if (val.name == wall):
                 materials._wall = copy(val)
             if (val.name == ceiling):
