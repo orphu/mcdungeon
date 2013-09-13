@@ -197,9 +197,12 @@ class Mud(Blank):
                 self.parent.parent.setblock(p, materials.Water)
             elif (n >= d+.30):
                 self.parent.parent.setblock(p, materials.SoulSand)
-            elif (n >= d+.15):
+            elif (n >= d+.20):
                 self.parent.parent.setblock(p, materials.Farmland)
                 self.parent.parent.blocks[p].data = random.randint(0,1)
+            elif (n >= d+.10):
+                self.parent.parent.setblock(p, materials.Podzol)
+                self.parent.parent.blocks[p].data = 2   # Podzol data val
             elif (n >= d):
                 self.parent.parent.setblock(p, materials.Dirt)
 

@@ -10,7 +10,7 @@
 1,Stone,0,64
 2,Grass,0,64
 3,Dirt,0,64
-3,No Grass Dirt,1,64
+3,Grassless Dirt,1,64
 3,Podzol,2,64
 4,Cobblestone,0,64
 5,Wooden Plank,0,64
