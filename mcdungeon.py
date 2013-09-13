@@ -6,8 +6,8 @@ import argparse
 import logging
 import re
 import time
-import cPickle
-from numpy import *
+
+import numpy
 
 # Silence some logging from pymclevel
 logging.basicConfig(level=logging.CRITICAL)
@@ -18,254 +18,267 @@ import pmeter
 
 # Version info
 __version__ = '0.13.0'
-__version_info__ = tuple([ num for num in __version__.split('.')])
+__version_info__ = tuple([num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
 # Argument parsers
 parser = argparse.ArgumentParser(
     description='Generate a tile-based dungeon in a Minecraft map.')
-parser.add_argument('-v', '--version',
-                           action='version', version=_vstring,
-                           help='Print version and exit')
+parser.add_argument('-v',
+                    '--version',
+                    action='version',
+                    version=_vstring,
+                    help='Print version and exit')
 subparsers = parser.add_subparsers(
-                                   description='See "COMMAND --help" for \
-                                   additional help.',
-                                   title='Available commands')
+    description='See "COMMAND --help" for additional help.',
+    title='Available commands')
 
 # Interactive subcommand parser
-parser_inter= subparsers.add_parser('interactive',
-                                    help='Interactive mode.')
+parser_inter = subparsers.add_parser('interactive',
+                                     help='Interactive mode.')
 parser_inter.set_defaults(command='interactive')
 parser_inter.add_argument('--skip-relight',
-                    action='store_true',
-                    dest='skiprelight',
-                    help='Skip relighting the level')
-parser_inter.add_argument('-t','--term',
-                    type=int,dest='term',
-                    metavar='FLOOR',
-                    help='Print a text version of a given floor to the \
-                    terminal')
+                          action='store_true',
+                          dest='skiprelight',
+                          help='Skip relighting the level')
+parser_inter.add_argument('-t',
+                          '--term',
+                          type=int,
+                          dest='term',
+                          metavar='FLOOR',
+                          help='Print a text version of a given floor to the \
+                          terminal')
 parser_inter.add_argument('--html',
-                    dest='html',
-                    metavar='BASENAME',
-                    help='Output html versions of the dungeon. This \
-                    produces one file per level of the form \
-                    BASENAME-(level number).html')
+                          dest='html',
+                          metavar='BASENAME',
+                          help='Output html versions of the dungeon. This \
+                          produces one file per level of the form \
+                          BASENAME-(level number).html')
 parser_inter.add_argument('--debug',
-                    action='store_true',
-                    dest='debug',
-                    help='Provide additional debug info')
+                          action='store_true',
+                          dest='debug',
+                          help='Provide additional debug info')
 parser_inter.add_argument('--force',
-                    action='store_true',
-                    dest='force',
-                    help='Force overwriting of html output files')
+                          action='store_true',
+                          dest='force',
+                          help='Force overwriting of html output files')
 parser_inter.add_argument('-s', '--seed',
-                    dest='seed',
-                    metavar='SEED',
-                    help='Provide a seed for this dungeon. This can be \
-                    anything')
+                          dest='seed',
+                          metavar='SEED',
+                          help='Provide a seed for this dungeon. This can be \
+                          anything')
 parser_inter.add_argument('-o', '--offset',
-                    dest='offset',
-                    nargs=3,
-                    type=int,
-                    metavar=('X', 'Y', 'Z'),
-                    help='Provide a location offset in blocks')
+                          dest='offset',
+                          nargs=3,
+                          type=int,
+                          metavar=('X', 'Y', 'Z'),
+                          help='Provide a location offset in blocks')
 parser_inter.add_argument('--force-bury',
-                    action='store_true',
-                    dest='bury',
-                    help='Attempt to calculate Y when using --offset')
+                          action='store_true',
+                          dest='bury',
+                          help='Attempt to calculate Y when using --offset')
 parser_inter.add_argument('-e', '--entrance',
-                    dest='entrance',
-                    nargs=2,
-                    type=int,
-                    metavar=('X', 'Z'),
-                    help='Provide an offset for the entrance in chunks')
+                          dest='entrance',
+                          nargs=2,
+                          type=int,
+                          metavar=('X', 'Z'),
+                          help='Provide an offset for the entrance in chunks')
 parser_inter.add_argument('--spawn',
-                    dest='spawn',
-                    nargs=2,
-                    type=int,
-                    metavar=('X', 'Z'),
-                    help='Override spawn point')
+                          dest='spawn',
+                          nargs=2,
+                          type=int,
+                          metavar=('X', 'Z'),
+                          help='Override spawn point')
 parser_inter.add_argument('--dir',
                           dest='dir',
                           metavar='SAVEDIR',
                           help='Override the default map directory.')
 parser_inter.add_argument('--mapstore',
-                    dest='mapstore',
-                    metavar='PATH',
-                    help='Provide an alternate world to store maps.')
+                          dest='mapstore',
+                          metavar='PATH',
+                          help='Provide an alternate world to store maps.')
 
-# Add subcommand parser 
+# Add subcommand parser
 parser_add = subparsers.add_parser('add', help='Add new dungeons.')
 parser_add.set_defaults(command='add')
 parser_add.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
+                        metavar='SAVEDIR',
+                        help='Target world (path to save directory)')
 parser_add.add_argument('x',
-                    metavar='X',
-                    help='Number of rooms West -> East, or provide a range.')
+                        metavar='X',
+                        help='Number of rooms West -> East, or provide a \
+                        range.')
 parser_add.add_argument('z',
-                    metavar='Z',
-                    help='Number of rooms North -> South, or provide a range. (ie: 4-7)')
+                        metavar='Z',
+                        help='Number of rooms North -> South, or provide a \
+                        range. (ie: 4-7)')
 parser_add.add_argument('levels',
-                    metavar='LEVELS',
-                    help='Number of levels. Enter a positive value, or \
+                        metavar='LEVELS',
+                        help='Number of levels. Enter a positive value, or \
                         provide a range.')
 parser_add.add_argument('-c', '--config',
-                    dest='config',
-                    metavar='CFGFILE',
-                    default='default.cfg',
-                    help='Alternate config file. Default: default.cfg')
+                        dest='config',
+                        metavar='CFGFILE',
+                        default='default.cfg',
+                        help='Alternate config file. Default: default.cfg')
 parser_add.add_argument('--write',
-                    action='store_true',
-                    dest='write' ,
-                    help='Write the dungeon to disk')
+                        action='store_true',
+                        dest='write',
+                        help='Write the dungeon to disk')
 parser_add.add_argument('--skip-relight',
-                    action='store_true',
-                    dest='skiprelight',
-                    help='Skip relighting the level')
-parser_add.add_argument('-t','--term',
-                    type=int,dest='term',
-                    metavar='FLOOR',
-                    help='Print a text version of a given floor to the \
-                    terminal')
+                        action='store_true',
+                        dest='skiprelight',
+                        help='Skip relighting the level')
+parser_add.add_argument('-t',
+                        '--term',
+                        type=int,
+                        dest='term',
+                        metavar='FLOOR',
+                        help='Print a text version of a given floor to the \
+                        terminal')
 parser_add.add_argument('--html',
-                    dest='html',
-                    metavar='BASENAME',
-                    help='Output html versions of the dungeon. This \
-                    produces one file per level of the form \
-                    BASENAME-(level number).html')
+                        dest='html',
+                        metavar='BASENAME',
+                        help='Output html versions of the dungeon. This \
+                        produces one file per level of the form \
+                        BASENAME-(level number).html')
 parser_add.add_argument('--debug',
-                    action='store_true',
-                    dest='debug',
-                    help='Provide additional debug info')
+                        action='store_true',
+                        dest='debug',
+                        help='Provide additional debug info')
 parser_add.add_argument('--force',
-                    action='store_true',
-                    dest='force',
-                    help='Force overwriting of html output files')
+                        action='store_true',
+                        dest='force',
+                        help='Force overwriting of html output files')
 parser_add.add_argument('-s', '--seed',
-                    dest='seed',
-                    metavar='SEED',
-                    help='Provide a seed for this dungeon. This can be \
-                    anything')
+                        dest='seed',
+                        metavar='SEED',
+                        help='Provide a seed for this dungeon. This can be \
+                        anything')
 parser_add.add_argument('-o', '--offset',
-                    dest='offset',
-                    nargs=3,
-                    type=int,
-                    metavar=('X', 'Y', 'Z'),
-                    help='Provide a location offset in blocks')
+                        dest='offset',
+                        nargs=3,
+                        type=int,
+                        metavar=('X', 'Y', 'Z'),
+                        help='Provide a location offset in blocks')
 parser_add.add_argument('--force-bury',
-                    action='store_true',
-                    dest='bury',
-                    help='Attempt to calculate Y when using --offset')
+                        action='store_true',
+                        dest='bury',
+                        help='Attempt to calculate Y when using --offset')
 parser_add.add_argument('-e', '--entrance',
-                    dest='entrance',
-                    nargs=2,
-                    type=int,
-                    metavar=('X', 'Z'),
-                    help='Provide an offset for the entrance in chunks')
+                        dest='entrance',
+                        nargs=2,
+                        type=int,
+                        metavar=('X', 'Z'),
+                        help='Provide an offset for the entrance in chunks')
 parser_add.add_argument('--spawn',
-                    dest='spawn',
-                    nargs=2,
-                    type=int,
-                    metavar=('X', 'Z'),
-                    help='Override spawn point')
-parser_add.add_argument('-n','--number',
-                    type=int,dest='number',
-                    metavar='NUM',
-                    default=1,
-                    help='Number of dungeons to generate. -1 will create as \
-                    many as possible given X, Z, and LEVEL settings.')
+                        dest='spawn',
+                        nargs=2,
+                        type=int,
+                        metavar=('X', 'Z'),
+                        help='Override spawn point')
+parser_add.add_argument('-n',
+                        '--number',
+                        type=int,
+                        dest='number',
+                        metavar='NUM',
+                        default=1,
+                        help='Number of dungeons to generate. -1 will \
+                        create as many as possible given X, Z, and LEVEL \
+                        settings.')
 parser_add.add_argument('--mapstore',
-                    dest='mapstore',
-                    metavar='PATH',
-                    help='Provide an alternate world to store maps.')
+                        dest='mapstore',
+                        metavar='PATH',
+                        help='Provide an alternate world to store maps.')
 
 # List subcommand parser
-parser_list= subparsers.add_parser('list',
+parser_list = subparsers.add_parser('list',
                                     help='List known dungeons in a map.')
 parser_list.set_defaults(command='list')
 parser_list.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
+                         metavar='SAVEDIR',
+                         help='Target world (path to save directory)')
 
 # Delete subcommand parser
-parser_del= subparsers.add_parser('delete',
-                                    help='Delete dungeons from a map.')
+parser_del = subparsers.add_parser('delete',
+                                   help='Delete dungeons from a map.')
 parser_del.set_defaults(command='delete')
 parser_del.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
+                        metavar='SAVEDIR',
+                        help='Target world (path to save directory)')
 parser_del.add_argument('-d', '--dungeon',
-                    metavar=('X', 'Z'),
-                    nargs=2,
-                    action='append',
-                    dest='dungeons',
-                    type=int,
-                    help='The X Z coordinates of a dungeon to delete. \
+                        metavar=('X', 'Z'),
+                        nargs=2,
+                        action='append',
+                        dest='dungeons',
+                        type=int,
+                        help='The X Z coordinates of a dungeon to delete. \
                         NOTE: These will be rounded to the nearest chunk. \
                         Multiple -d flags can be specified.')
 parser_del.add_argument('-a', '--all',
-                    dest='all',
-                    action='store_true',
-                    help='Delete all known dungeons. Overrides -d.')
+                        dest='all',
+                        action='store_true',
+                        help='Delete all known dungeons. Overrides -d.')
 parser_del.add_argument('--mapstore',
-                    dest='mapstore',
-                    metavar='PATH',
-                    help='Provide an alternate world to store maps.')
+                        dest='mapstore',
+                        metavar='PATH',
+                        help='Provide an alternate world to store maps.')
 
 # Regnerate subcommand parser
-parser_regen= subparsers.add_parser('regenerate',
-                                    help='Regenerate dungeons in a map.')
+parser_regen = subparsers.add_parser('regenerate',
+                                     help='Regenerate dungeons in a map.')
 parser_regen.set_defaults(command='regenerate')
 parser_regen.add_argument('world',
-                    metavar='SAVEDIR',
-                    help='Target world (path to save directory)')
+                          metavar='SAVEDIR',
+                          help='Target world (path to save directory)')
 parser_regen.add_argument('-d', '--dungeon',
-                    metavar=('X', 'Z'),
-                    nargs=2,
-                    action='append',
-                    dest='dungeons',
-                    type=int,
-                    help='The X Z coordinates of a dungeon to regenerate. \
-                        NOTE: These will be rounded to the nearest chunk. \
-                        Multiple -d flags can be specified.')
+                          metavar=('X', 'Z'),
+                          nargs=2,
+                          action='append',
+                          dest='dungeons',
+                          type=int,
+                          help='The X Z coordinates of a dungeon to \
+                          regenerate. NOTE: These will be rounded to the \
+                          nearest chunk. Multiple -d flags can be \
+                          specified.')
 parser_regen.add_argument('-c', '--config',
-                    dest='config',
-                    metavar='CFGFILE',
-                    default='default.cfg',
-                    help='Alternate config file. Default: default.cfg')
+                          dest='config',
+                          metavar='CFGFILE',
+                          default='default.cfg',
+                          help='Alternate config file. Default: default.cfg')
 parser_regen.add_argument('--debug',
-                    action='store_true',
-                    dest='debug',
-                    help='Provide additional debug info')
+                          action='store_true',
+                          dest='debug',
+                          help='Provide additional debug info')
 parser_regen.add_argument('--html',
-                    dest='html',
-                    metavar='BASENAME',
-                    help='Output html versions of the dungeon. This \
-                    produces one file per level of the form \
-                    BASENAME-(level number).html')
+                          dest='html',
+                          metavar='BASENAME',
+                          help='Output html versions of the dungeon. This \
+                          produces one file per level of the form \
+                          BASENAME-(level number).html')
 parser_regen.add_argument('--force',
-                    action='store_true',
-                    dest='force',
-                    help='Force overwriting of html output files')
-parser_regen.add_argument('-t','--term',
-                    type=int,dest='term',
-                    metavar='FLOOR',
-                    help='Print a text version of a given floor to the \
-                    terminal')
+                          action='store_true',
+                          dest='force',
+                          help='Force overwriting of html output files')
+parser_regen.add_argument('-t',
+                          '--term',
+                          type=int,
+                          dest='term',
+                          metavar='FLOOR',
+                          help='Print a text version of a given floor to the \
+                          terminal')
 parser_regen.add_argument('--skip-relight',
-                    action='store_true',
-                    dest='skiprelight',
-                    help='Skip relighting the level')
+                          action='store_true',
+                          dest='skiprelight',
+                          help='Skip relighting the level')
 parser_regen.add_argument('--mapstore',
-                    dest='mapstore',
-                    metavar='PATH',
-                    help='Provide an alternate world to store maps.')
+                          dest='mapstore',
+                          metavar='PATH',
+                          help='Provide an alternate world to store maps.')
 parser_regen.add_argument('-a', '--all',
-                    dest='all',
-                    action='store_true',
-                    help='Regenerate all known dungeons. Overrides -d.')
+                          dest='all',
+                          action='store_true',
+                          help='Regenerate all known dungeons. Overrides -d.')
 
 
 # Parse the args
@@ -273,17 +286,20 @@ args = parser.parse_args()
 
 import cfg
 import loottable
-from dungeon import *
-from utils import *
+from dungeon import Dungeon
+import utils
+from utils import Vec
 import mapstore
 import ruins
+import materials
+
 
 def loadWorld(world_name):
     '''Attempt to load a world file. Look in the literal path first, then look
     in the typical save directory for the given platform. Check to see if the
     mcdungeon cache directory exists, and create it if not.'''
     # Attempt to open the world. Look in cwd first, then try to search the
-    # user's save directory. 
+    # user's save directory.
     global cfg
     global cache_path
 
@@ -300,12 +316,12 @@ def loadWorld(world_name):
             world = mclevel.fromFile(world_name)
             oworld = ov_world.World(world_name)
         except:
-            print "Failed to open world:",world_name
+            print "Failed to open world:", world_name
             sys.exit(1)
     print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
                                                             world.chunkCount,
                                                             world.Height)
-    # Create the mcdungeon cache dir if needed. 
+    # Create the mcdungeon cache dir if needed.
     cache_path = os.path.join(world_name, cfg.cache_dir)
     if os.path.exists(cache_path) is False:
         os.makedirs(cache_path)
@@ -321,6 +337,7 @@ def loadWorld(world_name):
 
     return world, oworld
 
+
 def listDungeons(world, oworld, expand_fill_caves=False):
     '''Scan a world for dungeons. Try to cache the results and only look at
     chunks that have changed since the last run.'''
@@ -328,7 +345,7 @@ def listDungeons(world, oworld, expand_fill_caves=False):
     pm = pmeter.ProgressMeter()
 
     # Try to load the cache
-    dungeonCacheOld, mtime = loadDungeonCache(cache_path)
+    dungeonCacheOld, mtime = utils.loadDungeonCache(cache_path)
     dungeonCache = {}
 
     # Scan with overviewer
@@ -346,12 +363,17 @@ def listDungeons(world, oworld, expand_fill_caves=False):
         if (cmtime > mtime or key in dungeonCacheOld):
             notcached += 1
             for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
-                if tileEntity['id'] == 'Sign' and tileEntity['Text1'].startswith('[MCD]'):
+                if (
+                    tileEntity['id'] == 'Sign' and
+                    tileEntity['Text1'].startswith('[MCD]')
+                ):
                     key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                     dungeonCache[key] = tileEntity
-                if (tileEntity['id'] == 'Chest' and
+                if (
+                    tileEntity['id'] == 'Chest' and
                     'CustomName' in tileEntity and
-                    tileEntity['CustomName'] == 'MCDungeon Data Library'):
+                    tileEntity['CustomName'] == 'MCDungeon Data Library'
+                ):
                     key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                     dungeonCache[key] = tileEntity
         else:
@@ -361,13 +383,14 @@ def listDungeons(world, oworld, expand_fill_caves=False):
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100*cached/world.chunkCount)
 
-    saveDungeonCache(cache_path, dungeonCache)
+    utils.saveDungeonCache(cache_path, dungeonCache)
 
     # Process the dungeons
     dungeons = []
     output = ''
     output += "Known dungeons on this map:\n"
-    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
+    output += '+-----------+----------------+---------+-------+----+'\
+              '-------------------------+\n'
     output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
         'Pos',
         'Date/Time',
@@ -376,9 +399,10 @@ def listDungeons(world, oworld, expand_fill_caves=False):
         'Lv',
         'Name'
     )
-    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
+    output += '+-----------+----------------+---------+-------+----+'\
+              '-------------------------+\n'
     for tileEntity in dungeonCache.values():
-        info = decodeDungeonInfo(tileEntity)
+        info = utils.decodeDungeonInfo(tileEntity)
 
         (major, minor, patch) = info['version'].split('.')
         version = float(major+'.'+minor)
@@ -388,8 +412,10 @@ def listDungeons(world, oworld, expand_fill_caves=False):
         levels = info['levels']
         offset = 0
 
-        if (expand_fill_caves == True and
-            info['fill_caves'] is True):
+        if (
+            expand_fill_caves is True and
+            info['fill_caves'] is True
+        ):
             offset = 5
         dungeons.append((info["position"].x-offset,
                          info["position"].z-offset,
@@ -402,16 +428,15 @@ def listDungeons(world, oworld, expand_fill_caves=False):
                          info["position"].z,
                          version))
         output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
-                  '%d %d'%(info["position"].x,
-                  info["position"].z),
-                  time.strftime('%x %H:%M',
-                  time.localtime(info['timestamp'])),
-                  info['version'],
-                  '%dx%d'%(xsize, zsize),
-                  levels,
-                  info.get('full_name', 'Dungeon')[:23]
+            '%d %d' % (info["position"].x, info["position"].z),
+            time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
+            info['version'],
+            '%dx%d' % (xsize, zsize),
+            levels,
+            info.get('full_name', 'Dungeon')[:23]
         )
-    output += '+-----------+----------------+---------+-------+----+-------------------------+\n'
+    output += '+-----------+----------------+---------+-------+----+'\
+              '-------------------------+\n'
     if len(dungeons) > 0:
         print output
     else:
@@ -437,18 +462,21 @@ if (args.command == 'interactive'):
     if args.dir is not None:
         saveFileDir = args.dir
     print '\nYour save directory is:\n', saveFileDir
-    if (os.path.isdir(saveFileDir) == False):
+    if (os.path.isdir(saveFileDir) is False):
         sys.exit('\nI cannot find your save directory! Aborting!')
     print '\nWorlds in your save directory:\n'
     count = 0
     for file in os.listdir(saveFileDir):
         file_path = os.path.join(saveFileDir, file)
-        if (os.path.isdir(file_path) and
-            os.path.isfile(file_path+'/level.dat')):
-            print '   ',file
+        if (
+            os.path.isdir(file_path) and
+            os.path.isfile(file_path+'/level.dat')
+        ):
+            print '   ', file
             count += 1
     if count == 0:
-        sys.exit('There do not appear to be any worlds in your save direcory. Aborting!')
+        sys.exit('There do not appear to be any worlds in your save direcory. \
+                 Aborting!')
     w = raw_input('\nEnter the name of the world you wish to modify: ')
     args.world = os.path.join(saveFileDir, w)
 
@@ -464,9 +492,9 @@ if (args.command == 'interactive'):
         args.command = 'add'
         # Pick a config
         configDir = os.path.join(sys.path[0], 'configs')
-        if (os.path.isdir(configDir) == False):
+        if (os.path.isdir(configDir) is False):
             configDir = 'configs'
-        if (os.path.isdir(configDir) == False):
+        if (os.path.isdir(configDir) is False):
             sys.exit('\nI cannot find your configs directory! Aborting!')
         print '\nConfigurations in your configs directory:\n'
         for file in os.listdir(configDir):
@@ -474,7 +502,7 @@ if (args.command == 'interactive'):
             file = file.replace('.cfg', '')
             if (os.path.isfile(file_path) and
                file_path.endswith('.cfg')):
-                print '   ',file
+                print '   ', file
         print '\nEnter the name of the configuration you wish to use.'
         config = raw_input('(leave blank for default): ')
         if (config == ''):
@@ -484,34 +512,39 @@ if (args.command == 'interactive'):
         cfg.Load(args.config)
 
         # Prompt for a mapstore if we need to
-        if (cfg.mapstore == '' and args.mapstore == None):
+        if (cfg.mapstore == '' and args.mapstore is None):
             print '\nSome configurations may generate dungeon maps. If you are'
             print 'using bukkit/multiverse you need supply the name of your'
             print 'primary world for this to work. You can also provide this'
             print 'in the config file or as a command switch.'
             print '\n(if you don\'t use bukkit, just hit enter)'
             cfg.mapstore = raw_input('Name of primary bukkit world: ')
-            
+
         # Prompt for max_dist
         print '\nEnter the maximum distance (in chunks) from spawn to place'
         print 'dungeons. Take care to pick a value that matches your needs.'
         print 'If this value is too high and you add few dungeons, they'
         print 'may be hard to find. If this value is too low and you'
         print 'add many dungeons, they will not cover much of the map.\n'
-        input_max_dist = raw_input('Max Distance (leave blank for config value, '+str(cfg.max_dist)+'): ')
+        input_max_dist = raw_input(
+            'Max Distance (leave blank for config value, ' +
+            str(cfg.max_dist)+'): '
+        )
         if (input_max_dist != ''):
             try:
-                cfg.max_dist  = int(input_max_dist)
+                cfg.max_dist = int(input_max_dist)
             except ValueError:
                 sys.exit('You must enter an integer.')
 
         m = cfg.max_dist - cfg.min_dist
 
-        print '\nEnter the size of the dungeon(s) in chunks from West to East. (X size)'
+        print '\nEnter the size of the dungeon(s) in chunks from West to' \
+              ' East. (X size)'
         print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
         args.x = raw_input('X size: ')
 
-        print '\nEnter the size of the dungeon(s) in chunks from North to South. (Z size)'
+        print '\nEnter the size of the dungeon(s) in chunks from North to' \
+              ' South. (Z size)'
         print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
         args.z = raw_input('Z size: ')
 
@@ -521,29 +554,26 @@ if (args.command == 'interactive'):
         args.levels = raw_input('Levels: ')
 
         print '\nEnter the maximum number of dungeons to add.'
-        print 'Depending on the characteristics of your world, and size of your'
+        print 'Depending on the characteristics of your world, and size ' \
+              ' of your'
         print 'dungeons, the actual number placed may be less.'
         print 'Enter -1 to add as many dungeons as possible.'
         args.number = raw_input('Number of dungeons (leave blank for 1): ')
         if (args.number == ''):
             args.number = 1
         try:
-            args.number  = int(args.number)
+            args.number = int(args.number)
         except ValueError:
             sys.exit('You must enter an integer.')
 
-        #html = raw_input('\nWould you like to create an HTML map? (y/n): ')
-        #if (html.lower() == 'y'):
-        #    args.html = world
-        #    args.force = True
         args.write = True
     elif command == 'r':
         args.command = 'regenerate'
         # Pick a config
         configDir = os.path.join(sys.path[0], 'configs')
-        if (os.path.isdir(configDir) == False):
+        if (os.path.isdir(configDir) is False):
             configDir = 'configs'
-        if (os.path.isdir(configDir) == False):
+        if (os.path.isdir(configDir) is False):
             sys.exit('\nI cannot find your configs directory! Aborting!')
         print '\nConfigurations in your configs directory:\n'
         for file in os.listdir(configDir):
@@ -551,7 +581,7 @@ if (args.command == 'interactive'):
             file = file.replace('.cfg', '')
             if (os.path.isfile(file_path) and
                file_path.endswith('.cfg')):
-                print '   ',file
+                print '   ', file
         print '\nEnter the name of the configuration you wish to use.'
         config = raw_input('(leave blank for default): ')
         if (config == ''):
@@ -560,7 +590,7 @@ if (args.command == 'interactive'):
         cfg.Load(args.config)
 
         # Prompt for a mapstore if we need to
-        if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore == None):
+        if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore is None):
             print '\nThis configuration may generate dungeon maps. If you are'
             print 'using bukkit/multiverse you need supply the name of your'
             print 'primary world for this to work. You can also provide this'
@@ -577,13 +607,16 @@ if (args.command == 'interactive'):
         dlist = listDungeons(world, oworld)
         if len(dlist) == 0:
             sys.exit()
-        print 'Choose a dungeon to regenerate:\n-------------------------------\n'
+        print 'Choose a dungeon to regenerate:'
+        print '-------------------------------\n'
         print '\t[a] Regenerate ALL dungeons in this map.'
         for i in xrange(len(dlist)):
-            print '\t[%d] Dungeon at %d %d.'%(i+1,
-                                              dlist[i][0],
-                                              dlist[i][1])
-        while (args.all == False and args.dungeons == []):
+            print '\t[%d] Dungeon at %d %d.' % (
+                i+1,
+                dlist[i][0],
+                dlist[i][1]
+            )
+        while (args.all is False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
                 args.all = True
@@ -594,7 +627,7 @@ if (args.command == 'interactive'):
                 print 'Quitting...'
                 sys.exit()
             else:
-                print '"%s" is not a valid choice!'%d
+                print '"%s" is not a valid choice!' % d
 
     elif command == 'l':
         args.command = 'list'
@@ -604,10 +637,11 @@ if (args.command == 'interactive'):
         args.all = False
 
         # Prompt for a mapstore if we need to
-        if args.mapstore == None:
+        if args.mapstore is None:
             print '\nIf you are using bukkit/multiverse you need supply the'
             print 'name of your primary world so any existing dungeon maps'
-            print 'can be removed. You can also provide this as a command switch.'
+            print 'can be removed. You can also provide this as a command'
+            print 'switch.'
             print '\n(if you don\'t use bukkit, just hit enter)'
             cfg.mapstore = raw_input('Name of primary bukkit world: ')
 
@@ -622,10 +656,12 @@ if (args.command == 'interactive'):
         print 'Choose dungeon(s) to delete:\n----------------------------\n'
         print '\t[a] Delete ALL dungeons from this map.'
         for i in xrange(len(dungeons)):
-            print '\t[%d] Dungeon at %d %d.'%(i+1,
-                                              dungeons[i][0],
-                                              dungeons[i][1])
-        while (args.all == False and args.dungeons == []):
+            print '\t[%d] Dungeon at %d %d.' % (
+                i+1,
+                dungeons[i][0],
+                dungeons[i][1]
+            )
+        while (args.all is False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
                 args.all = True
@@ -636,7 +672,7 @@ if (args.command == 'interactive'):
                 print 'Quitting...'
                 sys.exit()
             else:
-                print '"%s" is not a valid choice!'%d
+                print '"%s" is not a valid choice!' % d
     else:
         print 'Quitting...'
         sys.exit()
@@ -650,7 +686,7 @@ if (cfg.mapstore == ''):
     cfg.mapstore = args.world
 
 # Load the world if we havent already
-if world == None:
+if world is None:
     world, oworld = loadWorld(args.world)
 
 # List mode
@@ -663,9 +699,9 @@ if (args.command == 'list'):
 # Delete mode
 if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
-    if args.dungeons == [] and args.all == False:
-        print 'You must specify either --all or at least one -d option when '+\
-                'deleting dungeons.'
+    if args.dungeons == [] and args.all is False:
+        print 'You must specify either --all or at least one -d option' \
+              ' when deleting dungeons.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
@@ -673,31 +709,31 @@ if (args.command == 'delete'):
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
-    # A list of existing dungeon positions for convenience. 
+    # A list of existing dungeon positions for convenience.
     existing = set()
     for d in dungeons:
         existing.add((d[0], d[1]))
     # Populate a list of dungeons to delete.
     # If --all was specified, populate the delete list will all known dungeons.
-    # Otherwise just validate the -d options. 
+    # Otherwise just validate the -d options.
     to_delete = []
-    if args.all == True:
+    if args.all is True:
         for d in dungeons:
             to_delete.append((d[0], d[1]))
     else:
         for d in args.dungeons:
             if (d[0], d[1]) not in existing:
-                sys.exit('Unable to locate dungeon at %d %d.'%(d[0], d[1]))
+                sys.exit('Unable to locate dungeon at %d %d.' % (d[0], d[1]))
             to_delete.append(d)
     # Build a list of chunks to delete from the dungeon info.
     chunks = []
     # We need to update the caches for the chunks we are affecting
-    dcache, dmtime = loadDungeonCache(cache_path)
+    dcache, dmtime = utils.loadDungeonCache(cache_path)
     ms = mapstore.new(cfg.mapstore)
     for d in to_delete:
         p = [d[0]/16, d[1]/16]
-        print 'Deleting dungeon at %d %d...'%(d[0], d[1])
-        dkey = '%s,%s' % (d[0],d[1])
+        print 'Deleting dungeon at %d %d...' % (d[0], d[1])
+        dkey = '%s,%s' % (d[0], d[1])
         ms.delete_maps(dkey)
         if dkey in dcache:
             del dcache[dkey]
@@ -720,12 +756,12 @@ if (args.command == 'delete'):
             for z in xrange(zsize):
                 chunks.append((p[0]+x, p[1]+z))
     # We need to update the caches for the chunks we are affecting
-    ccache, cmtime = loadChunkCache(cache_path)
+    ccache, cmtime = utils.loadChunkCache(cache_path)
     # Delete the chunks
     for c in chunks:
-        if world.containsChunk(c[0],c[1]):
-            world.deleteChunk(c[0],c[1])
-            ckey = '%s,%s' % (c[0],c[1])
+        if world.containsChunk(c[0], c[1]):
+            world.deleteChunk(c[0], c[1])
+            ckey = '%s,%s' % (c[0], c[1])
             if ckey in ccache:
                 del ccache[ckey]
             else:
@@ -733,16 +769,16 @@ if (args.command == 'delete'):
     # Save the world.
     print "Saving..."
     world.saveInPlace()
-    saveDungeonCache(cache_path, dcache)
-    saveChunkCache(cache_path, ccache)
+    utils.saveDungeonCache(cache_path, dcache)
+    utils.saveChunkCache(cache_path, ccache)
     sys.exit()
 
 # Regenerate mode
 if (args.command == 'regenerate'):
     # Check to make sure the user specified what they want to do.
-    if args.dungeons == [] and args.all == False:
+    if args.dungeons == [] and args.all is False:
         print 'You must specify either --all or at least one -d option when ' \
-                'regnerating dungeons.'
+              'regnerating dungeons.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
@@ -754,7 +790,7 @@ if (args.command == 'regenerate'):
     # If --all was specified, populate the regen lst will contain all known
     # dungeons.
     to_regen = []
-    if args.all == True:
+    if args.all is True:
         for d in dungeons:
             to_regen.append(d)
     else:
@@ -768,8 +804,8 @@ if (args.command == 'regenerate'):
         sys.exit(1)
 
     # We'll need caches and map stores
-    dungeon_cache, dmtime = loadDungeonCache(cache_path)
-    chunk_cache, cmtime = loadChunkCache(cache_path)
+    dungeon_cache, dmtime = utils.loadDungeonCache(cache_path)
+    chunk_cache, cmtime = utils.loadChunkCache(cache_path)
     map_store = mapstore.new(cfg.mapstore)
     loottable.Load()
 
@@ -784,16 +820,16 @@ if (args.command == 'regenerate'):
     # Now go through each dungeon
     for d in to_regen:
         # Delete the existing maps for this dungeon so they can be recycled.
-        map_store.delete_maps('%s,%s'%(d[0], d[1]))
+        map_store.delete_maps('%s,%s' % (d[0], d[1]))
 
         # Set some parameters for this specific dungeon
         cfg.min_x = cfg.max_x = d[2]
         cfg.min_z = cfg.max_z = d[3]
         cfg.min_levels = cfg.max_levels = d[5]
-        cfg.offset = '%d %d %d'%(d[6], d[7], d[8])
+        cfg.offset = '%d %d %d' % (d[6], d[7], d[8])
         args.entrance = [d[4]['entrance_pos'].x, d[4]['entrance_pos'].z]
         args.entrance_height = d[4]['entrance_height']
-        cfg.portal_exit = d[4].get('portal_exit', Vec(0,0,0))
+        cfg.portal_exit = d[4].get('portal_exit', Vec(0, 0, 0))
         cfg.dungeon_name = d[4].get('dungeon_name', ruins.Blank.nameDungeon())
 
         print 'Regenerating dungeon at', cfg.offset, '...'
@@ -881,27 +917,34 @@ if (args.offset is not None):
                                  args.offset[1],
                                  args.offset[2])
 
-if (args.entrance is not None and (
-    args.entrance[0] >= args.x or
-    args.entrance[0] < 0 or
-    args.entrance[1] >= args.z or
-    args.entrance[1] < 0)):
+if (
+    args.entrance is not None and
+        (
+            args.entrance[0] >= args.x or
+            args.entrance[0] < 0 or
+            args.entrance[1] >= args.z or
+            args.entrance[1] < 0
+        )
+):
     print 'Entrance offset values out of range.'
-    print 'These should be >= 0 and < the maximum width or length of the dungeon.'
+    print 'These should be >= 0 and < the maximum width or length of' \
+          ' the dungeon.'
     sys.exit(1)
 
 # Some options don't work with multidungeons
 if (args.number is not 1):
     if (args.offset is not None):
-        print 'WARN: Offset option is ignored when generating multiple dungeons.'
+        print 'WARN: Offset option is ignored when generating multiple ' \
+              ' dungeons.'
         cfg.offset = None
     if (args.entrance is not None):
-        print 'WARN: Entrance option is ignored when generating multiple dungeons.'
+        print 'WARN: Entrance option is ignored when generating multiple ' \
+              ' dungeons.'
         args.entrance = None
-    if  (args.html is not None):
+    if (args.html is not None):
         print 'WARN: HTML option is ignored when generating multiple dungeons.'
         args.html = None
-    if  (args.seed is not None):
+    if (args.seed is not None):
         print 'WARN: Seed option is ignored when generating multiple dungeons.'
         args.seed = None
 
@@ -909,9 +952,9 @@ if (args.number is not 1):
 # Load lewts
 loottable.Load()
 
-print "MCDungeon",__version__,"startup complete. "
+print "MCDungeon", __version__, "startup complete. "
 
-if args.debug == True:
+if args.debug:
     print 'Z:', args.z
     print '   ', cfg.min_z
     print '   ', cfg.max_z
@@ -925,22 +968,22 @@ if args.debug == True:
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
     # Load the chunk cache
-    chunk_cache, chunk_mtime = loadChunkCache(cache_path)
+    chunk_cache, chunk_mtime = utils.loadChunkCache(cache_path)
     cached = 0
     notcached = 1
 
     # Store some stats
     chunk_stats = [
-                   ['          Far Chunks', 0],
-                   ['         Near Chunks', 0],
-                   ['         Unpopulated', 0],
-                   ['              Oceans', 0],
-                   ['          Structures', 0],
-                   ['         High Chunks', 0],
-                   ['          Low Chunks', 0],
-                   ['              Rivers', 0],
-                   ['         Good Chunks', 0]
-                ]
+        ['          Far Chunks', 0],
+        ['         Near Chunks', 0],
+        ['         Unpopulated', 0],
+        ['              Oceans', 0],
+        ['          Structures', 0],
+        ['         High Chunks', 0],
+        ['          Low Chunks', 0],
+        ['              Rivers', 0],
+        ['         Good Chunks', 0]
+    ]
     pm = pmeter.ProgressMeter()
     pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
@@ -952,35 +995,37 @@ if (cfg.offset is None or cfg.offset is ''):
         pm.update(cc)
         # Flush the cache periodically.
         if notcached % 200 == 0:
-            saveChunkCache(cache_path, chunk_cache)
+            utils.saveChunkCache(cache_path, chunk_cache)
 
         if args.spawn is not None:
             sx = args.spawn[0]
             sz = args.spawn[1]
         else:
-            sx = world.playerSpawnPosition()[0]>>4
-            sz = world.playerSpawnPosition()[2]>>4
+            sx = world.playerSpawnPosition()[0] >> 4
+            sz = world.playerSpawnPosition()[2] >> 4
         # Far chunk
-        if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
+        if (numpy.sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
             chunk_stats[0][1] += 1
             continue
         # Near chunk
-        if (sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
+        if (numpy.sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
             chunk_stats[1][1] += 1
             continue
         # Chunk map stuff
-        if chunk_min == None:
+        if chunk_min is None:
             chunk_min = (cx, cz)
         else:
             chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
-        if chunk_max == None:
+        if chunk_max is None:
             chunk_max = (cx, cz)
         else:
             chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
         # Check mtime on the chunk to avoid loading the whole thing
         key = '%s,%s' % (cx, cz)
-        if (regions.get_chunk_mtime(cx, cz) < chunk_mtime and
-            key in chunk_cache):
+        if (
+            regions.get_chunk_mtime(cx, cz) < chunk_mtime and
+            key in chunk_cache
+        ):
             cached += 1
         else:
             notcached += 1
@@ -988,12 +1033,6 @@ if (cfg.offset is None or cfg.offset is ''):
             # Load the chunk
             chunk = regions.get_chunk(cx, cz)
             while chunk_cache[key][0] is None:
-                # Unpopulated
-                # Disabled for now... this doesn't work reliably, and in 1.6 the
-                # flag doesn't appear to get cleared. 
-                #if (chunk['TerrainPopulated'] is not 1):
-                #    chunk_cache[key][0] = 'U'
-                #    continue
                 # Biomes
                 biomes = chunk['Biomes'].flatten()
                 # Exclude chunks that are 20% river.
@@ -1022,7 +1061,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     t = False
                     i = 0
                     y = 0
-                    while (t == False and y < world.Height//16):
+                    while (t is False and y < world.Height//16):
                         if (y not in b or i >= len(mats)):
                             y += 1
                             i = 0
@@ -1030,19 +1069,19 @@ if (cfg.offset is None or cfg.offset is ''):
                             x = (b[y][:] == mats[i])
                             t = x.any()
                             i += 1
-                    if t == True:
+                    if t:
                         chunk_cache[key][0] = 'S'
                         continue
                 # Depths
                 min_depth = world.Height
                 max_depth = 0
                 # list of IDs that are solid. (for our purposes anyway)
-                solids = ( 1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
+                solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
                 for x in xrange(16):
                     for z in xrange(16):
                         y = chunk['HeightMap'][z+x*16]-1
                         while (y > 0 and y//16 in b and
-                               b[y//16][y%16, z, x] not in solids):
+                               b[y//16][y % 16, z, x] not in solids):
                             y = y - 1
                         min_depth = min(y, min_depth)
                         max_depth = max(y, max_depth)
@@ -1057,17 +1096,17 @@ if (cfg.offset is None or cfg.offset is ''):
                 chunk_cache[key][2] = min_depth
                 chunk_cache[key][0] = 'G'
         # Classify chunks
-        if  chunk_cache[key][0] == 'U':
+        if chunk_cache[key][0] == 'U':
             chunk_stats[2][1] += 1
-        elif  chunk_cache[key][0] == 'O':
+        elif chunk_cache[key][0] == 'O':
             chunk_stats[3][1] += 1
-        elif  chunk_cache[key][0] == 'S':
+        elif chunk_cache[key][0] == 'S':
             chunk_stats[4][1] += 1
-        elif  chunk_cache[key][0] == 'H':
+        elif chunk_cache[key][0] == 'H':
             chunk_stats[5][1] += 1
-        elif  chunk_cache[key][0] == 'L':
+        elif chunk_cache[key][0] == 'L':
             chunk_stats[6][1] += 1
-        elif  chunk_cache[key][0] == 'R':
+        elif chunk_cache[key][0] == 'R':
             chunk_stats[7][1] += 1
         else:
             chunk_stats[8][1] += 1
@@ -1077,13 +1116,14 @@ if (cfg.offset is None or cfg.offset is ''):
     # Find old dungeons
     old_dungeons = listDungeons(world, oworld, expand_fill_caves=True)
     for d in old_dungeons:
-        if args.debug: print 'old dungeon:', d
+        if args.debug:
+            print 'old dungeon:', d
         p = (d[0]/16, d[1]/16)
         for x in xrange(int(d[2])):
             for z in xrange(int(d[3])):
-                if (p[0]+x,p[1]+z) in good_chunks:
-                    del(good_chunks[(p[0]+x,p[1]+z)])
-                    key = '%s,%s' % (p[0]+x,p[1]+z)
+                if (p[0]+x, p[1]+z) in good_chunks:
+                    del(good_chunks[(p[0]+x, p[1]+z)])
+                    key = '%s,%s' % (p[0]+x, p[1]+z)
                     chunk_cache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
                     chunk_stats[8][1] -= 1
@@ -1092,7 +1132,7 @@ if (cfg.offset is None or cfg.offset is ''):
     if args.debug:
         for cz in xrange(chunk_min[1], chunk_max[1]+1):
             for cx in xrange(chunk_min[0], chunk_max[0]+1):
-                key = '%s,%s' % (cx,cz)
+                key = '%s,%s' % (cx, cz)
                 if key in chunk_cache:
                     if chunk_cache[key][0] == 'U':
                         sys.stdout.write(materials.RED)
@@ -1116,26 +1156,29 @@ if (cfg.offset is None or cfg.offset is ''):
             print
 
     # Re-cache the chunks and update mtime
-    saveChunkCache(cache_path, chunk_cache)
+    utils.saveChunkCache(cache_path, chunk_cache)
 
     for stat in chunk_stats:
-        print '   %s: %d'%(stat[0], stat[1])
+        print '   %s: %d' % (stat[0], stat[1])
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached+cached,
                                              100*cached/(notcached+cached))
 
 
 # Load the dungeon cache for updates later.
-dungeon_cache, mtime = loadDungeonCache(cache_path)
+dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
 # Create a map store
 map_store = mapstore.new(cfg.mapstore)
 
 # Gnerate dungeons!
 count = 0
 result = True
-while (result is True and
-       (count < args.number or
-        args.number == -1)
-      ):
+while (
+    result is True and
+    (
+        count < args.number or
+        args.number == -1
+    )
+):
     dungeon = Dungeon(args,
                       world,
                       oworld,
