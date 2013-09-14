@@ -75,7 +75,7 @@
 35,Dark Green Wool,13,64
 35,Red Wool,14,64
 35,Black Wool,15,64
-37,Yellow Flower,0,64
+37,Dandelion,0,64
 38,Poppy,0,64
 38,Blue Orchid,1,64
 38,Allium,2,64

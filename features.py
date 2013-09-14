@@ -1957,8 +1957,6 @@ class Farm(Blank):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
 
-        sb = self.parent.parent.setblock
-
         center = self.parent.canvasCenter()
 
         o = self.parent.loc.trans(center.x-2,
@@ -2009,18 +2007,24 @@ class Farm(Blank):
             if(p+Vec(0,y,1) not in stairs and
                p+Vec(0,y+1,1) not in stairs):
                 locs.extend( [ o.trans(0,0,5) ] )
+                
+        self.plant(locs)
+        
+    def plant(self, locs):
+        sb = self.parent.parent.setblock
+        
+        crops = [
+            (materials.Fern, 2),
+            (materials.TallGrass, 1),
+            (materials.DeadBush, 0),
+            (materials.RedMushroom, 0),
+            (materials.BrownMushroom, 0),
+            (materials.NetherWart, 0)
+        ]
 
         for loc in locs:
             #choose a random crop. there's a 33% change it'll be a dead bush
             #i mean good lord, it's in an UNDERGROUND ABANDONED dungeon (:
-            crops = [
-                (materials.Fern, 2),
-                (materials.TallGrass, 1),
-                (materials.DeadBush, 0),
-                (materials.RedMushroom, 0),
-                (materials.BrownMushroom, 0),
-                (materials.NetherWart, 0)
-            ]
             if( random.randint(0, 100) < 34 ):
                 crop = (materials.DeadBush, 0)
             else:
@@ -2058,6 +2062,47 @@ class Farm(Blank):
             # Add some gates
             sb(loc.trans(2,0,0), materials.FenceGate, 0)
             sb(loc.trans(2,0,5), materials.FenceGate, 0)
+
+
+class WildGarden(Farm):
+    _name = 'wildgarden'
+    
+    def plant(self, locs):
+        sb = self.parent.parent.setblock
+        
+        # format: mat, block val, top block val (tall flowers only)
+        flowers = [
+            (materials.Air, 0),
+            (materials.Poppy, 0),
+            (materials.BlueOrchid, 1),
+            (materials.Allium, 2),
+            (materials.AzureBluet, 3),
+            (materials.RedTulip, 4),
+            (materials.OrangeTulip, 5),
+            (materials.WhiteTulip, 6),
+            (materials.PinkTulip, 7),
+            (materials.OxeyeDaisy, 8),
+            (materials.Dandelion, 0),
+            #(materials.Sunflower, 0, 10), #Doesn't look right underground
+            (materials.Lilac, 1, 10),
+            (materials.RoseBush, 4, 11),
+            (materials.Peony, 5, 8)
+        ]
+
+        for loc in locs:
+            for x in xrange(6):
+                for z in xrange(6):
+                    p = loc.trans(x,0,z)
+                    if( random.randint(0, 100) < 45 ):
+                        flower = random.choice(flowers)
+                        sb(p, flower[0], flower[1])
+                        if (len(flower) > 2):   # tall flower
+                            sb(p.up(1), flower[0], flower[2])
+                        # Place dirt/grass only under flowers
+                        if( random.randint(0, 100) < 25 ):
+                            sb(p.down(1), materials.Dirt, 0)
+                        else:
+                            sb(p.down(1), materials.Grass, 0)
 
 
 class Chapel(Blank):

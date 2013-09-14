@@ -254,6 +254,23 @@ DarkGreenStainedClay = Material('Dark Green Stained Clay', 'C',GREEN)
 RedStainedClay = Material('Red Stained Clay', 'C',RED)
 BlackStainedClay = Material('Black Stained Clay', 'C',DGREY)
 
+# Flowers
+Poppy = Material('Poppy', 'f',RED)
+BlueOrchid = Material('Blue Orchid', 'f',BLUE)
+Allium = Material('Allium', 'f',BPURPLE)
+AzureBluet = Material('Azure Bluet', 'f',BLUE)
+RedTulip = Material('Red Tulip', 'f',RED)
+OrangeTulip = Material('Orange Tulip', 'f',YELLOW)
+WhiteTulip = Material('White Tulip', 'f',WHITE)
+PinkTulip = Material('Pink Tulip', 'f',GREY)
+OxeyeDaisy = Material('Oxeye Daisy', 'f',WHITE)
+Dandelion = Material('Dandelion', 'f',YELLOW)
+# Tall Flowers
+Sunflower = Material('Sunflower', 'F',YELLOW)
+Lilac = Material('Lilac', 'F',PURPLE)
+RoseBush = Material('Rose Bush', 'F',RED)
+Peony = Material('Peony', 'F',GREY)
+
 # Meta materials
 class meta_class_mossycobble(MetaMaterial):
     name = 'meta_mossycobble'
