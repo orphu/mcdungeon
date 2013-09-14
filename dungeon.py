@@ -2535,18 +2535,25 @@ class Dungeon (object):
                 continue
 
             val = mat.val
+            #Silverfish egg pass
             if (cfg.silverfish > 0 and
                 (val == 1 or val == 4 or val == 98) and
                 random.randint(1,100) <= cfg.silverfish):
                 if (val == 4):
-                    val = 97
-                    dat = 1
+                    dat = 1 # Cobblestone
                 elif (val == 1):
-                    val = 97
-                    dat = 0
-                elif (val == 98 and dat == 0):
-                    val = 97
-                    dat = 2
+                    dat = 0 # Smooth Stone
+                elif (val == 98):
+                    if (dat == 0):
+                        dat = 2 # Bricks
+                    elif (dat == 1):
+                        dat = 3 # Mossy Bricks
+                    elif (dat == 2):
+                        dat = 4 # Cracked Bricks
+                    elif (dat == 3):
+                        dat = 5 # Chiseled Bricks
+                val = 97    # Switch to egg brick
+
             # Write the block.
             chunk.Blocks[xInChunk, zInChunk, y] = val
             chunk.Data[xInChunk, zInChunk, y] = dat
