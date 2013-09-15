@@ -6,11 +6,13 @@ tfunc = time.time
 if sys.platform == "win32":
     tfunc = time.clock
 
+
 def format_sec(sec):
     sec = int(sec)
     min_, sec = divmod(sec, 60)
     hour, min_ = divmod(min_, 60)
     return '%d:%02d:%02d' % (hour, min_, sec)
+
 
 class ETA(object):
     '''
@@ -67,7 +69,7 @@ class ProgressMeter(object):
         self.done_char = '='
         self.left_char = ' '
         self.eta_calculator = None
-        # max 25 fps on redraw 
+        # max 25 fps on redraw
         self.min_update_delta = max(min_update_delta, 0.04)
         self.outstream = outstream
         self.work_mutex = threading.Lock()
@@ -108,11 +110,13 @@ class ProgressMeter(object):
         else:
             eta = self.eta_calculator.getstatus()
 
-        message = '%s %s[%s>%s] %s' % (self.label,
-                                      percent_str,
-                                      self.done_char*donesteps,
-                                      self.left_char*stepsleft,
-                                      eta)
+        message = '%s %s[%s>%s] %s' % (
+            self.label,
+            percent_str,
+            self.done_char*donesteps,
+            self.left_char*stepsleft,
+            eta
+        )
         self.outstream.write('\b'*len(self.prev_message) + message)
         self.outstream.flush()
         self.prev_message = message
