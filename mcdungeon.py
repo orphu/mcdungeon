@@ -1169,7 +1169,7 @@ dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
 # Create a map store
 map_store = mapstore.new(cfg.mapstore)
 
-# Gnerate dungeons!
+# Generate dungeons!
 count = 0
 result = True
 while (
@@ -1179,6 +1179,11 @@ while (
         args.number == -1
     )
 ):
+    if args.number == -1:
+        print '\n***** Placing dungeon {0} *****\n'.format(count+1)
+    else:
+        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count+1, args.number)
+
     dungeon = Dungeon(args,
                       world,
                       oworld,
