@@ -1036,16 +1036,17 @@ if (cfg.offset is None or cfg.offset is ''):
                 # Biomes
                 biomes = chunk['Biomes'].flatten()
                 # Exclude chunks that are 20% river.
-                if (biomes == 7).sum() > 50:
+                river = -1
+                for river_biome in cfg.river_biomes:
+                    if (biomes == river_biome).sum() > 50:
+                        river = river_biome
+                if river > -1:
                     chunk_cache[key][0] = 'R'
-                    chunk_cache[key][1] = 7
+                    chunk_cache[key][1] = river
                     continue
-                if (biomes == 11).sum() > 50:
-                    chunk_cache[key][0] = 'R'
-                    chunk_cache[key][1] = 11
-                chunk_cache[key][1] = numpy.argmax(numpy.bincount((biomes)))
+                chunk_cache[key][1] = numpy.argmax(numpy.bincount(biomes))
                 # Exclude Oceans
-                if chunk_cache[key][1] in [0, 10, 24]:
+                if chunk_cache[key][1] in cfg.ocean_biomes:
                     chunk_cache[key][0] = 'O'
                     continue
                 # Now the heavy stuff

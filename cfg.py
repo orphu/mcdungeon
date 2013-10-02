@@ -60,6 +60,8 @@ maps = '0'
 mapstore = ''
 portal_exit = Vec(0, 0, 0)
 dungeon_name = None
+river_biomes = [7, 11]
+ocean_biomes = [0, 10, 24]
 
 master_halls = []
 master_rooms = []
@@ -179,7 +181,9 @@ def Load(filename='default.cfg'):
         treasure_SpawnMinDelay, treasure_SpawnMaxDelay, \
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
-        dir_books, dir_extra_spawners, dir_extra_items
+        dir_books, dir_extra_spawners, dir_extra_items, river_biomes, \
+        ocean_biomes
+
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
         fh = open(temp)
@@ -448,3 +452,25 @@ def Load(filename='default.cfg'):
                 structure_values.append(v)
             else:
                 sys.exit('Unable to find structure material: '+str(a))
+
+    # Load river biomes
+    try:
+        river_biomes = set([int(x) for x in get(
+            'dungeon',
+            'river_biomes',
+            river_biomes
+        ).split(',')])
+    except:
+        print 'WARNING: Unable to parse river_biomes from config.'\
+              ' Using default.'
+
+    # Load ocean biomes
+    try:
+        ocean_biomes = set([int(x) for x in get(
+            'dungeon',
+            'ocean_biomes',
+            ocean_biomes
+        ).split(',')])
+    except:
+        print 'WARNING: Unable to parse ocean_biomes from config.'\
+              ' Using default.'

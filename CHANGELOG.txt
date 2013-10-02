@@ -1,6 +1,9 @@
 v0.13.0 -
 
   !! NOTE: This version requires Minecraft 1.7.0 release or higher!
+	
+   * River and ocean biome exclusions are now configurable. (orphu)
+     See default.cfg for details.
 
    * Interactive mode will now prompt for max_distance value to help avoid confusion for new users. (JiFish)
 
