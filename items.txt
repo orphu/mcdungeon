@@ -27,6 +27,7 @@
 10,Lava,0,64
 11,StillLava,0,64
 12,Sand,0,64
+12,Red Sand,1,64
 13,Gravel,0,64
 14,Gold Ore,0,64
 15,Iron Ore,0,64
