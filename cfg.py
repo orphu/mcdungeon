@@ -113,7 +113,7 @@ def getPath(section, var, default):
         return default
     # Convert backslashes to forward slahes, normpath will then convert
     # them to the OS directory seperator
-    temp.replace('\\', '/')
+    temp = temp.replace('\\', '/')
     # Paths other than the default are relative to the config folder
     return os.path.join('configs', os.path.normpath(temp))
 
