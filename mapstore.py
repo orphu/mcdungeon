@@ -25,7 +25,7 @@ from utils import Vec
 import materials
 
 class new:
-    def __init__(self, mapstore):
+    def __init__(self, mapstore, dir_paintings):
         self.mapstore = os.path.join(mapstore, 'data')
 
         # Load the idcounts.dat NBT if it exists, otherwise make
@@ -58,10 +58,10 @@ class new:
                 self.maphash[hash] = int(file[4:-4])
 
         # Store paintings path
-        if os.path.isdir(os.path.join(sys.path[0],'paintings')):
-            self.painting_path = os.path.join(sys.path[0],'paintings')
-        elif os.path.isdir('paintings'):
-            self.painting_path = 'paintings'
+        if os.path.isdir(os.path.join(sys.path[0],dir_paintings)):
+            self.painting_path = os.path.join(sys.path[0],dir_paintings)
+        elif os.path.isdir(dir_paintings):
+            self.painting_path = dir_paintings
         else:
             sys.exit("Error: Could not find the paintings folder!")
 

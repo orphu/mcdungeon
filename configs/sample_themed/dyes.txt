@@ -1,0 +1,7 @@
+# Replacement Dye Colors
+#
+# Format is:
+# <name>:<hex color>
+
+# Yuck!
+Hot Pink:FF40FF

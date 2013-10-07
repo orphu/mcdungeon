@@ -1,0 +1,2 @@
+A Mandel Brot Fractal.
+(1/2)

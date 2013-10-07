@@ -1,0 +1,6 @@
+# Replacement Magic Items
+#
+# Format is:
+# <name>:<base item name>,<enchant>-<level>,<enchant>-<level>...:<lore>:<lore>...
+
+Quantum Gemerald:Emerald,51-1:A valuable jewel from the year 3000.

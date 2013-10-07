@@ -806,7 +806,7 @@ if (args.command == 'regenerate'):
     # We'll need caches and map stores
     dungeon_cache, dmtime = utils.loadDungeonCache(cache_path)
     chunk_cache, cmtime = utils.loadChunkCache(cache_path)
-    map_store = mapstore.new(cfg.mapstore)
+    map_store = mapstore.new(cfg.mapstore,cfg.dir_paintings)
     loottable.Load()
 
     # Set/override some common parameters

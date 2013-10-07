@@ -1,0 +1,9 @@
+# Items in this file are loaded in addition to those in the normal items.txt
+# This file is ideal for adding mod items for loot.
+# 
+# Format is:
+# ID,Item Name,Data Value,Maximum Stack Size
+
+# This block can't normally be obtained in vanilla.
+# (http://www.minecraftwiki.net/wiki/Double_Slab#Trivia)
+43,smooth full halfslab,8,64

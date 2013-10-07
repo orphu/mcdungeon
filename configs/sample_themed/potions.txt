@@ -1,0 +1,6 @@
+# Replacement Potions
+#
+# Format is:
+# <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...
+
+Energy Drink:8193,3-2-1800

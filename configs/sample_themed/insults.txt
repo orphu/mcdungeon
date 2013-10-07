@@ -1,0 +1,8 @@
+# Replacement list of fortunes for fortune cookies. One per line.
+#
+# This version insults you!
+#
+I once owned a dog that was smarter then you.
+You fight like a dairy farmer.
+You have the manners of a beggar.
+There are no words for how disgusting you are.
