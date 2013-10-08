@@ -243,6 +243,7 @@
 153,Nether Quartz Ore,0,64
 154,Hopper,0,64
 155,Block of Quartz,0,64
+155,Chiseled Quartz,1,64
 156,Quartz Stairs,0,64
 157,Activator Rail,0,64
 158,Dropper,0,64
