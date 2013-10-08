@@ -806,7 +806,7 @@ if (args.command == 'regenerate'):
     # We'll need caches and map stores
     dungeon_cache, dmtime = utils.loadDungeonCache(cache_path)
     chunk_cache, cmtime = utils.loadChunkCache(cache_path)
-    map_store = mapstore.new(cfg.mapstore,cfg.dir_paintings)
+    map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings)
     loottable.Load()
 
     # Set/override some common parameters
@@ -1077,7 +1077,8 @@ if (cfg.offset is None or cfg.offset is ''):
                 min_depth = world.Height
                 max_depth = 0
                 # list of IDs that are solid. (for our purposes anyway)
-                solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
+                solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110,
+                          112, 114, 121, 159, 172, 173)
                 for x in xrange(16):
                     for z in xrange(16):
                         y = chunk['HeightMap'][z+x*16]-1
@@ -1183,7 +1184,8 @@ while (
     if args.number == -1:
         print '\n***** Placing dungeon {0} *****\n'.format(count+1)
     else:
-        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count+1, args.number)
+        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count+1,
+                                                                  args.number)
 
     dungeon = Dungeon(args,
                       world,
