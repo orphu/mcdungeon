@@ -729,7 +729,7 @@ if (args.command == 'delete'):
     chunks = []
     # We need to update the caches for the chunks we are affecting
     dcache, dmtime = utils.loadDungeonCache(cache_path)
-    ms = mapstore.new(cfg.mapstore)
+    ms = mapstore.new(cfg.mapstore, cfg.dir_paintings)
     for d in to_delete:
         p = [d[0]/16, d[1]/16]
         print 'Deleting dungeon at %d %d...' % (d[0], d[1])
@@ -1169,7 +1169,7 @@ if (cfg.offset is None or cfg.offset is ''):
 # Load the dungeon cache for updates later.
 dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
 # Create a map store
-map_store = mapstore.new(cfg.mapstore)
+map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings)
 
 # Generate dungeons!
 count = 0
