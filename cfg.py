@@ -278,11 +278,12 @@ def Load(filename='default.cfg'):
     except:
         default_entrances = [('SquareTowerEntrance', 10)]
     # Try to find any biome specific entrance definitions.
-    entrancematch = re.compile('entrances.(\d+)')
+    entrancematch = re.compile('entrances.([0-9,]+)')
     for name in parser.sections():
         match = entrancematch.search(name)
         if match:
-            master_entrances[int(match.group(1))] = parser.items(name)
+            for biome in match.group(1).split(','):
+                master_entrances[int(biome)] = parser.items(name)
 
     # Load the mob spawner tables
     max_mob_tier = 0
