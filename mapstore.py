@@ -25,7 +25,7 @@ from utils import Vec
 import materials
 
 class new:
-    def __init__(self, mapstore, dir_paintings):
+    def __init__(self, mapstore, dir_paintings='paintings'):
         self.mapstore = os.path.join(mapstore, 'data')
 
         # Load the idcounts.dat NBT if it exists, otherwise make
