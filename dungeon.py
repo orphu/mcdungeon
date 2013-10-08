@@ -2338,7 +2338,7 @@ class Dungeon (object):
         ignore = (0,6,17,18,31,37,38,39,40,44,50,51,55,
                   59,63,64,65,66,68,70,71,72,75,76,
                   77,81,83,85,86,90,91,92,93,94, 99, 100, 103, 104, 105, 106,
-                  111, 127)
+                  111, 127, 174)
         chunk = self.world.getChunk(wcoord.x>>4, wcoord.z>>4)
         for x in xrange(wcoord.x+4, wcoord.x+12):
             for z in xrange(wcoord.z+4, wcoord.z+12):
