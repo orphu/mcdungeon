@@ -25,6 +25,7 @@ from utils import (
 )
 
 _desert_biomes = (2, 17, 130)
+_ice_biomes = (140,)
 _mesa_biomes = (37, 38, 39, 165, 166, 167)
 _swamp_jungle_biomes = (6, 21, 22, 23, 149, 151)
 
@@ -296,6 +297,13 @@ class StepPyramid(Blank):
             mat_stair = materials.SandstoneStairs
             mat_slab = materials.SandstoneSlab
             mat_floor = materials.Sand
+        elif self.parent.parent.biome in _ice_biomes:
+            mat_ext = materials.PackedIce
+            mat_block = materials.Ice
+            mat_ruins = materials.PackedIce
+            mat_stair = materials.QuartzStairs
+            mat_slab = materials.QuartzSlab
+            mat_floor = materials.PackedIce
         elif self.parent.parent.biome in _mesa_biomes:
             mat_ext = materials.HardenedClay
             mat_block = materials.HardenedClay
@@ -754,9 +762,15 @@ class RoundTowerEntrance(Blank):
             if self.parent.parent.biome in _desert_biomes:
                 self._mat = materials.meta_decoratedsandstone
                 self._stair = materials.SandstoneStairs
+            # Ice Spikes
+            elif self.parent.parent.biome in _ice_biomes:
+                self._mat = materials.PackedIce
+                self._stair = materials.QuartzStairs
+            # Mesas
             elif self.parent.parent.biome in _mesa_biomes:
                 self._mat = materials.HardenedClay
                 self._stair = materials.WoodenStairs
+            # Swamps and such
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
                 self._stair = materials.StoneStairs
@@ -965,10 +979,17 @@ class SquareTowerEntrance(Blank):
                 self._mat = materials.meta_decoratedsandstone
                 self._support = materials.WoodenStairs
                 self._stair = materials.SandstoneStairs
+            # Ice Spikes
+            elif self.parent.parent.biome in _ice_biomes:
+                self._mat = materials.PackedIce
+                self._support = materials.QuartzStairs
+                self._stair = materials.QuartzStairs
+            # Mesas
             elif self.parent.parent.biome in _mesa_biomes:
                 self._mat = materials.HardenedClay
                 self._support = materials.WoodenStairs
                 self._stair = materials.WoodenStairs
+            # Swamps and such
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
                 self._support = materials.StoneStairs
@@ -1289,6 +1310,18 @@ class RuinedFane(Blank):
             singleSlab = materials.SandstoneSlab
             doubleSlab = materials.ChiseledSandstone
             stair = materials.WoodenStairs
+        # Ice Spikes
+        elif self.parent.parent.biome in _ice_biomes:
+            wall = materials.PackedIce
+            buttress = materials.Ice
+            buttressStair = materials.QuartzStairs
+            soil = materials.SnowBlock
+            topsoil = materials.SnowBlock
+            floor = materials.SnowBlock
+            singleSlab = materials.QuartzSlab
+            doubleSlab = materials.ChiseledQuartz
+            stair = materials.QuartzStairs
+        # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             wall = materials.HardenedClay
             buttress = materials.HardenedClay
@@ -1722,6 +1755,12 @@ class Barrow(Blank):
             self._grass = materials.HardenedClay
             self._stones = materials.BrownStainedClay
             self._tallgrass = materials.Air
+        # Ice spikes
+        elif self.parent.parent.biome in _ice_biomes:
+            self._earth = materials.SnowBlock
+            self._grass = materials.SnowBlock
+            self._stones = materials.ChiseledQuartz
+            self._tallgrass = materials.PackedIce
         # Swamps, rivers, and jungles
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             self._earth = materials.Dirt
@@ -2206,6 +2245,9 @@ class CircularTower(Blank):
         # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             mat = materials.HardenedClay
+        # Ice Spikes
+        elif self.parent.parent.biome in _ice_biomes:
+            mat = materials.PackedIce
         # Use cobblestone for jungle and swamp
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat = materials.meta_mossycobble
@@ -2249,6 +2291,12 @@ class Arches(Blank):
             stair = materials.SandstoneStairs
             slab1 = materials.SandstoneSlab
             slab2 = materials.SandstoneSlab
+        # Ice Spikes
+        elif self.parent.parent.biome in _ice_biomes:
+            mat = materials.PackedIce
+            stair = materials.Ice
+            slab1 = materials.QuartzSlab
+            slab2 = materials.QuartzSlab
         # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             mat = materials.HardenedClay
@@ -2331,6 +2379,10 @@ class HouseFrame(Blank):
         if self.parent.parent.biome in _desert_biomes:
             mat = materials.meta_decoratedsandstone
             stair = materials.SandstoneStairs
+        # Ice Spikes
+        elif self.parent.parent.biome in _mesa_biomes:
+            mat = materials.PackedIce
+            stair = materials.QuartzStairs
         # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             mat = materials.HardenedClay
