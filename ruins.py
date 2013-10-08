@@ -9,7 +9,8 @@ import materials
 import perlin
 from utils import *
 
-_desert_biomes = (2,17,37,38,39,130,165,166,167)
+_desert_biomes = (2,17,130)
+_mesa_biomes = (37,38,39,165,166,167)
 _swamp_jungle_biomes = (6,21,22,23,149,151)
 
 class Blank(object):
@@ -274,6 +275,13 @@ class StepPyramid(Blank):
             mat_stair = materials.SandstoneStairs
             mat_slab = materials.SandstoneSlab
             mat_floor = materials.Sand
+        elif self.parent.parent.biome in _mesa_biomes:
+            mat_ext = materials.HardenedClay
+            mat_block = materials.HardenedClay
+            mat_ruins = materials.RedStainedClay
+            mat_stair = materials.WoodenStairs
+            mat_slab = materials.HardenedClay
+            mat_floor = materials.RedSand
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat_ext = materials.meta_mossycobble
             mat_block = materials.meta_mossycobble
@@ -575,7 +583,8 @@ class StepPyramid(Blank):
 
         # Topper
         # Deserts have a fancy glass tipped pyramid
-        if self.parent.parent.biome in _desert_biomes:
+        if (self.parent.parent.biome in _desert_biomes or
+            self.parent.parent.biome in _mesa_biomes):
             for y in xrange(29, 33):
                 for p in iterate_cube(c1.trans(y,-y,y),
                                             c3.trans(-y,-y,-y)):
@@ -592,25 +601,26 @@ class StepPyramid(Blank):
                 self.parent.parent.setblock(p, materials.Air)
             for p in iterate_cube(c1.trans(28, -30, 32),c3.trans(-28, -29, -32)):
                 self.parent.parent.setblock(p, materials.Air)
-            # Spires
-            for y in xrange(6):
-                self.parent.parent.setblock(c1.trans(20,-20-y,20),
-                                            materials.ChiseledSandstone)
-                self.parent.parent.setblock(c1.trans(43,-20-y,20),
-                                            materials.ChiseledSandstone)
-                self.parent.parent.setblock(c3.trans(-20,-20-y,-20),
-                                            materials.ChiseledSandstone)
-                self.parent.parent.setblock(c3.trans(-43,-20-y,-20),
-                                            materials.ChiseledSandstone)
-            for y in xrange(2):
-                self.parent.parent.setblock(c1.trans(20,-26-y,20),
-                                            materials.Fence)
-                self.parent.parent.setblock(c1.trans(43,-26-y,20),
-                                            materials.Fence)
-                self.parent.parent.setblock(c3.trans(-20,-26-y,-20),
-                                            materials.Fence)
-                self.parent.parent.setblock(c3.trans(-43,-26-y,-20),
-                                            materials.Fence)
+                # Spires
+            if self.parent.parent.biome in _desert_biomes:
+                for y in xrange(6):
+                    self.parent.parent.setblock(c1.trans(20,-20-y,20),
+                                                materials.ChiseledSandstone)
+                    self.parent.parent.setblock(c1.trans(43,-20-y,20),
+                                                materials.ChiseledSandstone)
+                    self.parent.parent.setblock(c3.trans(-20,-20-y,-20),
+                                                materials.ChiseledSandstone)
+                    self.parent.parent.setblock(c3.trans(-43,-20-y,-20),
+                                                materials.ChiseledSandstone)
+                for y in xrange(2):
+                    self.parent.parent.setblock(c1.trans(20,-26-y,20),
+                                                materials.Fence)
+                    self.parent.parent.setblock(c1.trans(43,-26-y,20),
+                                                materials.Fence)
+                    self.parent.parent.setblock(c3.trans(-20,-26-y,-20),
+                                                materials.Fence)
+                    self.parent.parent.setblock(c3.trans(-43,-26-y,-20),
+                                                materials.Fence)
         # swamps and jungles are myan-like
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             # Supports
@@ -708,6 +718,11 @@ class RoundTowerEntrance(Blank):
             if self.parent.parent.biome in _desert_biomes:
                 self._mat = materials.meta_decoratedsandstone
                 self._stair = materials.SandstoneStairs
+            elif self.parent.parent.biome in _mesa_biomes:
+                self._mat = random.choice([
+                    materials.HardenedClay,
+                ])
+                self._stair = materials.WoodenStairs
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
                 self._stair = materials.StoneStairs
@@ -912,6 +927,12 @@ class SquareTowerEntrance(Blank):
                 self._mat = materials.meta_decoratedsandstone
                 self._support = materials.WoodenStairs
                 self._stair = materials.SandstoneStairs
+            elif self.parent.parent.biome in _mesa_biomes:
+                self._mat = random.choice([
+                    materials.HardenedClay,
+                ])
+                self._support = materials.WoodenStairs
+                self._stair = materials.WoodenStairs
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
                 self._support = materials.StoneStairs
@@ -1221,6 +1242,16 @@ class RuinedFane(Blank):
             floor = materials.Stone
             singleSlab = materials.SandstoneSlab
             doubleSlab = materials.ChiseledSandstone
+            stair = materials.WoodenStairs
+        elif self.parent.parent.biome in _mesa_biomes:
+            wall = materials.HardenedClay
+            buttress = materials.HardenedClay
+            buttressStair = materials.WoodenStairs
+            soil = materials.RedSand
+            topsoil = materials.RedSand
+            floor = materials.BrownStainedClay
+            singleSlab = materials.OrangeStainedClay
+            doubleSlab = materials.OrangeStainedClay
             stair = materials.WoodenStairs
 
         # the fane is 2 chunks by 3 chunks
@@ -1565,6 +1596,12 @@ class Barrow(Blank):
             self._earth = materials.Sandstone
             self._grass = materials.SmoothSandstone
             self._stones = materials.ChiseledSandstone
+            self._tallgrass = materials.Air
+        # Mesas
+        elif self.parent.parent.biome in _mesa_biomes:
+            self._earth = materials.RedSand
+            self._grass = materials.HardenedClay
+            self._stones = materials.BrownStainedClay
             self._tallgrass = materials.Air
         # Swamps, rivers, and jungles
         elif self.parent.parent.biome in _swamp_jungle_biomes:
@@ -2014,6 +2051,11 @@ class CircularTower(Blank):
         # Use sandstone for deserts
         if self.parent.parent.biome in _desert_biomes:
             mat = materials.meta_decoratedsandstone
+        # Mesas
+        elif self.parent.parent.biome in _mesa_biomes:
+            mat = random.choice([
+                materials.HardenedClay,
+            ])
         # Use cobblestone for jungle and swamp
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat = materials.meta_mossycobble
@@ -2057,6 +2099,14 @@ class Arches(Blank):
             stair = materials.SandstoneStairs
             slab1 = materials.SandstoneSlab
             slab2 = materials.SandstoneSlab
+        # Mesas
+        elif self.parent.parent.biome in _mesa_biomes:
+            mat = random.choice([
+                materials.HardenedClay,
+            ])
+            stair = materials.WoodenStairs
+            slab1 = materials.HardenedClay
+            slab2 = materials.HardenedClay
         # Swamps and jungles are cobblestone
         elif self.parent.parent.biome in _desert_biomes:
             mat = materials.meta_mossycobble
@@ -2131,6 +2181,12 @@ class HouseFrame(Blank):
         if self.parent.parent.biome in _desert_biomes:
             mat = materials.meta_decoratedsandstone
             stair = materials.SandstoneStairs
+        # Mesas
+        elif self.parent.parent.biome in _mesa_biomes:
+            mat = random.choice([
+                materials.HardenedClay,
+            ])
+            stair = materials.WoodenStairs
         # Use cobblestone for jungle and swamp
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat = materials.meta_mossycobble

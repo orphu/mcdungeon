@@ -11,7 +11,7 @@ import numpy
 
 from pymclevel import mclevel, nbt
 
-cache_version = '4'
+cache_version = '5'
 
 
 def floor(n):
@@ -524,7 +524,8 @@ def findChunkDepth(p, world):
         return 0
     depth = world.Height
     # list of IDs that are solid. (for our purposes anyway)
-    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
+    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110, 112, 114, 121,
+              159, 172, 173)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1
@@ -543,7 +544,8 @@ def findChunkDepths(p, world):
     min_depth = world.Height
     max_depth = 0
     # list of IDs that are solid. (for our purposes anyway)
-    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98)
+    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110, 112, 114, 121,
+              159, 172, 173)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1
