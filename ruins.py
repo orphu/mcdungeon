@@ -2380,7 +2380,7 @@ class HouseFrame(Blank):
             mat = materials.meta_decoratedsandstone
             stair = materials.SandstoneStairs
         # Ice Spikes
-        elif self.parent.parent.biome in _mesa_biomes:
+        elif self.parent.parent.biome in _ice_biomes:
             mat = materials.PackedIce
             stair = materials.QuartzStairs
         # Mesas
