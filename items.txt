@@ -151,7 +151,22 @@
 92,Cake Block,0,64
 93,Redstone Repeater Off,0,64
 94,Redstone Repeater On,0,64
-95,Locked Chest,0,64
+95,White Stained Glass,0,64
+95,Orange Stained Glass,1,64
+95,Magenta Stained Glass,2,64
+95,Light Blue Stained Glass,3,64
+95,Yellow Stained Glass,4,64
+95,Light Green Stained Glass,5,64
+95,Pink Stained Glass,6,64
+95,Gray Stained Glass,7,64
+95,Light Gray Stained Glass,8,64
+95,Cyan Stained Glass,9,64
+95,Purple Stained Glass,10,64
+95,Blue Stained Glass,11,64
+95,Brown Stained Glass,12,64
+95,Dark Green Stained Glass,13,64
+95,Red Stained Glass,14,64
+95,Black Stained Glass,15,64
 96,Trapdoor,0,64
 97,Silverfish Stone,0,64
 97,Silverfish Cobblestone,1,64
@@ -263,6 +278,22 @@
 159,Dark Green Stained Clay,13,64
 159,Red Stained Clay,14,64
 159,Black Stained Clay,15,64
+160,White Stained Glass Pane,0,64
+160,Orange Stained Glass Pane,1,64
+160,Magenta Stained Glass Pane,2,64
+160,Light Blue Stained Glass Pane,3,64
+160,Yellow Stained Glass Pane,4,64
+160,Light Green Stained Glass Pane,5,64
+160,Pink Stained Glass Pane,6,64
+160,Gray Stained Glass Pane,7,64
+160,Light Gray Stained Glass Pane,8,64
+160,Cyan Stained Glass Pane,9,64
+160,Purple Stained Glass Pane,10,64
+160,Blue Stained Glass Pane,11,64
+160,Brown Stained Glass Pane,12,64
+160,Dark Green Stained Glass Pane,13,64
+160,Red Stained Glass Pane,14,64
+160,Black Stained Glass Pane,15,64
 170,Hay Block,0,64
 171,White Carpet,0,64
 171,Orange Carpet,1,64
