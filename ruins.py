@@ -147,9 +147,6 @@ class EvilRunestones(Blank):
             chunk.Blocks[p.x, p.z, p.y] = mat.val
             chunk.Data[p.x, p.z, p.y] = mat.data
 
-        # list of IDs that are solid. (for our purposes anyway)
-        solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110, 112,
-                  114, 121, 159, 172, 173)
         # Height of the runestones
         runes = {}
         for x in xrange(16):
@@ -160,8 +157,10 @@ class EvilRunestones(Blank):
             for z in xrange(16):
                 # find the height at this block
                 y = chunk.HeightMap[z, x]
-                while (y > 0 and
-                       chunk.Blocks[x, z, y] not in solids):
+                while (
+                    y > 0 and
+                    chunk.Blocks[x, z, y] not in materials.heightmap_solids
+                ):
                     y = y - 1
                 q = Vec(x, y, z)
                 # create a chest
@@ -308,7 +307,7 @@ class StepPyramid(Blank):
             mat_ext = materials.HardenedClay
             mat_block = materials.HardenedClay
             mat_ruins = materials.RedStainedClay
-            mat_stair = materials.WoodenStairs
+            mat_stair = materials.OakWoodStairs
             mat_slab = materials.HardenedClay
             mat_floor = materials.RedSand
         elif self.parent.parent.biome in _swamp_jungle_biomes:
@@ -405,7 +404,7 @@ class StepPyramid(Blank):
             self.parent.parent.setblock(p, materials._wall)
         for p in iterate_four_walls(start, start.trans(5, 0, 5), 0):
             self.parent.parent.setblock(p, materials.StoneSlab)
-        mat = materials.WoodenSlab
+        mat = materials.OakWoodSlab
         if random.randint(1, 100) <= 50:
             mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x+1, 7, start.z+1),
@@ -689,7 +688,7 @@ class StepPyramid(Blank):
             # Roof
             for p in iterate_cube(c1.trans(29, -32, 29),
                                   c3.trans(-29, -32, -29)):
-                self.parent.parent.setblock(p, materials.CircleStoneBrick)
+                self.parent.parent.setblock(p, materials.ChiseledStoneBrick)
             for p in iterate_cube(c1.trans(29, -28, 29),
                                   c3.trans(-29, -28, -29)):
                 self.parent.parent.setblock(p, mat_floor)
@@ -769,7 +768,7 @@ class RoundTowerEntrance(Blank):
             # Mesas
             elif self.parent.parent.biome in _mesa_biomes:
                 self._mat = materials.HardenedClay
-                self._stair = materials.WoodenStairs
+                self._stair = materials.OakWoodStairs
             # Swamps and such
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
@@ -876,19 +875,19 @@ class RoundTowerEntrance(Blank):
         # Internal columns
         for p in iterate_cube(Vec(b1.x+1, elev, b1.z+1),
                               Vec(b1.x+1, clev, b1.z+1)):
-            self.parent.parent.setblock(p, materials.DoubleSlab)
+            self.parent.parent.setblock(p, materials.StoneDoubleSlab)
         for p in iterate_cube(Vec(b2.x-1, elev, b2.z+1),
                               Vec(b2.x-1, clev, b2.z+1)):
-            self.parent.parent.setblock(p, materials.DoubleSlab)
+            self.parent.parent.setblock(p, materials.StoneDoubleSlab)
         for p in iterate_cube(Vec(b3.x-1, elev, b3.z-1),
                               Vec(b3.x-1, clev, b3.z-1)):
-            self.parent.parent.setblock(p, materials.DoubleSlab)
+            self.parent.parent.setblock(p, materials.StoneDoubleSlab)
         for p in iterate_cube(Vec(b4.x+1, elev, b4.z-1),
                               Vec(b4.x+1, clev, b4.z-1)):
-            self.parent.parent.setblock(p, materials.DoubleSlab)
+            self.parent.parent.setblock(p, materials.StoneDoubleSlab)
         # (re)draw the staircase
         self.parent.parent.entrance.height = abs(room_floor-elev-1)
-        mat = materials.WoodenSlab
+        mat = materials.OakWoodSlab
         if random.randint(1, 100) <= 50:
             mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x, room_floor+4, start.z),
@@ -977,7 +976,7 @@ class SquareTowerEntrance(Blank):
             # Desert
             if self.parent.parent.biome in _desert_biomes:
                 self._mat = materials.meta_decoratedsandstone
-                self._support = materials.WoodenStairs
+                self._support = materials.OakWoodStairs
                 self._stair = materials.SandstoneStairs
             # Ice Spikes
             elif self.parent.parent.biome in _ice_biomes:
@@ -987,8 +986,8 @@ class SquareTowerEntrance(Blank):
             # Mesas
             elif self.parent.parent.biome in _mesa_biomes:
                 self._mat = materials.HardenedClay
-                self._support = materials.WoodenStairs
-                self._stair = materials.WoodenStairs
+                self._support = materials.OakWoodStairs
+                self._stair = materials.OakWoodStairs
             # Swamps and such
             elif self.parent.parent.biome in _swamp_jungle_biomes:
                 self._mat = materials.meta_mossycobble
@@ -1102,7 +1101,7 @@ class SquareTowerEntrance(Blank):
                 self.parent.parent.setblock(p, materials.Air)
         # (re)draw the staircase
         self.parent.parent.entrance.height = abs(room_floor-elev-1)
-        mat = materials.WoodenSlab
+        mat = materials.OakWoodSlab
         if random.randint(1, 100) <= 50:
             mat = materials.StoneSlab
         for p in iterate_spiral(Vec(start.x, room_floor+4, start.z),
@@ -1291,7 +1290,7 @@ class RuinedFane(Blank):
         topsoil = materials.Grass
         floor = materials.Stone
         singleSlab = materials.StoneSlab
-        doubleSlab = materials.DoubleSlab
+        doubleSlab = materials.StoneDoubleSlab
         stair = materials.StoneBrickStairs
 
         N = 3  # Data values for a north ascending stair
@@ -1309,7 +1308,7 @@ class RuinedFane(Blank):
             floor = materials.Stone
             singleSlab = materials.SandstoneSlab
             doubleSlab = materials.ChiseledSandstone
-            stair = materials.WoodenStairs
+            stair = materials.OakWoodStairs
         # Ice Spikes
         elif self.parent.parent.biome in _ice_biomes:
             wall = materials.PackedIce
@@ -1325,13 +1324,13 @@ class RuinedFane(Blank):
         elif self.parent.parent.biome in _mesa_biomes:
             wall = materials.HardenedClay
             buttress = materials.HardenedClay
-            buttressStair = materials.WoodenStairs
+            buttressStair = materials.OakWoodStairs
             soil = materials.RedSand
             topsoil = materials.RedSand
             floor = materials.BrownStainedClay
             singleSlab = materials.OrangeStainedClay
             doubleSlab = materials.OrangeStainedClay
-            stair = materials.WoodenStairs
+            stair = materials.OakWoodStairs
 
         # the fane is 2 chunks by 3 chunks
         # do we need to move it west or north?
@@ -1718,7 +1717,7 @@ class Barrow(Blank):
     _earth = materials.Dirt
     _grass = materials.Grass
     _floor = materials.meta_mossycobble
-    _stones = materials.CircleStoneBrick
+    _stones = materials.ChiseledStoneBrick
     _tallgrass = materials.TallGrass
 
     _dnamesB = (
@@ -1765,7 +1764,7 @@ class Barrow(Blank):
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             self._earth = materials.Dirt
             self._grass = materials.Grass
-            self._stones = materials.CircleStoneBrick
+            self._stones = materials.ChiseledStoneBrick
             self._tallgrass = materials.TallGrass
 
         # The Dolmen will be 2x2 chunks.
@@ -1895,7 +1894,7 @@ class Barrow(Blank):
                                            '')
 
         matsE = {
-            'W': (materials.WoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5+8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 0+4),
@@ -1906,7 +1905,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsW = {
-            'W': (materials.WoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5+8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 1+4),
@@ -1917,7 +1916,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsN = {
-            'W': (materials.WoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5+8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 2+4),
@@ -1928,7 +1927,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsS = {
-            'W': (materials.WoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5+8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 3+4),
@@ -2152,9 +2151,9 @@ class Oasis(Blank):
                 continue
             if random.randint(1, 100) <= 10:
                 notchest.append(p)
-                sb(p.up(1), materials.SugarCaneBlock)
-                sb(p.up(2), materials.SugarCaneBlock)
-                sb(p.up(3), materials.SugarCaneBlock)
+                sb(p.up(1), materials.SugarCane)
+                sb(p.up(2), materials.SugarCane)
+                sb(p.up(3), materials.SugarCane)
             elif random.randint(1, 100) <= 50:
                 sb(p.up(1), materials.TallGrass, random.randint(0, 2))
 
@@ -2300,7 +2299,7 @@ class Arches(Blank):
         # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             mat = materials.HardenedClay
-            stair = materials.WoodenStairs
+            stair = materials.OakWoodStairs
             slab1 = materials.HardenedClay
             slab2 = materials.HardenedClay
         # Swamps and jungles are cobblestone
@@ -2386,7 +2385,7 @@ class HouseFrame(Blank):
         # Mesas
         elif self.parent.parent.biome in _mesa_biomes:
             mat = materials.HardenedClay
-            stair = materials.WoodenStairs
+            stair = materials.OakWoodStairs
         # Use cobblestone for jungle and swamp
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat = materials.meta_mossycobble

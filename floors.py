@@ -76,16 +76,16 @@ class WoodTile(Blank):
                                                 materials.Wood)
                 else:
                     self.parent.parent.setblock(x+self.parent.loc,
-                                                materials.WoodPlanks)
+                                                materials.OakWoodPlanks)
 
 
 class MixedWoodTile(Blank):
     _name = 'mixedwoodtile'
     woodtypes = (
-        materials.WoodPlanks,
-        materials.SprucePlanks,
-        materials.BirchPlanks,
-        materials.JunglePlanks
+        materials.OakWoodPlanks,
+        materials.SpruceWoodPlanks,
+        materials.BirchWoodPlanks,
+        materials.JungleWoodPlanks
         )
 
     def render(self):
@@ -152,13 +152,13 @@ class BrokenCheckerRug(CheckerRug):
 
 class CheckerClay(CheckerRug):
     _name = 'checkerclay'
-    mat = materials.StainedClay
+    mat = materials.WhiteStainedClay
 
 
 class BrokenCheckerClay(CheckerRug):
     _name = 'brokencheckerclay'
     ruin = True
-    mat = materials.StainedClay
+    mat = materials.WhiteStainedClay
 
 
 class DoubleSlab(Blank):
@@ -170,7 +170,7 @@ class DoubleSlab(Blank):
             return
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
             self.parent.parent.setblock(x+self.parent.loc,
-                                        materials.DoubleSlab)
+                                        materials.StoneDoubleSlab)
         # Runined
         pn = perlin.SimplexNoise(256)
         if (self.ruin is False):
@@ -249,10 +249,10 @@ class Bridges(Blank):
     _name = 'bridges'
     sandpit = False
     slabtypes = (
-        materials.WoodenSlab,
-        materials.SpruceSlab,
-        materials.BirchSlab,
-        materials.JungleSlab
+        materials.OakWoodSlab,
+        materials.SpruceWoodSlab,
+        materials.BirchWoodSlab,
+        materials.JungleWoodSlab
         )
 
     def render(self):
@@ -363,7 +363,8 @@ class Bridges(Blank):
                 for x in xrange(1, self.parent.halls[1].size-1):
                     wires.add(
                         Vec(
-                            self.parent.parent.room_size-self.parent.hallLength[1]-1,
+                            (self.parent.parent.room_size -
+                             self.parent.hallLength[1]-1),
                             y-1,
                             self.parent.halls[1].offset+x
                         )
@@ -375,7 +376,8 @@ class Bridges(Blank):
                         Vec(
                             self.parent.halls[2].offset+x,
                             y-1,
-                            self.parent.parent.room_size-self.parent.hallLength[2]-1
+                            (self.parent.parent.room_size -
+                             self.parent.hallLength[2]-1)
                         )
                     )
             # h3

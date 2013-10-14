@@ -1,10 +1,13 @@
+import inspect
 import sys
 import os
 
+import materials
 from pymclevel import nbt
 
 _items = {}
 _by_id = {}
+
 
 class ItemInfo (object):
     def __init__(self, name, value, data=0, maxstack=64, ench='', p_effect='',
@@ -22,24 +25,27 @@ class ItemInfo (object):
         self.file = str(file)
 
     # Intentionally not printing lore
-    def __str__ (self):
-        return 'Item: %s, ID: %d, Data: %d, MaxStack: %d, Ench: %s, PEff: %s, Name: %s, Flag: %s, FP: %s, File: %s'%(
-            self.name,
-            self.value,
-            self.data,
-            self.maxstack,
-            self.ench,
-            self.p_effect,
-            self.customname,
-            self.flag,
-            self.flagparam,
-            self.file)
+    def __str__(self):
+        return 'Item: %s, ID: %d, Data: %d, MaxStack: %d,'\
+               ' Ench: %s, PEff: %s, Name: %s, Flag: %s, '\
+               ' FP: %s, File: %s' % (
+                   self.name,
+                   self.value,
+                   self.data,
+                   self.maxstack,
+                   self.ench,
+                   self.p_effect,
+                   self.customname,
+                   self.flag,
+                   self.flagparam,
+                   self.file
+               )
 
 
-def LoadItems(filename = 'items.txt'):
-    # Try to load items from sys.path[0] if we can, 
-    # otherwise default to the cd. 
-    temp = os.path.join(sys.path[0],filename)
+def LoadItems(filename='items.txt'):
+    # Try to load items from sys.path[0] if we can,
+    # otherwise default to the cd.
+    temp = os.path.join(sys.path[0], filename)
     try:
         fh = open(temp)
         fh.close
@@ -56,7 +62,7 @@ def LoadItems(filename = 'items.txt'):
         with file(filename) as f:
             items_txt = f.read()
     except Exception, e:
-        print "Error reading items file: ", e;
+        print "Error reading items file: ", e
     for line in items_txt.split("\n"):
         try:
             line = line.strip()
@@ -71,18 +77,53 @@ def LoadItems(filename = 'items.txt'):
                 value, name, data, maxstack = line.split(',')
                 flag = ''
             name = name.lower()
-            _items[name] = ItemInfo(name, value, data, maxstack, flag=flag)
-            _by_id[int(value)] = ItemInfo(name, value, data, maxstack, flag=flag)
+            _items[name] = ItemInfo(
+                name,
+                value,
+                data,
+                maxstack,
+                flag=flag
+            )
+            _by_id[int(value)] = ItemInfo(
+                name,
+                value,
+                data,
+                maxstack,
+                flag=flag
+            )
             items += 1
         except Exception, e:
             print "Error reading line:", e
             print "Line: ", line
+
+    # Now import items from materials
+    for material, obj in inspect.getmembers(materials):
+        if (
+            type(obj) == materials.Material and
+            obj.name not in _items
+        ):
+            _items[obj.name] = ItemInfo(
+                obj.name,
+                obj.val,
+                obj.data,
+                obj.stack,
+                ''
+            )
+            _by_id[obj.val] = ItemInfo(
+                obj.name,
+                obj.val,
+                obj.data,
+                obj.stack,
+                ''
+            )
+            items += 1
     print 'Loaded', items, 'items.'
 
-def LoadMagicItems(filename = 'magic_items.txt'):
-    # Try to load items from sys.path[0] if we can, 
-    # otherwise default to the cd. 
-    temp = os.path.join(sys.path[0],filename)
+
+def LoadMagicItems(filename='magic_items.txt'):
+    # Try to load items from sys.path[0] if we can,
+    # otherwise default to the cd.
+    temp = os.path.join(sys.path[0], filename)
     try:
         fh = open(temp)
         fh.close
@@ -99,7 +140,7 @@ def LoadMagicItems(filename = 'magic_items.txt'):
         with file(filename) as f:
             items_txt = f.read()
     except Exception, e:
-        print "Error reading items file: ", e;
+        print "Error reading items file: ", e
     for line in items_txt.split("\n"):
         try:
             line = line.strip()
@@ -122,9 +163,16 @@ def LoadMagicItems(filename = 'magic_items.txt'):
             flag = _items[item].flag
             flagparam = _items[item].flagparam
 
-            _items[name] = ItemInfo(name, value, data=data, maxstack=1, ench=ench,
-                                    customname=customname, flag=flag,
-                                    flagparam=flagparam, lore=lore)
+            _items[name] = ItemInfo(
+                name,
+                value,
+                data=data,
+                maxstack=1,
+                ench=ench,
+                customname=customname,
+                flag=flag,
+                flagparam=flagparam, lore=lore
+            )
             #print _items[name]
             items += 1
         except Exception, e:
@@ -133,10 +181,10 @@ def LoadMagicItems(filename = 'magic_items.txt'):
     print 'Loaded', items, 'magic items.'
 
 
-def LoadPotions(filename = 'potions.txt'):
-    # Try to load items from sys.path[0] if we can, 
-    # otherwise default to the cd. 
-    temp = os.path.join(sys.path[0],filename)
+def LoadPotions(filename='potions.txt'):
+    # Try to load items from sys.path[0] if we can,
+    # otherwise default to the cd.
+    temp = os.path.join(sys.path[0], filename)
     try:
         fh = open(temp)
         fh.close
@@ -153,7 +201,7 @@ def LoadPotions(filename = 'potions.txt'):
         with file(filename) as f:
             items_txt = f.read()
     except Exception, e:
-        print "Error reading custom potions file: ", e;
+        print "Error reading custom potions file: ", e
     for line in items_txt.split("\n"):
         try:
             line = line.strip()
@@ -178,10 +226,10 @@ def LoadPotions(filename = 'potions.txt'):
     print 'Loaded', items, 'custom potions.'
 
 
-def LoadDyedArmour(filename = 'dye_colors.txt'):
-    # Try to load items from sys.path[0] if we can, 
-    # otherwise default to the cd. 
-    temp = os.path.join(sys.path[0],filename)
+def LoadDyedArmour(filename='dye_colors.txt'):
+    # Try to load items from sys.path[0] if we can,
+    # otherwise default to the cd.
+    temp = os.path.join(sys.path[0], filename)
     try:
         fh = open(temp)
         fh.close
@@ -198,9 +246,12 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
         with file(filename) as f:
             color_txt = f.read()
     except Exception, e:
-        print "Error reading dyes file: ", e;
+        print "Error reading dyes file: ", e
     #leather armour types
-    arms = ['leather helmet','leather chestplate','leather leggings','leather boots']
+    arms = ['leather helmet',
+            'leather chestplate',
+            'leather leggings',
+            'leather boots']
     for line in color_txt.split("\n"):
         try:
             line = line.strip()
@@ -215,7 +266,7 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
 
             for arm in arms:
                 value = _items[arm].value
-                name = '%s %s' % (colorname.lower(),_items[arm].name)
+                name = '%s %s' % (colorname.lower(), _items[arm].name)
                 _items[name] = ItemInfo(name, value, data=0, maxstack=1,
                                         flag=flag, flagparam=flagparam)
             #print _items[name]
@@ -226,21 +277,21 @@ def LoadDyedArmour(filename = 'dye_colors.txt'):
     print 'Loaded', items, 'dye colors.'
 
 
-def LoadNBTFiles(dirname = 'items'):
+def LoadNBTFiles(dirname='items'):
     # Test which path to use. If the path can't be found
     # just don't load any items.
-    if os.path.isdir(os.path.join(sys.path[0],dirname)):
-        item_path = os.path.join(sys.path[0],dirname)
+    if os.path.isdir(os.path.join(sys.path[0], dirname)):
+        item_path = os.path.join(sys.path[0], dirname)
     elif os.path.isdir(dirname):
         item_path = dirname
     else:
-        print 'Could not find the NBT items folder!';
+        print 'Could not find the NBT items folder!'
         return
     #Make a list of all the NBT files in the items directory
     itemlist = []
     for file in os.listdir(item_path):
         if (file.endswith(".nbt")):
-            itemlist.append(file);
+            itemlist.append(file)
     items_count = 0
     for item in itemlist:
         # SomeItem.nbt would be referenced in loot as file_some_item
@@ -249,22 +300,22 @@ def LoadNBTFiles(dirname = 'items'):
         # Load the nbt file and do some basic validation
         try:
             item_nbt = nbt.load(full_path)
-            item_nbt['id']  #Throws an error if not set
+            item_nbt['id']  # Throws an error if not set
         except:
             print item + " is an invalid item! Skipping."
-            continue    #Skip to next item
+            continue    # Skip to next item
         # If the Count tag exists, use it as our maxstack
         try:
             stack = item_nbt['Count'].value
         except:
             stack = 1
-        _items[name] = ItemInfo(name, 0, maxstack=stack, file = full_path)
+        _items[name] = ItemInfo(name, 0, maxstack=stack, file=full_path)
         #print _items[name]
         items_count += 1
     print 'Loaded', items_count, 'items from NBT files.'
 
 
-def byName (name):
+def byName(name):
         try:
             return _items[name]
         except:
@@ -272,7 +323,7 @@ def byName (name):
             return None
 
 
-def byID (id):
+def byID(id):
         try:
             return _by_id[id]
         except:

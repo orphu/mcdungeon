@@ -1076,14 +1076,12 @@ if (cfg.offset is None or cfg.offset is ''):
                 # Depths
                 min_depth = world.Height
                 max_depth = 0
-                # list of IDs that are solid. (for our purposes anyway)
-                solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110,
-                          112, 114, 121, 159, 172, 173)
                 for x in xrange(16):
                     for z in xrange(16):
                         y = chunk['HeightMap'][z+x*16]-1
                         while (y > 0 and y//16 in b and
-                               b[y//16][y % 16, z, x] not in solids):
+                               b[y//16][y % 16, z, x] not in
+                               materials.heightmap_solids):
                             y = y - 1
                         min_depth = min(y, min_depth)
                         max_depth = max(y, max_depth)

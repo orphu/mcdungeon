@@ -9,6 +9,7 @@ import time
 
 import numpy
 
+from materials import heightmap_solids
 from pymclevel import mclevel, nbt
 
 cache_version = '5'
@@ -523,14 +524,11 @@ def findChunkDepth(p, world):
     except:
         return 0
     depth = world.Height
-    # list of IDs that are solid. (for our purposes anyway)
-    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110, 112, 114, 121,
-              159, 172, 173)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1
             while (y > 0 and
-                   chunk.Blocks[x, z, y] not in solids):
+                   chunk.Blocks[x, z, y] not in heightmap_solids):
                 y = y - 1
             depth = min(y, depth)
     return depth
@@ -543,14 +541,11 @@ def findChunkDepths(p, world):
         return 0
     min_depth = world.Height
     max_depth = 0
-    # list of IDs that are solid. (for our purposes anyway)
-    solids = (1, 2, 3, 4, 7, 12, 13, 24, 48, 49, 60, 82, 98, 110, 112, 114, 121,
-              159, 172, 173)
     for x in xrange(16):
         for z in xrange(16):
             y = chunk.HeightMap[z, x]-1
             while (y > 0 and
-                   chunk.Blocks[x, z, y] not in solids):
+                   chunk.Blocks[x, z, y] not in heightmap_solids):
                 y = y - 1
             min_depth = min(y, min_depth)
             max_depth = max(y, max_depth)

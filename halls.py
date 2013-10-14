@@ -114,13 +114,13 @@ def drawHall (hall):
             hall.parent.parent.setblock(tpen, materials.Dispenser, dd1)
             hall.parent.parent.addtrap(tpen, tname)
             hall.parent.parent.setblock(tpen-stepw,
-                                        materials.RedStoneTorchOff, 5)
+                                        materials.RedstoneTorchOff, 5)
             tpen = tpen.down(2)
             hall.parent.parent.setblock(tpen, materials.Air)
             hall.parent.parent.setblock(tpen-stepw,
-                                        materials.RedStoneTorchOn, 5)
+                                        materials.RedstoneTorchOn, 5)
             tpen = tpen.down(1)
-            hall.parent.parent.setblock(tpen, materials.RedStoneWire)
+            hall.parent.parent.setblock(tpen, materials.RedstoneWire)
         # hallway (ceiling and floor)
         for x in xrange(hall.size-2):
             pen += stepw
@@ -143,7 +143,7 @@ def drawHall (hall):
                 else:
                     hall.parent.parent.setblock(
                         pen.down(hall.parent.parent.room_height-1),
-                        materials.RedStoneWire)
+                        materials.RedstoneWire)
                     if (randint(1,100) <= 66):
                         hall.parent.parent.setblock(
                             pen.down(hall.parent.parent.room_height-3),
@@ -166,13 +166,13 @@ def drawHall (hall):
             hall.parent.parent.setblock(tpen, materials.Dispenser, dd2)
             hall.parent.parent.addtrap(tpen, tname)
             hall.parent.parent.setblock(tpen+stepw,
-                                        materials.RedStoneTorchOff, 5)
+                                        materials.RedstoneTorchOff, 5)
             tpen = tpen.down(2)
             hall.parent.parent.setblock(tpen, materials.Air)
             hall.parent.parent.setblock(tpen+stepw,
-                                        materials.RedStoneTorchOn, 5)
+                                        materials.RedstoneTorchOn, 5)
             tpen = tpen.down(1)
-            hall.parent.parent.setblock(tpen, materials.RedStoneWire)
+            hall.parent.parent.setblock(tpen, materials.RedstoneWire)
 
     # Possible torches.
     pen = start+stepl*length

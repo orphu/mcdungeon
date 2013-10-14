@@ -461,7 +461,7 @@ class GreatHallNS(Basic):
         mat = random.choice((
             (materials.CobblestoneSlab,materials.meta_mossycobble,materials.meta_mossycobblewall),
             (materials.StoneBrickSlab,materials.StoneBrick,materials.IronBars),
-            (materials.WoodenSlab,materials.WoodPlanks,materials.Fence)
+            (materials.OakWoodSlab,materials.OakWoodPlanks,materials.Fence)
         ))
         for p in iterate_four_walls(self.c1+Vec(1,-6,1),
                                     self.c3+Vec(-1,-6,-1),0):
@@ -477,11 +477,11 @@ class GreatHallNS(Basic):
             self.parent.setblock(p, mat[2])
         # Columns
         mat = random.choice((
-            (materials.StoneBrick, materials.CircleStoneBrick),
+            (materials.StoneBrick, materials.ChiseledStoneBrick),
             (materials.meta_mossycobble, materials.StoneBrick),
-            (materials.meta_mossystonebrick, materials.CircleStoneBrick),
-            (materials.DoubleSlab, materials.DoubleSlab),
-            (materials.meta_stonedungeon, materials.DoubleSlab),
+            (materials.meta_mossystonebrick, materials.ChiseledStoneBrick),
+            (materials.StoneDoubleSlab, materials.StoneDoubleSlab),
+            (materials.meta_stonedungeon, materials.StoneDoubleSlab),
             (materials.meta_mossycobblewall, materials.meta_mossycobble)
         ))
         for n in xrange(0, 26, 3):
@@ -733,22 +733,22 @@ class CellBlock(Basic2x2):
             if ((p.x+p.z)%2 == 0):
                 if cbits[str(bit)] == True:
                     charge = 15
-                    torch = materials.RedStoneTorchOn
-                    repeater = materials.RedStoneRepeaterOn
+                    torch = materials.RedstoneTorchOn
+                    repeater = materials.RedstoneRepeaterOn
                     ctext2 = 'X ' + ctext2
                 else:
                     charge = 0
-                    torch = materials.RedStoneWire
-                    repeater = materials.RedStoneRepeaterOff
+                    torch = materials.RedstoneWire
+                    repeater = materials.RedstoneRepeaterOff
                     ctext2 = 'O ' + ctext2
                 self.parent.setblock(p.up(1),
-                                     materials.RedStoneWire, 0, lock=True)
+                                     materials.RedstoneWire, 0, lock=True)
                 self.parent.setblock(p.e(1),
                                      torch, 1, lock=True)
                 self.parent.setblock(p.e(2),
                                      repeater, 1, lock=True)
                 self.parent.setblock(p.e(3),
-                                     materials.RedStoneWire, charge, lock=True)
+                                     materials.RedstoneWire, charge, lock=True)
                 bit += 2
         # North
         bit = 0
@@ -757,22 +757,22 @@ class CellBlock(Basic2x2):
             if ((p.x+p.z)%2 == 0):
                 if cbits[str(bit)] == True:
                     charge = 15
-                    torch = materials.RedStoneTorchOn
-                    repeater = materials.RedStoneRepeaterOn
+                    torch = materials.RedstoneTorchOn
+                    repeater = materials.RedstoneRepeaterOn
                     ctext1 = 'X ' + ctext1
                 else:
                     charge = 0
-                    torch = materials.RedStoneWire
-                    repeater = materials.RedStoneRepeaterOff
+                    torch = materials.RedstoneWire
+                    repeater = materials.RedstoneRepeaterOff
                     ctext1 = 'O ' + ctext1
                 self.parent.setblock(p.up(1),
-                                     materials.RedStoneWire, 15, lock=True)
+                                     materials.RedstoneWire, 15, lock=True)
                 self.parent.setblock(p.w(1),
                                      torch, 2, lock=True)
                 self.parent.setblock(p.w(2),
                                      repeater, 3, lock=True)
                 self.parent.setblock(p.w(3),
-                                     materials.RedStoneWire, charge, lock=True)
+                                     materials.RedstoneWire, charge, lock=True)
                 bit += 2
         self.parent.setblock(self.c1+Vec(7,-2,12), materials.WallSign, 5)
         self.parent.addsign(self.c1+Vec(7,-2,12),
@@ -796,24 +796,24 @@ class CellBlock(Basic2x2):
         # Inner bus
         for p in iterate_four_walls(self.c1+Vec(9, 1,9),
                                  self.c3-Vec(9,-1,9),0):
-            self.parent.setblock(p, materials.RedStoneWire, 15, lock=True)
+            self.parent.setblock(p, materials.RedstoneWire, 15, lock=True)
         self.parent.setblock(self.c1+Vec(10,1,18),
-                             materials.RedStoneRepeaterOff, 1, lock=True)
+                             materials.RedstoneRepeaterOff, 1, lock=True)
         self.parent.setblock(self.c3-Vec(10,-1,18),
-                             materials.RedStoneRepeaterOff, 3, lock=True)
+                             materials.RedstoneRepeaterOff, 3, lock=True)
         # East / West Bus
         for p in iterate_cube(self.c1+Vec(6,1,6), self.c4+Vec(6,1,-6)):
-            self.parent.setblock(p, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(p.e(15), materials.RedStoneWire, 15,
+            self.parent.setblock(p, materials.RedstoneWire, 15, lock=True)
+            self.parent.setblock(p.e(15), materials.RedstoneWire, 15,
                                  lock=True)
         for p in iterate_cube(Vec(7,1,7), Vec(12,1,7)):
             q = self.c1+p
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.e(8), materials.RedStoneWire, 15,
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
+            self.parent.setblock(q.e(8), materials.RedstoneWire, 15,
                                  lock=True)
             q = self.c4+Vec(p.x, p.y, -p.z)
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
-            self.parent.setblock(q.e(8), materials.RedStoneWire, 15,
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
+            self.parent.setblock(q.e(8), materials.RedstoneWire, 15,
                                  lock=True)
         for p in [Vec(6,0,6), Vec(6,0,8), Vec(12,0,6)]:
             q = self.c1+p
@@ -826,33 +826,33 @@ class CellBlock(Basic2x2):
             self.parent.setblock(q, materials.Air, lock=True)
         for p in [Vec(6,0,5), Vec(6,0,9), Vec(12,0,5), Vec(12,1,6)]:
             q = self.c1+p
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
             self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c2+Vec(-p.x, p.y, p.z)
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
             self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c3+Vec(-p.x, p.y, -p.z)
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
             self.parent.setblock(q.down(1), materials._ceiling, lock=True)
             q = self.c4+Vec(p.x, p.y, -p.z)
-            self.parent.setblock(q, materials.RedStoneWire, 15, lock=True)
+            self.parent.setblock(q, materials.RedstoneWire, 15, lock=True)
             self.parent.setblock(q.down(1), materials._ceiling, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,10),
-                             materials.RedStoneRepeaterOn, 0, lock=True)
+                             materials.RedstoneRepeaterOn, 0, lock=True)
         self.parent.setblock(self.c1+Vec(6,1,17),
-                             materials.RedStoneRepeaterOn, 2, lock=True)
+                             materials.RedstoneRepeaterOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(21,1,10),
-                             materials.RedStoneRepeaterOn, 0, lock=True)
+                             materials.RedstoneRepeaterOn, 0, lock=True)
         self.parent.setblock(self.c1+Vec(21,1,17),
-                             materials.RedStoneRepeaterOn, 2, lock=True)
+                             materials.RedstoneRepeaterOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(8,1,13),
-                             materials.RedStoneRepeaterOn, 3, lock=True)
+                             materials.RedstoneRepeaterOn, 3, lock=True)
         self.parent.setblock(self.c1+Vec(19,1,14),
-                             materials.RedStoneRepeaterOn, 1, lock=True)
+                             materials.RedstoneRepeaterOn, 1, lock=True)
         self.parent.setblock(self.c1+Vec(7,1,13),
-                             materials.RedStoneWire, 15, lock=True)
+                             materials.RedstoneWire, 15, lock=True)
         self.parent.setblock(self.c1+Vec(20,1,14),
-                             materials.RedStoneWire, 15, lock=True)
+                             materials.RedstoneWire, 15, lock=True)
         # Wooden pressure plates
         for p in iterate_cube(self.c1+Vec(13,-2,11),
                               self.c3-Vec(13, 2,11)):
@@ -867,30 +867,30 @@ class CellBlock(Basic2x2):
         # Zelda tune
         # 13,12,9,3,2,10,14,18
         self.parent.setblock(self.c1+Vec(5,1,19),
-                             materials.RedStoneRepeaterOn, 15, lock=True)
+                             materials.RedstoneRepeaterOn, 15, lock=True)
         self.parent.setblock(self.c1+Vec(3,1,19),
-                             materials.RedStoneTorchOn, 2, lock=True)
+                             materials.RedstoneTorchOn, 2, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,19),
-                             materials.RedStoneWire, 0, lock=True)
+                             materials.RedstoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,18),
-                             materials.RedStoneWire, 0, lock=True)
+                             materials.RedstoneWire, 0, lock=True)
         for p in iterate_cube(self.c1+Vec(2,1,19), self.c1+Vec(2,1,2)):
             self.parent.setblock(p,
-                                 materials.RedStoneWire, 0, lock=True)
+                                 materials.RedstoneWire, 0, lock=True)
         for p in iterate_cube(self.c1+Vec(2,1,17), self.c1+Vec(2,1,9)):
             if (p.z%2 == 1):
                 self.parent.setblock(p,
-                                     materials.RedStoneRepeaterOff, 4, lock=True)
+                                     materials.RedstoneRepeaterOff, 4, lock=True)
                 self.parent.setblock(p+Vec(-1,0,-1),
-                                     materials.RedStoneWire, 0, lock=True)
+                                     materials.RedstoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,3),
-                             materials.RedStoneRepeaterOff, 4, lock=True)
+                             materials.RedstoneRepeaterOff, 4, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,2),
-                             materials.RedStoneWire, 0, lock=True)
+                             materials.RedstoneWire, 0, lock=True)
         self.parent.setblock(self.c1+Vec(2,1,5),
-                             materials.RedStoneRepeaterOff, 4, lock=True)
+                             materials.RedstoneRepeaterOff, 4, lock=True)
         self.parent.setblock(self.c1+Vec(1,1,4),
-                             materials.RedStoneWire, 0, lock=True)
+                             materials.RedstoneWire, 0, lock=True)
         for z, p in [(18,13),(16,12),(14,9),(12,3),(10,2),(8,10),(4,14),(2,18)]:
             self.parent.setblock(self.c1+Vec(0,2,z),
                                  materials.Dirt, lock=True, hide=True)
@@ -993,13 +993,13 @@ class ThroneRoom(Basic):
 
         # Wooden balcony
         for p in iterate_cube(Vec(1,4,1), Vec(3,4,9)):
-            ssb(p, materials.WoodPlanks)
+            ssb(p, materials.OakWoodPlanks)
         for p in iterate_cube(Vec(1,4,1), Vec(5,4,3)):
-            ssb(p, materials.WoodPlanks)
+            ssb(p, materials.OakWoodPlanks)
         for p in iterate_cube(Vec(1,4,1), Vec(2,4,8)):
-            ssb(p, materials.WoodenSlab)
+            ssb(p, materials.OakWoodSlab)
         for p in iterate_cube(Vec(1,4,1), Vec(5,4,2)):
-            ssb(p, materials.WoodenSlab)
+            ssb(p, materials.OakWoodSlab)
         for p in iterate_cube(Vec(1,3,9), Vec(2,3,9)):
             ssb(p, materials.Fence)
         for p in iterate_cube(Vec(4,3,3), Vec(5,3,3)):
@@ -1053,14 +1053,14 @@ class ThroneRoom(Basic):
         ssb(Vec(6,9,30), materials.meta_mossycobble)
         ssb(Vec(7,11,30), materials.Lava)
         # The throne
-        ssb(Vec(7,7,29), materials.WoodPlanks)
-        ssb(Vec(7,6,29), materials.WoodPlanks)
-        sb(o+Vec(7,7,28), materials.WoodenStairs, 1)
-        sb(o+Vec(8,7,28), materials.WoodenStairs, 0)
-        sb(o+Vec(6,6,29), materials.RedStoneTorchOn, 2)
-        sb(o+Vec(9,6,29), materials.RedStoneTorchOn, 1)
+        ssb(Vec(7,7,29), materials.OakWoodPlanks)
+        ssb(Vec(7,6,29), materials.OakWoodPlanks)
+        sb(o+Vec(7,7,28), materials.OakWoodStairs, 1)
+        sb(o+Vec(8,7,28), materials.OakWoodStairs, 0)
+        sb(o+Vec(6,6,29), materials.RedstoneTorchOn, 2)
+        sb(o+Vec(9,6,29), materials.RedstoneTorchOn, 1)
         ssb(Vec(7,5,29), materials.Fence)
-        ssb(Vec(7,4,29), materials.RedStoneTorchOn, 5)
+        ssb(Vec(7,4,29), materials.RedstoneTorchOn, 5)
 
         # Back wall
         wall = random.choice(
@@ -1396,7 +1396,7 @@ class PitWithArchers(Basic2x2):
         # Build a bridge around the edge
         for p in iterate_four_walls(self.c1+Vec(1,0,1),
                                     self.c3+Vec(-1,0,-1),0):
-            self.parent.setblock(p, materials.WoodenSlab)
+            self.parent.setblock(p, materials.OakWoodSlab)
         # Make some island areas
         cave = cave_factory.new(22, 22)
         cave.gen_map()
@@ -1442,13 +1442,13 @@ class PitWithArchers(Basic2x2):
             for p in iterate_tube(b1, b2, 1):
                 if (p in self.parent.blocks and (
                     self.parent.blocks[p].material == materials.Air or
-                    self.parent.blocks[p].material == materials.WoodenSlab or
+                    self.parent.blocks[p].material == materials.OakWoodSlab or
                     self.parent.blocks[p].material == materials.Fence)):
                     self.parent.setblock(p, materials.Fence)
             for p in iterate_disc(b1, b2):
                 if (p in self.parent.blocks and (
                     self.parent.blocks[p].material == materials.Air or
-                    self.parent.blocks[p].material == materials.WoodenSlab or
+                    self.parent.blocks[p].material == materials.OakWoodSlab or
                     self.parent.blocks[p].material == materials.Fence)):
                     self.parent.setblock(p, materials._floor)
             self.parent.addspawner(x.up(1), 'Skeleton')
@@ -1779,30 +1779,30 @@ class Arena(Basic2x2):
 
         # Wooden balcony
         for p in iterate_cube(Vec(1,4,1), Vec(3,4,9)):
-            ssb(p, materials.WoodPlanks)
+            ssb(p, materials.OakWoodPlanks)
         for p in iterate_cube(Vec(1,4,1), Vec(14,4,3)):
-            ssb(p, materials.WoodPlanks)
+            ssb(p, materials.OakWoodPlanks)
         for p in iterate_cube(Vec(1,4,1), Vec(2,4,8)):
-            ssb(p, materials.WoodenSlab)
+            ssb(p, materials.OakWoodSlab)
         for p in iterate_cube(Vec(1,4,1), Vec(15,4,2)):
-            ssb(p, materials.WoodenSlab)
+            ssb(p, materials.OakWoodSlab)
         for p in iterate_cube(Vec(1,3,9), Vec(2,3,9)):
             ssb(p, materials.Fence)
         for p in iterate_cube(Vec(4,3,3), Vec(14,3,3)):
             ssb(p, materials.Fence)
         for p in iterate_cube(Vec(3,3,3), Vec(3,3,9)):
             ssb(p, materials.Fence)
-        ssb(Vec(15,4,3), materials.WoodenSlab)
-        ssb(Vec(15,4,4), materials.WoodenSlab)
-        ssb(Vec(15,4,5), materials.WoodenSlab)
+        ssb(Vec(15,4,3), materials.OakWoodSlab)
+        ssb(Vec(15,4,4), materials.OakWoodSlab)
+        ssb(Vec(15,4,5), materials.OakWoodSlab)
 
         # Stairs
         for y in xrange(5, sy-3):
             p = Vec(25-2*y, y, 4)
             for q in iterate_cube(p, p.trans(-1,0,1)):
-                ssb(q, materials.WoodPlanks)
+                ssb(q, materials.OakWoodPlanks)
             for q in iterate_cube(p.trans(-2,0,0), p.trans(-2,0,1)):
-                ssb(q, materials.WoodenSlab)
+                ssb(q, materials.OakWoodSlab)
 
         # Banners
         for p in iterate_cube(Vec(0,0,15), Vec(0,sy-5,15)):
@@ -3067,8 +3067,8 @@ class Corridor(Blank):
                 (materials.IronOre,40),
                 (materials.GoldOre,10),
                 (materials.DiamondOre,5),
-                (materials.RedStoneOre,20),
-                (materials.LapisOre,5),
+                (materials.RedstoneOre,20),
+                (materials.LapisLazuliOre,5),
                 (materials.EmeraldOre,5)
             )
             start = c4.trans(1,1,-2)

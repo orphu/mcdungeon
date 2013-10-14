@@ -567,9 +567,7 @@ class Dungeon (object):
             soft = True
         else:
             soft = False
-        solids = [1, 2, 3, 4, 5, 12, 13, 17, 24, 43, 45, 48, 60, 89, 98, 99,
-                  100, 112, 121, 123, 124, 125, 35]
-        if self.getblock(pos.down(count)).val in solids:
+        if self.getblock(pos.down(count)).val in materials.heightmap_solids:
             self.setblock(pos.down(count-1), materials.Snow, soft=soft)
             #print 'snow placed: ',pos.down(count-1), soft
 
@@ -590,28 +588,18 @@ class Dungeon (object):
             soft = False
 
         # Look around for something to attach to
-        noattach = [materials.Air, materials.Vines, materials.CobblestoneSlab,
-                    materials.SandstoneSlab, materials.StoneBrickSlab,
-                    materials.StoneSlab, materials.WoodenSlab, materials.Fence,
-                    materials.IronBars, materials.Cobweb, materials.Torch,
-                    materials.GlassPane, materials.StoneButton,
-                    materials.StoneBrickStairs, materials.StoneStairs,
-                    materials.WoodenStairs, materials.WallSign,
-                    materials.NetherBrickFence, materials.CobblestoneWall,
-                    materials.MossStoneWall, materials.StonePressurePlate,
-                    materials.WoodenPressurePlate, materials.Chest]
         data = 0
         b = self.getblock(pos.s(1))
-        if (b != False and b not in noattach):
+        if (b != False and b.val in materials.vine_solids):
             data += 1
         b = self.getblock(pos.w(1))
-        if (b != False and b not in noattach):
+        if (b != False and b.val in materials.vine_solids):
             data += 2
         b = self.getblock(pos.n(1))
-        if (b != False and b not in noattach):
+        if (b != False and b.val in materials.vine_solids):
             data += 4
         b = self.getblock(pos.e(1))
-        if (b != False and b not in noattach):
+        if (b != False and b.val in materials.vine_solids):
             data += 8
         # Nothing to attach to
         if data == 0:
@@ -1615,10 +1603,10 @@ class Dungeon (object):
                   106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
                   120)
         # Blocks we shouldn't place trapped chests on
-        trapped_ignore = (materials.WoodenSlab.val,
-                          materials.SpruceSlab.val,
-                          materials.BirchSlab.val,
-                          materials.JungleSlab.val,
+        trapped_ignore = (materials.OakWoodSlab.val,
+                          materials.SpruceWoodSlab.val,
+                          materials.BirchWoodSlab.val,
+                          materials.JungleWoodSlab.val,
                           materials.StoneBrickSlab.val,
                           materials.StoneSlab.val,
                           materials.SandstoneSlab.val)
@@ -1779,17 +1767,17 @@ class Dungeon (object):
             'CC': [materials._ceiling, 0],
             'SF': [materials._subfloor, 0],
             'ST': [materials.Stone, 0],
-            'R0': [materials.RedStoneWire, 0],
-            'R1': [materials.RedStoneWire, 15],
-            'o-': [materials.RedStoneTorchOff, 4],
-            '-*': [materials.RedStoneTorchOn, 3],
-            '**': [materials.RedStoneTorchOn, 5],
+            'R0': [materials.RedstoneWire, 0],
+            'R1': [materials.RedstoneWire, 15],
+            'o-': [materials.RedstoneTorchOff, 4],
+            '-*': [materials.RedstoneTorchOn, 3],
+            '**': [materials.RedstoneTorchOn, 5],
             'AR': [materials.Air, 0],
-            'P0': [materials.RedStoneRepeaterOff, 0],
-            'P1': [materials.RedStoneRepeaterOn, 2],
+            'P0': [materials.RedstoneRepeaterOff, 0],
+            'P1': [materials.RedstoneRepeaterOn, 2],
             'PI': [materials.StickyPiston, 4+8],
             'PE': [materials.PistonExtension, 4+8],
-            'TR': [materials.RedStoneRepeaterOff, 17],
+            'TR': [materials.RedstoneRepeaterOff, 17],
             #'XX': [materials.Air, 0],
         }
         # Piston trap 
@@ -1993,36 +1981,36 @@ class Dungeon (object):
             # Rotate some materials according to the direction of the hall.
             # Hall runs East
             if sl == Vec(0,0,1):
-                mat['o-'] = [materials.RedStoneTorchOff, 4]
-                mat['-*'] = [materials.RedStoneTorchOn, 3]
-                mat['P0'] = [materials.RedStoneRepeaterOff, 0]
-                mat['P1'] = [materials.RedStoneRepeaterOn, 2]
+                mat['o-'] = [materials.RedstoneTorchOff, 4]
+                mat['-*'] = [materials.RedstoneTorchOn, 3]
+                mat['P0'] = [materials.RedstoneRepeaterOff, 0]
+                mat['P1'] = [materials.RedstoneRepeaterOn, 2]
                 # South side
                 if sw == Vec(1,0,0):
                     mat['PI'] = [materials.StickyPiston, 4+8]
                     mat['PE'] = [materials.PistonExtension, 4+8]
-                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+1]
+                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+1]
                 # North side
                 else:
                     mat['PI'] = [materials.StickyPiston, 5+8]
                     mat['PE'] = [materials.PistonExtension, 5+8]
-                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+3]
+                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+3]
             # Hall runs South
             else:
-                mat['o-'] = [materials.RedStoneTorchOff, 2]
-                mat['-*'] = [materials.RedStoneTorchOn, 1]
-                mat['P0'] = [materials.RedStoneRepeaterOff, 3]
-                mat['P1'] = [materials.RedStoneRepeaterOn, 1]
+                mat['o-'] = [materials.RedstoneTorchOff, 2]
+                mat['-*'] = [materials.RedstoneTorchOn, 1]
+                mat['P0'] = [materials.RedstoneRepeaterOff, 3]
+                mat['P1'] = [materials.RedstoneRepeaterOn, 1]
                 # East side
                 if sw == Vec(0,0,1):
                     mat['PI'] = [materials.StickyPiston, 2+8]
                     mat['PE'] = [materials.PistonExtension, 2+8]
-                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+2]
+                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+2]
                 # West side
                 else:
                     mat['PI'] = [materials.StickyPiston, 3+8]
                     mat['PE'] = [materials.PistonExtension, 3+8]
-                    mat['TR'] = [materials.RedStoneRepeaterOff, 16+0]
+                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+0]
             # This is the first trigger mechanism. 
             for p in iterate_cube(Vec(0,0,0), Vec(3,5,2)):
                 q = pos + sw*p.x + sl*p.z + Vec(0,1,0)*p.y
@@ -2465,13 +2453,13 @@ class Dungeon (object):
                                .6, materials.IronOre)
                     ## Redstone. .8% between 5 and 20
                     distribute(chunk, 5, min(self.position.y, 20),
-                               .8, materials.RedStoneOre)
+                               .8, materials.RedstoneOre)
                     ## Gold. .1% between 5 and 35
                     distribute(chunk, 5, min(self.position.y, 35),
                                .1, materials.GoldOre)
                     ## Lapis. .1% between 5 and 35
                     distribute(chunk, 5, min(self.position.y, 35),
-                               .1, materials.LapisOre)
+                               .1, materials.LapisLazuliOre)
                     ## Diamond. .1% between 5 and 20
                     distribute(chunk, 5, min(self.position.y, 20),
                                .1, materials.DiamondOre)

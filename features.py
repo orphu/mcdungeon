@@ -84,7 +84,7 @@ class Stairwell(Blank):
                 self.parent.parent.setblock(x, materials.Air)
             mat = random.choice([
                 (materials.StoneStairs, materials.meta_mossycobble),
-                (materials.WoodenStairs, materials.Wood),
+                (materials.OakWoodStairs, materials.Wood),
                 (materials.StoneBrickStairs, materials.meta_stonedungeon)
             ])
             # Draw the steps
@@ -120,7 +120,7 @@ class TripleStairs(Blank):
         decos = ( (materials.Cauldron, 2) ,
                   (materials.Torch, 0),
                   (materials.FlowerPot, 10),
-                  (materials.DoubleSlab, 0),
+                  (materials.StoneDoubleSlab, 0),
                   (materials.Air, 0) )
 
         deco = random.choice(decos)
@@ -271,9 +271,9 @@ class Scaffolding(Blank):
         mats = [
             (materials.Air,0),           #0
             (materials.Fence,0),         #1
-            (materials.WoodenSlab, 0 ),  #2 
-            (materials.WoodenStairs, 0 ),#3 Acending East 
-            (materials.WoodenStairs, 3 ) #4 Ascending North
+            (materials.OakWoodSlab, 0 ),  #2 
+            (materials.OakWoodStairs, 0 ),#3 Acending East 
+            (materials.OakWoodStairs, 3 ) #4 Ascending North
             ]
 
         template = [
@@ -395,7 +395,7 @@ class Columns(Blank):
         materials.Jungle,
         materials.Bedrock,
         materials.ChiseledSandstone,
-        materials.DoubleSlab,
+        materials.StoneDoubleSlab,
         materials.Obsidian,
         materials.StoneBrick,
         materials.meta_mossycobblewall,
@@ -467,10 +467,10 @@ class Arcane(Blank):
                 for z in xrange(self.parent.canvasLength()/3+1):
                     if random.random() < 0.5:
                         q = Vec(o.x+x*3, o.y, o.z+z*3)
-                        sb(q, materials.RedStoneWire)
-                        sb(q.trans(1,0,0), materials.RedStoneWire)
-                        sb(q.trans(0,0,1), materials.RedStoneWire)
-                        sb(q.trans(1,0,1), materials.RedStoneWire)
+                        sb(q, materials.RedstoneWire)
+                        sb(q.trans(1,0,0), materials.RedstoneWire)
+                        sb(q.trans(0,0,1), materials.RedstoneWire)
+                        sb(q.trans(1,0,1), materials.RedstoneWire)
             return
 
         if mode == 'conc':
@@ -478,11 +478,11 @@ class Arcane(Blank):
             c = self.parent.loc + Vec(center.x,
                                       self.parent.canvasHeight()-1,
                                       center.z)
-            sb(c, materials.RedStoneWire)
+            sb(c, materials.RedstoneWire)
             for p in iterate_ellipse(c.trans(-2,0,-2), c.trans(2,0,2)):
-                sb(p, materials.RedStoneWire)
+                sb(p, materials.RedstoneWire)
             for p in iterate_ellipse(c.trans(-4,0,-4), c.trans(4,0,4)):
-                sb(p, materials.RedStoneWire)
+                sb(p, materials.RedstoneWire)
             return
 
         center = self.parent.canvasCenter()
@@ -490,11 +490,11 @@ class Arcane(Blank):
                                   self.parent.canvasHeight()-1,
                                   center.z)
         for p in iterate_cube(c.n(4), c.s(4)):
-            sb(p, materials.RedStoneWire)
+            sb(p, materials.RedstoneWire)
         for p in iterate_cube(c.e(4), c.w(4)):
-            sb(p, materials.RedStoneWire)
+            sb(p, materials.RedstoneWire)
         for p in iterate_four_walls(c.trans(-2,0,-2), c.trans(2,0,2),0):
-            sb(p, materials.RedStoneWire)
+            sb(p, materials.RedstoneWire)
 
 
 class Mushrooms(Blank):
@@ -570,12 +570,12 @@ class MessHall(Blank):
                     q = p+Vec(5,0,6)
                     o = random.randint(0,1)
                     while o <= 5:
-                            sb(q.e(o), materials.WoodenStairs, 3)
+                            sb(q.e(o), materials.OakWoodStairs, 3)
                             o += random.randint(2,3)
                     q = p+Vec(5,0,9)
                     o = random.randint(0,1)
                     while o <= 5:
-                            sb(q.e(o), materials.WoodenStairs, 2)
+                            sb(q.e(o), materials.OakWoodStairs, 2)
                             o += random.randint(2,3)
 
         # If the room is 1x1, stop here.
@@ -754,13 +754,13 @@ class SecretRoom(Blank):
             [materials._wall,0],        # 2
             [materials.Stone,0],        # 3
             [materials._wall,0],        # 4
-            [materials.RedStoneWire,0], # 5
+            [materials.RedstoneWire,0], # 5
             [materials.StickyPiston,3], # 6 - toggle piston
-            [materials.RedStoneTorchOn,2],# 7
+            [materials.RedstoneTorchOn,2],# 7
             [materials._ceiling, 0],    # 8
             [materials.StickyPiston, 4],# 9 - pusher piston
-            [materials.RedStoneRepeaterOff, 3],# 10 - piston repeater
-            [materials.RedStoneRepeaterOff, 7],# 11 - toggle repeater
+            [materials.RedstoneRepeaterOff, 3],# 10 - piston repeater
+            [materials.RedstoneRepeaterOff, 7],# 11 - toggle repeater
             [materials.Torch, 0],       # 12
             [materials._secret_door, 0],# 13
             [materials._floor, 0],      # 14
@@ -875,7 +875,7 @@ class SecretRoom(Blank):
         blocks = self.parent.parent.blocks
         while blocks[p+dl].material != materials.Air:
             sb(p.up(1), materials.Air)
-            sb(p, materials.RedStoneWire)
+            sb(p, materials.RedstoneWire)
             sb(p.down(1), materials.Stone)
             p = p + dl
         sb(p+dl, materials.StoneButton, bdata)
@@ -945,12 +945,12 @@ class SecretStudy(SecretRoom):
         # Desk
         mats = [
            (materials.Air,0),          # 0
-           (materials.WoodenStairs,7), # 1
+           (materials.OakWoodStairs,7), # 1
            (materials.Chest,0),        # 2
            (materials.CraftingTable,0),# 3
            (materials.WallSign,0),     # 4
-           (materials.WoodenStairs,0), # 5
-           (materials.WoodenStairs,6), # 6
+           (materials.OakWoodStairs,0), # 5
+           (materials.OakWoodStairs,6), # 6
         ]
         template = [
            [3,1,6,2],
@@ -1022,13 +1022,13 @@ class SecretAlchemyLab(SecretRoom):
         # Desk
         mats = [
            (materials.Air,0),          # 0
-           (materials.WoodenStairs,7), # 1
+           (materials.OakWoodStairs,7), # 1
            (materials.Chest,0),        # 2
            (materials.CraftingTable,0),# 3
            (materials.WallSign,0),     # 4
-           (materials.WoodenStairs,0), # 5
-           (materials.WoodenStairs,6), # 6
-           (materials.WoodenSlab,8)    # 7
+           (materials.OakWoodStairs,0), # 5
+           (materials.OakWoodStairs,6), # 6
+           (materials.OakWoodSlab,8)    # 7
         ]
         template = [
            [1,7,6,2],
@@ -1048,7 +1048,7 @@ class SecretAlchemyLab(SecretRoom):
 
         # Wither skulls are rare
         SkullType = weighted_choice(((0,30),(1,1)))
-        sb(self.c1.trans(4,-2,3), materials.Head, 1)
+        sb(self.c1.trans(4,-2,3), materials.MobHead, 1)
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Skull')
         root_tag['x'] = nbt.TAG_Int(self.c1.trans(4,-2,3).x)
@@ -1310,7 +1310,7 @@ class SecretArmory(SecretRoom):
         # Thing in the middle
         for p in iterate_cube(Vec(4,-1,4), Vec(5,-1,5)):
             sb(self.c1+p, materials.meta_mossycobblewall)
-            sb(self.c1+p.up(3), materials.QuartzBlock, 1, hide=True)
+            sb(self.c1+p.up(3), materials.BlockOfQuartz, 1, hide=True)
 
         # Armory alcoves. We want to leave out the ones on the wall with the
         # hallway. Each entry here stores:
@@ -1614,7 +1614,7 @@ class SecretEnchantingLibrary(SecretRoom):
         for q in iterate_cube(self.c1.up(4), self.c3.up(4)):
             sb(q, materials.StoneBrickSlab, 13, hide=True)
         for q in iterate_cube(self.c1, self.c3):
-            sb(q, materials.CircleStoneBrick)
+            sb(q, materials.ChiseledStoneBrick)
         for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height-2):
             sb(q, materials.meta_mossystonebrick)
 
@@ -1658,8 +1658,8 @@ class SecretEnchantingLibrary(SecretRoom):
         for p in (Vec(1,-4,1), Vec(1,-4,9),
                   Vec(9,-4,1), Vec(9,-4,9),
                   Vec(5, -4, 5)):
-            sb(self.c1+p, materials.RedStoneLampOn, hide=True)
-            sb(self.c1+p.up(1), materials.RedStoneBlock, hide=True)
+            sb(self.c1+p, materials.RedstoneLampOn, hide=True)
+            sb(self.c1+p.up(1), materials.BlockOfRedstone, hide=True)
 
         # The book cases
         levs = int( self.c1.y/dungeon.room_height)+1
@@ -1673,7 +1673,7 @@ class SecretEnchantingLibrary(SecretRoom):
         mat = materials.Bookshelf
         while len(spots) > 0:
             if levs < 1:
-                mat = materials.WoodPlanks
+                mat = materials.OakWoodPlanks
             levs -= 1
             s = spots.pop()
             p = (bl+rt*s.x+fw*s.z).up(s.y)
@@ -1735,7 +1735,7 @@ class Forge(Blank):
         mats = [
             (materials.Air, 0),             # 0
             (materials.Furnace, 0),         # 1
-            (materials.DoubleSlab, 0),      # 2
+            (materials.StoneDoubleSlab, 0),      # 2
             (materials.Water, 0),           # 3
             (materials.BrickBlock, 0),      # 4
             (materials.StoneSlab, 0),       # 5
@@ -1857,7 +1857,7 @@ class CircleOfSkulls(Blank):
                 if (random.randint(0,100) < 33):
                     continue
                 SkullType = weighted_choice(skulls)
-                self.parent.parent.setblock(p.up(2), materials.Head, 1)
+                self.parent.parent.setblock(p.up(2), materials.MobHead, 1)
                 root_tag = nbt.TAG_Compound()
                 root_tag['id'] = nbt.TAG_String('Skull')
                 root_tag['x'] = nbt.TAG_Int(p.x)
@@ -2109,6 +2109,18 @@ class WildGrowth(Farm):
                             sb(p.down(1), materials.Grass, 0)
                         else:
                             sb(p.down(1), materials.Dirt, 1)    # No grass dirt
+        # Grow some vines
+        sx = self.parent.size.x * self.parent.parent.room_size
+        sz = self.parent.size.z * self.parent.parent.room_size
+        sy = self.parent.size.y * self.parent.parent.room_height
+
+        c1 = self.parent.loc + Vec(0,0,0)
+        c3 = c1 + Vec(sx-1, sy-2, sz-1)
+
+        for p in iterate_cube(c1,
+                              c3):
+            if random.randint(1,100) <= 20:
+                self.parent.parent.vines(p, grow=True)
 
 
 class WildGarden(WildGrowth):
@@ -2143,7 +2155,7 @@ class Chapel(Blank):
     _name = 'chapel'
 
     decos = ( (materials.Cauldron, 2) ,
-               (materials.RedStoneBlock, 0),
+               (materials.BlockOfRedstone, 0),
                (materials.Torch, 0),
                (materials.Chest, 5),
                (materials.CraftingTable, 0) )
@@ -2218,7 +2230,7 @@ class Chapel(Blank):
                     sb(p, materials.WhiteCarpet, carpetColor)
                 elif( x % 2 == 0):
                     sb(p,
-                      materials.WoodenStairs, 1)
+                      materials.OakWoodStairs, 1)
 
         #carpet continues in front of pews
         for x in xrange( self.parent.canvasWidth()/2 - E_margin,
@@ -2341,8 +2353,8 @@ class ConstructionArea(Blank):
                                 (items.byName('stone shovel'), .3, 1),
                                 (items.byName('iron shovel'), .1, 1),
                                 (items.byName('diamond shovel'), .02, 1),
-                                (items.byName('wooden plank'), .5, 10),
-                                (items.byName('wooden slab'), .5, 10),
+                                (items.byName('oak wood planks'), .5, 10),
+                                (items.byName('oak wood slab'), .5, 10),
                                 (items.byName('fence'), .5, 10),
                                 (items.byName('clock'), .1, 1),
                                 (items.byName('compass'), .1, 1),
@@ -2435,10 +2447,10 @@ class ConstructionArea(Blank):
             sb(p + d[1] + loc, materials.Fence)
             sb(p + d[2] + loc, materials.Fence)
             p += Vec(0,-1,0)
-            sb(p + loc, materials.WoodenSlab)
-            sb(p + d[0] + loc, materials.WoodenSlab)
-            sb(p + d[1] + loc, materials.WoodenSlab)
-            sb(p + d[2] + loc, materials.WoodenSlab)
+            sb(p + loc, materials.OakWoodSlab)
+            sb(p + d[0] + loc, materials.OakWoodSlab)
+            sb(p + d[1] + loc, materials.OakWoodSlab)
+            sb(p + d[2] + loc, materials.OakWoodSlab)
 
 
 # Catalog the features we know about. 
