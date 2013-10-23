@@ -393,6 +393,8 @@ class Columns(Blank):
         materials.Wood,
         materials.Spruce,
         materials.Jungle,
+        materials.Acacia,
+        materials.DarkOak,
         materials.Bedrock,
         materials.ChiseledSandstone,
         materials.StoneDoubleSlab,

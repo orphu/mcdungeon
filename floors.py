@@ -85,7 +85,9 @@ class MixedWoodTile(Blank):
         materials.OakWoodPlanks,
         materials.SpruceWoodPlanks,
         materials.BirchWoodPlanks,
-        materials.JungleWoodPlanks
+        materials.JungleWoodPlanks,
+        materials.AcaciaWoodPlanks,
+        materials.DarkOakWoodPlanks
         )
 
     def render(self):
@@ -252,7 +254,9 @@ class Bridges(Blank):
         materials.OakWoodSlab,
         materials.SpruceWoodSlab,
         materials.BirchWoodSlab,
-        materials.JungleWoodSlab
+        materials.JungleWoodSlab,
+        materials.AcaciaWoodSlab,
+        materials.DarkOakWoodSlab
         )
 
     def render(self):
