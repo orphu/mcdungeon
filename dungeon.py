@@ -137,28 +137,95 @@ class Dungeon (object):
                 if (located is False):
                     # Scale. Start with the largest axis and work down.
                     adjusted = False
-                    while (adjusted is False and
-                           (self.xsize > cfg.min_x or
-                            self.zsize > cfg.min_z or
-                            self.levels > cfg.min_levels)
-                          ):
-                        if (self.xsize >= self.zsize and
+                    while (
+                        self.xsize > cfg.min_x or
+                        self.zsize > cfg.min_z or
+                        self.levels > cfg.min_levels
+                    ):
+                        # X Z L
+                        if (
+                            self.xsize >= self.zsize and
+                            self.zsize >= self.levels
+                        ):
+                            if self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
+                            elif self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                            elif self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                        # X L Z
+                        elif (
                             self.xsize >= self.levels and
-                            self.xsize > cfg.min_x):
-                            self.xsize -= 1
-                            adjusted = True
-                        if (adjusted == False and
+                            self.levels >= self.zsize
+                        ):
+                            if self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
+                            elif self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                            elif self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                        # Z X L
+                        elif (
                             self.zsize >= self.xsize and
+                            self.xsize >= self.levels
+                        ):
+                            if self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                            elif self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
+                            elif self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                        # Z L X
+                        elif (
                             self.zsize >= self.levels and
-                            self.zsize > cfg.min_z):
-                            self.zsize -= 1
-                            adjusted = True
-                        if (adjusted == False and
-                            self.levels+3 >= self.xsize and
-                            self.levels+3 >= self.zsize and
-                            self.levels > cfg.min_levels):
-                            self.levels -= 1
-                            adjusted = True
+                            self.levels >= self.xsize
+                        ):
+                            if self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                            elif self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                            elif self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
+                        # L X Z
+                        elif (
+                            self.levels >= self.xsize and
+                            self.xsize >= self.zsize
+                        ):
+                            if self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                            elif self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
+                            elif self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                        # L Z X
+                        elif (
+                            self.levels >= self.zsize and
+                            self.zsize >= self.xsize
+                        ):
+                            if self.levels > cfg.min_levels:
+                                self.levels -= 1
+                                adjusted = True
+                            elif self.zsize > cfg.min_z:
+                                self.zsize -= 1
+                                adjusted = True
+                            elif self.xsize > cfg.min_x:
+                                self.xsize -= 1
+                                adjusted = True
 
                     if (adjusted is False):
                         print 'Unable to place any more dungeons.'
@@ -430,7 +497,6 @@ class Dungeon (object):
         if self.dinfo['fill_caves'] == True:
             offset = 10
         for p, d in sorted_p:
-            #if self.args.debug: print 'Checking: ', p
             d_chunks = set()
             for x in xrange(self.xsize+offset):
                 for z in xrange(self.zsize+offset):
@@ -441,8 +507,10 @@ class Dungeon (object):
                                     0,
                                     (p[1]+(offset/2))*self.room_size)
                 if self.args.debug: print 'Final: ', self.position
-                self.worldmap(world, positions)
-                return self.bury()
+                if self.bury():
+                    self.worldmap(world, positions)
+                    return True
+        if self.args.debug: print 'No positions', p
         return False
 
     def worldmap(self, world, positions):
@@ -534,11 +602,11 @@ class Dungeon (object):
                 d1 = self.good_chunks[chunk]
             d1 -= 2
             if manual == False:
+                # Too shallow
                 if (d1 < min_depth):
-                    print 'Selected area is too shallow to bury dungeon.'
                     return False
+                # Too high
                 elif (d1 > self.world.Height - 27):
-                    print 'Selected area is too high to hold dungeon. ', d1
                     return False
 
             depth = min(depth, d1)
