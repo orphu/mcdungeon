@@ -108,3 +108,5 @@ Book of The Tower:Enchanted Book,48-5:- XVI -
 Book of Judgement:Enchanted Book,49-2:- XX -
 Book of The Magician:Enchanted Book,50-1:- I -
 Book of The World:Enchanted Book,51-1:- XXI -
+Book of Fish Stories Vol 1:Enchanted Book,61-3
+Book of Fish Stories Vol 2:Enchanted Book,62-3
