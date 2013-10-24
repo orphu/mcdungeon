@@ -36,6 +36,10 @@ PUNCH = 49
 FLAME = 50
 INFINITY = 51
 
+# Fishing Rod Enchantments
+LUCK_OF_THE_SEA = 61
+LURE = 62
+
 # Enchantment names
 _ench_name = {
     PROTECTION: 'Protection',
@@ -59,7 +63,9 @@ _ench_name = {
     POWER: 'Power',
     PUNCH: 'Punch',
     FLAME: 'Flame',
-    INFINITY: 'Infinity'
+    INFINITY: 'Infinity',
+    LUCK_OF_THE_SEA: 'Luck of the Sea',
+    LURE: 'Lure'
 }
 
 # Level names
@@ -94,34 +100,38 @@ _ench_prob = {
     POWER: 10,
     PUNCH: 2,
     FLAME: 2,
-    INFINITY: 1
+    INFINITY: 1,
+    LUCK_OF_THE_SEA: 5,
+    LURE: 5
 }
 
 # Enchantment level table
 _ench_level = {
     # Enchantment               I         II       III        IV        V
-    PROTECTION:            [(  1, 21),( 17, 37),( 33, 53),( 49, 69),(  0,  0)],
-    FIRE_PROTECTION:       [( 10, 22),( 16, 30),( 26, 38),( 34, 46),(  0,  0)],
+    PROTECTION:            [(  1, 21),( 12, 32),( 23, 43),( 34, 54),(  0,  0)],
+    FIRE_PROTECTION:       [( 10, 22),( 18, 30),( 26, 38),( 34, 46),(  0,  0)],
     FEATHER_FALLING:       [(  5, 15),( 11, 21),( 17, 27),( 23, 33),(  0,  0)],
     BLAST_PROTECTION:      [(  5, 17),( 13, 25),( 21, 33),( 29, 41),(  0,  0)],
     PROJECTILE_PROTECTION: [(  3, 18),(  9, 24),( 15, 30),( 21, 36),(  0,  0)],
     RESPIRATION:           [( 10, 40),( 20, 50),( 30, 60),(  0,  0),(  0,  0)],
     AQUA_AFFINITY:         [(  1, 41),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
     THORNS:                [( 10, 60),( 30, 80),( 50,100),(  0,  0),(  0,  0)],
-    SHARPNESS:             [(  1, 21),( 17, 37),( 33, 53),( 49, 69),( 65, 85)],
+    SHARPNESS:             [(  1, 21),( 12, 32),( 23, 43),( 34, 54),( 45, 65)],
     SMITE:                 [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
     BANE_OF_ARTHROPODS:    [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
-    KNOCKBACK:             [(  5, 25),( 25, 75),(  0,  0),(  0,  0),(  0,  0)],
+    KNOCKBACK:             [(  5, 55),( 25, 75),(  0,  0),(  0,  0),(  0,  0)],
     FIRE_ASPECT:           [( 10, 60),( 30, 80),(  0,  0),(  0,  0),(  0,  0)],
-    LOOTING:               [( 20, 70),( 32, 82),( 44, 94),(  0,  0),(  0,  0)],
-    EFFICIENCY:            [(  1, 51),( 16, 66),( 33, 81),( 46, 96),( 61,111)],
-    SILK_TOUCH:            [( 25, 75),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    UNBREAKING:            [(  5, 55),( 15, 65),( 25, 75),(  0,  0),(  0,  0)],
-    FORTUNE:               [( 20, 70),( 32, 82),( 44, 94),(  0,  0),(  0,  0)],
+    LOOTING:               [( 15, 65),( 34, 74),( 33, 83),(  0,  0),(  0,  0)],
+    EFFICIENCY:            [(  1, 51),( 11, 61),( 21, 71),( 31, 81),( 41, 91)],
+    SILK_TOUCH:            [( 15, 65),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
+    UNBREAKING:            [(  5, 55),( 13, 63),( 21, 71),(  0,  0),(  0,  0)],
+    FORTUNE:               [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)],
     POWER:                 [(  1, 16),( 11, 26),( 21, 36),( 31, 46),( 41, 56)],
     PUNCH:                 [( 12, 37),( 32, 57),(  0,  0),(  0,  0),(  0,  0)],
     FLAME:                 [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    INFINITY:              [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)]
+    INFINITY:              [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
+    LUCK_OF_THE_SEA:       [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)],
+    LURE:                  [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)]
 }
 
 # Enchantment valid items tables
@@ -151,7 +161,9 @@ _ench_items_table_book = {
     POWER:                 ['book','bow'],
     PUNCH:                 ['book','bow'],
     FLAME:                 ['book','bow'],
-    INFINITY:              ['book','bow']
+    INFINITY:              ['book','bow'],
+    LUCK_OF_THE_SEA:       ['fishing rod'],
+    LURE:                  ['fishing rod']
 }
 
 # Table: Only enchants that can be achieved with an enchanting table.
@@ -178,7 +190,9 @@ _ench_items_table = {
     POWER:                 ['book','bow'],
     PUNCH:                 ['book','bow'],
     FLAME:                 ['book','bow'],
-    INFINITY:              ['book','bow']
+    INFINITY:              ['book','bow'],
+    LUCK_OF_THE_SEA:       ['fishing rod'],
+    LURE:                  ['fishing rod']
 }
 
 # Extended: As normal, but all weapon enchants can appear on axes,
