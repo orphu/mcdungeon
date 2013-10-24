@@ -1,11 +1,17 @@
 v0.13.0 -
 
-  !! NOTE: This version requires Minecraft 1.7.0 release or higher!
+  !! NOTE: This version requires Minecraft 1.7.1 release or higher!
 	
+   * New Feature: WildGrowth (JiFish)
+
+   * New entrance variations for Mesa and Ice Spike biomes. (orphu)
+
    * River and ocean biome exclusions are now configurable. (orphu)
      See default.cfg for details.
 
    * Interactive mode will now prompt for max_distance value to help avoid confusion for new users. (JiFish)
+
+   * Progress now reports how many dungeons have been placed. (orphu)
 
    * Changed config layout to make distributing themed configs easier. (JiFish)
 
@@ -13,9 +19,18 @@ v0.13.0 -
 
    * Added more paintings. (JiFish)
 
-   * Added/Updated 1.7 items and blocks (JiFish)
+   * Added 1.7 materials to various dungeon features (JiFish, orphu)
 
-   * Updated biome related functions to support 1.7 biomes. (orphu)
+   * Added 1.7 fishing pole enchantments. (orphu)
+
+   * Lowered the default silverfish concentration since explosions now trigger
+     silverfish to spawn. (orphu)
+
+   * Moved blocks out of items.txt to materials.cfg. This allows more control over
+     how blocks are used in the dungeons without resorting to code changes. (orphu)
+
+   * Fixed a bug that caused the dungeon placer to give up early when placing
+     multiple dungeons of a fixed depth. (orphu)
 
 v0.12.2 - 08/17/2013
 
