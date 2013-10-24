@@ -1595,21 +1595,6 @@ class Dungeon (object):
         # contain a chest if they have fewer halls.
         candidates = []
         chests = ceil(cfg.chests * float(self.xsize * self.zsize) / 10.0)
-        # Blocks we are not allowed to place a chest upon
-        ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
-                  44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
-                  66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
-                  86, 88, 90, 91, 92, 93, 94, 95, 96, 101, 102, 103, 104, 105,
-                  106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
-                  120)
-        # Blocks we shouldn't place trapped chests on
-        trapped_ignore = (materials.OakWoodSlab.val,
-                          materials.SpruceWoodSlab.val,
-                          materials.BirchWoodSlab.val,
-                          materials.JungleWoodSlab.val,
-                          materials.StoneBrickSlab.val,
-                          materials.StoneSlab.val,
-                          materials.SandstoneSlab.val)
         for room in self.rooms:
             # Only consider rooms on this level
             if (self.rooms[room].pos.y != level):
@@ -1638,20 +1623,23 @@ class Dungeon (object):
                     point.up(2) not in self.blocks or
                     point.down(1) not in self.blocks):
                     continue
-                if(self.blocks[point].material.val not in ignore and
-                   self.blocks[point.up(1)].material.val == 0 and 
-                   self.blocks[point.up(2)].material.val == 0):
+                if(
+                    self.blocks[point].material.val in materials.vine_solids and
+                    self.blocks[point.up(1)].material.val == 0 and
+                    self.blocks[point.up(2)].material.val == 0
+                ):
                     points.append(point)
-                if (self.blocks[point.down(1)].material.val not in ignore and
+                if (
+                    self.blocks[point.down(1)].material.val in materials.vine_solids and
                     self.blocks[point].material.val == 0 and
-                    self.blocks[point.up(1)].material.val == 0):
+                    self.blocks[point.up(1)].material.val == 0
+                ):
                     points.append(point.down(1))
             # Pick a spot, if one exists.
             if (len(points) > 0):
                 point = random.choice(points)
                 # Decide if we are a trap
-                if (randint(1,100) <= cfg.chest_traps and
-                    self.blocks[point].material.val not in trapped_ignore):
+                if randint(1,100) <= cfg.chest_traps:
                     self.setblock(point.up(1), materials.TrappedChest)
                     self.setblock(point, materials.Dispenser, 1)
                     self.addchesttrap(point)
@@ -1671,13 +1659,6 @@ class Dungeon (object):
         # contain a spawners if they have fewer halls.
         candidates = []
         spawners = ceil(cfg.spawners * float(self.xsize * self.zsize) / 10.0)
-        # Blocks we are not allowed to place a spawner upon
-        ignore = (0, 6, 8, 9, 10, 11, 18, 20, 23, 25, 26, 37, 38, 39, 40,
-                  44, 50, 51, 52, 53, 54, 55, 58, 59, 60, 61, 62, 63, 64, 65,
-                  66, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 81, 83, 84, 85,
-                  86, 88, 90, 91, 92, 93, 94, 95, 96, 101, 102, 103, 104, 105,
-                  106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
-                  120)
         for room in self.rooms:
             # Only consider rooms on this level
             if (self.rooms[room].pos.y != level):
@@ -1708,8 +1689,10 @@ class Dungeon (object):
                         point.up(2) not in self.blocks or
                         point.down(1) not in self.blocks):
                         continue
-                    if(self.blocks[point].material.val not in ignore and
-                       self.blocks[point.up(1)].material.val == 0):
+                    if(
+                        self.blocks[point].material.val in materials.vine_solids and
+                        self.blocks[point.up(1)].material.val == 0
+                    ):
                         points.append(point)
             else:
                 # Hidden spawners, just on the other side of walls.
@@ -2321,12 +2304,6 @@ class Dungeon (object):
         low_height = self.world.Height
         high_height = baseheight
         if self.args.debug: print '   Base height:',baseheight
-        # List of blocks to ignore.
-        # Leaves, trees, flowers, etc.
-        ignore = (0,6,17,18,31,37,38,39,40,44,50,51,55,
-                  59,63,64,65,66,68,70,71,72,75,76,
-                  77,81,83,85,86,90,91,92,93,94, 99, 100, 103, 104, 105, 106,
-                  111, 127, 174)
         chunk = self.world.getChunk(wcoord.x>>4, wcoord.z>>4)
         for x in xrange(wcoord.x+4, wcoord.x+12):
             for z in xrange(wcoord.z+4, wcoord.z+12):
@@ -2335,7 +2312,9 @@ class Dungeon (object):
                 # Heightmap is a good starting place, but I need to look
                 # down through foliage.
                 y = chunk.HeightMap[zInChunk, xInChunk]-1
-                while (chunk.Blocks[xInChunk, zInChunk, y] in ignore):
+                while (
+                    chunk.Blocks[xInChunk, zInChunk, y] not in materials.heightmap_solids
+                ):
                     y -= 1
                 if (chunk.Blocks[xInChunk, zInChunk, y] == 9 or
                     chunk.Blocks[xInChunk, zInChunk, y] == 79):
