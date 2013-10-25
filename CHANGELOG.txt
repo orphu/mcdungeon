@@ -19,6 +19,8 @@ v0.13.0 -
 
    * Added more paintings. (JiFish)
 
+   * Updated existing paintings to use expanded map palette. (JiFish)
+
    * Added 1.7 materials to various dungeon features (JiFish, orphu)
 
    * Added 1.7 fishing pole enchantments. (orphu)
@@ -27,14 +29,14 @@ v0.13.0 -
      silverfish to spawn. (orphu)
 
    * Moved blocks out of items.txt to materials.cfg. This allows more control over
-     how blocks are used in the dungeons without resorting to code changes. (orphu)
+     how blocks are used in the dungeons without requiring to code changes. (orphu)
 
    * Fixed a bug that caused the dungeon placer to give up early when placing
      multiple dungeons of a fixed depth. (orphu)
 
 v0.12.2 - 08/17/2013
 
-   * Fixed crash when encounting unknown biomes. (orphu)
+   * Fixed crash when encountering unknown biomes. (orphu)
 
 v0.12.1 - 07/08/2013
 
