@@ -103,7 +103,7 @@ if [ -d $NAME ]; then
 fi
 
 # Make a spec file.
-python utils/makespec.py -F -c $OPTS mcdungeon/mcdungeon.py
+python utils/makespec.py -F -c $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
 
 # Add additional data files.
 sed -i -e '/^pyz/ i\
@@ -116,7 +116,7 @@ a.datas += [ \
 ' mcdungeon/mcdungeon.spec
 
 # Build it!
-python utils/build.py mcdungeon/mcdungeon.spec
+python utils/build.py mcdungeon/mcdungeon.spec || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
 mkdir -p $NAME/bin
