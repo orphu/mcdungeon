@@ -5,11 +5,11 @@
 #
 # Tested configurations:
 #
-# Pyinstaller 2.1 dev - 5804133658
+# Pyinstaller 2.1 stable - fc75057047
 #
-# Windows 7 / Python 2.7.3 64 bit
-# Windows 7 / Python 2.7.3 32 bit
-# Linux / Python 2.7.3 64 bit (Ubuntu)
+# Windows 7 / Python 2.7.5 64 bit
+# Windows 7 / Python 2.7.5 32 bit
+# Linux / Python 2.7.5 64 bit (Ubuntu)
 # OS X 10.8 / Python 2.7.2 64 bit 
 #
 # Requirements:
@@ -59,10 +59,6 @@ if [ -d mcdungeon ]; then
 	echo "Removing old git repo..."
 	rm -rf mcdungeon
 fi
-if [ -d mcdungeon-build ]; then
-	echo "Removing old build directory..."
-	rm -rf mcdungeon-build
-fi
 
 # Grab a fresh copy of the repo
 git clone --recursive https://github.com/orphu/mcdungeon || error 'Failed to pull MCDungeon repo.' $?
@@ -107,18 +103,20 @@ if [ -d $NAME ]; then
 fi
 
 # Make a spec file.
-python utils/Makespec.py -o mcdungeon-build --onefile $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
+python utils/makespec.py -F -c $OPTS mcdungeon/mcdungeon.py
+
 # Add additional data files.
 sed -i -e '/^pyz/ i\
 a.datas += [ \
-	("pymclevel/minecraft.yaml", "mcdungeon/pymclevel/minecraft.yaml", "DATA"), \
-	("pymclevel/classic.yaml", "mcdungeon/pymclevel/classic.yaml", "DATA"), \
-	("pymclevel/indev.yaml", "mcdungeon/pymclevel/indev.yaml", "DATA"), \
-	("pymclevel/pocket.yaml", "mcdungeon/pymclevel/pocket.yaml", "DATA"), \
+        ("pymclevel/minecraft.yaml", "mcdungeon/pymclevel/minecraft.yaml", "DATA"), \
+        ("pymclevel/classic.yaml", "mcdungeon/pymclevel/classic.yaml", "DATA"), \
+        ("pymclevel/indev.yaml", "mcdungeon/pymclevel/indev.yaml", "DATA"), \
+        ("pymclevel/pocket.yaml", "mcdungeon/pymclevel/pocket.yaml", "DATA"), \
 ]
-' mcdungeon-build/mcdungeon.spec
+' mcdungeon/mcdungeon.spec
+
 # Build it!
-python utils/Build.py -y mcdungeon-build/mcdungeon.spec || error 'Pyinstaller build failed.' $?
+python utils/build.py mcdungeon/mcdungeon.spec
 
 # Copy over support files
 mkdir -p $NAME/bin
@@ -142,7 +140,7 @@ for F in README.txt CHANGELOG.txt LICENSE.txt; do
 done
 
 # Copy over the executable
-cp -v mcdungeon-build/dist/$EXE $NAME/bin/
+cp -v mcdungeon/dist/$EXE $NAME/bin/
 
 echo -e "\nDone!"
 echo "Look in $NAME"
