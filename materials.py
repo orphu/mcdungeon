@@ -127,7 +127,7 @@ except:
 try:
     parser.readfp(open(filename))
 except Exception, e:
-    print "Failed to read config file!"
+    print "Failed to read materials config file!"
     sys.exit(e.message)
 
 # Convert materials.cfg into Materials objects.
