@@ -127,7 +127,7 @@ done
 
 case $PLATFORM in
 	win)
-		cp -v mcdungeon/extras/launcher.bat $NAME/lancher.bat
+		cp -v mcdungeon/extras/launcher.bat $NAME/launcher.bat
 		;;
 	macosx)
 		cp -v mcdungeon/extras/launcher.command $NAME/launcher.command
