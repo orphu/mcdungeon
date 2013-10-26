@@ -20,6 +20,7 @@ import pmeter
 __version__ = '0.13.0'
 __version_info__ = tuple([num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
+print "MCDungeon", __version__
 
 # Argument parsers
 parser = argparse.ArgumentParser(
