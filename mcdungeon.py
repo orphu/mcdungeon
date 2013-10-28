@@ -551,7 +551,6 @@ if (args.command == 'interactive'):
 
         print '\nEnter a number of levels.'
         print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
-        print 'Enter -1 to pick random values between 1 and 8.'
         args.levels = raw_input('Levels: ')
 
         print '\nEnter the maximum number of dungeons to add.'
