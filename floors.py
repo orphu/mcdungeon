@@ -556,7 +556,3 @@ def new(name, parent):
     if name in _floors.keys():
         return _floors[name](parent)
     return Blank(parent)
-
-if __name__ == "__main__":
-    s = SpiralRug()
-
