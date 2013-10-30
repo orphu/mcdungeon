@@ -1,6 +1,7 @@
 v0.13.1 - 
 
-   * New Floors: RadialRug and BrokenRadialRug. (huderlem)
+   * New Floors: RadialRug, BrokenRadialRug, RadialClay, and BrokenRadialClay.
+     (huderlem)
 
    * Removed "-1" option for levels in interactive mode. Just use a range
      instead. (orphu)

@@ -162,7 +162,8 @@ class RadialRug(Blank):
                 points[p.x][p.z] = color_num
                 points_left.remove((p.x, p.z))
 
-                # pick random direction to walk, try to keep walking same direction
+                # pick random direction to walk, try to keep walking same
+                # direction
                 if random.randint(0, self._walk_weight) != 0:
                     next_dir = prev_dir
                 else:
