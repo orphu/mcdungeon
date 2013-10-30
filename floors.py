@@ -121,6 +121,7 @@ class RadialRug(Blank):
         (1, 4, 0),    # red / yellow / white
         (10, 4, 0),   # purple / yellow / white
     )
+    _walk_weight = 5
 
     def render(self):
         if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
@@ -161,9 +162,8 @@ class RadialRug(Blank):
                 points[p.x][p.z] = color_num
                 points_left.remove((p.x, p.z))
 
-                # pick random direction to walk, try to keep walking same
-                # direction
-                if random.randint(0, 5) != 0:
+                # pick random direction to walk, try to keep walking same direction
+                if random.randint(0, self._walk_weight) != 0:
                     next_dir = prev_dir
                 else:
                     while next_dir == prev_dir:
@@ -213,6 +213,17 @@ class RadialRug(Blank):
 
 class BrokenRadialRug(RadialRug):
     _name = 'brokenradialrug'
+    ruin = True
+
+
+class RadialClay(RadialRug):
+    _name = 'radialclay'
+    mat = materials.WhiteStainedClay
+
+
+class BrokenRadialClay(RadialRug):
+    _name = 'brokenradialclay'
+    mat = materials.WhiteStainedClay
     ruin = True
 
 
