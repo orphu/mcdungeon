@@ -101,24 +101,25 @@ class MixedWoodTile(Blank):
                 else:
                     self.parent.parent.setblock(x+self.parent.loc, wood[1])
 
+
 class RadialRug(Blank):
     _name = 'radialrug'
     ruin = False
     mat = materials.Wool
     colors = (
-        (7, 8),      # dark grey / light grey
-        (14, 0),     # red / white
-        (11, 9),     # dark blue / cyan
-        (1, 14),     # red / orange
-        (7, 15),     # dark grey / black
-        (11, 10),    # dark blue  / purple
-        (12, 13),    # brown  / dark green
-        (15, 13),    # black  / dark green
-        (7, 8, 11),  # dark grey / light grey / dark blue
-        (14, 0, 15), # red / white / black
-        (11, 14, 0), # dark blue / orange / white
-        (1, 4, 0),   # red / yellow / white
-        (10, 4, 0),  # purple / yellow / white
+        (7, 8),       # dark grey / light grey
+        (14, 0),      # red / white
+        (11, 9),      # dark blue / cyan
+        (1, 14),      # red / orange
+        (7, 15),      # dark grey / black
+        (11, 10),     # dark blue  / purple
+        (12, 13),     # brown  / dark green
+        (15, 13),     # black  / dark green
+        (7, 8, 11),   # dark grey / light grey / dark blue
+        (14, 0, 15),  # red / white / black
+        (11, 14, 0),  # dark blue / orange / white
+        (1, 4, 0),    # red / yellow / white
+        (10, 4, 0),   # purple / yellow / white
     )
     _walk_weight = 5
 
@@ -133,27 +134,31 @@ class RadialRug(Blank):
         max_z = utils.ceil(max([p.z for p in self.parent.canvas]))
         min_y = utils.floor(min([p.y for p in self.parent.canvas]))
 
-        # Cut the canvas into quarters and fill one quarter with colors. 
+        # Cut the canvas into quarters and fill one quarter with colors.
         # Then, copy that quarter into the other three quarters.
         width = utils.floor(((max_x - min_x + 1) + 1) / 2)
         depth = utils.floor(((max_z - min_z + 1) + 1) / 2)
-        
+
         points = [[-1 for j in xrange(depth)] for i in xrange(width)]
         points_left = []
         for i in xrange(width):
             for j in xrange(depth):
                 points_left.append((i, j))
         bounds = utils.Box(Vec(0, 0, 0), width, 1, depth)
-        p = Vec(0, 0, 0);
+        p = Vec(0, 0, 0)
         color_num = 0
         prev_dir = random.randint(0, 3)
         next_dir = random.randint(0, 3)
         while len(points_left) > 0:
             # pick random starting point and walk around the matrix
             point_index = random.randint(0, len(points_left)-1)
-            p = Vec(points_left[point_index][0], 0, points_left[point_index][1])
+            p = Vec(points_left[point_index][0],
+                    0,
+                    points_left[point_index][1])
 
-            while bounds.containsPoint(p) and points[p.x][p.z] == -1 and len(points_left) > 0:
+            while (bounds.containsPoint(p) and
+                   points[p.x][p.z] == -1 and
+                   len(points_left) > 0):
                 points[p.x][p.z] = color_num
                 points_left.remove((p.x, p.z))
 
@@ -163,16 +168,16 @@ class RadialRug(Blank):
                 else:
                     while next_dir == prev_dir:
                         next_dir = random.randint(0, 3)
-                if next_dir == 0: # right
+                if next_dir == 0:  # right
                     p += Vec(1, 0, 0)
-                elif next_dir == 1: # down
+                elif next_dir == 1:  # down
                     p += Vec(0, 0, 1)
-                elif next_dir == 2: # left
+                elif next_dir == 2:  # left
                     p += Vec(-1, 0, 0)
-                else: # up
+                else:  # up
                     p += Vec(0, 0, -1)
                 prev_dir = next_dir
-            color_num = (color_num + 1)%len(color_profile)
+            color_num = (color_num + 1) % len(color_profile)
 
         for j in xrange(max_z - min_z + 1):
             for i in xrange(max_x - min_x + 1):
@@ -186,7 +191,8 @@ class RadialRug(Blank):
                     j_adj = j
                 else:
                     j_adj = 2*depth - 1 - j
-                self.parent.parent.blocks[p].data = color_profile[points[i_adj][j_adj]]
+                self.parent.parent.blocks[p].data = \
+                    color_profile[points[i_adj][j_adj]]
 
         if not self.ruin:
             return

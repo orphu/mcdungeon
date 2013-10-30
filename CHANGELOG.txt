@@ -1,3 +1,10 @@
+v0.13.1 - 
+
+   * New Floors: RadialRug and BrokenRadialRug. (huderlem)
+
+   * Removed "-1" option for levels in interactive mode. Just use a range
+     instead. (orphu)
+
 v0.13.0 - 10/26/2013
 
   !! NOTE: This version requires Minecraft 1.7.2 release or higher!
@@ -9,7 +16,8 @@ v0.13.0 - 10/26/2013
    * River and ocean biome exclusions are now configurable. (orphu)
      See default.cfg for details.
 
-   * Interactive mode will now prompt for max_dist value to help avoid confusion for new users. (JiFish)
+   * Interactive mode will now prompt for max_dist value to help avoid
+     confusion for new users. (JiFish)
 
    * Progress now reports how many dungeons have been placed. (orphu)
 
@@ -28,8 +36,9 @@ v0.13.0 - 10/26/2013
    * Lowered the default silverfish concentration since explosions now trigger
      silverfish to spawn. (orphu)
 
-   * Moved blocks out of items.txt to materials.cfg. This allows more control over
-     how blocks are used in the dungeons without requiring code changes. (orphu)
+   * Moved blocks out of items.txt to materials.cfg. This allows more control
+     over how blocks are used in the dungeons without requiring code changes.
+     (orphu)
 
    * Fixed a bug that caused the dungeon placer to give up early when placing
      multiple dungeons of a fixed depth. (orphu)

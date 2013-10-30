@@ -17,7 +17,7 @@ from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
-__version__ = '0.13.0'
+__version__ = '0.13.1'
 __version_info__ = tuple([num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 print "MCDungeon", __version__
@@ -551,7 +551,6 @@ if (args.command == 'interactive'):
 
         print '\nEnter a number of levels.'
         print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
-        print 'Enter -1 to pick random values between 1 and 8.'
         args.levels = raw_input('Levels: ')
 
         print '\nEnter the maximum number of dungeons to add.'
