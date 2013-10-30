@@ -101,6 +101,113 @@ class MixedWoodTile(Blank):
                 else:
                     self.parent.parent.setblock(x+self.parent.loc, wood[1])
 
+class RadialRug(Blank):
+    _name = 'radialrug'
+    ruin = False
+    mat = materials.Wool
+    colors = (
+        (7, 8),      # dark grey / light grey
+        (14, 0),     # red / white
+        (11, 9),     # dark blue / cyan
+        (1, 14),     # red / orange
+        (7, 15),     # dark grey / black
+        (11, 10),    # dark blue  / purple
+        (12, 13),    # brown  / dark green
+        (15, 13),    # black  / dark green
+        (7, 8, 11),  # dark grey / light grey / dark blue
+        (14, 0, 15), # red / white / black
+        (11, 14, 0), # dark blue / orange / white
+        (1, 4, 0),   # red / yellow / white
+        (10, 4, 0),  # purple / yellow / white
+    )
+
+    def render(self):
+        if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
+            return
+        color_profile = random.choice(self.colors)
+
+        min_x = utils.floor(min([p.x for p in self.parent.canvas]))
+        max_x = utils.ceil(max([p.x for p in self.parent.canvas]))
+        min_z = utils.floor(min([p.z for p in self.parent.canvas]))
+        max_z = utils.ceil(max([p.z for p in self.parent.canvas]))
+        min_y = utils.floor(min([p.y for p in self.parent.canvas]))
+
+        # Cut the canvas into quarters and fill one quarter with colors. 
+        # Then, copy that quarter into the other three quarters.
+        width = utils.floor(((max_x - min_x + 1) + 1) / 2)
+        depth = utils.floor(((max_z - min_z + 1) + 1) / 2)
+        
+        points = [[-1 for j in xrange(depth)] for i in xrange(width)]
+        points_left = []
+        for i in xrange(width):
+            for j in xrange(depth):
+                points_left.append((i, j))
+        bounds = utils.Box(Vec(0, 0, 0), width, 1, depth)
+        p = Vec(0, 0, 0);
+        color_num = 0
+        prev_dir = random.randint(0, 3)
+        next_dir = random.randint(0, 3)
+        while len(points_left) > 0:
+            # pick random starting point and walk around the matrix
+            point_index = random.randint(0, len(points_left)-1)
+            p = Vec(points_left[point_index][0], 0, points_left[point_index][1])
+
+            while bounds.containsPoint(p) and points[p.x][p.z] == -1 and len(points_left) > 0:
+                points[p.x][p.z] = color_num
+                points_left.remove((p.x, p.z))
+
+                # pick random direction to walk, try to keep walking same direction
+                if random.randint(0, 5) != 0:
+                    next_dir = prev_dir
+                else:
+                    while next_dir == prev_dir:
+                        next_dir = random.randint(0, 3)
+                if next_dir == 0: # right
+                    p += Vec(1, 0, 0)
+                elif next_dir == 1: # down
+                    p += Vec(0, 0, 1)
+                elif next_dir == 2: # left
+                    p += Vec(-1, 0, 0)
+                else: # up
+                    p += Vec(0, 0, -1)
+                prev_dir = next_dir
+            color_num = (color_num + 1)%len(color_profile)
+
+        for j in xrange(max_z - min_z + 1):
+            for i in xrange(max_x - min_x + 1):
+                p = self.parent.loc + Vec(min_x+i, min_y, min_z+j)
+                self.parent.parent.setblock(p, self.mat)
+                if i < width:
+                    i_adj = i
+                else:
+                    i_adj = 2*width - 1 - i
+                if j < depth:
+                    j_adj = j
+                else:
+                    j_adj = 2*depth - 1 - j
+                self.parent.parent.blocks[p].data = color_profile[points[i_adj][j_adj]]
+
+        if not self.ruin:
+            return
+        # this chunk of code is copied from CheckerRug's render() method
+        pn = perlin.SimplexNoise(256)
+        c = self.parent.canvasCenter()
+        y = self.parent.canvasHeight()
+        r = random.randint(1, 1000)
+        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
+            p = x+self.parent.loc
+            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            if (n < d):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.blocks[p].data = 0
+
+
+class BrokenRadialRug(RadialRug):
+    _name = 'brokenradialrug'
+    ruin = True
+
 
 class CheckerRug(Blank):
     _name = 'checkerrug'
@@ -131,9 +238,9 @@ class CheckerRug(Blank):
             else:
                 self.parent.parent.blocks[x+self.parent.loc].data = color[1]
         # Runined
-        pn = perlin.SimplexNoise(256)
         if (self.ruin is False):
             return
+        pn = perlin.SimplexNoise(256)
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
         r = random.randint(1, 1000)
