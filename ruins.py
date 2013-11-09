@@ -2628,6 +2628,16 @@ class MazeEntrance(Blank):
 
         # adjust the entrance height to match with the floor of the labyrinth
         self.parent.parent.entrance.height = abs(room_floor-glev)
+
+        # Supply chest
+        chest_pos = start.trans(7, -1, 5)
+        self.parent.parent.setblock(chest_pos, materials.Chest)
+        self.parent.parent.addchest(chest_pos, 0)
+        # Portal exit point
+        self.parent.parent.dinfo['portal_exit'] = Vec(chest_pos.x+1,
+                                                      chest_pos.y,
+                                                      chest_pos.z)
+
         # draw sandbar if necessary
         if (self.parent.parent.entrance.inwater):
             gstart = Vec(self.parent.loc.x,
