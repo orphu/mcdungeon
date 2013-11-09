@@ -2560,7 +2560,6 @@ class MazeEntrance(Blank):
 
     def _get_open_neighbors(self, blocks, canvas_width, canvas_length, i, j):
         if i%2 != 1 or j%2 != 1:
-            print 'ERROR!!! i:', i, 'j:', j
             return
         neighbors = []
         # check 4 directions
@@ -2593,8 +2592,6 @@ class MazeEntrance(Blank):
         if len(blocks) == 0: # not sure if this check is necessary...
             return
         mats = self._mats['stone']
-        print self.parent.parent.biome
-        print _ice_biomes
         if self._biome is True:
             if self.parent.parent.biome in _desert_biomes:
                 mats = self._mats['desert']
