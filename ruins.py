@@ -2490,14 +2490,51 @@ class MazeEntrance(Blank):
         'ice': [(materials.PackedIce, 0.8), (materials.Ice, 1.0)],
         'mesa': [(materials.HardenedClay, 1.0)]
     }
+    _size = 1
+
+    _dnamesB = (
+        ('{{owners}} Labyrinth', 5),
+        ('{A}Labyrinth', 5),
+        ('Labyrinth to {{owner}}', 5),
+        ('The {A}Labyrinth', 5),
+        ('{A}Catacombs', 1),
+        ('{A}Ruins', 1),
+        ('{A}Temple', 1),
+        ('{{owners}} Temple', 1),
+        ('Temple to {{owner}}', 1),
+        ('{A}Tomb', 1),
+        ('{{owners}} Tomb', 1),
+        ('Tomb of {{owner}}', 1)
+    )
+
+    def setData(self):
+        # the maze will be 3x3 if the entrance isn't on the edge of the dungeon chunks
+        # it will be 1x1 otherwise
+        xsize = self.parent.parent.xsize
+        zsize = self.parent.parent.zsize
+        if self.pos.x > 0 and self.pos.z > 0 and self.pos.x < xsize-1 and self.pos.z < zsize-1:
+            self._size = 3
+
+        maze_pos = self.pos
+
+        # clear all ruins with 3x3 block around dungeon entrance
+        # the maze will be 3x3 chunks with the entrance in the center chunk
+        if self._size == 3:
+            for p in iterate_cube(Vec(maze_pos.x-1, 0, maze_pos.z-1),
+                                  Vec(maze_pos.x+1, 0, maze_pos.z+1)):
+                if p == self.pos:
+                    continue
+                blank = new('blank', self.parent.parent.rooms[p])
+                self.parent.parent.rooms[p].ruins = [blank]
+
 
     def _gen_maze_dfs(self):
         '''
         Generates a maze using caver algorithm.
         Returns 2D array of 1s and 0s that represent the maze. (0: wall, 1: open)
         '''
-        cw = 16
-        cl = 16
+        cw = self._size * 16
+        cl = self._size * 16
         canvas_width = cw - ((cw)+1)%2
         canvas_length = cl - ((cl)+1)%2
         blocks = [[0 for j in xrange(canvas_length)] for i in xrange(canvas_width)]
@@ -2608,7 +2645,10 @@ class MazeEntrance(Blank):
         elev = room_floor - self.parent.parent.entrance.low_height
         # Ground level
         glev = room_floor - self.parent.parent.entrance.high_height
-        start = self.parent.loc.trans(0, glev, 0)
+        # start = self.parent.loc.trans(-16, glev, -16)
+
+        sc = int(self._size/2)*16
+        start = Vec(self.loc.x - sc, self.parent.loc.y+glev, self.loc.z-sc)
 
         # render the floor of the labyrinth
         for i in xrange(len(blocks)):
@@ -2616,13 +2656,25 @@ class MazeEntrance(Blank):
                 self.parent.parent.setblock(start.trans(i, 0, j), self._pick_material(mats))
 
         pn = perlin.SimplexNoise(256)
+
+        open_x_start = sc + 4
+        open_z_start = sc + 4
+        open_x_end = sc + 11
+        open_z_end = sc + 11
+
         for i in xrange(len(blocks)):
             for j in xrange(len(blocks[0])):
-                if (i <= 4 or i >= 11 or j <= 4 or j >= 11) and blocks[i][j] == 0: # wall
+                if (i <= open_x_start or i >= open_x_end or j <= open_z_start or j >= open_z_end):
                     # walls near the middle of the labyrinth are taller than the edges
-                    height = ((pn.noise2(i / 32.0, j / 32.0) + 1.0) / 2.0 * self.parent.parent.room_height)*(16.0/(abs(j-8) + abs(i-8)) ) + 7
+                    height = ((pn.noise2(i / 32.0, j / 32.0) + 1.0) / 2.0 * self.parent.parent.room_height)*((16*self._size)/(abs(j-(sc+8)) + abs(i-(sc+8))) ) + 7
                     for y in xrange(int(height)):
-                        self.parent.parent.setblock(start.trans(i, -y, j), self._pick_material(mats))
+                        if blocks[i][j] == 0: # wall
+                            self.parent.parent.setblock(start.trans(i, -y, j), self._pick_material(mats))
+                        else:
+                            self.parent.parent.setblock(start.trans(i, -y, j), materials.Air)
+                else:
+                    for y in xrange(20):
+                        self.parent.parent.setblock(start.trans(i, -y, j), materials.Air)
                 for y in xrange(abs(glev) + 1):
                     self.parent.parent.setblock(start.trans(i, y, j), self._pick_material(mats))
 
@@ -2630,22 +2682,22 @@ class MazeEntrance(Blank):
         self.parent.parent.entrance.height = abs(room_floor-glev)
 
         # Supply chest
-        chest_pos = start.trans(7, -1, 5)
+        chest_pos = start.trans(sc + 7, -1, sc + 5)
         self.parent.parent.setblock(chest_pos, materials.Chest)
         self.parent.parent.addchest(chest_pos, 0)
         # Portal exit point
-        self.parent.parent.dinfo['portal_exit'] = Vec(chest_pos.x+1,
+        self.parent.parent.dinfo['portal_exit'] = Vec(chest_pos.x + 1,
                                                       chest_pos.y,
                                                       chest_pos.z)
 
         # draw sandbar if necessary
         if (self.parent.parent.entrance.inwater):
-            gstart = Vec(self.parent.loc.x,
+            gstart = Vec(self.parent.loc.x - sc,
                         glev,
-                        self.parent.loc.z)
+                        self.parent.loc.z - sc)
             d = 2
-            s1 = Vec(gstart.x-3, glev+1, start.z-3)
-            s3 = Vec(gstart.x+19, glev+1, start.z+19)
+            s1 = Vec(gstart.x - 3, glev + 1, start.z - 3)
+            s3 = Vec(gstart.x + self._size*3 + 3, glev + 1, start.z + self._size*3 + 3)
             for y in xrange(rheight):
                 for p in iterate_disc(s1.trans(-d, y, -d),
                                       s3.trans(d, y, d)):
