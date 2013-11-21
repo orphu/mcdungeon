@@ -1108,6 +1108,12 @@ class Dungeon (object):
             name = weighted_choice(cfg.master_dispensers)
         if count == None:
             count = int(cfg.lookup_dispensers[name][1])
+        # sanity check for count
+        if count > 9*64:
+            print '\nFATAL: Item count for dispenser trap too large! Max number of items is 9x64 = 576! Check config file.'
+            print 'Item name:', name
+            print 'Count:', count
+            sys.exit()
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Trap')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -1115,12 +1121,20 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
-        item_tag = nbt.TAG_Compound()
-        item_tag['Slot'] = nbt.TAG_Byte(0)
-        item_tag['Count'] = nbt.TAG_Byte(count)
-        item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
-        item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
-        inv_tag.append(item_tag)
+        # fill slots of dispenser trap
+        slot = 0
+        while count > 0:
+            item_tag = nbt.TAG_Compound()
+            item_tag['Slot'] = nbt.TAG_Byte(slot)
+            if count > 64:
+                item_tag['Count'] = nbt.TAG_Byte(64)
+            else:
+                item_tag['Count'] = nbt.TAG_Byte(count)
+            count -= 64
+            item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
+            item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
+            inv_tag.append(item_tag)
+            slot += 1
         self.tile_ents[loc] = root_tag
 
     def addentity(self, root_tag):
