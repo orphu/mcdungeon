@@ -2,9 +2,13 @@ v0.13.1 -
 
    * New Floors: RadialRug, BrokenRadialRug, RadialClay, and BrokenRadialClay.
      (huderlem)
+	
+   * New Entrance: Labyrinth (huderlem)
 
    * Removed "-1" option for levels in interactive mode. Just use a range
      instead. (orphu)
+
+   * Dispenser traps can now contain 9*64 items. (huderlem)
 
 v0.13.0 - 10/26/2013
 
