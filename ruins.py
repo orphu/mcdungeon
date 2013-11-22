@@ -25,7 +25,7 @@ from utils import (
 )
 
 _desert_biomes = (2, 17, 130)
-_ice_biomes = (140,)
+_ice_biomes = (140,12)
 _mesa_biomes = (37, 38, 39, 165, 166, 167)
 _swamp_jungle_biomes = (6, 21, 22, 23, 149, 151)
 
@@ -2476,6 +2476,234 @@ class HouseFrame(Blank):
         #ruin it! (maybe)
         if (random.randint(1, 100) < 50):
             ruinBlocks(start, start.trans(7, 0, 7), 7, self.parent.parent)
+
+
+class MazeEntrance(Blank):
+    '''
+    Maze-like entrance to a dungeon.
+    '''
+    _name = 'mazeentrance'
+    _biome = True
+    _mats = {
+        'stone': [(materials.MossyStoneBrick, 0.7), (materials.CrackedStoneBrick, 0.9), (materials.ChiseledStoneBrick, 1.0)],
+        'desert': [(materials.Sandstone, 0.5), (materials.SmoothSandstone, 0.8), (materials.ChiseledSandstone, 1.0)],
+        'ice': [(materials.PackedIce, 0.8), (materials.Ice, 1.0)],
+        'mesa': [(materials.HardenedClay, 1.0)]
+    }
+    _size = 1
+
+    _dnamesB = (
+        ('{{owners}} Labyrinth', 5),
+        ('{A}Labyrinth', 5),
+        ('Labyrinth to {{owner}}', 5),
+        ('The {A}Labyrinth', 5),
+        ('{A}Catacombs', 1),
+        ('{A}Ruins', 1),
+        ('{A}Temple', 1),
+        ('{{owners}} Temple', 1),
+        ('Temple to {{owner}}', 1),
+        ('{A}Tomb', 1),
+        ('{{owners}} Tomb', 1),
+        ('Tomb of {{owner}}', 1)
+    )
+
+    def setData(self):
+        # the maze will be 3x3 if the entrance isn't on the edge of the dungeon chunks
+        # it will be 1x1 otherwise
+        xsize = self.parent.parent.xsize
+        zsize = self.parent.parent.zsize
+        if self.pos.x > 0 and self.pos.z > 0 and self.pos.x < xsize-1 and self.pos.z < zsize-1:
+            self._size = 3
+
+        maze_pos = self.pos
+
+        # clear all ruins with 3x3 block around dungeon entrance
+        # the maze will be 3x3 chunks with the entrance in the center chunk
+        if self._size == 3:
+            for p in iterate_cube(Vec(maze_pos.x-1, 0, maze_pos.z-1),
+                                  Vec(maze_pos.x+1, 0, maze_pos.z+1)):
+                if p == self.pos:
+                    continue
+                blank = new('blank', self.parent.parent.rooms[p])
+                self.parent.parent.rooms[p].ruins = [blank]
+
+
+    def _gen_maze_dfs(self):
+        '''
+        Generates a maze using caver algorithm.
+        Returns 2D array of 1s and 0s that represent the maze. (0: wall, 1: open)
+        '''
+        cw = self._size * 16
+        cl = self._size * 16
+        canvas_width = cw - ((cw)+1)%2
+        canvas_length = cl - ((cl)+1)%2
+        blocks = [[0 for j in xrange(canvas_length)] for i in xrange(canvas_width)]
+        start_x = random.randint(0, canvas_width/2 - 1)*2 + 1
+        start_z = 1
+        unvisited = [] # keep track of the unvisited nodes in a stack
+        cur = (start_x, start_z)
+        while True:
+            blocks[cur[0]][cur[1]] = 1
+            neighbors = self._get_open_neighbors(blocks, canvas_width, canvas_length, cur[0], cur[1])
+            if len(neighbors) > 0:
+                # pick a neighbor, and add the rest to the back of unvisited
+                next = neighbors.pop(random.randint(0, len(neighbors)-1))
+                if len(neighbors) > 0:
+                    unvisited += [cur]
+                # hollow out hole in between cur and next
+                if next[0] < cur[0]: # left
+                    blocks[cur[0]-1][cur[1]] = 1
+                elif next[0] > cur[0]: # right
+                    blocks[cur[0]+1][cur[1]] = 1
+                elif next[1] < cur[1]: # down
+                    blocks[cur[0]][cur[1]-1] = 1
+                elif next[1] > cur[1]: # up
+                    blocks[cur[0]][cur[1]+1] = 1
+                cur = next
+            elif len(unvisited) > 0:
+                cur = unvisited.pop()
+            else:
+                break
+        # add an entrance on each side
+        # front
+        x = random.randint(0, canvas_width/2 - 1)*2 + 1
+        blocks[x][0] = 1
+        # back
+        x = random.randint(0, canvas_width/2 - 1)*2 + 1
+        blocks[x][canvas_length-1] = 1
+        # left 
+        z = random.randint(0, canvas_length/2 - 1)*2 + 1
+        blocks[0][z] = 1
+        # right 
+        z = random.randint(0, canvas_length/2 - 1)*2 + 1
+        blocks[canvas_width-1][z] = 1
+
+        # post-process to smooth out turns in the maze
+        # use a sliding 2x2 window
+        for i in xrange(canvas_width-2):
+            for j in xrange(canvas_length-2):
+                count = blocks[i][j] + 2*blocks[i+1][j] + 4*blocks[i][j+1] + 8*blocks[i+1][j+1]
+                if count == 8:
+                    blocks[i][j] = 1
+                elif count == 4:
+                    blocks[i+1][j] = 1
+                elif count == 2:
+                    blocks[i][j+1] = 1
+                elif count == 1:
+                    blocks[i+1][j+1] = 1
+
+        return blocks
+
+
+    def _get_open_neighbors(self, blocks, canvas_width, canvas_length, i, j):
+        if i%2 != 1 or j%2 != 1:
+            return
+        neighbors = []
+        # check 4 directions
+        if i > 1 and blocks[i-2][j] == 0: # left
+            neighbors.append((i-2, j))
+        if i < canvas_width - 2 and blocks[i+2][j] == 0: # right
+            neighbors.append((i+2, j))
+        if j > 1 and blocks[i][j - 2] == 0: # down
+            neighbors.append((i, j-2))
+        if j < canvas_length - 2 and blocks[i][j+2] == 0:
+            neighbors.append((i, j+2))
+        return neighbors
+
+
+    def _pick_material(self, mat_list):
+        '''
+        Helper method for choosing a random material from a weighted list of materials.
+        '''
+        r = random.random()
+        for m in xrange(len(mat_list)):
+            if r < mat_list[m][1]:
+                return mat_list[m][0]
+
+
+    def render(self):
+        '''
+        Renders a maze around the entrance shaft.
+        '''
+        blocks = self._gen_maze_dfs()
+        if len(blocks) == 0: # not sure if this check is necessary...
+            return
+        mats = self._mats['stone']
+        if self._biome is True:
+            if self.parent.parent.biome in _desert_biomes:
+                mats = self._mats['desert']
+            elif self.parent.parent.biome in _ice_biomes:
+                mats = self._mats['ice']
+            elif self.parent.parent.biome in _mesa_biomes:
+                mats = self._mats['mesa']
+
+        # The room floor Y location
+        room_floor = self.parent.loc.y+self.parent.parent.room_height-3
+        # The height of one room
+        rheight = self.parent.parent.room_height
+        # Entrance Level
+        elev = room_floor - self.parent.parent.entrance.low_height
+        # Ground level
+        glev = room_floor - self.parent.parent.entrance.high_height
+        # start = self.parent.loc.trans(-16, glev, -16)
+
+        sc = int(self._size/2)*16
+        start = Vec(self.loc.x - sc, self.parent.loc.y+glev, self.loc.z-sc)
+
+        # render the floor of the labyrinth
+        for i in xrange(len(blocks)):
+            for j in xrange(len(blocks[0])):
+                self.parent.parent.setblock(start.trans(i, 0, j), self._pick_material(mats))
+
+        pn = perlin.SimplexNoise(256)
+
+        open_x_start = sc + 4
+        open_z_start = sc + 4
+        open_x_end = sc + 11
+        open_z_end = sc + 11
+
+        for i in xrange(len(blocks)):
+            for j in xrange(len(blocks[0])):
+                if (i <= open_x_start or i >= open_x_end or j <= open_z_start or j >= open_z_end):
+                    # walls near the middle of the labyrinth are taller than the edges
+                    height = ((pn.noise2(i / 32.0, j / 32.0) + 1.0) / 2.0 * self.parent.parent.room_height)*((16*self._size)/(abs(j-(sc+8)) + abs(i-(sc+8))) ) + 7
+                    for y in xrange(int(height)):
+                        if blocks[i][j] == 0: # wall
+                            self.parent.parent.setblock(start.trans(i, -y, j), self._pick_material(mats))
+                        else:
+                            self.parent.parent.setblock(start.trans(i, -y, j), materials.Air)
+                else:
+                    for y in xrange(20):
+                        self.parent.parent.setblock(start.trans(i, -y, j), materials.Air)
+                for y in xrange(abs(glev) + 1):
+                    self.parent.parent.setblock(start.trans(i, y, j), self._pick_material(mats))
+
+        # adjust the entrance height to match with the floor of the labyrinth
+        self.parent.parent.entrance.height = abs(room_floor-glev)
+
+        # Supply chest
+        chest_pos = start.trans(sc + 7, -1, sc + 5)
+        self.parent.parent.setblock(chest_pos, materials.Chest)
+        self.parent.parent.addchest(chest_pos, 0)
+        # Portal exit point
+        self.parent.parent.dinfo['portal_exit'] = Vec(chest_pos.x + 1,
+                                                      chest_pos.y,
+                                                      chest_pos.z)
+
+        # draw sandbar if necessary
+        if (self.parent.parent.entrance.inwater):
+            gstart = Vec(self.parent.loc.x - sc,
+                        glev,
+                        self.parent.loc.z - sc)
+            d = 2
+            s1 = Vec(gstart.x - 3, glev + 1, start.z - 3)
+            s3 = Vec(gstart.x + self._size*3 + 3, glev + 1, start.z + self._size*3 + 3)
+            for y in xrange(rheight):
+                for p in iterate_disc(s1.trans(-d, y, -d),
+                                      s3.trans(d, y, d)):
+                    if (p not in self.parent.parent.blocks):
+                        self.parent.parent.setblock(p, materials._sandbar)
+                d += 1
 
 
 def ruinBlocks(p1, p2, height, dungeon, override=False, aggressive=False):
