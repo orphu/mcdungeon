@@ -2485,14 +2485,14 @@ class MazeEntrance(Blank):
     _name = 'mazeentrance'
     _biome = True
     _mats = {
-        'stone': [(materials.MossyStoneBrick, 0.7),
-                  (materials.CrackedStoneBrick, 0.9),
-                  (materials.ChiseledStoneBrick, 1.0)],
-        'desert': [(materials.Sandstone, 0.5),
-                   (materials.SmoothSandstone, 0.8),
-                   (materials.ChiseledSandstone, 1.0)],
-        'ice': [(materials.PackedIce, 0.8), (materials.Ice, 1.0)],
-        'mesa': [(materials.HardenedClay, 1.0)]
+        'stone': ((materials.MossyStoneBrick, 7),
+                  (materials.CrackedStoneBrick, 2),
+                  (materials.ChiseledStoneBrick, 1)),
+        'desert': ((materials.Sandstone, 5),
+                   (materials.SmoothSandstone, 3),
+                   (materials.ChiseledSandstone, 2)),
+        'ice': ((materials.PackedIce, 8), (materials.Ice, 2)),
+        'mesa': ((materials.HardenedClay, 1))
     }
     _size = 1
 
@@ -2627,16 +2627,6 @@ class MazeEntrance(Blank):
             neighbors.append((i, j+2))
         return neighbors
 
-    def _pick_material(self, mat_list):
-        '''
-        Helper method for choosing a random material from a weighted
-        list of materials.
-        '''
-        r = random.random()
-        for m in xrange(len(mat_list)):
-            if r < mat_list[m][1]:
-                return mat_list[m][0]
-
     def render(self):
         '''
         Renders a maze around the entrance shaft.
@@ -2668,7 +2658,7 @@ class MazeEntrance(Blank):
         for i in xrange(len(blocks)):
             for j in xrange(len(blocks[0])):
                 self.parent.parent.setblock(start.trans(i, 0, j),
-                                            self._pick_material(mats))
+                                            weighted_choice(mats))
 
         pn = perlin.SimplexNoise(256)
 
@@ -2698,7 +2688,7 @@ class MazeEntrance(Blank):
                         if blocks[i][j] == 0:  # wall
                             self.parent.parent.setblock(
                                 start.trans(i, -y, j),
-                                self._pick_material(mats)
+                                weighted_choice(mats)
                             )
                         else:
                             self.parent.parent.setblock(
@@ -2714,7 +2704,7 @@ class MazeEntrance(Blank):
                 for y in xrange(abs(glev) + 1):
                     self.parent.parent.setblock(
                         start.trans(i, y, j),
-                        self._pick_material(mats)
+                        weighted_choice(mats)
                     )
 
         # adjust the entrance height to match with the floor of the labyrinth
