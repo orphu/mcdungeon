@@ -260,9 +260,17 @@ def Load ():
         thistable =  _master_loot[tiername]
         num = 0
         for line in loots:
-            chance, minmax, enchant = [x.strip() for x in line[1].split(',')]
-            minimum = minmax.split('-')[0]
-            maximum = minmax.split('-')[-1]
+            try:
+                chance, minmax, enchant = [x.strip() for x in line[1].split(',')]
+                minimum = minmax.split('-')[0]
+                maximum = minmax.split('-')[-1]
+            except:
+                print 'WARNING: Cannot parse loot table entry around line:'
+                print '  {}: {} (skipping...)'.format(
+                    line[0],
+                    line[1]
+                )
+                continue
 
             ilist = []
             for i in line[0].split(','):
