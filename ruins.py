@@ -2492,7 +2492,7 @@ class MazeEntrance(Blank):
                    (materials.SmoothSandstone, 3),
                    (materials.ChiseledSandstone, 2)),
         'ice': ((materials.PackedIce, 8), (materials.Ice, 2)),
-        'mesa': ((materials.HardenedClay, 1))
+        'mesa': ((materials.HardenedClay, 1), (materials.HardenedClay, 1))
     }
     _size = 1
 
