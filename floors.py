@@ -63,6 +63,47 @@ class BrokenStoneBrick(Cobble):
     mat = materials.meta_mossystonebrick
 
 
+class StoneTile(Blank):
+    _name = 'stonetile'
+    ruin = False
+    stonetypes = (
+        (materials.Granite, materials.PolishedGranite),
+        (materials.Diorite, materials.PolishedDiorite),
+        (materials.Andesite, materials.PolishedAndesite)
+        )
+
+    def render(self):
+        mat = random.choice(self.stonetypes)
+        if (utils.sum_points_inside_flat_poly(*self.parent.canvas) > 4):
+            for x in utils.iterate_points_inside_flat_poly(
+                *self.parent.canvas
+            ):
+                if ((x.x+x.z) & 1 == 1):
+                    self.parent.parent.setblock(x+self.parent.loc, mat[0])
+                else:
+                    self.parent.parent.setblock(x+self.parent.loc, mat[1])
+        # Ruined
+        if (self.ruin is False):
+            return
+        c = self.parent.canvasCenter()
+        y = self.parent.canvasHeight()
+        r = random.randint(1, 1000)
+        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
+        pn = perlin.SimplexNoise(256)
+        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
+            p = x+self.parent.loc
+            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
+            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            if (n < d):
+                self.parent.parent.setblock(p, materials._floor)
+                self.parent.parent.blocks[p].data = 0
+
+
+class BrokenStoneTile(StoneTile):
+    _name = 'brokenstonetile'
+    ruin = True
+
+
 class WoodTile(Blank):
     _name = 'woodtile'
 
