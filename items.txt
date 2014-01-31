@@ -76,13 +76,13 @@
 322,Golden Apple,0,64
 322,Enchanted Golden Apple,1,64
 323,Sign,0,16
-324,Wooden Door,0,1
+324,Wooden Door,0,64
 325,Bucket,0,16
 326,Water Bucket,0,1
 327,Lava Bucket,0,1
 328,Minecart,0,1
 329,Saddle,0,1
-330,Iron Door,0,1
+330,Iron Door,0,64
 331,Redstone Dust,0,64
 332,Snowball,0,16
 333,Boat,0,1
