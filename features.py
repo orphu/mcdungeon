@@ -660,13 +660,21 @@ class SecretRoom(Blank):
                               self.parent.loc+Vec(self.parent.parent.room_size-1,
                                                   self.parent.parent.room_height-2,
                                                   self.parent.parent.room_size-1)):
+            # Remove all blocks.
             sb(p, None)
+            # Clear out any doors or extra torches.
+            if p in self.parent.parent.doors:
+                del(self.parent.parent.doors[p])
+            if p in self.parent.parent.torches:
+                del(self.parent.parent.torches[p])
+
         self.c1 = self.parent.loc + Vec(3,
                                   self.parent.parent.room_height-2,
                                   3)
         self.c3 = self.parent.loc + Vec(self.parent.parent.room_size-4,
                                   self.parent.parent.room_height-2,
                                   self.parent.parent.room_size-4)
+
         for q in iterate_cube(self.c1.up(1), self.c3.up(3)):
             sb(q, materials.Air)
         for q in iterate_cube(self.c1.up(4), self.c3.up(4)):
@@ -896,7 +904,7 @@ class SecretRoom(Blank):
                 sb(q-dl, materials.Air, lock=True)
             sb(q+dw, materials._wall, lock=True)
 
-        # Clear out any doors or extra torches in this room/hall
+        # Clear out any additional doors or extra torches in the hall.
         for q in iterate_cube(o+dw*2+dl*5, p-dw-dl):
             if q in self.parent.parent.doors:
                 del(self.parent.parent.doors[q])
