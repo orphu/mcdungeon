@@ -1388,7 +1388,7 @@ class SecretArmory(SecretRoom):
             # Spice things up with some synonyms
             if 'sword' in item:
                 item_name = random.choice(('sword','blade','claymore',
-                                           'cutlas','sabre','scimtar'))
+                                           'cutlass','sabre','scimitar'))
             elif 'pickaxe' in item:
                 item_name = random.choice(('pickaxe','pickax','pick'))
             elif 'axe' in item:
@@ -1453,12 +1453,10 @@ class SecretArmory(SecretRoom):
             # Place the item frame.
             dungeon.addentity(tags)
 
-        # DEATH KNIGHT! RRRRRAGH!
         name = dungeon.namegen.genname()
-        # For now, always create a death knight. The item by itself disappears
-        # too quickly. 
-        #if random.random() < .80:
-        if True:
+
+        # DEATH KNIGHT! RRRRRAGH!
+        if random.random() < .80:
             pos = Vec(3,-2,3)
             # Always get a weapon
             while True:
