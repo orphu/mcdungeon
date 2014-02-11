@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 size = 16
 factor = float(size) * 0.25
 i = [' ', '.', ',', 'o', 'O', '@', '#']

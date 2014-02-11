@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 from random import randrange
 
 import cave_factory
