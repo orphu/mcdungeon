@@ -11,7 +11,18 @@ v0.14.0 -
    * Removed "-1" option for levels in interactive mode. Just use a range
      instead. (orphu)
 
-   * Dispenser traps can now contain 9*64 items. (huderlem)
+   * Removed arrow trap, portcullis, piston trap, and dispenser trap
+     settings from configs. All of this is now controlled with new 
+     [hall traps] section. (orphu)
+
+   * Projectile traps are now more compact, cannot be looted, and
+     never run out of ammo. (orphu)
+
+   * Piston hall traps are now more compact and can be longer. (orphu)
+
+   * Working portcullises in halls. (orphu)
+
+   * Portcullises can now be make of cobblestone wall. (orphu)
 
 v0.13.0 - 10/26/2013
 

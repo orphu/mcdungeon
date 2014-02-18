@@ -3,7 +3,6 @@ import inspect
 
 import materials
 import doors
-import portcullises
 import cfg
 from utils import *
 from random import *
@@ -58,11 +57,6 @@ class Ten(Blank):
 def drawHall (hall):
     length = hall.parent.hallLength[hall.direction]
     start = hall.parent.loc
-    trap = 0
-    tname = None 
-    if (randint(1,100) <= cfg.arrow_traps):
-        trap = 1
-        tname = weighted_choice(cfg.master_dispensers)
     if (hall.direction == 0):
         start += Vec(0,0,0)
         start = start.e(hall.offset)
@@ -100,27 +94,6 @@ def drawHall (hall):
         # First wall
         for k in xrange(hall.parent.parent.room_height-1):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
-        if (trap == 1 and (j%2) == 0 and j > 0 and j < length-1):
-            for k in iterate_cube(pen.down(1),
-                                  pen.down(hall.parent.parent.room_height-1)-
-                                  (stepw*2)):
-                hall.parent.parent.setblock(k, materials._wall)
-        elif (trap == 1 and (j%2) == 1 and j > 0 and j < length-1):
-            for k in iterate_cube(pen.down(1),
-                                  pen.down(hall.parent.parent.room_height-1)-
-                                  (stepw*2)):
-                hall.parent.parent.setblock(k, materials._wall)
-            tpen = pen.down(2)
-            hall.parent.parent.setblock(tpen, materials.Dispenser, dd1)
-            hall.parent.parent.addtrap(tpen, tname)
-            hall.parent.parent.setblock(tpen-stepw,
-                                        materials.RedstoneTorchOff, 5)
-            tpen = tpen.down(2)
-            hall.parent.parent.setblock(tpen, materials.Air)
-            hall.parent.parent.setblock(tpen-stepw,
-                                        materials.RedstoneTorchOn, 5)
-            tpen = tpen.down(1)
-            hall.parent.parent.setblock(tpen, materials.RedstoneWire)
         # hallway (ceiling and floor)
         for x in xrange(hall.size-2):
             pen += stepw
@@ -130,49 +103,10 @@ def drawHall (hall):
             hall.parent.parent.setblock(
                 pen.down(hall.parent.parent.room_height-2),
                 materials._floor)
-            # Arrow trap place redstone under the floor, and a button.
-            # For TNT traps, redstone might be TNT instead
-            if (trap == 1 and j < length-1):
-                if (randint(1,100) <= cfg.arrow_trap_defects):
-                    hall.parent.parent.setblock(
-                        pen.down(hall.parent.parent.room_height-1),
-                        materials.TNT)
-                    hall.parent.parent.setblock(
-                        pen.down(hall.parent.parent.room_height-3),
-                        materials.StonePressurePlate)
-                else:
-                    hall.parent.parent.setblock(
-                        pen.down(hall.parent.parent.room_height-1),
-                        materials.RedstoneWire)
-                    if (randint(1,100) <= 66):
-                        hall.parent.parent.setblock(
-                            pen.down(hall.parent.parent.room_height-3),
-                            materials.StonePressurePlate)
         # Second wall
         pen += stepw
         for k in xrange(hall.parent.parent.room_height-1):
             hall.parent.parent.setblock(pen.down(k), materials._wall)
-        if (trap == 1 and (j%2) == 1 and j > 0 and j < length-1):
-            for k in iterate_cube(pen.down(1),
-                                  pen.down(hall.parent.parent.room_height-1)+
-                                  (stepw*2)):
-                hall.parent.parent.setblock(k, materials._wall)
-        elif (trap == 1 and (j%2) == 0 and j > 0 and j < length-1):
-            for k in iterate_cube(pen.down(1),
-                                  pen.down(hall.parent.parent.room_height-1)+
-                                  (stepw*2)):
-                hall.parent.parent.setblock(k, materials._wall)
-            tpen = pen.down(2)
-            hall.parent.parent.setblock(tpen, materials.Dispenser, dd2)
-            hall.parent.parent.addtrap(tpen, tname)
-            hall.parent.parent.setblock(tpen+stepw,
-                                        materials.RedstoneTorchOff, 5)
-            tpen = tpen.down(2)
-            hall.parent.parent.setblock(tpen, materials.Air)
-            hall.parent.parent.setblock(tpen+stepw,
-                                        materials.RedstoneTorchOn, 5)
-            tpen = tpen.down(1)
-            hall.parent.parent.setblock(tpen, materials.RedstoneWire)
 
     # Possible torches.
     pen = start+stepl*length
@@ -203,40 +137,6 @@ def drawHall (hall):
                 pen += stepw
                 hall.parent.parent.doors[door].doors.append(pen)
 
-    # Possible portcullises. Portcullises can appear for any width hall 
-    # between 2 and 10.
-    if (4 <= hall.size <= 12):
-        # find a starting position at the end of the hall
-        pen = start+stepl*(length-1)
-        pen = pen.down(1)
-        port = pen
-        # Looks for adjacent portcullises.
-        box = Box(port,0,0,0)
-        abort = False
-        for x in iterate_points_surrounding_box(box):
-            if (x in hall.parent.parent.portcullises):
-                abort = True
-        # Create the portcullis.
-        if (abort == False):
-            # Portcullises can be makde from fence, nether fence, or iron bars.
-            # They can be 1 (open) or 3 (closed) blocks high
-            mat = choice([materials.Fence, materials.NetherBrickFence,
-                         materials.IronBars])
-            hall.parent.parent.portcullises[port] = portcullises.Portcullis()
-            hall.parent.parent.portcullises[port].material = mat
-            if (randint(1,100) <= cfg.portcullis_closed):
-                hall.parent.parent.portcullises[port].size = 3
-            else:
-                hall.parent.parent.portcullises[port].size = 1
-            # Make this a web instead
-            if (randint(1,100) <= cfg.portcullis_web):
-                hall.parent.parent.portcullises[port].material = \
-                    materials.Cobweb
-                hall.parent.parent.portcullises[port].size = 3
-            # place the actual portcullis positions
-            for x in xrange(hall.size-2):
-                pen += stepw
-                hall.parent.parent.portcullises[port].portcullises[pen] = True
 
 # Catalog the halls we know about. 
 _halls = {}

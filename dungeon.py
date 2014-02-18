@@ -12,6 +12,7 @@ import loottable
 import materials
 import rooms
 import halls
+import hall_traps
 import floors
 import features
 import ruins
@@ -80,13 +81,14 @@ class Dungeon (object):
         self.mapstore = mapstore
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
+        self.halls = []
+        self.hall_traps = []
         self.blocks = {}
         self.tile_ents = {}
         self.ents = []
         self.placed_items = []
         self.torches = {}
         self.doors = {}
-        self.portcullises = {}
         self.entrance = None
         self.entrance_pos = Vec(0,0,0)
         self.maze = {}
@@ -289,13 +291,12 @@ class Dungeon (object):
             self.renderhalls()
             self.renderfloors()
             self.renderfeatures()
-            print "Rendering hall traps..."
-            self.renderhallpistons()
+            print "Generating hall traps..."
+            self.genhalltraps()
+            self.renderhalltraps()
             self.processBiomes()
             print "Placing doors..."
             self.placedoors(cfg.doors)
-            print "Placing portcullises..."
-            self.placeportcullises()
             print "Placing torches..."
             self.placetorches()
             print "Placing chests..."
@@ -344,6 +345,10 @@ class Dungeon (object):
                 self.world.saveInPlace()
                 saveDungeonCache(cache_path, self.dungeon_cache)
                 saveChunkCache(cache_path, self.chunk_cache)
+                # make sure commandBlockOutput is false.
+                root_tag = nbt.load(self.world.filename)
+                root_tag['Data']['GameRules']['commandBlockOutput'].value = 'false'
+                root_tag.save(self.world.filename)
             else:
                 print "Skipping save! (--write disabled)"
 
@@ -1103,9 +1108,9 @@ class Dungeon (object):
 
     def addtrap(self, loc, name=None, count=None):
         if name == None:
-            name = weighted_choice(cfg.master_dispensers)
+            name = weighted_choice(cfg.master_chest_traps)
         if count == None:
-            count = int(cfg.lookup_dispensers[name][1])
+            count = int(cfg.lookup_chest_traps[name][1])
         # sanity check for count
         if count > 9*64:
             print '\nFATAL: Item count for dispenser trap too large! Max number of items is 9x64 = 576! Check config file.'
@@ -1137,6 +1142,14 @@ class Dungeon (object):
 
     def addentity(self, root_tag):
         self.ents.append(root_tag)
+
+    def addtileentity(self, root_tag):
+        loc = Vec(
+            root_tag['x'].value,
+            root_tag['y'].value,
+            root_tag['z'].value
+        )
+        self.tile_ents[loc] = root_tag
 
     def setroom(self, coord, room):
         if coord not in self.rooms:
@@ -1578,6 +1591,101 @@ class Dungeon (object):
                                                              self.rooms[pos],
                                                              d, 6)
 
+    def genhalltraps(self):
+        '''Place hallway traps'''
+        # Some lookups
+        d = enum('N', 'E', 'S', 'W')
+        dv = [
+            Vec(0, 0, -1),
+            Vec(1, 0, 0),
+            Vec(0, 0, 1),
+            Vec(-1, 0, 0)
+        ]
+
+        # First, lets create a list of E-W and N-S halls.
+        # Record hall position (NW corner), width, ;ength, direction.
+        halls = []
+        for y in xrange(0, self.levels):
+            for z in xrange(0, self.zsize):
+                for x in xrange(0, self.xsize):
+                    p1 = Vec(x, y, z)
+                    r1 = self.rooms[p1]
+                    # W-E hall
+                    if (r1.halls[d.E]._name is not 'blank'):
+                        r2 = self.rooms[p1+dv[d.E]]
+                        if (
+                            r1.features[0]._is_secret is not True and
+                            r2.features[0]._is_secret is not True
+                        ):
+                            offset = r1.halls[d.E].offset
+                            size = r1.halls[d.E].size
+                            pos = Vec(
+                                p1.x*16,
+                                p1.y*6,
+                                p1.z*16
+                            ) +Vec(
+                                16-r1.hallLength[d.E],
+                                0,
+                                offset
+                            )
+                            length = r1.hallLength[d.E] + r2.hallLength[d.W]
+                            halls.append({
+                                'pos': pos,
+                                'size': size,
+                                'length': length,
+                                'direction': d.E,
+                            })
+                    # N-S hall
+                    if (r1.halls[d.S]._name is not 'blank'):
+                        r2 = self.rooms[p1+dv[d.S]]
+                        if (
+                            r1.features[0]._is_secret is not True and
+                            r2.features[0]._is_secret is not True
+                        ):
+                            offset = r1.halls[d.S].offset
+                            size = r1.halls[d.S].size
+                            pos = Vec(
+                                p1.x*16,
+                                p1.y*6,
+                                p1.z*16
+                            ) +Vec(
+                                offset,
+                                0,
+                                16-r1.hallLength[d.S]
+                            )
+                            length = r1.hallLength[d.S] + r2.hallLength[d.N]
+                            halls.append({
+                                'pos': pos,
+                                'size': size,
+                                'length': length,
+                                'direction': d.S,
+                            })
+
+
+        # Assign a hall trap class to each hall.
+        for hall in halls:
+            # Weighted shuffle the traps, and default to Blank.
+            trap_list = weighted_shuffle(cfg.master_hall_traps)
+            trap_list.insert(0, 'Blank')
+
+            while (len(trap_list)):
+                trapname = trap_list.pop()
+                trap = hall_traps.new(
+                    trapname,
+                    self,
+                    hall['pos'],
+                    hall['size'],
+                    hall['length'],
+                    hall['direction']
+                )
+                if (
+                    trap._min_width <= hall['size'] <= trap._max_width and
+                    trap._min_length <= hall['length'] <= trap._max_length
+                ):
+                    self.hall_traps.append(trap)
+                    trap_list = []
+
+
     def genfloors(self):
         for pos in self.rooms:
             if (len(self.rooms[pos].floors) == 0):
@@ -1800,320 +1908,15 @@ class Dungeon (object):
         if (level < self.levels-1):
             self.placespawners(level+1)
 
-
-    def placeportcullises(self):
-        '''Place a proportion of the portcullises where possible'''
-        count = 0
-        maxcount = cfg.portcullises * len(self.portcullises) / 100
-        for pos, portcullis in self.portcullises.items():
-            if (count < maxcount):
-                for dpos, val in portcullis.portcullises.items():
-                    if(dpos in self.blocks and self.blocks[dpos].material == materials.Air):
-                        for x in xrange(portcullis.size):
-                            self.blocks[dpos.down(x)].material = portcullis.material
-                count += 1
-
-    def renderhallpistons(self):
-        '''Locate hallway candidates for piston traps and draw them'''
-        if cfg.hall_piston_traps <= 0:
-            return
-        # Some lookups
-        # sides maps a dir to a room side for hall placement.
-        # TODO: This is still backwards from the coordinate switch.
-        # S == E, E == S, etc. 
-        sides = {'N': 3,
-                 'S': 1,
-                 'E': 2,
-                 'W': 0}
-        # Materials lookup
-        mat = {
-            'CC': [materials._ceiling, 0],
-            'SF': [materials._subfloor, 0],
-            'ST': [materials.Stone, 0],
-            'R0': [materials.RedstoneWire, 0],
-            'R1': [materials.RedstoneWire, 15],
-            'o-': [materials.RedstoneTorchOff, 4],
-            '-*': [materials.RedstoneTorchOn, 3],
-            '**': [materials.RedstoneTorchOn, 5],
-            'AR': [materials.Air, 0],
-            'P0': [materials.RedstoneRepeaterOff, 0],
-            'P1': [materials.RedstoneRepeaterOn, 2],
-            'PI': [materials.StickyPiston, 4+8],
-            'PE': [materials.PistonExtension, 4+8],
-            'TR': [materials.RedstoneRepeaterOff, 17],
-            #'XX': [materials.Air, 0],
-        }
-        # Piston trap 
-        # ptrap1[level][sw][sl]
-        ptrap = [[
-            ['CC', 'CC', 'CC', 'CC', 'CC', 'CC'],
-            ['CC', 'CC', 'CC', 'CC', 'CC', 'CC'],
-            ['CC', 'CC', 'CC', 'CC', 'CC', 'CC'],
-            ['CC', 'CC', 'CC', 'CC', 'CC', 'CC'],
-        ],[
-            ['XX', 'XX', 'XX', 'XX', 'XX', 'XX'],
-            ['AR', 'AR', 'AR', 'AR', 'AR', 'AR'],
-            ['AR', 'R1', '**', 'AR', 'AR', 'AR'],
-            ['ST', 'ST', 'ST', 'ST', 'ST', 'ST'],
-        ],[
-            ['XX', 'XX', 'XX', 'XX', 'XX', 'XX'],
-            ['AR', 'AR', 'AR', 'R1', 'AR', 'AR'],
-            ['o-', 'ST', 'ST', 'P0', 'R0', 'AR'],
-            ['ST', 'ST', 'ST', 'ST', 'ST', 'ST'],
-        ],[
-            ['XX', 'XX', 'XX', 'XX', 'XX', 'XX'],
-            ['AR', 'AR', 'R1', 'ST', 'AR', 'AR'],
-            ['R0', 'AR', 'AR', 'ST', 'ST', 'R0'],
-            ['ST', 'ST', 'ST', 'ST', 'ST', 'ST'],
-        ],[
-            ['R0', 'R0', 'R0', 'PE', 'R0', 'R0'],
-            ['R0', 'o-', 'ST', 'PI', 'ST', 'R0'],
-            ['ST', '-*', 'R1', 'ST', 'ST', 'ST'],
-            ['ST', 'ST', 'ST', 'ST', 'ST', 'ST'],
-        ],[
-            ['SF', 'SF', 'SF', 'SF', 'SF', 'SF'],
-            ['SF', 'SF', 'SF', 'SF', 'SF', 'SF'],
-            ['SF', 'SF', 'SF', 'SF', 'SF', 'SF'],
-            ['SF', 'SF', 'SF', 'SF', 'SF', 'SF'],
-        ]]
-        traps = []
-        # Make traps reset themselves
-        if (cfg.resetting_hall_pistons == True):
-            ptrap[4][1][0] = 'TR'
-            ptrap[4][1][1] = 'AR'
-
-        # Build a list of all the rooms and directions to check. We'll iterate
-        # through them randomly, and remove cull out the overlaps as we go. 
-        halls = {}
-        # These are the West->East checks. 
-        for y in xrange(0, self.levels):
-            for z in xrange(0, self.zsize-1):
-                for x in xrange(0, self.xsize):
-                    halls[str(Vec(x,y,z))+'E'] = {'room': Vec(x,y,z),
-                                                  'd': 'E'}
-        # These are the North->South checks. 
-        for y in xrange(0, self.levels):
-            for z in xrange(0, self.zsize):
-                for x in xrange(0, self.xsize-1):
-                    halls[str(Vec(x,y,z))+'S'] = {'room': Vec(x,y,z),
-                                                  'd': 'S'}
-        # Randomize our search
-        hallkeys = halls.keys()
-        random.shuffle(hallkeys)
-
-        # Now, go through all the keys and pick which traps to place.
-        # To qualify, halls must be 1 or 2 blocks wide, at least 8 blocks
-        # long. Single halls can be at any offset (just build on the inside
-        # edge). Double halls must be between offset 3 and 9. 
-        for key in hallkeys:
-            if key not in halls:
-                continue
-            room = halls[key]['room']
-            d = halls[key]['d']
-            x = room.x
-            y = room.y
-            z = room.z
-
-            if d == 'E':
-                rpos1 = Vec(x,y,z)
-                rpos2 = Vec(x,y,z+1)
-                room1 = self.rooms[rpos1]
-                room2 = self.rooms[rpos2]
-                size = room1.halls[sides['E']].size - 2
-                offset = room1.halls[sides['E']].offset
-                length = room1.hallLength[sides['E']] + \
-                         room2.hallLength[sides['W']]
-                pos = Vec(0,0,0)
-                if (size >= 1 and
-                    size <= 2 and
-                    length >= 8 and
-                    #room1.features[0]._name != 'secretroom' and
-                    #room2.features[0]._name != 'secretroom' and
-                    room1._pistontrap == True and
-                    room2._pistontrap == True and
-                    random.randint(1,100) <= cfg.hall_piston_traps):
-                    if (size == 1):
-                        pos = room1.loc + Vec(offset,
-                                          0,
-                                          17-room1.hallLength[sides['E']])
-                        sw = Vec(-1,0,0)
-                        if offset < 8:
-                            pos += Vec(2,0,0)
-                            sw = Vec(1,0,0)
-                        traps.append({'pos': pos,
-                                      'length': length-7,
-                                      'sw': sw,
-                                      'sl': Vec(0,0,1)})
-                    elif(size == 2 and offset >= 3 and offset <= 9):
-                        pos = room1.loc + Vec(offset,
-                                          0,
-                                          17-room1.hallLength[sides['E']])
-                        traps.append({'pos': pos,
-                                      'length': length-7,
-                                      'sw': Vec(-1,0,0),
-                                      'sl': Vec(0,0,1)})
-                        traps.append({'pos': pos+Vec(3,0,0),
-                                  'length': length-7,
-                                      'sw': Vec(1,0,0),
-                                      'sl': Vec(0,0,1)})
-                    else:
-                        continue
-                    # Remove any overlapping halls
-                    k = str(Vec(x,y,z))+'S'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x-1,y,z))+'S'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x,y,z+1))+'S'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x-1,y,z+1))+'S'
-                    if k in halls:
-                        del halls[k]
-
-            if d == 'S':
-                rpos1 = Vec(x,y,z)
-                rpos2 = Vec(x+1,y,z)
-                room1 = self.rooms[rpos1]
-                room2 = self.rooms[rpos2]
-                size = room1.halls[sides['S']].size - 2
-                offset = room1.halls[sides['S']].offset
-                length = room1.hallLength[sides['S']] + \
-                         room2.hallLength[sides['N']]
-                pos = Vec(0,0,0)
-                if (size >= 1 and
-                    size <= 2 and
-                    length >= 8 and
-                    #room1.features[0]._name != 'secretroom' and
-                    #room2.features[0]._name != 'secretroom' and
-                    room1._pistontrap == True and
-                    room2._pistontrap == True and
-                    random.randint(1,100) <= cfg.hall_piston_traps):
-                    if (size == 1):
-                        pos = room1.loc + Vec(
-                                          17-room1.hallLength[sides['S']],
-                                          0,
-                                          offset)
-                        sw = Vec(0,0,-1)
-                        if offset < 8:
-                            pos += Vec(0,0,2)
-                            sw = Vec(0,0,1)
-                        traps.append({'pos': pos,
-                                      'length': length-7,
-                                      'sw': sw,
-                                      'sl': Vec(1,0,0)})
-                    elif(size == 2 and offset >= 3 and offset <= 9):
-                        pos = room1.loc + Vec(
-                                          17-room1.hallLength[sides['S']],
-                                          0,
-                                          offset)
-                        traps.append({'pos': pos,
-                                      'length': length-7,
-                                      'sw': Vec(0,0,-1),
-                                      'sl': Vec(1,0,0)})
-                        traps.append({'pos': pos+Vec(0,0,3),
-                                      'length': length-7,
-                                      'sw': Vec(0,0,1),
-                                      'sl': Vec(1,0,0)})
-                    else:
-                        continue
-                    # Remove any overlapping halls
-                    k = str(Vec(x,y,z))+'E'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x,y,z-1))+'E'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x+1,y,z))+'E'
-                    if k in halls:
-                        del halls[k]
-                    k = str(Vec(x+1,y,z-1))+'E'
-                    if k in halls:
-                        del halls[k]
-
-        # Render the traps
-        for trap in traps:
-            pos = trap['pos']
-            length = trap['length']
-            sw = trap['sw']
-            sl = trap['sl']
-            # x = width
-            # z = length
-            # y = depth
-            # Rotate some materials according to the direction of the hall.
-            # Hall runs East
-            if sl == Vec(0,0,1):
-                mat['o-'] = [materials.RedstoneTorchOff, 4]
-                mat['-*'] = [materials.RedstoneTorchOn, 3]
-                mat['P0'] = [materials.RedstoneRepeaterOff, 0]
-                mat['P1'] = [materials.RedstoneRepeaterOn, 2]
-                # South side
-                if sw == Vec(1,0,0):
-                    mat['PI'] = [materials.StickyPiston, 4+8]
-                    mat['PE'] = [materials.PistonExtension, 4+8]
-                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+1]
-                # North side
-                else:
-                    mat['PI'] = [materials.StickyPiston, 5+8]
-                    mat['PE'] = [materials.PistonExtension, 5+8]
-                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+3]
-            # Hall runs South
-            else:
-                mat['o-'] = [materials.RedstoneTorchOff, 2]
-                mat['-*'] = [materials.RedstoneTorchOn, 1]
-                mat['P0'] = [materials.RedstoneRepeaterOff, 3]
-                mat['P1'] = [materials.RedstoneRepeaterOn, 1]
-                # East side
-                if sw == Vec(0,0,1):
-                    mat['PI'] = [materials.StickyPiston, 2+8]
-                    mat['PE'] = [materials.PistonExtension, 2+8]
-                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+2]
-                # West side
-                else:
-                    mat['PI'] = [materials.StickyPiston, 3+8]
-                    mat['PE'] = [materials.PistonExtension, 3+8]
-                    mat['TR'] = [materials.RedstoneRepeaterOff, 16+0]
-            # This is the first trigger mechanism. 
-            for p in iterate_cube(Vec(0,0,0), Vec(3,5,2)):
-                q = pos + sw*p.x + sl*p.z + Vec(0,1,0)*p.y
-                block = ptrap[p.y][p.x][p.z]
-                if block is not 'XX':
-                    m = mat[block]
-                    self.setblock(q, m[0], m[1], hide=True)
-            # First pressure plate
-            p1 = pos + sw*-1 + sl*2 + Vec(0,1,0)*3
-            self.setblock(p1, materials.StonePressurePlate)
-            #c = 0
-            # The piston section. Repeat this, alternating configurations for
-            # the length of the hall minus some space at the end. 
-            for i in xrange(0,length):
-                # In 1.5 snapshots, repeaters don't power the block they sit on.
-                #if c == 0:
-                #    ptrap[2][1][3] = 'R1'
-                #else:
-                #    ptrap[2][1][3] = 'P1'
-                #c  = (c+1)%2
-                for p in iterate_cube(Vec(0,0,3), Vec(3,5,3)):
-                    q = pos + sw*p.x + sl*(p.z+i) + Vec(0,1,0)*p.y
-                    block = ptrap[p.y][p.x][p.z]
-                    if block is not 'XX':
-                        m = mat[block]
-                        self.setblock(q, m[0], m[1], hide=True)
-            # The return trigger mechanism.
-            for p in iterate_cube(Vec(0,0,4), Vec(3,5,5)):
-                q = pos + sw*p.x + sl*p.z  + sl*(length-1) + Vec(0,1,0)*p.y
-                block = ptrap[p.y][p.x][p.z]
-                if block is not 'XX':
-                    m = mat[block]
-                    self.setblock(q, m[0], m[1], hide=True)
-            # Return pressure plate
-            p2 = pos + sw*-1 + sl*4  + sl*(length-1) + Vec(0,1,0)*3
-            self.setblock(p2, materials.StonePressurePlate)
-            # Lava
-            for p in iterate_cube(p1.down(2), p2.down(2)):
-                self.setblock(p, materials.Lava)
-
+    def renderhalltraps(self):
+        '''Render hallway traps'''
+        count = len(self.hall_traps)
+        self.pm.init(count, label='Rendering hall_traps:')
+        for trap in self.hall_traps:
+            self.pm.update_left(count)
+            count -= 1
+            trap.render()
+        self.pm.set_complete()
 
     def renderrooms(self):
         '''Call render() on all rooms to populate the block buffer'''

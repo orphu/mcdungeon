@@ -7,7 +7,6 @@ import sys
 import items
 import materials
 from utils import Vec
-
 cache_dir = 'mcdungeon_cache'
 
 loops = '0'
@@ -19,9 +18,6 @@ bury = 'True'
 tower = '2.0'
 ruin_ruins = 'True'
 doors = '25'
-portcullises = '25'
-portcullis_closed = '10'
-portcullis_web = '5'
 torches_top = '50'
 torches_bottom = '50'
 wall = 'Cobblestone'
@@ -45,10 +41,8 @@ treasure_SpawnMaxNearbyEntities = 0
 treasure_SpawnMinDelay = 0
 treasure_SpawnMaxDelay = 0
 treasure_SpawnRequiredPlayerRange = 0
-arrow_traps = '3'
 chest_traps = '3'
 sand_traps = '40'
-arrow_trap_defects = '1'
 skeleton_balconies = '25'
 fill_caves = 'False'
 torches_position = 3
@@ -64,6 +58,7 @@ river_biomes = [7, 11]
 ocean_biomes = [0, 10, 24]
 
 master_halls = []
+master_hall_traps = []
 master_rooms = []
 master_srooms = []
 master_features = []
@@ -73,8 +68,8 @@ master_ruins = [('blank', 1)]
 default_entrances = []
 master_entrances = {}
 master_treasure = [('pitwitharchers', 1)]
-master_dispensers = []
-lookup_dispensers = {}
+master_projectile_traps = [('Arrow', 'Arrow,20,pickup:2')]
+lookup_projectile_traps = {}
 master_chest_traps = []
 lookup_chest_traps = {}
 master_mobs = {}
@@ -163,17 +158,17 @@ def LoadSpawners(path='spawners'):
 
 
 def Load(filename='default.cfg'):
-    global parser, offset, tower, doors, portcullises, torches_top, wall, \
+    global parser, offset, tower, doors, torches_top, wall, \
         floor, ceiling, exit_portal, master_halls, master_rooms, \
         master_features, master_floors, chests, double_treasure, \
         enchant_system, spawners, master_mobs, torches_bottom, min_dist, \
-        max_dist, arrow_traps, loops, portcullis_closed, fill_caves, \
-        portcullis_web, subfloor, torches_position, skeleton_balconies, \
-        arrow_trap_defects, sand_traps, master_ruins, ruin_ruins, \
+        max_dist, loops, fill_caves, \
+        subfloor, torches_position, skeleton_balconies, \
+        sand_traps, master_ruins, ruin_ruins, \
         maximize_distance, hall_piston_traps, resetting_hall_pistons, \
         structure_values, default_entrances, master_entrances, \
         master_treasure, secret_rooms, secret_door, silverfish, bury, \
-        master_dispensers, maps, mapstore, max_mob_tier, custom_spawners, \
+        master_projectile_traps, maps, mapstore, max_mob_tier, custom_spawners, \
         master_stairwells, hidden_spawners, master_srooms, SpawnCount, \
         SpawnMaxNearbyEntities, SpawnMinDelay, SpawnMaxDelay, \
         SpawnRequiredPlayerRange, chest_traps, master_chest_traps, \
@@ -182,7 +177,7 @@ def Load(filename='default.cfg'):
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
         dir_books, dir_extra_spawners, dir_extra_items, river_biomes, \
-        ocean_biomes
+        ocean_biomes, master_hall_traps
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -254,12 +249,24 @@ def Load(filename='default.cfg'):
 
     # Load master tables from .cfg.
     master_halls = parser.items('halls')
+    try:
+        master_hall_traps = parser.items('hall traps')
+    except:
+        print 'WARNING: No hall traps section found in config. Using default.'
+        master_hall_traps = [['Blank',100]]
+
     master_rooms = parser.items('rooms')
     master_srooms = parser.items('secret rooms')
     master_features = parser.items('features')
     master_stairwells = parser.items('stairwells')
     master_floors = parser.items('floors')
-    temp_dispensers = parser.items('dispensers')
+
+    try:
+        temp_projectile_traps = parser.items('projectile traps')
+    except:
+        print 'WARNING: No projectile traps section found in config. Using default.'
+        temp_projectile_traps = master_projectile_traps
+
     temp_chest_traps = parser.items('chest_traps')
     try:
         master_ruins = parser.items('ruins')
@@ -308,12 +315,13 @@ def Load(filename='default.cfg'):
             temp_mobs = []
             max_mob_tier -= 1
 
-    # Process dispensers config
-    for d in temp_dispensers:
-        (prob, number) = d[1].split(',')
+    # Process projectile traps config
+    master_projectile_traps = []
+    for d in temp_projectile_traps:
         name = d[0].lower()
-        lookup_dispensers[name] = (prob, number)
-        master_dispensers.append((name, prob))
+        (ent_name, prob, data) = d[1].split(',', 2)
+        lookup_projectile_traps[name] = (ent_name, prob, data)
+        master_projectile_traps.append((name, prob))
 
     # Process chest_traps config
     for d in temp_chest_traps:
@@ -329,13 +337,6 @@ def Load(filename='default.cfg'):
     tower = float(get('dungeon', 'tower', tower))
     ruin_ruins = str2bool(get('dungeon', 'ruin_ruins', ruin_ruins))
     doors = int(get('dungeon', 'doors', doors))
-    portcullises = int(get('dungeon', 'portcullises', portcullises))
-    portcullis_closed = int(get('dungeon',
-                                'portcullis_closed',
-                                portcullis_closed))
-    portcullis_web = int(get('dungeon',
-                             'portcullis_web',
-                             portcullis_web))
     torches_top = int(get('dungeon',
                           'torches_top',
                           torches_top))
@@ -396,10 +397,7 @@ def Load(filename='default.cfg'):
     max_dist = int(get('dungeon', 'max_dist', max_dist))
     maximize_distance = str2bool(get('dungeon', 'maximize_distance',
                                      maximize_distance))
-    arrow_traps = int(get('dungeon', 'arrow_traps', arrow_traps))
     chest_traps = int(get('dungeon', 'chest_traps', chest_traps))
-    arrow_trap_defects = int(get('dungeon', 'arrow_trap_defects',
-                                 arrow_trap_defects))
     hall_piston_traps = int(get('dungeon', 'hall_piston_traps',
                                 hall_piston_traps))
     resetting_hall_pistons = str2bool(get('dungeon',
