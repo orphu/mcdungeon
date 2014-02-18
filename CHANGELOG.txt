@@ -22,7 +22,7 @@ v0.14.0 -
 
    * Working portcullises in halls. (orphu)
 
-   * Portcullises can now be make of cobblestone wall. (orphu)
+   * Portcullises can now be made of cobblestone wall. (orphu)
 
 v0.13.0 - 10/26/2013
 
