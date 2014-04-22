@@ -896,6 +896,9 @@ class Dungeon (object):
                 if (str(file.lower()).endswith(".txt") and
                     file.lower() is not "readme.txt"):
                     booklist.append(file)
+        # Book 'editions'
+        ed_dict = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th']
+        
         item = nbt.TAG_Compound()
         item['id'] = nbt.TAG_Short(387)
         item['Count'] = nbt.TAG_Byte(1)
@@ -903,21 +906,32 @@ class Dungeon (object):
         if len(booklist) == 0:
             item['id'] = nbt.TAG_Short(386)
             return item
-        #Prevent unusual characters from being used
+        # Prevent unusual characters from being used
         valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
-        #Open the book's text file
+        # Open the book's text file
         bookfile = open(os.path.join(book_path, random.choice(booklist)))
         bookdata = bookfile.read().splitlines()
         bookfile.close()
-        #Create NBT tag
+        # Create NBT tag
         item['tag'] = nbt.TAG_Compound()
         item['tag']['author'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
         item['tag']['title'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
         item['tag']["pages"] = nbt.TAG_List()
-        #Slice the pages at 50 and the page text at 256 to match minecraft limits
+        # Slice the pages at 50 and the page text at 256 to match minecraft limits
         for p in bookdata[:50]:
             page = filter(lambda x: x in valid_characters, p)
             item['tag']["pages"].append(nbt.TAG_String(page[:256]))
+        # Give the book an edition
+        ed = topheavy_random(0,9)
+        item['tag']['display'] = nbt.TAG_Compound()
+        item['tag']['display']['Lore'] = nbt.TAG_List()
+        item['tag']['display']['Lore'].append(nbt.TAG_String(ed_dict[ed]+' Edition'))
+        if (ed == 0):
+            item['tag']['generation'] = nbt.TAG_Int(0)
+        elif (ed == 1):
+            item['tag']['generation'] = nbt.TAG_Int(1)
+        else:
+            item['tag']['generation'] = nbt.TAG_Int(2)
 
         return item
 

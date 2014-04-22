@@ -384,6 +384,13 @@ def weighted_shuffle(master_list):
         results.insert(0, item)
         items.remove([item, weight])
     return results
+    
+
+# Generate a number between min and max. Weighted towards higher numbers.
+# (Beta distribution.)    
+def topheavy_random(min,max):
+    d = max-min+1
+    return int(math.floor(math.sqrt(random.randrange(d*d)))+min)
 
 
 def str2Vec(string):
