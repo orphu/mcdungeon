@@ -24,6 +24,9 @@ v0.14.0 -
 
    * Portcullises can now be made of cobblestone wall. (orphu)
 
+   * Added editions to books. Most books will be late editions and cannot
+     be copied. (JiFish)
+
 v0.13.0 - 10/26/2013
 
   !! NOTE: This version requires Minecraft 1.7.2 release or higher!
