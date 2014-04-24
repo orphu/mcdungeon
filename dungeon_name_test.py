@@ -10,9 +10,9 @@ for x in xrange(50):
     n = namegenerator.namegenerator(random.randint(0, 39))
     o = n.genroyalname()
     if o.endswith("s"):
-        os = o+"'"
+        os = o + "'"
     else:
-        os = o+"'s"
+        os = o + "'s"
     print random.choice([
         ruins.Blank.nameDungeon().format(
             owner=o,

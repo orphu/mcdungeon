@@ -27,7 +27,7 @@ class Cobble(Blank):
         if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            self.parent.parent.setblock(x+self.parent.loc, self.mat)
+            self.parent.parent.setblock(x + self.parent.loc, self.mat)
         # Ruined
         if (self.ruin is False):
             return
@@ -37,9 +37,9 @@ class Cobble(Blank):
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         pn = perlin.SimplexNoise(256)
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -70,7 +70,7 @@ class StoneTile(Blank):
         (materials.Granite, materials.PolishedGranite),
         (materials.Diorite, materials.PolishedDiorite),
         (materials.Andesite, materials.PolishedAndesite)
-        )
+    )
 
     def render(self):
         mat = random.choice(self.stonetypes)
@@ -78,10 +78,10 @@ class StoneTile(Blank):
             for x in utils.iterate_points_inside_flat_poly(
                 *self.parent.canvas
             ):
-                if ((x.x+x.z) & 1 == 1):
-                    self.parent.parent.setblock(x+self.parent.loc, mat[0])
+                if ((x.x + x.z) & 1 == 1):
+                    self.parent.parent.setblock(x + self.parent.loc, mat[0])
                 else:
-                    self.parent.parent.setblock(x+self.parent.loc, mat[1])
+                    self.parent.parent.setblock(x + self.parent.loc, mat[1])
         # Ruined
         if (self.ruin is False):
             return
@@ -91,9 +91,9 @@ class StoneTile(Blank):
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         pn = perlin.SimplexNoise(256)
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -112,11 +112,11 @@ class WoodTile(Blank):
             for x in utils.iterate_points_inside_flat_poly(
                 *self.parent.canvas
             ):
-                if ((x.x+x.z) & 1 == 1):
-                    self.parent.parent.setblock(x+self.parent.loc,
+                if ((x.x + x.z) & 1 == 1):
+                    self.parent.parent.setblock(x + self.parent.loc,
                                                 materials.Wood)
                 else:
-                    self.parent.parent.setblock(x+self.parent.loc,
+                    self.parent.parent.setblock(x + self.parent.loc,
                                                 materials.OakWoodPlanks)
 
 
@@ -129,7 +129,7 @@ class MixedWoodTile(Blank):
         materials.JungleWoodPlanks,
         materials.AcaciaWoodPlanks,
         materials.DarkOakWoodPlanks
-        )
+    )
 
     def render(self):
         wood = random.sample(self.woodtypes, 2)
@@ -137,10 +137,10 @@ class MixedWoodTile(Blank):
             for x in utils.iterate_points_inside_flat_poly(
                 *self.parent.canvas
             ):
-                if ((x.x+x.z) & 1 == 1):
-                    self.parent.parent.setblock(x+self.parent.loc, wood[0])
+                if ((x.x + x.z) & 1 == 1):
+                    self.parent.parent.setblock(x + self.parent.loc, wood[0])
                 else:
-                    self.parent.parent.setblock(x+self.parent.loc, wood[1])
+                    self.parent.parent.setblock(x + self.parent.loc, wood[1])
 
 
 class RadialRug(Blank):
@@ -192,7 +192,7 @@ class RadialRug(Blank):
         next_dir = random.randint(0, 3)
         while len(points_left) > 0:
             # pick random starting point and walk around the matrix
-            point_index = random.randint(0, len(points_left)-1)
+            point_index = random.randint(0, len(points_left) - 1)
             p = Vec(points_left[point_index][0],
                     0,
                     points_left[point_index][1])
@@ -223,16 +223,16 @@ class RadialRug(Blank):
 
         for j in xrange(max_z - min_z + 1):
             for i in xrange(max_x - min_x + 1):
-                p = self.parent.loc + Vec(min_x+i, min_y, min_z+j)
+                p = self.parent.loc + Vec(min_x + i, min_y, min_z + j)
                 self.parent.parent.setblock(p, self.mat)
                 if i < width:
                     i_adj = i
                 else:
-                    i_adj = 2*width - 1 - i
+                    i_adj = 2 * width - 1 - i
                 if j < depth:
                     j_adj = j
                 else:
-                    j_adj = 2*depth - 1 - j
+                    j_adj = 2 * depth - 1 - j
                 self.parent.parent.blocks[p].data = \
                     color_profile[points[i_adj][j_adj]]
 
@@ -245,9 +245,9 @@ class RadialRug(Blank):
         r = random.randint(1, 1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -275,15 +275,15 @@ class CheckerRug(Blank):
     colors = (
         (7, 8),    # dark grey / light grey
         (9, 3),    # cyan / light blue
-        #(14, 10), # red / purple
+        # (14, 10), # red / purple
         (11, 9),   # dark blue / cyan
         (1, 14),   # red / orange
         (7, 15),   # dark grey / black
-        #(3, 4),   # light blue  / yellow
+        # (3, 4),   # light blue  / yellow
         (11, 10),  # dark blue  / purple
         (12, 13),  # brown  / dark green
         (15, 13),  # black  / dark green
-        )
+    )
     mat = materials.Wool
 
     def render(self):
@@ -291,12 +291,12 @@ class CheckerRug(Blank):
             return
         color = random.choice(self.colors)
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            self.parent.parent.setblock(x+self.parent.loc,
+            self.parent.parent.setblock(x + self.parent.loc,
                                         self.mat)
-            if ((x.x+x.z) & 1 == 1):
-                self.parent.parent.blocks[x+self.parent.loc].data = color[0]
+            if ((x.x + x.z) & 1 == 1):
+                self.parent.parent.blocks[x + self.parent.loc].data = color[0]
             else:
-                self.parent.parent.blocks[x+self.parent.loc].data = color[1]
+                self.parent.parent.blocks[x + self.parent.loc].data = color[1]
         # Runined
         if (self.ruin is False):
             return
@@ -306,9 +306,9 @@ class CheckerRug(Blank):
         r = random.randint(1, 1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -338,7 +338,7 @@ class DoubleSlab(Blank):
         if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
             return
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            self.parent.parent.setblock(x+self.parent.loc,
+            self.parent.parent.setblock(x + self.parent.loc,
                                         materials.StoneDoubleSlab)
         # Runined
         pn = perlin.SimplexNoise(256)
@@ -349,9 +349,9 @@ class DoubleSlab(Blank):
         r = random.randint(1, 1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -374,17 +374,17 @@ class Mud(Blank):
         r = random.randint(1, 1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n >= d+.50):
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            if (n >= d + .50):
                 self.parent.parent.setblock(p, materials.Water)
-            elif (n >= d+.30):
+            elif (n >= d + .30):
                 self.parent.parent.setblock(p, materials.SoulSand)
-            elif (n >= d+.20):
+            elif (n >= d + .20):
                 self.parent.parent.setblock(p, materials.Farmland)
                 self.parent.parent.blocks[p].data = random.randint(0, 1)
-            elif (n >= d+.10):
+            elif (n >= d + .10):
                 self.parent.parent.setblock(p, materials.Podzol)
                 self.parent.parent.blocks[p].data = 2   # Podzol data val
             elif (n >= d):
@@ -403,12 +403,12 @@ class Sand(Blank):
         r = random.randint(1, 1000)
         maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x+self.parent.loc
+            p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n >= d+.20):
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            if (n >= d + .20):
                 self.parent.parent.setblock(p, materials.Sand)
-            elif (n >= d+.10):
+            elif (n >= d + .10):
                 self.parent.parent.setblock(p, materials.Sandstone)
             elif (n >= d):
                 self.parent.parent.setblock(p, materials.Gravel)
@@ -424,7 +424,7 @@ class Bridges(Blank):
         materials.JungleWoodSlab,
         materials.AcaciaWoodSlab,
         materials.DarkOakWoodSlab
-        )
+    )
 
     def render(self):
         pn = perlin.SimplexNoise(256)
@@ -482,12 +482,12 @@ class Bridges(Blank):
         h0 = Vec(x1,
                  y,
                  self.parent.hallLength[0])
-        h1 = Vec(self.parent.parent.room_size-self.parent.hallLength[1]-1,
+        h1 = Vec(self.parent.parent.room_size - self.parent.hallLength[1] - 1,
                  y,
                  z1)
         h2 = Vec(x2,
                  y,
-                 self.parent.parent.room_size-self.parent.hallLength[2]-1)
+                 self.parent.parent.room_size - self.parent.hallLength[2] - 1)
         h3 = Vec(self.parent.hallLength[3],
                  y,
                  z2)
@@ -505,10 +505,14 @@ class Bridges(Blank):
             for x in utils.iterate_points_inside_flat_poly(
                 *self.parent.canvas
             ):
-                p = x+self.parent.loc
+                p = x + self.parent.loc
                 d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-                n = (pn.noise3((p.x+r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-                if (n >= d+.10):
+                n = (
+                    pn.noise3(
+                        (p.x + r) / 4.0,
+                        y / 4.0,
+                        p.z / 4.0) + 1.0) / 2.0
+                if (n >= d + .10):
                     self.parent.parent.setblock(p, materials.Sand)
                 elif (n >= d):
                     self.parent.parent.setblock(p, materials.Gravel)
@@ -518,58 +522,58 @@ class Bridges(Blank):
             # h0
             # Cool fact: in 12w30c tripwires will trigger sand without hooks.
             if (halls[0] != 0):
-                for x in xrange(1, self.parent.halls[0].size-1):
-                    p = Vec(self.parent.halls[0].offset+x,
-                            y-1,
+                for x in xrange(1, self.parent.halls[0].size - 1):
+                    p = Vec(self.parent.halls[0].offset + x,
+                            y - 1,
                             self.parent.hallLength[0])
-                    #if x == 0:
+                    # if x == 0:
                     #    wirehooks.add((p, 4+3))
-                    #elif x == self.parent.halls[0].size-1:
+                    # elif x == self.parent.halls[0].size-1:
                     #    wirehooks.add((p, 4+1))
-                    #else:
+                    # else:
                     #    wires.add(p)
                     wires.add(p)
             # h1
             if (halls[1] != 0):
-                for x in xrange(1, self.parent.halls[1].size-1):
+                for x in xrange(1, self.parent.halls[1].size - 1):
                     wires.add(
                         Vec(
                             (self.parent.parent.room_size -
-                             self.parent.hallLength[1]-1),
-                            y-1,
-                            self.parent.halls[1].offset+x
+                             self.parent.hallLength[1] - 1),
+                            y - 1,
+                            self.parent.halls[1].offset + x
                         )
                     )
             # h2
             if (halls[2] != 0):
-                for x in xrange(1, self.parent.halls[2].size-1):
+                for x in xrange(1, self.parent.halls[2].size - 1):
                     wires.add(
                         Vec(
-                            self.parent.halls[2].offset+x,
-                            y-1,
+                            self.parent.halls[2].offset + x,
+                            y - 1,
                             (self.parent.parent.room_size -
-                             self.parent.hallLength[2]-1)
+                             self.parent.hallLength[2] - 1)
                         )
                     )
             # h3
             if (halls[3] != 0):
-                for x in xrange(1, self.parent.halls[3].size-1):
+                for x in xrange(1, self.parent.halls[3].size - 1):
                     wires.add(
                         Vec(
                             self.parent.hallLength[3],
-                            y-1,
-                            self.parent.halls[3].offset+x
+                            y - 1,
+                            self.parent.halls[3].offset + x
                         )
                     )
             for p in wires:
                 self.parent.parent.setblock(
-                    offset+p.down(1),
+                    offset + p.down(1),
                     materials.Gravel,
                     lock=True
                 )
-                self.parent.parent.setblock(offset+p,
+                self.parent.parent.setblock(offset + p,
                                             materials.Tripwire, hide=True)
-            #for p in wirehooks:
+            # for p in wirehooks:
             #    self.parent.parent.setblock(offset+p[0].down(1), mat)
             #    self.parent.parent.setblock(offset+p[0],
             #                                materials.TripwireHook, p[1])
@@ -579,26 +583,26 @@ class Bridges(Blank):
         # h2 -> c3
         # h3 -> c4
         if (halls[0] != 0):
-            for p in utils.iterate_cube(offset+h0, offset+c1):
+            for p in utils.iterate_cube(offset + h0, offset + c1):
                 self.parent.parent.setblock(p, mat)
         if (halls[1] != 0):
-            for p in utils.iterate_cube(offset+h1, offset+c2):
+            for p in utils.iterate_cube(offset + h1, offset + c2):
                 self.parent.parent.setblock(p, mat)
         if (halls[2] != 0):
-            for p in utils.iterate_cube(offset+h2, offset+c3):
+            for p in utils.iterate_cube(offset + h2, offset + c3):
                 self.parent.parent.setblock(p, mat)
         if (halls[3] != 0):
-            for p in utils.iterate_cube(offset+h3, offset+c4):
+            for p in utils.iterate_cube(offset + h3, offset + c4):
                 self.parent.parent.setblock(p, mat)
         # Draw the connecting bridges.
         # c1 -> c2
         # c2 -> c3
         # c3 -> c4
-        for p in utils.iterate_cube(offset+c1, offset+c2):
+        for p in utils.iterate_cube(offset + c1, offset + c2):
             self.parent.parent.setblock(p, mat)
-        for p in utils.iterate_cube(offset+c2, offset+c3):
+        for p in utils.iterate_cube(offset + c2, offset + c3):
             self.parent.parent.setblock(p, mat)
-        for p in utils.iterate_cube(offset+c3, offset+c4):
+        for p in utils.iterate_cube(offset + c3, offset + c4):
             self.parent.parent.setblock(p, mat)
 
 # Catalog the floors we know about.

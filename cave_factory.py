@@ -22,6 +22,7 @@ TUNNEL = 3
 
 
 class new:
+
     def __init__(self, length, width, walls=0.40):
         self.__length = length
         self.__width = width
@@ -30,13 +31,13 @@ class new:
         self.__buf_map = []
         self.__gen_initial_map(walls)
         self.__ds = DisjointSet()
-        self.__cpt = (int(self.__length/2), int(self.__width/2))
+        self.__cpt = (int(self.__length / 2), int(self.__width / 2))
 
     def resize_map(self, new_length, new_width, center=True):
         new_map = [[WALL for i in xrange(new_width)]
                    for j in xrange(new_length)]
-        ox = int(new_width/2.0-self.__width/2.0+0.5)
-        oy = int(new_length/2.0-self.__length/2.0+0.5)
+        ox = int(new_width / 2.0 - self.__width / 2.0 + 0.5)
+        oy = int(new_length / 2.0 - self.__length / 2.0 + 0.5)
         for i in xrange(self.__width):
             for j in xrange(self.__length):
                 x2 = ox + i
@@ -52,7 +53,7 @@ class new:
         self.__length = new_length
         self.__width = new_width
         self.__exits = []
-        self.__cpt = (int(self.__length/2), int(self.__width/2))
+        self.__cpt = (int(self.__length / 2), int(self.__width / 2))
 
     def print_map(self):
         for c in xrange(0, self.__width):
@@ -98,8 +99,8 @@ class new:
         for c in xrange(0, self.__width):
             for r in xrange(0, self.__length):
                 if (
-                    c == 0 or c == self.__width-1 or
-                    r == 0 or r == self.__length-1
+                    c == 0 or c == self.__width - 1 or
+                    r == 0 or r == self.__length - 1
                 ):
                     self.__map[r][c] == WALL
 
@@ -117,8 +118,8 @@ class new:
             self.__generation(1, 5, -1)
         else:
             # Windey passages.
-            #Repeat 4: W?(p) = R1(p) ? 5 || R2(p) ? 2
-            #Repeat 3: W?(p) = R1(p) ? 5
+            # Repeat 4: W?(p) = R1(p) ? 5 || R2(p) ? 2
+            # Repeat 3: W?(p) = R1(p) ? 5
             # We do the above, with a cave join pass right before the final
             # iteration. This helps smooth out any sharp edges after the join
             # pass.
@@ -133,8 +134,8 @@ class new:
                               for j in xrange(self.__length)]
             self.__gen_walls(self.__buf_map)
             self.__gen_walls(self.__map)
-            for r in xrange(1, self.__length-1):
-                for c in xrange(1, self.__width-1):
+            for r in xrange(1, self.__length - 1):
+                for c in xrange(1, self.__width - 1):
                     adjcount_r1 = self.__adj_wall_count(r, c, 1)
                     adjcount_r2 = self.__adj_wall_count(r, c, 2)
                     if(adjcount_r1 >= r1_cutoff or
@@ -158,11 +159,11 @@ class new:
     def __gen_walls(self, a_map):
         for j in range(0, self.__length):
             a_map[j][0] = WALL
-            a_map[j][self.__width-1] = WALL
+            a_map[j][self.__width - 1] = WALL
 
         for j in range(0, self.__width):
             a_map[0][j] = WALL
-            a_map[self.__length-1][j] = WALL
+            a_map[self.__length - 1][j] = WALL
 
         # Force the exits to be floor. We grow them out from the edge a bit to
         # make sure they don't get sealed off.
@@ -170,12 +171,12 @@ class new:
             a_map[pos[0]][pos[1]] = FLOOR
             for pos2 in ((-1, 0), (1, 0), (0, -1), (0, 1),
                          (-2, 0), (2, 0), (0, -2), (0, 2)):
-                p = (pos[0]+pos2[0], pos[1]+pos2[1])
+                p = (pos[0] + pos2[0], pos[1] + pos2[1])
                 if (p[0] < 1 or p[1] < 1):
                     continue
                 if (
-                    p[0] >= self.__width-1 or
-                    p[1] >= self.__length-1
+                    p[0] >= self.__width - 1 or
+                    p[1] >= self.__length - 1
                 ):
                     continue
                 a_map[p[0]][p[1]] = FLOOR
@@ -183,12 +184,12 @@ class new:
     def __adj_flr_count(self, sr, sc):
         count = 0
         for pos in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            p = (sr+pos[0], sc+pos[1])
+            p = (sr + pos[0], sc + pos[1])
             if (p[0] < 0 or p[1] < 0):
                 continue
             if (
-                p[0] > self.__width-1 or
-                p[1] > self.__length-1
+                p[0] > self.__width - 1 or
+                p[1] > self.__length - 1
             ):
                 continue
             if (self.__map[p[0]][p[1]] == FLOOR):
@@ -198,9 +199,9 @@ class new:
     def __adj_wall_count(self, sr, sc, rng=1):
         count = 0
 
-        for r in xrange(-rng, rng+1):
-            for c in xrange(-rng, rng+1):
-                #if (r == 0 and c == 0):
+        for r in xrange(-rng, rng + 1):
+            for c in xrange(-rng, rng + 1):
+                # if (r == 0 and c == 0):
                 #    continue
                 if (abs(r) == 2 and abs(c) == 2):
                     continue
@@ -232,14 +233,14 @@ class new:
         # A cell is connected to other cells only in cardinal directions.
         # (diagonals don't count for movement).
         for pos in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-            if (sr+pos[0] < 0 or sc+pos[1] < 0):
+            if (sr + pos[0] < 0 or sc + pos[1] < 0):
                 continue
             if (
-                sr+pos[0] >= self.__length or
-                sc+pos[1] >= self.__width
+                sr + pos[0] >= self.__length or
+                sc + pos[1] >= self.__width
             ):
                 continue
-            nloc = (sr+pos[0], sc+pos[1])
+            nloc = (sr + pos[0], sc + pos[1])
             if self.__map[nloc[0]][nloc[1]] == FLOOR:
                 root2 = self.__ds.find(nloc)
                 if root1 != root2:
@@ -247,7 +248,7 @@ class new:
 
     def __join_points(self, pt1):
         next_pt = pt1
-        while 1:
+        while True:
             dir = self.__get_tunnel_dir(pt1, self.__cpt)
             move = randrange(0, 3)
 
@@ -266,13 +267,17 @@ class new:
 
             for pos in ((0, 0), (-1, 0), (1, 0), (0, -1), (0, 1)):
                 if (
-                    next_pt[0]+pos[0] < 0 or next_pt[1]+pos[1] < 0 or
-                    next_pt[0]+pos[0] >= self.__length or
-                    next_pt[1]+pos[1] >= self.__width
+                    next_pt[0] + pos[0] < 0 or next_pt[1] + pos[1] < 0 or
+                    next_pt[0] + pos[0] >= self.__length or
+                    next_pt[1] + pos[1] >= self.__width
                 ):
                     continue
-                if (self.__map[next_pt[0]+pos[0]][next_pt[1]+pos[1]] == WALL):
-                    self.__map[next_pt[0]+pos[0]][next_pt[1]+pos[1]] = TUNNEL
+                if (self.__map[next_pt[0] + pos[0]][next_pt[1] + pos[1]] == WALL):
+                    self.__map[
+                        next_pt[0] +
+                        pos[0]][
+                        next_pt[1] +
+                        pos[1]] = TUNNEL
 
             if self.__stop_drawing(pt1, next_pt, self.__cpt):
                 return

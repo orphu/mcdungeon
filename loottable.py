@@ -108,104 +108,104 @@ _ench_prob = {
 # Enchantment level table
 _ench_level = {
     # Enchantment               I         II       III        IV        V
-    PROTECTION:            [(  1, 21),( 12, 32),( 23, 43),( 34, 54),(  0,  0)],
-    FIRE_PROTECTION:       [( 10, 22),( 18, 30),( 26, 38),( 34, 46),(  0,  0)],
-    FEATHER_FALLING:       [(  5, 15),( 11, 21),( 17, 27),( 23, 33),(  0,  0)],
-    BLAST_PROTECTION:      [(  5, 17),( 13, 25),( 21, 33),( 29, 41),(  0,  0)],
-    PROJECTILE_PROTECTION: [(  3, 18),(  9, 24),( 15, 30),( 21, 36),(  0,  0)],
-    RESPIRATION:           [( 10, 40),( 20, 50),( 30, 60),(  0,  0),(  0,  0)],
-    AQUA_AFFINITY:         [(  1, 41),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    THORNS:                [( 10, 60),( 30, 80),( 50,100),(  0,  0),(  0,  0)],
-    SHARPNESS:             [(  1, 21),( 12, 32),( 23, 43),( 34, 54),( 45, 65)],
-    SMITE:                 [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
-    BANE_OF_ARTHROPODS:    [(  5, 25),( 13, 33),( 21, 41),( 29, 49),( 37, 57)],
-    KNOCKBACK:             [(  5, 55),( 25, 75),(  0,  0),(  0,  0),(  0,  0)],
-    FIRE_ASPECT:           [( 10, 60),( 30, 80),(  0,  0),(  0,  0),(  0,  0)],
-    LOOTING:               [( 15, 65),( 34, 74),( 33, 83),(  0,  0),(  0,  0)],
-    EFFICIENCY:            [(  1, 51),( 11, 61),( 21, 71),( 31, 81),( 41, 91)],
-    SILK_TOUCH:            [( 15, 65),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    UNBREAKING:            [(  5, 55),( 13, 63),( 21, 71),(  0,  0),(  0,  0)],
-    FORTUNE:               [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)],
-    POWER:                 [(  1, 16),( 11, 26),( 21, 36),( 31, 46),( 41, 56)],
-    PUNCH:                 [( 12, 37),( 32, 57),(  0,  0),(  0,  0),(  0,  0)],
-    FLAME:                 [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    INFINITY:              [( 20, 50),(  0,  0),(  0,  0),(  0,  0),(  0,  0)],
-    LUCK_OF_THE_SEA:       [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)],
-    LURE:                  [( 15, 65),( 24, 74),( 33, 83),(  0,  0),(  0,  0)]
+    PROTECTION: [(1, 21), (12, 32), (23, 43), (34, 54), (0, 0)],
+    FIRE_PROTECTION: [(10, 22), (18, 30), (26, 38), (34, 46), (0, 0)],
+    FEATHER_FALLING: [(5, 15), (11, 21), (17, 27), (23, 33), (0, 0)],
+    BLAST_PROTECTION: [(5, 17), (13, 25), (21, 33), (29, 41), (0, 0)],
+    PROJECTILE_PROTECTION: [(3, 18), (9, 24), (15, 30), (21, 36), (0, 0)],
+    RESPIRATION: [(10, 40), (20, 50), (30, 60), (0, 0), (0, 0)],
+    AQUA_AFFINITY: [(1, 41), (0, 0), (0, 0), (0, 0), (0, 0)],
+    THORNS: [(10, 60), (30, 80), (50, 100), (0, 0), (0, 0)],
+    SHARPNESS: [(1, 21), (12, 32), (23, 43), (34, 54), (45, 65)],
+    SMITE: [(5, 25), (13, 33), (21, 41), (29, 49), (37, 57)],
+    BANE_OF_ARTHROPODS: [(5, 25), (13, 33), (21, 41), (29, 49), (37, 57)],
+    KNOCKBACK: [(5, 55), (25, 75), (0, 0), (0, 0), (0, 0)],
+    FIRE_ASPECT: [(10, 60), (30, 80), (0, 0), (0, 0), (0, 0)],
+    LOOTING: [(15, 65), (34, 74), (33, 83), (0, 0), (0, 0)],
+    EFFICIENCY: [(1, 51), (11, 61), (21, 71), (31, 81), (41, 91)],
+    SILK_TOUCH: [(15, 65), (0, 0), (0, 0), (0, 0), (0, 0)],
+    UNBREAKING: [(5, 55), (13, 63), (21, 71), (0, 0), (0, 0)],
+    FORTUNE: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
+    POWER: [(1, 16), (11, 26), (21, 36), (31, 46), (41, 56)],
+    PUNCH: [(12, 37), (32, 57), (0, 0), (0, 0), (0, 0)],
+    FLAME: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)],
+    INFINITY: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)],
+    LUCK_OF_THE_SEA: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
+    LURE: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)]
 }
 
 # Enchantment valid items tables
 # table+book: All legal enchants achieved with tables and books.
 _ench_items_table_book = {
     # Enchantment
-    PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
-    FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
-    FEATHER_FALLING:       ['book','boots'],
-    BLAST_PROTECTION:      ['book','helmet','chestplate','leggings','boots'],
-    PROJECTILE_PROTECTION: ['book','helmet','chestplate','leggings','boots'],
-    RESPIRATION:           ['book','helmet'],
-    AQUA_AFFINITY:         ['book','helmet'],
-    THORNS:                ['book','helmet','chestplate','leggings','boots'],
-    SHARPNESS:             ['book','sword','axe'],
-    SMITE:                 ['book','sword','axe'],
-    BANE_OF_ARTHROPODS:    ['book','sword','axe'],
-    KNOCKBACK:             ['book','sword'],
-    FIRE_ASPECT:           ['book','sword'],
-    LOOTING:               ['book','sword'],
-    EFFICIENCY:            ['book','tool','axe','shears'],
-    SILK_TOUCH:            ['book','tool','axe','shears'],
-    UNBREAKING:            ['book','helmet','chestplate','leggings','boots',
-                            'sword','tool','axe','bow','hoe','fishing rod',
-                            'shears','flint and steel','carrot on a stick'],
-    FORTUNE:               ['book','tool','axe'],
-    POWER:                 ['book','bow'],
-    PUNCH:                 ['book','bow'],
-    FLAME:                 ['book','bow'],
-    INFINITY:              ['book','bow'],
-    LUCK_OF_THE_SEA:       ['fishing rod'],
-    LURE:                  ['fishing rod']
+    PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    FIRE_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    FEATHER_FALLING: ['book', 'boots'],
+    BLAST_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    PROJECTILE_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    RESPIRATION: ['book', 'helmet'],
+    AQUA_AFFINITY: ['book', 'helmet'],
+    THORNS: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    SHARPNESS: ['book', 'sword', 'axe'],
+    SMITE: ['book', 'sword', 'axe'],
+    BANE_OF_ARTHROPODS: ['book', 'sword', 'axe'],
+    KNOCKBACK: ['book', 'sword'],
+    FIRE_ASPECT: ['book', 'sword'],
+    LOOTING: ['book', 'sword'],
+    EFFICIENCY: ['book', 'tool', 'axe', 'shears'],
+    SILK_TOUCH: ['book', 'tool', 'axe', 'shears'],
+    UNBREAKING: ['book', 'helmet', 'chestplate', 'leggings', 'boots',
+                 'sword', 'tool', 'axe', 'bow', 'hoe', 'fishing rod',
+                 'shears', 'flint and steel', 'carrot on a stick'],
+    FORTUNE: ['book', 'tool', 'axe'],
+    POWER: ['book', 'bow'],
+    PUNCH: ['book', 'bow'],
+    FLAME: ['book', 'bow'],
+    INFINITY: ['book', 'bow'],
+    LUCK_OF_THE_SEA: ['fishing rod'],
+    LURE: ['fishing rod']
 }
 
 # Table: Only enchants that can be achieved with an enchanting table.
 _ench_items_table = {
     # Enchantment
-    PROTECTION:            ['book','helmet','chestplate','leggings','boots'],
-    FIRE_PROTECTION:       ['book','helmet','chestplate','leggings','boots'],
-    FEATHER_FALLING:       ['book','boots'],
-    BLAST_PROTECTION:      ['book','helmet','chestplate','leggings','boots'],
-    PROJECTILE_PROTECTION: ['book','helmet','chestplate','leggings','boots'],
-    RESPIRATION:           ['book','helmet'],
-    AQUA_AFFINITY:         ['book','helmet'],
-    THORNS:                ['book','chestplate'],
-    SHARPNESS:             ['book','sword'],
-    SMITE:                 ['book','sword'],
-    BANE_OF_ARTHROPODS:    ['book','sword'],
-    KNOCKBACK:             ['book','sword'],
-    FIRE_ASPECT:           ['book','sword'],
-    LOOTING:               ['book','sword'],
-    EFFICIENCY:            ['book','tool','axe'],
-    SILK_TOUCH:            ['book','tool','axe'],
-    UNBREAKING:            ['book','tool','axe'],
-    FORTUNE:               ['book','tool','axe'],
-    POWER:                 ['book','bow'],
-    PUNCH:                 ['book','bow'],
-    FLAME:                 ['book','bow'],
-    INFINITY:              ['book','bow'],
-    LUCK_OF_THE_SEA:       ['fishing rod'],
-    LURE:                  ['fishing rod']
+    PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    FIRE_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    FEATHER_FALLING: ['book', 'boots'],
+    BLAST_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    PROJECTILE_PROTECTION: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    RESPIRATION: ['book', 'helmet'],
+    AQUA_AFFINITY: ['book', 'helmet'],
+    THORNS: ['book', 'chestplate'],
+    SHARPNESS: ['book', 'sword'],
+    SMITE: ['book', 'sword'],
+    BANE_OF_ARTHROPODS: ['book', 'sword'],
+    KNOCKBACK: ['book', 'sword'],
+    FIRE_ASPECT: ['book', 'sword'],
+    LOOTING: ['book', 'sword'],
+    EFFICIENCY: ['book', 'tool', 'axe'],
+    SILK_TOUCH: ['book', 'tool', 'axe'],
+    UNBREAKING: ['book', 'tool', 'axe'],
+    FORTUNE: ['book', 'tool', 'axe'],
+    POWER: ['book', 'bow'],
+    PUNCH: ['book', 'bow'],
+    FLAME: ['book', 'bow'],
+    INFINITY: ['book', 'bow'],
+    LUCK_OF_THE_SEA: ['fishing rod'],
+    LURE: ['fishing rod']
 }
 
 # Extended: As normal, but all weapon enchants can appear on axes,
 #           pickaxes and shovels
 _ench_items_extended = _ench_items_table_book.copy()
-for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
-    _ench_items_extended[i] = ['book','sword','axe','tool']
+for i in (SHARPNESS, SMITE, BANE_OF_ARTHROPODS, KNOCKBACK, FIRE_ASPECT, LOOTING):
+    _ench_items_extended[i] = ['book', 'sword', 'axe', 'tool']
 
 # Zistonian: As extended, but all weapon enchants can appear on all
 # normally non-enchantable items
 _ench_items_zistonian = _ench_items_extended.copy()
-for i in (SHARPNESS,SMITE,BANE_OF_ARTHROPODS,KNOCKBACK,FIRE_ASPECT,LOOTING):
-    _ench_items_zistonian[i] = ['book','sword','axe','tool','none']
+for i in (SHARPNESS, SMITE, BANE_OF_ARTHROPODS, KNOCKBACK, FIRE_ASPECT, LOOTING):
+    _ench_items_zistonian[i] = ['book', 'sword', 'axe', 'tool', 'none']
 
 # Anything: Complete madness! Anything on anything.
 _ench_items_anything = {}
@@ -215,9 +215,11 @@ for (enchant, name) in _ench_name.items():
 _maxtier = -1
 _master_loot = {}
 
+
 class Loot (object):
-    def __init__ (self, slot, count, id, damage, enchantments, p_effect = '',
-                  customname = '', flag = '', flagparam = '', lore = '', file = ''):
+
+    def __init__(self, slot, count, id, damage, enchantments, p_effect='',
+                 customname='', flag='', flagparam='', lore='', file=''):
         self.slot = slot
         self.id = id
         self.value = id
@@ -233,35 +235,36 @@ class Loot (object):
         self.file = file
 
     # Intentionally not printing lore
-    def __str__ (self):
-        return 'Slot: %d, ID: %d, Dmg: %d, Cnt: %d, E: %s, PE: %s, N: %s, F: %s, FP: %s, File: %s'%(
-                                                     self.slot,
-                                                     self.id,
-                                                     self.damage,
-                                                     self.count,
-                                                     self.enchantments,
-                                                     self.p_effect,
-                                                     self.customname,
-                                                     self.flag,
-                                                     self.flagparam,
-                                                     self.file)
+    def __str__(self):
+        return 'Slot: %d, ID: %d, Dmg: %d, Cnt: %d, E: %s, PE: %s, N: %s, F: %s, FP: %s, File: %s' % (
+            self.slot,
+            self.id,
+            self.damage,
+            self.count,
+            self.enchantments,
+            self.p_effect,
+            self.customname,
+            self.flag,
+            self.flagparam,
+            self.file)
 
 
-def Load ():
+def Load():
     print 'Reading loot tables...'
     global _maxtier
 
-    while (cfg.parser.has_section('tier%d'%(_maxtier+1))):
+    while (cfg.parser.has_section('tier%d' % (_maxtier + 1))):
         _maxtier += 1
-        tiername = 'tier%d'%(_maxtier)
-        #print 'Reading loot table for:',tiername
+        tiername = 'tier%d' % (_maxtier)
+        # print 'Reading loot table for:',tiername
         loots = cfg.parser.items(tiername)
         _master_loot[tiername] = {}
-        thistable =  _master_loot[tiername]
+        thistable = _master_loot[tiername]
         num = 0
         for line in loots:
             try:
-                chance, minmax, enchant = [x.strip() for x in line[1].split(',')]
+                chance, minmax, enchant = [x.strip()
+                                           for x in line[1].split(',')]
                 minimum = minmax.split('-')[0]
                 maximum = minmax.split('-')[-1]
             except:
@@ -284,11 +287,12 @@ def Load ():
             ])
             num += 1
 
-def rollLoot (tier, level):
-    tiername = 'tier%s'%(tier)
+
+def rollLoot(tier, level):
+    tiername = 'tier%s' % (tier)
     slot = 0
     for key, loot in _master_loot[tiername].items():
-        if (loot['chance'] >= random.randint(1,100)):
+        if (loot['chance'] >= random.randint(1, 100)):
             amount = random.randint(loot['min'], loot['max'])
             item = random.choice(loot['item'])
 
@@ -299,9 +303,10 @@ def rollLoot (tier, level):
                     for e in item.ench.split(','):
                         k = int(e.split('-')[0])
                         v = int(e.split('-')[-1])
-                        enchantments.append(dict({'id':k, 'lvl':v}))
+                        enchantments.append(dict({'id': k, 'lvl': v}))
             elif 'level*' in loot['ench']:
-                ench_level = int(level*float(loot['ench'].split('level*')[-1]))
+                ench_level = int(
+                    level * float(loot['ench'].split('level*')[-1]))
                 ench_level = max(1, ench_level)
             elif '-' in loot['ench']:
                 min_ench = int(loot['ench'].split('-')[0])
@@ -345,7 +350,8 @@ def rollLoot (tier, level):
                     yield thisloot
                     slot += 1
 
-def enchant (item, level, debug=False):
+
+def enchant(item, level, debug=False):
     # Based on the info available in the wiki as of 1.3.1:
     # http://www.minecraftwiki.net/wiki/Enchantment_Mechanics
     #
@@ -363,11 +369,11 @@ def enchant (item, level, debug=False):
     #                 TAG_Compound():
     #                     TAG_Short( "id" ): 17
     #                     TAG_Short( "lvl" ): 5
-    # 
+    #
     #                 TAG_Compound():
     #                     TAG_Short( "id" ): 19
     #                     TAG_Short( "lvl" ): 2
-    # 
+    #
     #                 TAG_Compound():
     #                     TAG_Short( "id" ): 20
     #                     TAG_Short( "lvl" ): 2
@@ -461,8 +467,8 @@ def enchant (item, level, debug=False):
     def check_enchantment(ench, mlevel):
         for x in xrange(4, -1, -1):
             if (mlevel >= _ench_level[ench][x][0] and
-                mlevel <= _ench_level[ench][x][1]):
-                enchantments[ench] = x+1
+                    mlevel <= _ench_level[ench][x][1]):
+                enchantments[ench] = x + 1
                 prob.append((ench, _ench_prob[ench]))
                 return
         return
@@ -482,7 +488,7 @@ def enchant (item, level, debug=False):
     # is a match for the item type
     for (enchant, name) in _ench_name.items():
         if (item_filter[enchant][0] == 'any' or
-            type in item_filter[enchant]):
+                type in item_filter[enchant]):
             check_enchantment(enchant, mlevel)
 
     # Item did not result in any enchantments
@@ -505,15 +511,15 @@ def enchant (item, level, debug=False):
         # Add it.
         final[ench] = enchantments[ench]
         if (type == 'book'):
-            break;
+            break
         # Remove it so we don't pick again.
         prob.remove((ench, _ench_prob[ench]))
         # Some enchantments conflict with each other. If we picked one, remove
-        # its counterparts. 
+        # its counterparts.
         if ench in [PROTECTION, FIRE_PROTECTION, BLAST_PROTECTION,
                     PROJECTILE_PROTECTION]:
             for x in [PROTECTION, FIRE_PROTECTION,
-                      BLAST_PROTECTION,PROJECTILE_PROTECTION]:
+                      BLAST_PROTECTION, PROJECTILE_PROTECTION]:
                 if (x, _ench_prob[x]) in prob:
                     prob.remove((x, _ench_prob[x]))
 
@@ -526,7 +532,7 @@ def enchant (item, level, debug=False):
             break
         # Check for additional enchantments
         mlevel /= 2
-        if random.randint(1,50) > mlevel+1:
+        if random.randint(1, 50) > mlevel + 1:
             break
 
     if debug is True:
@@ -535,16 +541,18 @@ def enchant (item, level, debug=False):
             print '\t', _ench_name[k], _level_name[v]
 
     for k, v in final.items():
-        yield dict({'id':k, 'lvl':v})
+        yield dict({'id': k, 'lvl': v})
 
-def enchant_tags (item, level, debug=False):
+
+def enchant_tags(item, level, debug=False):
     tags = nbt.TAG_List()
-    for ench in  enchant(item, level, debug):
+    for ench in enchant(item, level, debug):
         e = nbt.TAG_Compound()
         e['id'] = nbt.TAG_Short(ench['id'])
         e['lvl'] = nbt.TAG_Short(ench['lvl'])
         tags.append(e)
     return tags
+
 
 def print_enchant(item, level, debug=True):
     for ench in enchant(item, level, debug):

@@ -190,7 +190,7 @@ def Load(filename='default.cfg'):
     print 'Reading config from', filename, '...'
     try:
         parser.readfp(open(filename))
-    except Exception, e:
+    except Exception as e:
         print "Failed to read config file!"
         sys.exit(e.message)
 
@@ -214,11 +214,11 @@ def Load(filename='default.cfg'):
     # These are not used until actual generation begins, so check they are
     # good now.
     if isFile(file_fortunes) is False:
-            print "Warning: fortune file '"+file_fortunes+"' not found."
+        print "Warning: fortune file '" + file_fortunes + "' not found."
     if isDir(dir_paintings) is False:
-            print "Warning: paintings directory '"+dir_paintings+"' not found."
+        print "Warning: paintings directory '" + dir_paintings + "' not found."
     if isDir(dir_books) is False:
-            print "Warning: books directory '"+dir_books+"' not found."
+        print "Warning: books directory '" + dir_books + "' not found."
     if dir_extra_spawners != '':
         if isDir(dir_extra_spawners) is False:
             print "Warning: extra spawners directory '" +\
@@ -253,7 +253,7 @@ def Load(filename='default.cfg'):
         master_hall_traps = parser.items('hall traps')
     except:
         print 'WARNING: No hall traps section found in config. Using default.'
-        master_hall_traps = [['Blank',100]]
+        master_hall_traps = [['Blank', 100]]
 
     master_rooms = parser.items('rooms')
     master_srooms = parser.items('secret rooms')
@@ -310,7 +310,7 @@ def Load(filename='default.cfg'):
             master_mobs[max_mob_tier].append((mob_name, mob[1]))
         max_mob_tier += 1
         try:
-            temp_mobs = parser.items('mobs.'+str(max_mob_tier))
+            temp_mobs = parser.items('mobs.' + str(max_mob_tier))
         except:
             temp_mobs = []
             max_mob_tier -= 1
@@ -450,7 +450,7 @@ def Load(filename='default.cfg'):
             if (v >= 0):
                 structure_values.append(v)
             else:
-                sys.exit('Unable to find structure material: '+str(a))
+                sys.exit('Unable to find structure material: ' + str(a))
 
     # Load river biomes
     try:

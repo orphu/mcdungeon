@@ -22,7 +22,7 @@ def floor(n):
 def ceil(n):
     if int(n) == n:
         return int(n)
-    return int(n)+1
+    return int(n) + 1
 
 
 def clamp(n, a, b):
@@ -36,25 +36,26 @@ def clamp(n, a, b):
 
 
 class Vec(object):
+
     def __init__(self, x, y, z):
         self.x = int(x)
         self.y = int(y)
         self.z = int(z)
 
     def __add__(self, b):
-        if type(b) == Vec:
-            return Vec(self.x+b.x, self.y+b.y, self.z+b.z)
+        if isinstance(b, Vec):
+            return Vec(self.x + b.x, self.y + b.y, self.z + b.z)
         else:
-            return Vec(self.x+b, self.y+b, self.z+b)
+            return Vec(self.x + b, self.y + b, self.z + b)
 
     def __sub__(self, b):
-        if type(b) == Vec:
-            return Vec(self.x-b.x, self.y-b.y, self.z-b.z)
+        if isinstance(b, Vec):
+            return Vec(self.x - b.x, self.y - b.y, self.z - b.z)
         else:
-            return Vec(self.x-b, self.y-b, self.z-b)
+            return Vec(self.x - b, self.y - b, self.z - b)
 
     def __mul__(self, b):
-        return Vec(self.x*b, self.y*b, self.z*b)
+        return Vec(self.x * b, self.y * b, self.z * b)
 
     def __str__(self):
         return "(%d,%d,%d)" % (self.x, self.y, self.z)
@@ -63,12 +64,12 @@ class Vec(object):
         return self.__str__()
 
     def __eq__(self, b):
-        if type(b) != Vec:
+        if not isinstance(b, Vec):
             return False
         return self.x == b.x and self.y == b.y and self.z == b.z
 
     def __ne__(self, b):
-        if type(b) != Vec:
+        if not isinstance(b, Vec):
             return True
         return self.x != b.x or self.y != b.y or self.z != b.z
 
@@ -76,25 +77,25 @@ class Vec(object):
         return self.x + (self.y << 4) + (self.z << 8)
 
     def e(self, x):
-        return Vec(self.x+x, self.y, self.z)
+        return Vec(self.x + x, self.y, self.z)
 
     def w(self, x):
-        return Vec(self.x-x, self.y, self.z)
+        return Vec(self.x - x, self.y, self.z)
 
     def up(self, y):
-        return Vec(self.x, self.y-y, self.z)
+        return Vec(self.x, self.y - y, self.z)
 
     def down(self, y):
-        return Vec(self.x, self.y+y, self.z)
+        return Vec(self.x, self.y + y, self.z)
 
     def n(self, z):
-        return Vec(self.x, self.y, self.z-z)
+        return Vec(self.x, self.y, self.z - z)
 
     def s(self, z):
-        return Vec(self.x, self.y, self.z+z)
+        return Vec(self.x, self.y, self.z + z)
 
     def mag2d(self):
-        return math.sqrt(self.x*self.x + self.z*self.z)
+        return math.sqrt(self.x * self.x + self.z * self.z)
 
     def d(self, d):
         if (d == 0):
@@ -126,7 +127,7 @@ class Vec(object):
         return self.rotate(1)
 
     def trans(self, x, y, z):
-        return Vec(self.x+x, self.y+y, self.z+z)
+        return Vec(self.x + x, self.y + y, self.z + z)
 
 
 # As of 1.9 pre 4:
@@ -143,6 +144,7 @@ DOWN = Vec(0, -1, 0)
 
 
 class Vec2f(object):
+
     def __init__(self, x, z):
         self.x = float(x)
         self.z = float(z)
@@ -164,35 +166,36 @@ class Vec2f(object):
             return Vec2f(self.z, -self.x)
 
     def det(self, b):
-        return self.x*b.z - self.z*b.x
+        return self.x * b.z - self.z * b.x
 
     def mag(self):
-        return math.sqrt(self.x*self.x + self.z*self.z)
+        return math.sqrt(self.x * self.x + self.z * self.z)
 
     def unit(self):
-        mag = math.sqrt(self.x*self.x + self.z*self.z)
-        return Vec2f(self.x/mag, self.z/mag)
+        mag = math.sqrt(self.x * self.x + self.z * self.z)
+        return Vec2f(self.x / mag, self.z / mag)
 
     def __str__(self):
         return "(%f,%f)" % (self.x, self.z)
 
     def __add__(self, b):
-        if type(b) == Vec2f:
-            return Vec2f(self.x+b.x, self.z+b.z)
+        if isinstance(b, Vec2f):
+            return Vec2f(self.x + b.x, self.z + b.z)
         else:
-            return Vec2f(self.x+b, self.z+b)
+            return Vec2f(self.x + b, self.z + b)
 
     def __sub__(self, b):
-        if type(b) == Vec2f:
-            return Vec2f(self.x-b.x, self.z-b.z)
+        if isinstance(b, Vec2f):
+            return Vec2f(self.x - b.x, self.z - b.z)
         else:
-            return Vec2f(self.x-b, self.z-b)
+            return Vec2f(self.x - b, self.z - b)
 
     def __mul__(self, b):
-        return Vec2f(self.x*b, self.z*b)
+        return Vec2f(self.x * b, self.z * b)
 
 
 class Box(object):
+
     def __init__(self, loc, w, h, d):
         self.loc = loc
         self.w = w
@@ -200,13 +203,13 @@ class Box(object):
         self.d = d
 
     def x2(self):
-        return self.loc.x+self.w
+        return self.loc.x + self.w
 
     def y2(self):
-        return self.loc.y+self.h
+        return self.loc.y + self.h
 
     def z2(self):
-        return self.loc.z+self.d
+        return self.loc.z + self.d
 
     def containsPoint(self, p):
         x = p.x - self.loc.x
@@ -231,23 +234,23 @@ class Box(object):
             self.w, self.h, self.d)
 
     def area(loc1, loc2):
-        return abs((loc1.x-loc2.x)*(loc1.z-loc2.z))
+        return abs((loc1.x - loc2.x) * (loc1.z - loc2.z))
 
 
 def iterate_plane(loc1, loc2):
-    for x in xrange(min(loc1.x, loc2.x), max(loc1.x, loc2.x)+1):
-        for y in xrange(min(loc1.y, loc2.y), max(loc1.y, loc2.y)+1):
-            for z in xrange(min(loc1.z, loc2.z), max(loc1.z, loc2.z)+1):
+    for x in xrange(min(loc1.x, loc2.x), max(loc1.x, loc2.x) + 1):
+        for y in xrange(min(loc1.y, loc2.y), max(loc1.y, loc2.y) + 1):
+            for z in xrange(min(loc1.z, loc2.z), max(loc1.z, loc2.z) + 1):
                 yield Vec(x, y, z)
 
 
 def iterate_cube(*points):
     for x in xrange(min([p.x for p in points]),
-                    max([p.x for p in points])+1):
+                    max([p.x for p in points]) + 1):
         for y in xrange(min([p.y for p in points]),
-                        max([p.y for p in points])+1):
+                        max([p.y for p in points]) + 1):
             for z in xrange(min([p.z for p in points]),
-                            max([p.z for p in points])+1):
+                            max([p.z for p in points]) + 1):
                 yield Vec(x, y, z)
 
 
@@ -288,27 +291,27 @@ def iterate_points_inside_flat_poly(*poly_points):
     num_points = len(poly_points)
 
     def point_inside(p):
-        if type(p) == Vec2f:
+        if isinstance(p, Vec2f):
             p = Vec(p.x, 0, p.z)
         for i in xrange(num_points):
             a = poly_points[i]
-            b = poly_points[(i+1) % num_points]
+            b = poly_points[(i + 1) % num_points]
 
-            if type(a) == Vec2f:
+            if isinstance(a, Vec2f):
                 a = Vec(a.x, 0, a.z)
-            if type(b) == Vec2f:
+            if isinstance(b, Vec2f):
                 b = Vec(b.x, 0, b.z)
 
-            b_to_a = Vec2f.fromVec(b-a)
-            p_to_a = Vec2f.fromVec(p-a)
+            b_to_a = Vec2f.fromVec(b - a)
+            p_to_a = Vec2f.fromVec(p - a)
 
             det = b_to_a.det(p_to_a)
             if det < 0:
                 return False
         return True
 
-    for x in xrange(min_x, max_x+1):
-        for z in xrange(min_z, max_z+1):
+    for x in xrange(min_x, max_x + 1):
+        for z in xrange(min_z, max_z + 1):
             p = Vec(x, min_y, z)
             if point_inside(p):
                 yield p
@@ -327,17 +330,17 @@ def random_point_inside_flat_poly(*poly_points):
 
 def iterate_points_surrounding_box(box):
     near = box.loc.trans(-1, -1, -1)
-    far = box.loc.trans(box.w+1, box.h+1, box.d+1)
+    far = box.loc.trans(box.w + 1, box.h + 1, box.d + 1)
     return iterate_hollow_cube(near, far)
 
 
 def iterate_spiral(p1, p2, height):
     p = p1
-    box = Box(p1.trans(0, -height, 0), p2.x-p1.x, height, p2.z-p1.z)
+    box = Box(p1.trans(0, -height, 0), p2.x - p1.x, height, p2.z - p1.z)
     step = Vec(1, -1, 0)
     for y in xrange(int(height)):
         yield p
-        if (box.containsPoint(p+step) is False):
+        if (box.containsPoint(p + step) is False):
             if (step == Vec(1, -1, 0)):
                 step = Vec(0, -1, 1)
             elif (step == Vec(0, -1, 1)):
@@ -384,13 +387,13 @@ def weighted_shuffle(master_list):
         results.insert(0, item)
         items.remove([item, weight])
     return results
-    
+
 
 # Generate a number between min and max. Weighted towards higher numbers.
-# (Beta distribution.)    
-def topheavy_random(min,max):
-    d = max-min+1
-    return int(math.floor(math.sqrt(random.randrange(d*d)))+min)
+# (Beta distribution.)
+def topheavy_random(min, max):
+    d = max - min + 1
+    return int(math.floor(math.sqrt(random.randrange(d * d))) + min)
 
 
 def str2Vec(string):
@@ -399,7 +402,7 @@ def str2Vec(string):
 
 
 def iterate_tube(e0, e1, height):
-    for y in xrange(height+1):
+    for y in xrange(height + 1):
         for p in iterate_ellipse(e0.up(y), e1.up(y)):
             yield p
 
@@ -414,16 +417,16 @@ def iterate_cylinder(*points):
     e0 = Vec(xmin, ymax, zmin)
     e1 = Vec(xmax, ymax, zmax)
     height = ymax - ymin
-    for y in xrange(0, height+1):
+    for y in xrange(0, height + 1):
         for p in iterate_disc(e0.up(y), e1.up(y)):
             yield p
 
 
 def iterate_disc(e0, e1):
-    for (p0, p1) in zip(*[iter(iterate_ellipse(e0, e1))]*2):
+    for (p0, p1) in zip(*[iter(iterate_ellipse(e0, e1))] * 2):
         # A little wasteful. We get a few points more than once,
         # but oh well.
-        for x in xrange(p0.x, p1.x+1):
+        for x in xrange(p0.x, p1.x + 1):
             yield Vec(x, p0.y, p0.z)
 
 
@@ -478,7 +481,7 @@ def iterate_ellipse(p0, p1):
         # Bug here... not sure what is going on, but
         # this is only needed for ellipese with a
         # horizontal radius of 1
-        #while (y0 - y1 < b):
+        # while (y0 - y1 < b):
         #    y0 += 1
         #    yield Vec(x0-1, z, y0)
         #    y1 -= 1
@@ -520,8 +523,8 @@ def dumpEnts(world):
 def spin(c=''):
     spinner = ['O o o', 'O O o', 'o O O', 'o o O', 'o O O', 'O O o']
     if (c == ''):
-        c = spinner[random.randint(0, len(spinner)-1)]
-    sys.stdout.write("\r"+str(c)+"   \r")
+        c = spinner[random.randint(0, len(spinner) - 1)]
+    sys.stdout.write("\r" + str(c) + "   \r")
     sys.stdout.flush()
 
 
@@ -533,7 +536,7 @@ def findChunkDepth(p, world):
     depth = world.Height
     for x in xrange(16):
         for z in xrange(16):
-            y = chunk.HeightMap[z, x]-1
+            y = chunk.HeightMap[z, x] - 1
             while (y > 0 and
                    chunk.Blocks[x, z, y] not in heightmap_solids):
                 y = y - 1
@@ -550,7 +553,7 @@ def findChunkDepths(p, world):
     max_depth = 0
     for x in xrange(16):
         for z in xrange(16):
-            y = chunk.HeightMap[z, x]-1
+            y = chunk.HeightMap[z, x] - 1
             while (y > 0 and
                    chunk.Blocks[x, z, y] not in heightmap_solids):
                 y = y - 1
@@ -587,7 +590,7 @@ def loadDungeonCache(cache_path):
     mtime = 0
     # Try some basic versioning.
     if not os.path.exists(os.path.join(cache_path,
-                                       'dungeon_scan_version_'+cache_version)):
+                                       'dungeon_scan_version_' + cache_version)):
         print 'Dungeon cache missing, or is an old verision. Resetting...'
         return dungeonCache, mtime
 
@@ -639,8 +642,12 @@ def saveDungeonCache(cache_path, dungeonCache):
         for f in os.listdir(cache_path):
             if re.search('dungeon_scan_version_.*', f):
                 os.remove(os.path.join(cache_path, f))
-        FILE = open(os.path.join(cache_path,
-                                 'dungeon_scan_version_'+cache_version), 'wb')
+        FILE = open(
+            os.path.join(
+                cache_path,
+                'dungeon_scan_version_' +
+                cache_version),
+            'wb')
         cPickle.dump('SSsssss....BOOM', FILE, -1)
         FILE.close()
     except Exception as e:
@@ -658,7 +665,7 @@ def loadChunkCache(cache_path):
 
     # Try some basic versioning.
     if not os.path.exists(os.path.join(cache_path,
-                                       'chunk_scan_version_'+cache_version)):
+                                       'chunk_scan_version_' + cache_version)):
         print 'Chunk cache missing, or is an old verision. Resetting...'
         return chunkCache, chunkMTime
 
@@ -709,7 +716,7 @@ def saveChunkCache(cache_path, chunkCache):
             if re.search('chunk_scan_version_.*', f):
                 os.remove(os.path.join(cache_path, f))
         FILE = open(os.path.join(cache_path,
-                                 'chunk_scan_version_'+cache_version), 'wb')
+                                 'chunk_scan_version_' + cache_version), 'wb')
         cPickle.dump('SSsssss....BOOM', FILE, -1)
         FILE.close()
     except Exception as e:
@@ -760,7 +767,7 @@ def encodeDungeonInfo(dungeon, version):
             tag_tag = nbt.TAG_Compound()
             item_tag['tag'] = tag_tag
             tag_tag['title'] = nbt.TAG_String(
-                'MCDungeon Data Volume %d' % (slot+1)
+                'MCDungeon Data Volume %d' % (slot + 1)
             )
             tag_tag['author'] = nbt.TAG_String('Various')
             tag_tag['pages'] = nbt.TAG_List()
@@ -820,17 +827,40 @@ def decodeDungeonInfo(lib):
 
 
 # Some entity helpers
-def get_tile_entity_tags(eid='Chest', Pos=Vec(0,0,0), CustomName='', Lock='',
-                         Levels=0, Primary=0, Secondary=0, BrewTime=0,
-                         OutputSignal=0, Command='', SuccessCount=0,
-                         LastOutput='', Item='', Data=0, BurnTime=0, CookTime=0,
-                         TransferCooldown=0, note=0, Record=0, RecordItem='',
-                         Text1='', Text2='', Text3='', Text4='', SkullType=0,
-                         ExtraType='', Rot=0
-                        ):
+def get_tile_entity_tags(
+        eid='Chest',
+        Pos=Vec(
+            0,
+            0,
+            0),
+    CustomName='',
+    Lock='',
+    Levels=0,
+    Primary=0,
+    Secondary=0,
+    BrewTime=0,
+    OutputSignal=0,
+    Command='',
+    SuccessCount=0,
+    LastOutput='',
+    Item='',
+    Data=0,
+    BurnTime=0,
+    CookTime=0,
+    TransferCooldown=0,
+    note=0,
+    Record=0,
+    RecordItem='',
+    Text1='',
+    Text2='',
+    Text3='',
+    Text4='',
+    SkullType=0,
+    ExtraType='',
+        Rot=0):
     '''Returns an nbt.TAG_Compound containing tags for tile entities'''
     # Convert Vec types so we can use either
-    if type(Pos) is Vec:
+    if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
 
     root_tag = nbt.TAG_Compound()
@@ -884,7 +914,7 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
                          CustomName=''):
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
     # Convert Vec types so we can use either
-    if type(Pos) is Vec:
+    if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
 
     root_tag = nbt.TAG_Compound()
@@ -971,7 +1001,7 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             'Slime',
             'LavaSlime'
         ):
-            Health = Size*Size
+            Health = Size * Size
         elif eid == 'VillagerGolem':
             Health = 100
         elif eid == 'EnderDragon':
@@ -1107,7 +1137,7 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     calculated. ItemInfo should contain an item object from items.'''
 
     # Convert Vec types so we can use either
-    if type(Pos) is Vec:
+    if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
 
     root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
@@ -1136,31 +1166,31 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
         # Now, shift Pos appropriately. First we need the size of the entity.
         # Default is 1x1, and ItemFrames are 1x1.
         sizes = {
-            'Kebab':         (1, 1),
-            'Aztec':         (1, 1),
-            'Alban':         (1, 1),
-            'Aztec2':        (1, 1),
-            'Bomb':          (1, 1),
-            'Plant':         (1, 1),
-            'Wasteland':     (1, 1),
-            'Wanderer':      (1, 2),
-            'Graham':        (1, 2),
-            'Pool':          (2, 1),
-            'Courbet':       (2, 1),
-            'Sunset':        (2, 1),
-            'Sea':           (2, 1),
-            'Creebet':       (2, 1),
-            'Match':         (2, 2),
-            'Bust':          (2, 2),
-            'Stage':         (2, 2),
-            'Void':          (2, 2),
+            'Kebab': (1, 1),
+            'Aztec': (1, 1),
+            'Alban': (1, 1),
+            'Aztec2': (1, 1),
+            'Bomb': (1, 1),
+            'Plant': (1, 1),
+            'Wasteland': (1, 1),
+            'Wanderer': (1, 2),
+            'Graham': (1, 2),
+            'Pool': (2, 1),
+            'Courbet': (2, 1),
+            'Sunset': (2, 1),
+            'Sea': (2, 1),
+            'Creebet': (2, 1),
+            'Match': (2, 2),
+            'Bust': (2, 2),
+            'Stage': (2, 2),
+            'Void': (2, 2),
             'SkullAndRoses': (2, 2),
-            'Wither':        (2, 2),
-            'Fighters':      (4, 2),
-            'Skeleton':      (4, 3),
-            'DonkeyKong':    (4, 3),
-            'Pointer':       (4, 4),
-            'PigScene':      (4, 4),
+            'Wither': (2, 2),
+            'Fighters': (4, 2),
+            'Skeleton': (4, 3),
+            'DonkeyKong': (4, 3),
+            'Pointer': (4, 4),
+            'PigScene': (4, 4),
             'Flaming Skull': (4, 4),
         }
         if (eid == 'Painting' and Motive in sizes):
@@ -1172,23 +1202,23 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
 
         # North face
         if Direction == 2:
-            root_tag['Pos'][0].value += float(width)/2.0
-            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][0].value += float(width) / 2.0
+            root_tag['Pos'][1].value -= float(height) / 2.0
             root_tag['Pos'][2].value -= 0.0625
         # South face
         elif Direction == 0:
-            root_tag['Pos'][0].value += float(width)/2.0
-            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][0].value += float(width) / 2.0
+            root_tag['Pos'][1].value -= float(height) / 2.0
             root_tag['Pos'][2].value += 1.0625
         # East face
         elif Direction == 3:
             root_tag['Pos'][0].value += 1.0625
-            root_tag['Pos'][1].value -= float(height)/2.0
-            root_tag['Pos'][2].value += 1 + float(width)/2.0
+            root_tag['Pos'][1].value -= float(height) / 2.0
+            root_tag['Pos'][2].value += 1 + float(width) / 2.0
         # West face
         elif Direction == 1:
-            root_tag['Pos'][0].value -= float(width)/2.0
-            root_tag['Pos'][1].value -= float(height)/2.0
+            root_tag['Pos'][0].value -= float(width) / 2.0
+            root_tag['Pos'][1].value -= float(height) / 2.0
             root_tag['Pos'][2].value -= 0.0625
 
     # Attach an item to the frame (if any)

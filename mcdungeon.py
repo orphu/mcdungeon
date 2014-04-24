@@ -360,7 +360,7 @@ def listDungeons(world, oworld, expand_fill_caves=False):
     for cx, cz, cmtime in regions.iterate_chunks():
         count -= 1
         pm.update_left(count)
-        key = '%s,%s' % (cx*16, cz*16)
+        key = '%s,%s' % (cx * 16, cz * 16)
         if (cmtime > mtime or key in dungeonCacheOld):
             notcached += 1
             for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
@@ -382,7 +382,7 @@ def listDungeons(world, oworld, expand_fill_caves=False):
             continue
     pm.set_complete()
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
-                                             100*cached/world.chunkCount)
+                                             100 * cached / world.chunkCount)
 
     utils.saveDungeonCache(cache_path, dungeonCache)
 
@@ -406,7 +406,7 @@ def listDungeons(world, oworld, expand_fill_caves=False):
         info = utils.decodeDungeonInfo(tileEntity)
 
         (major, minor, patch) = info['version'].split('.')
-        version = float(major+'.'+minor)
+        version = float(major + '.' + minor)
 
         xsize = info['xsize']
         zsize = info['zsize']
@@ -418,10 +418,10 @@ def listDungeons(world, oworld, expand_fill_caves=False):
             info['fill_caves'] is True
         ):
             offset = 5
-        dungeons.append((info["position"].x-offset,
-                         info["position"].z-offset,
-                         xsize+offset,
-                         zsize+offset,
+        dungeons.append((info["position"].x - offset,
+                         info["position"].z - offset,
+                         xsize + offset,
+                         zsize + offset,
                          info,
                          levels,
                          info["position"].x,
@@ -471,7 +471,7 @@ if (args.command == 'interactive'):
         file_path = os.path.join(saveFileDir, file)
         if (
             os.path.isdir(file_path) and
-            os.path.isfile(file_path+'/level.dat')
+            os.path.isfile(file_path + '/level.dat')
         ):
             print '   ', file
             count += 1
@@ -502,14 +502,13 @@ if (args.command == 'interactive'):
             file_path = os.path.join(configDir, file)
             file = file.replace('.cfg', '')
             if (os.path.isfile(file_path) and
-               file_path.endswith('.cfg')):
+                    file_path.endswith('.cfg')):
                 print '   ', file
         print '\nEnter the name of the configuration you wish to use.'
         config = raw_input('(leave blank for default): ')
         if (config == ''):
             config = 'default'
-        #args.config = str(os.path.join(configDir, config))+'.cfg'
-        args.config = str(config)+'.cfg'
+        args.config = str(config) + '.cfg'
         cfg.Load(args.config)
 
         # Prompt for a mapstore if we need to
@@ -529,7 +528,7 @@ if (args.command == 'interactive'):
         print 'add many dungeons, they will not cover much of the map.\n'
         input_max_dist = raw_input(
             'Max Distance (leave blank for config value, ' +
-            str(cfg.max_dist)+'): '
+            str(cfg.max_dist) + '): '
         )
         if (input_max_dist != ''):
             try:
@@ -580,13 +579,13 @@ if (args.command == 'interactive'):
             file_path = os.path.join(configDir, file)
             file = file.replace('.cfg', '')
             if (os.path.isfile(file_path) and
-               file_path.endswith('.cfg')):
+                    file_path.endswith('.cfg')):
                 print '   ', file
         print '\nEnter the name of the configuration you wish to use.'
         config = raw_input('(leave blank for default): ')
         if (config == ''):
             config = 'default'
-        args.config = str(config)+'.cfg'
+        args.config = str(config) + '.cfg'
         cfg.Load(args.config)
 
         # Prompt for a mapstore if we need to
@@ -612,7 +611,7 @@ if (args.command == 'interactive'):
         print '\t[a] Regenerate ALL dungeons in this map.'
         for i in xrange(len(dlist)):
             print '\t[%d] Dungeon at %d %d.' % (
-                i+1,
+                i + 1,
                 dlist[i][0],
                 dlist[i][1]
             )
@@ -622,7 +621,7 @@ if (args.command == 'interactive'):
                 args.all = True
             elif d.isdigit() and int(d) > 0 and int(d) <= len(dlist):
                 d = int(d)
-                args.dungeons = [[dlist[d-1][0], dlist[d-1][1]]]
+                args.dungeons = [[dlist[d - 1][0], dlist[d - 1][1]]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
@@ -657,7 +656,7 @@ if (args.command == 'interactive'):
         print '\t[a] Delete ALL dungeons from this map.'
         for i in xrange(len(dungeons)):
             print '\t[%d] Dungeon at %d %d.' % (
-                i+1,
+                i + 1,
                 dungeons[i][0],
                 dungeons[i][1]
             )
@@ -667,7 +666,7 @@ if (args.command == 'interactive'):
                 args.all = True
             elif d.isdigit() and int(d) > 0 and int(d) <= len(dungeons):
                 d = int(d)
-                args.dungeons = [[dungeons[d-1][0], dungeons[d-1][1]]]
+                args.dungeons = [[dungeons[d - 1][0], dungeons[d - 1][1]]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
@@ -693,7 +692,6 @@ if world is None:
 if (args.command == 'list'):
     # List the known dungeons and exit
     dungeons = listDungeons(world, oworld)
-    #print dungeons
     sys.exit()
 
 # Delete mode
@@ -731,14 +729,14 @@ if (args.command == 'delete'):
     dcache, dmtime = utils.loadDungeonCache(cache_path)
     ms = mapstore.new(cfg.mapstore, cfg.dir_paintings)
     for d in to_delete:
-        p = [d[0]/16, d[1]/16]
+        p = [d[0] / 16, d[1] / 16]
         print 'Deleting dungeon at %d %d...' % (d[0], d[1])
         dkey = '%s,%s' % (d[0], d[1])
         ms.delete_maps(dkey)
         if dkey in dcache:
             del dcache[dkey]
         else:
-            print 'WARN: Dungeon not in dungeon cache! '+dkey
+            print 'WARN: Dungeon not in dungeon cache! ' + dkey
         xsize = 0
         zsize = 0
         for e in dungeons:
@@ -754,7 +752,7 @@ if (args.command == 'delete'):
                 break
         for x in xrange(xsize):
             for z in xrange(zsize):
-                chunks.append((p[0]+x, p[1]+z))
+                chunks.append((p[0] + x, p[1] + z))
     # We need to update the caches for the chunks we are affecting
     ccache, cmtime = utils.loadChunkCache(cache_path)
     # Delete the chunks
@@ -765,7 +763,7 @@ if (args.command == 'delete'):
             if ckey in ccache:
                 del ccache[ckey]
             else:
-                print 'WARN: Chunk not in chunk cache! '+ckey
+                print 'WARN: Chunk not in chunk cache! ' + ckey
     # Save the world.
     print "Saving..."
     world.saveInPlace()
@@ -1004,11 +1002,11 @@ if (cfg.offset is None or cfg.offset is ''):
             sx = world.playerSpawnPosition()[0] >> 4
             sz = world.playerSpawnPosition()[2] >> 4
         # Far chunk
-        if (numpy.sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) > cfg.max_dist):
+        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) > cfg.max_dist):
             chunk_stats[0][1] += 1
             continue
         # Near chunk
-        if (numpy.sqrt((cx-sx)*(cx-sx)+(cz-sz)*(cz-sz)) < cfg.min_dist):
+        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) < cfg.min_dist):
             chunk_stats[1][1] += 1
             continue
         # Chunk map stuff
@@ -1062,7 +1060,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     t = False
                     i = 0
                     y = 0
-                    while (t is False and y < world.Height//16):
+                    while (t is False and y < world.Height // 16):
                         if (y not in b or i >= len(mats)):
                             y += 1
                             i = 0
@@ -1078,9 +1076,9 @@ if (cfg.offset is None or cfg.offset is ''):
                 max_depth = 0
                 for x in xrange(16):
                     for z in xrange(16):
-                        y = chunk['HeightMap'][z+x*16]-1
-                        while (y > 0 and y//16 in b and
-                               b[y//16][y % 16, z, x] not in
+                        y = chunk['HeightMap'][z + x * 16] - 1
+                        while (y > 0 and y // 16 in b and
+                               b[y // 16][y % 16, z, x] not in
                                materials.heightmap_solids):
                             y = y - 1
                         min_depth = min(y, min_depth)
@@ -1118,20 +1116,20 @@ if (cfg.offset is None or cfg.offset is ''):
     for d in old_dungeons:
         if args.debug:
             print 'old dungeon:', d
-        p = (d[0]/16, d[1]/16)
+        p = (d[0] / 16, d[1] / 16)
         for x in xrange(int(d[2])):
             for z in xrange(int(d[3])):
-                if (p[0]+x, p[1]+z) in good_chunks:
-                    del(good_chunks[(p[0]+x, p[1]+z)])
-                    key = '%s,%s' % (p[0]+x, p[1]+z)
+                if (p[0] + x, p[1] + z) in good_chunks:
+                    del(good_chunks[(p[0] + x, p[1] + z)])
+                    key = '%s,%s' % (p[0] + x, p[1] + z)
                     chunk_cache[key] = ['S', -1, 0]
                     chunk_stats[4][1] += 1
                     chunk_stats[8][1] -= 1
 
     # Funky little chunk map
     if args.debug:
-        for cz in xrange(chunk_min[1], chunk_max[1]+1):
-            for cx in xrange(chunk_min[0], chunk_max[0]+1):
+        for cz in xrange(chunk_min[1], chunk_max[1] + 1):
+            for cx in xrange(chunk_min[0], chunk_max[0] + 1):
                 key = '%s,%s' % (cx, cz)
                 if key in chunk_cache:
                     if chunk_cache[key][0] == 'U':
@@ -1160,8 +1158,8 @@ if (cfg.offset is None or cfg.offset is ''):
 
     for stat in chunk_stats:
         print '   %s: %d' % (stat[0], stat[1])
-    print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached+cached,
-                                             100*cached/(notcached+cached))
+    print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached + cached,
+                                             100 * cached / (notcached + cached))
 
 
 # Load the dungeon cache for updates later.
@@ -1180,9 +1178,9 @@ while (
     )
 ):
     if args.number == -1:
-        print '\n***** Placing dungeon {0} *****\n'.format(count+1)
+        print '\n***** Placing dungeon {0} *****\n'.format(count + 1)
     else:
-        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count+1,
+        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count + 1,
                                                                   args.number)
 
     dungeon = Dungeon(args,

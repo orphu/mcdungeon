@@ -15,6 +15,7 @@ def format_sec(sec):
 
 
 class ETA(object):
+
     '''
     calculate ETA
     '''
@@ -34,7 +35,7 @@ class ETA(object):
             last_point_time = self.points[-1][0]
             while len(self.points) > 2:
                 if (last_point_time - self.points[0][0] > self.max_seconds and
-                   len(self.points) > self.max_point):
+                        len(self.points) > self.max_point):
                     self.points.pop(0)
                 else:
                     break
@@ -52,7 +53,7 @@ class ETA(object):
             return
 
         eta = (float(self.wanted_size) - float(cursize)) / float(speed)
-        self.eta = format_sec(eta+1)
+        self.eta = format_sec(eta + 1)
 
     def getstatus(self):
         return self.eta
@@ -106,18 +107,18 @@ class ProgressMeter(object):
 
         if cursize == self.size:
             percent = 100.0
-            eta = format_sec(tfunc()-self.start_time)
+            eta = format_sec(tfunc() - self.start_time)
         else:
             eta = self.eta_calculator.getstatus()
 
         message = '%s %s[%s>%s] %s' % (
             self.label,
             percent_str,
-            self.done_char*donesteps,
-            self.left_char*stepsleft,
+            self.done_char * donesteps,
+            self.left_char * stepsleft,
             eta
         )
-        self.outstream.write('\b'*len(self.prev_message) + message)
+        self.outstream.write('\b' * len(self.prev_message) + message)
         self.outstream.flush()
         self.prev_message = message
 
@@ -153,7 +154,7 @@ class ProgressMeter(object):
 if __name__ == '__main__':
     progress = ProgressMeter(30, outstream=sys.stderr)
     progress.init(500)
-    for i in range(500+1):
+    for i in range(500 + 1):
         time.sleep(0.01)
         progress.update(i)
     progress.cleanup()

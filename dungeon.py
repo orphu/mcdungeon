@@ -24,7 +24,9 @@ from pymclevel import nbt
 from overviewer_core import cache
 from overviewer_core import world as ov_world
 
+
 class Block(object):
+
     def __init__(self, loc):
         self.loc = loc
         self.material = None
@@ -36,16 +38,20 @@ class Block(object):
         # Soft blocks are only rendered in the world block is air
         self.soft = False
 
+
 class MazeCell(object):
     states = enum('BLANK', 'USED', 'CONNECTED', 'RESTRICTED')
+
     def __init__(self, loc):
         self.loc = loc
         self.depth = 0
         self.state = 0
 
+
 class RelightHandler(object):
     _curr = 28
     _count = 0
+
     def __init__(self):
         self.pm = pmeter.ProgressMeter()
         self.pm.init(self._curr, label='Relighting chunks:')
@@ -61,7 +67,9 @@ class RelightHandler(object):
     def done(self):
         self.pm.set_complete()
 
+
 class Dungeon (object):
+
     def __init__(self,
                  args,
                  world,
@@ -90,18 +98,17 @@ class Dungeon (object):
         self.torches = {}
         self.doors = {}
         self.entrance = None
-        self.entrance_pos = Vec(0,0,0)
+        self.entrance_pos = Vec(0, 0, 0)
         self.maze = {}
         self.stairwells = []
         self.room_size = 16
         self.room_height = 6
-        self.position = Vec(0,0,0)
+        self.position = Vec(0, 0, 0)
         self.args = args
         self.dinfo = {}
         self.dinfo['fill_caves'] = cfg.fill_caves
         self.dinfo['portal_exit'] = cfg.portal_exit
         self.dinfo['dungeon_name'] = cfg.dungeon_name
-
 
     def generate(self, cache_path, version):
         '''Generate a dungeon'''
@@ -120,10 +127,10 @@ class Dungeon (object):
                                                          self.levels)
 
             self.position = str2Vec(cfg.offset)
-            self.position.x = self.position.x &~15
-            self.position.z = self.position.z &~15
+            self.position.x = self.position.x & ~15
+            self.position.z = self.position.z & ~15
             # Bury it if we need to
-            located = self.bury(manual=bool(cfg.bury==False))
+            located = self.bury(manual=bool(cfg.bury == False))
             if (located == False):
                 print 'Unable to bury a dungeon of requested depth at', self.position
                 print 'Try fewer levels, or a smaller size, or another location.'
@@ -239,21 +246,21 @@ class Dungeon (object):
         if (located is True):
             # We have a final size, so let's initialize some things.
             for x in xrange(self.xsize):
-                 for y in xrange(self.levels):
-                     for z in xrange(self.zsize):
-                         self.maze[Vec(x,y,z)] = MazeCell(Vec(x,y,z))
-            self.halls = [ [ [ [None, None, None, None] for z in
-                             xrange(self.zsize) ] for y in
-                           xrange(self.levels) ] for x in
-                         xrange(self.xsize) ]
+                for y in xrange(self.levels):
+                    for z in xrange(self.zsize):
+                        self.maze[Vec(x, y, z)] = MazeCell(Vec(x, y, z))
+            self.halls = [[[[None, None, None, None] for z in
+                            xrange(self.zsize)] for y in
+                           xrange(self.levels)] for x in
+                          xrange(self.xsize)]
 
-            self.heightmap = numpy.zeros((self.xsize*self.room_size,
-                                          self.zsize*self.room_size))
+            self.heightmap = numpy.zeros((self.xsize * self.room_size,
+                                          self.zsize * self.room_size))
 
             # Set the seed if requested.
             if (self.args.seed is not None):
                 seed(self.args.seed)
-                print 'Seed:',self.args.seed
+                print 'Seed:', self.args.seed
 
             # Now we know the biome, we can setup a name generator
             self.namegen = namegenerator.namegenerator(self.biome)
@@ -277,11 +284,12 @@ class Dungeon (object):
                 self.entrance.height = self.args.entrance_height
             # Name this place
             if self.owner.endswith("s"):
-                owners = self.owner+"'"
+                owners = self.owner + "'"
             else:
-                owners = self.owner+"'s"
-            self.dungeon_name = self.dinfo['dungeon_name'].format(owner=self.owner,
-                                              owners=owners)
+                owners = self.owner + "'s"
+            self.dungeon_name = self.dinfo['dungeon_name'].format(
+                owner=self.owner,
+                owners=owners)
             self.dinfo['full_name'] = self.dungeon_name
             print "Dungeon name:", self.dungeon_name
             print "Finding secret rooms..."
@@ -305,9 +313,9 @@ class Dungeon (object):
             self.placespawners()
 
             # Signature
-            self.setblock(Vec(0,0,0), materials.Chest, 0, hide=True)
-            self.tile_ents[Vec(0,0,0)]=encodeDungeonInfo(self,
-                                                         version)
+            self.setblock(Vec(0, 0, 0), materials.Chest, 0, hide=True)
+            self.tile_ents[Vec(0, 0, 0)] = encodeDungeonInfo(self,
+                                                             version)
             # Add to the dungeon cache.
             key = key = '%s,%s' % (
                 self.position.x,
@@ -347,7 +355,8 @@ class Dungeon (object):
                 saveChunkCache(cache_path, self.chunk_cache)
                 # make sure commandBlockOutput is false.
                 root_tag = nbt.load(self.world.filename)
-                root_tag['Data']['GameRules']['commandBlockOutput'].value = 'false'
+                root_tag['Data']['GameRules'][
+                    'commandBlockOutput'].value = 'false'
                 root_tag.save(self.world.filename)
             else:
                 print "Skipping save! (--write disabled)"
@@ -366,74 +375,80 @@ class Dungeon (object):
         for z in xrange(self.zsize):
             line = u''
             for x in xrange(self.xsize):
-                p = Vec(x,y,z)
+                p = Vec(x, y, z)
                 if p in self.rooms:
                     if self.halls[x][y][z][0] == 1:
-                        line += ( u'\u2554\u2569\u2557')
+                        line += (u'\u2554\u2569\u2557')
                     else:
-                        line += ( u'\u2554\u2550\u2557')
+                        line += (u'\u2554\u2550\u2557')
                 else:
-                    line += ( u'\u2591\u2591\u2591')
+                    line += (u'\u2591\u2591\u2591')
             print line
             line = u''
             for x in xrange(self.xsize):
-                p = Vec(x,y,z)
+                p = Vec(x, y, z)
                 if p in self.rooms:
                     if self.halls[x][y][z][3] == 1:
-                        line += ( u'\u2563')
+                        line += (u'\u2563')
                     else:
-                        line += ( u'\u2551')
+                        line += (u'\u2551')
                     if (cursor == p):
-                        line += ( u'X')
+                        line += (u'X')
                     elif self.maze[p].state == MazeCell.states.CONNECTED:
-                        line += ( u' ')
+                        line += (u' ')
                     elif self.maze[p].state == MazeCell.states.USED:
-                        line += ( u'U')
+                        line += (u'U')
                     else:
-                        line += ( u'R')
+                        line += (u'R')
                     if self.halls[x][y][z][1] == 1:
-                        line += ( u'\u2560')
+                        line += (u'\u2560')
                     else:
-                        line += ( u'\u2551')
+                        line += (u'\u2551')
                 else:
-                    line += ( u'\u2591\u2591\u2591')
+                    line += (u'\u2591\u2591\u2591')
             print line
             line = u''
             for x in xrange(self.xsize):
-                p = Vec(x,y,z)
+                p = Vec(x, y, z)
                 if p in self.rooms:
                     if self.halls[x][y][z][2] == 1:
-                        line += ( u'\u255a\u2566\u255d')
+                        line += (u'\u255a\u2566\u255d')
                     else:
-                        line += ( u'\u255a\u2550\u255d')
+                        line += (u'\u255a\u2550\u255d')
                 else:
-                    line += ( u'\u2591\u2591\u2591')
+                    line += (u'\u2591\u2591\u2591')
             print line
             line = u''
         raw_input('continue...')
 
-
-    def setblock(self, loc, material, data=0, hide=False, lock=False, soft=False):
+    def setblock(
+            self,
+            loc,
+            material,
+            data=0,
+            hide=False,
+            lock=False,
+            soft=False):
         # If material is None, remove this block
-        if material == None:
+        if material is None:
             if loc in self.blocks:
                 del(self.blocks[loc])
             return
 
-        # Build a block if we need to 
+        # Build a block if we need to
         if loc not in self.blocks:
             self.blocks[loc] = Block(loc)
 
         if (loc.x >= 0 and
-            loc.z >= 0 and
-            loc.x < self.xsize*self.room_size and
-            loc.z < self.zsize*self.room_size):
+                loc.z >= 0 and
+                loc.x < self.xsize * self.room_size and
+                loc.z < self.zsize * self.room_size):
             self.heightmap[loc.x][loc.z] = min(loc.y,
                                                self.heightmap[loc.x][loc.z])
 
         # If the existing block is locked, abort
         # Unless we are requesting a locked block
-        if self.blocks[loc].lock == True and lock == False:
+        if self.blocks[loc].lock and lock == False:
             return
 
         # Setup the material
@@ -463,57 +478,62 @@ class Dungeon (object):
             return self.blocks[loc].material
         return False
 
-
     def findlocation(self):
         positions = {}
         sorted_p = []
         world = self.world
-        if self.args.debug: print 'Filtering for depth...'
+        if self.args.debug:
+            print 'Filtering for depth...'
         for key, value in self.good_chunks.iteritems():
-            if value >= (self.levels+1)*self.room_height:
+            if value >= (self.levels + 1) * self.room_height:
                 positions[key] = value
 
-        if (cfg.maximize_distance == True and len(self.dungeon_cache) > 0):
-            if self.args.debug: print 'Marking distances...'
+        if (cfg.maximize_distance and len(self.dungeon_cache) > 0):
+            if self.args.debug:
+                print 'Marking distances...'
             for key in positions.keys():
-                d = 2^64
+                d = 2 ^ 64
                 chunk = Vec(key[0], 0, key[1])
                 for dungeon in self.dungeon_cache:
                     (x, z) = dungeon.split(",")
-                    dpos = Vec(int(x)>>4, 0, int(z)>>4)
+                    dpos = Vec(int(x) >> 4, 0, int(z) >> 4)
                     d = min(d, (dpos - chunk).mag2d())
                 positions[key] = d
 
             sorted_p = sorted(positions.iteritems(),
-                          reverse=True,
-                          key=operator.itemgetter(1))
+                              reverse=True,
+                              key=operator.itemgetter(1))
         else:
             sorted_p = positions.items()
             random.shuffle(sorted_p)
 
-        if self.args.debug: print 'Selecting a location...'
+        if self.args.debug:
+            print 'Selecting a location...'
         all_chunks = set(positions.keys())
         # Offset is fill caves. Expand the size of the dungeon if fill_caves is
         # set. When recording the position, we'll center the dungeon in this
         # area.
         offset = 0
-        if self.dinfo['fill_caves'] == True:
+        if self.dinfo['fill_caves']:
             offset = 10
         for p, d in sorted_p:
             d_chunks = set()
-            for x in xrange(self.xsize+offset):
-                for z in xrange(self.zsize+offset):
-                    d_chunks.add((p[0]+x, p[1]+z))
+            for x in xrange(self.xsize + offset):
+                for z in xrange(self.zsize + offset):
+                    d_chunks.add((p[0] + x, p[1] + z))
             if d_chunks.issubset(all_chunks):
-                if self.args.debug: print 'Found: ', p
-                self.position = Vec((p[0]+(offset/2))*self.room_size,
+                if self.args.debug:
+                    print 'Found: ', p
+                self.position = Vec((p[0] + (offset / 2)) * self.room_size,
                                     0,
-                                    (p[1]+(offset/2))*self.room_size)
-                if self.args.debug: print 'Final: ', self.position
+                                    (p[1] + (offset / 2)) * self.room_size)
+                if self.args.debug:
+                    print 'Final: ', self.position
                 if self.bury():
                     self.worldmap(world, positions)
                     return True
-        if self.args.debug: print 'No positions', p
+        if self.args.debug:
+            print 'No positions', p
         return False
 
     def worldmap(self, world, positions):
@@ -521,8 +541,8 @@ class Dungeon (object):
         columns = 39
         bounds = world.bounds
         if self.args.spawn is None:
-            scx = world.playerSpawnPosition()[0]>>4
-            scz = world.playerSpawnPosition()[2]>>4
+            scx = world.playerSpawnPosition()[0] >> 4
+            scz = world.playerSpawnPosition()[2] >> 4
         else:
             scx = self.args.spawn[0]
             scz = self.args.spawn[1]
@@ -533,10 +553,10 @@ class Dungeon (object):
         map_min_z = bounds.maxcz
         map_max_z = bounds.mincz
         for p in self.good_chunks:
-            map_min_x = min(map_min_x, p[0]+1)
-            map_max_x = max(map_max_x, p[0]-1)
-            map_min_z = min(map_min_z, p[1]+1)
-            map_max_z = max(map_max_z, p[1]-1)
+            map_min_x = min(map_min_x, p[0] + 1)
+            map_max_x = max(map_max_x, p[0] - 1)
+            map_min_z = min(map_min_z, p[1] + 1)
+            map_max_z = max(map_max_z, p[1] - 1)
 
         # Include spawn
         map_min_x = min(map_min_x, spawn_chunk.x)
@@ -544,57 +564,59 @@ class Dungeon (object):
         map_min_z = min(map_min_z, spawn_chunk.z)
         map_max_z = max(map_max_z, spawn_chunk.z)
 
-        if map_max_x-map_min_x+1 >= int(columns):
-            print 'Map too wide for terminal:', map_max_x-map_min_x
+        if map_max_x - map_min_x + 1 >= int(columns):
+            print 'Map too wide for terminal:', map_max_x - map_min_x
             return
 
-        sx = self.position.x/self.room_size
-        sz = self.position.z/self.room_size
-        if self.args.debug: print 'spos:', Vec(sx, 0, sz)
+        sx = self.position.x / self.room_size
+        sz = self.position.z / self.room_size
+        if self.args.debug:
+            print 'spos:', Vec(sx, 0, sz)
         d_box = Box(Vec(sx, 0, sz), self.xsize, world.Height, self.zsize)
 
-        for z in xrange(map_min_z-1, map_max_z+2):
-            for x in xrange(map_min_x-1, map_max_x+2):
-                if (Vec(x,0,z) == spawn_chunk):
+        for z in xrange(map_min_z - 1, map_max_z + 2):
+            for x in xrange(map_min_x - 1, map_max_x + 2):
+                if (Vec(x, 0, z) == spawn_chunk):
                     sys.stdout.write('SS')
                 elif (x == 0 and z == 0):
                     sys.stdout.write('00')
-                elif (Vec(x,0,z) == Vec(sx, 0, sz)):
+                elif (Vec(x, 0, z) == Vec(sx, 0, sz)):
                     sys.stdout.write('XX')
-                elif (d_box.containsPoint(Vec(x,64,z))):
+                elif (d_box.containsPoint(Vec(x, 64, z))):
                     sys.stdout.write('##')
-                elif ((x,z) in positions.keys()):
+                elif ((x, z) in positions.keys()):
                     sys.stdout.write('++')
-                elif ((x,z) in self.good_chunks.keys()):
+                elif ((x, z) in self.good_chunks.keys()):
                     sys.stdout.write('--')
                 else:
                     sys.stdout.write('``')
             print
 
-
     def bury(self, manual=False):
-        if self.args.debug: print 'Burying dungeon...'
-        min_depth = (self.levels+1)*self.room_height
+        if self.args.debug:
+            print 'Burying dungeon...'
+        min_depth = (self.levels + 1) * self.room_height
 
         d_chunks = set()
-        p = (self.position.x/self.room_size,
-             self.position.z/self.room_size)
+        p = (self.position.x / self.room_size,
+             self.position.z / self.room_size)
         for x in xrange(self.xsize):
             for z in xrange(self.zsize):
-                d_chunks.add((p[0]+x, p[1]+z))
+                d_chunks.add((p[0] + x, p[1] + z))
 
         # Calaculate the biome
         biomes = {}
         rset = self.oworld.get_regionset(None)
         for chunk in d_chunks:
-            cdata = rset.get_chunk(chunk[0],chunk[1])
+            cdata = rset.get_chunk(chunk[0], chunk[1])
             key = numpy.argmax(numpy.bincount((cdata['Biomes'].flatten())))
             if key in biomes:
                 biomes[key] += 1
             else:
                 biomes[key] = 1
             self.biome = max(biomes, key=lambda k: biomes[k])
-        if self.args.debug: print 'Biome: ', self.biome
+        if self.args.debug:
+            print 'Biome: ', self.biome
 
         depth = self.world.Height
         for chunk in d_chunks:
@@ -604,7 +626,7 @@ class Dungeon (object):
             else:
                 d1 = self.good_chunks[chunk]
             d1 -= 2
-            if manual == False:
+            if not manual:
                 # Too shallow
                 if (d1 < min_depth):
                     return False
@@ -614,7 +636,7 @@ class Dungeon (object):
 
             depth = min(depth, d1)
 
-        if manual == False:
+        if not manual:
             self.position = Vec(self.position.x,
                                 depth,
                                 self.position.z)
@@ -622,7 +644,7 @@ class Dungeon (object):
 
     def snow(self, pos, limit=16):
         b = self.getblock(pos)
-        if (b != False and b != materials.Air):
+        if (b and b != materials.Air):
             return
 
         count = 1
@@ -634,13 +656,13 @@ class Dungeon (object):
         if count > limit:
             return
 
-        if b == False:
+        if not b:
             soft = True
         else:
             soft = False
         if self.getblock(pos.down(count)).val in materials.heightmap_solids:
-            self.setblock(pos.down(count-1), materials.Snow, soft=soft)
-            #print 'snow placed: ',pos.down(count-1), soft
+            self.setblock(pos.down(count - 1), materials.Snow, soft=soft)
+            # print 'snow placed: ',pos.down(count-1), soft
 
     def vines(self, pos, grow=False):
         # Data values (1.9p5)
@@ -650,10 +672,10 @@ class Dungeon (object):
         # 8 - East
         b = self.getblock(pos)
         # Something here already
-        if (b != False and b != materials.Air):
+        if (b and b != materials.Air):
             return
 
-        if b == False:
+        if not b:
             soft = True
         else:
             soft = False
@@ -661,27 +683,27 @@ class Dungeon (object):
         # Look around for something to attach to
         data = 0
         b = self.getblock(pos.s(1))
-        if (b != False and b.val in materials.vine_solids):
+        if (b and b.val in materials.vine_solids):
             data += 1
         b = self.getblock(pos.w(1))
-        if (b != False and b.val in materials.vine_solids):
+        if (b and b.val in materials.vine_solids):
             data += 2
         b = self.getblock(pos.n(1))
-        if (b != False and b.val in materials.vine_solids):
+        if (b and b.val in materials.vine_solids):
             data += 4
         b = self.getblock(pos.e(1))
-        if (b != False and b.val in materials.vine_solids):
+        if (b and b.val in materials.vine_solids):
             data += 8
         # Nothing to attach to
         if data == 0:
             return
         self.setblock(pos, materials.Vines, data, soft=soft)
-        if grow == False:
+        if not grow:
             return
         pos = pos.down(1)
         b = self.getblock(pos)
-        while ((b == False or b == materials.Air) and random.randint(1,100)<75):
-            if b == False:
+        while ((b == False or b == materials.Air) and random.randint(1, 100) < 75):
+            if not b:
                 soft = True
             else:
                 soft = False
@@ -696,20 +718,20 @@ class Dungeon (object):
         top = min(c1.y, c3.y)
         for p in iterate_cube(c1, c3):
             if (p not in self.blocks or
-                self.blocks[p].material != materials.Air):
+                    self.blocks[p].material != materials.Air):
                 continue
             count = 0
             chance = 80 - (p.y - top) * 14
-            for q in (Vec(1,0,0), Vec(-1,0,0),
-                      Vec(0,1,0), Vec(0,-1,0),
-                      Vec(0,0,1), Vec(0,0,-1)):
-                if (p+q in self.blocks and
-                    self.blocks[p+q].material != materials.Air and
-                    random.randint(1,100) <= chance):
+            for q in (Vec(1, 0, 0), Vec(-1, 0, 0),
+                      Vec(0, 1, 0), Vec(0, -1, 0),
+                      Vec(0, 0, 1), Vec(0, 0, -1)):
+                if (p + q in self.blocks and
+                        self.blocks[p + q].material != materials.Air and
+                        random.randint(1, 100) <= chance):
                     count += 1
             if count >= 3:
                 webs[p] = True
-        for p,q in webs.items():
+        for p, q in webs.items():
             self.setblock(p, materials.Cobweb)
 
     def processBiomes(self):
@@ -717,17 +739,17 @@ class Dungeon (object):
         rset = self.oworld.get_regionset(None)
         r = ov_world.CachedRegionSet(rset, self.caches)
         wp = Vec(self.position.x, 0, self.position.z)
-        count = self.xsize*16*self.zsize*16
+        count = self.xsize * 16 * self.zsize * 16
         self.pm.init(count, label='Processing biomes:')
-        for p in iterate_cube(Vec(0,0,0),
-                              Vec(self.xsize*16-1,0,self.zsize*16-1)):
+        for p in iterate_cube(Vec(0, 0, 0),
+                              Vec(self.xsize * 16 - 1, 0, self.zsize * 16 - 1)):
             self.pm.update_left(count)
             count -= 1
-            cx = (p.x+wp.x)//16
-            cz = (p.z+wp.z)//16
-            chunk = r.get_chunk(cx,cz)
-            biome = chunk['Biomes'][p.x%16][p.z%16]
-            # Vines 
+            cx = (p.x + wp.x) // 16
+            cz = (p.z + wp.z) // 16
+            chunk = r.get_chunk(cx, cz)
+            biome = chunk['Biomes'][p.x % 16][p.z % 16]
+            # Vines
             if biome in (6,     # Swampland
                          134,   # Swampland M
                          21,    # Jungle
@@ -735,32 +757,32 @@ class Dungeon (object):
                          22,    # Jungle Hills
                          23,    # Jungle Edge
                          151,   # Jungle Edge M
-                        ):
+                         ):
                 h = 0
                 try:
-                    h = min(self.heightmap[p.x-1][p.z], h)
+                    h = min(self.heightmap[p.x - 1][p.z], h)
                 except IndexError:
                     pass
                 try:
-                    h = min(self.heightmap[p.x+1][p.z], h)
+                    h = min(self.heightmap[p.x + 1][p.z], h)
                 except IndexError:
                     pass
                 try:
-                    h = min(self.heightmap[p.x][p.z-1], h)
+                    h = min(self.heightmap[p.x][p.z - 1], h)
                 except IndexError:
                     pass
                 try:
-                    h = min(self.heightmap[p.x][p.z+1], h)
+                    h = min(self.heightmap[p.x][p.z + 1], h)
                 except IndexError:
                     pass
                 if h == 0:
                     continue
-                for q in iterate_cube(Vec(p.x,h,p.z),
-                                      Vec(p.x,0,p.z)):
-                    if random.randint(1,100)<20:
+                for q in iterate_cube(Vec(p.x, h, p.z),
+                                      Vec(p.x, 0, p.z)):
+                    if random.randint(1, 100) < 20:
                         self.vines(q, grow=True)
-            # Snow 
-            if biome in (10,    # Frozen Ocean 
+            # Snow
+            if biome in (10,    # Frozen Ocean
                          11,    # Frozen River
                          12,    # Ice Plains
                          140,   # Ice Plains Spikes
@@ -769,13 +791,12 @@ class Dungeon (object):
                          30,    # Cold Taiga
                          158,   # Cold Taiga M
                          31,    # Cold Taiga Hills
-                        ):
+                         ):
                 h = self.heightmap[p.x][p.z]
                 if (h < 0):
-                    self.snow(Vec(p.x, h-1, p.z), limit=abs(h-1))
+                    self.snow(Vec(p.x, h - 1, p.z), limit=abs(h - 1))
 
         self.pm.set_complete()
-
 
     def getspawnertags(self, entity):
         # See if we have a custom spawner match
@@ -802,7 +823,6 @@ class Dungeon (object):
 
         return root_tag
 
-
     def addsign(self, loc, text1, text2, text3, text4):
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Sign')
@@ -815,30 +835,31 @@ class Dungeon (object):
         root_tag['Text4'] = nbt.TAG_String(text4)
         self.tile_ents[loc] = root_tag
 
-
     def addspawner(self, loc, entity='', tier=-1):
         if (entity == ''):
-            level = loc.y/self.room_height
+            level = loc.y / self.room_height
             if (cfg.max_mob_tier == 0 or level < 0):
                 tier = 0
             elif tier == -1:
                 if (self.levels > 1):
                     tier = (float(level) /
-                            float(self.levels-1) *
-                            float(cfg.max_mob_tier-2))+1.5
-                    tier = int(min(cfg.max_mob_tier-1, tier))
+                            float(self.levels - 1) *
+                            float(cfg.max_mob_tier - 2)) + 1.5
+                    tier = int(min(cfg.max_mob_tier - 1, tier))
                 else:
-                    tier = cfg.max_mob_tier-1
+                    tier = cfg.max_mob_tier - 1
             entity = weighted_choice(cfg.master_mobs[tier])
-            #print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
+            # print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
         root_tag = self.getspawnertags(entity)
         # Do generic spawner setup
         root_tag['id'] = nbt.TAG_String('MobSpawner')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        try: root_tag['Delay']
-        except: root_tag['Delay'] = nbt.TAG_Short(0)
+        try:
+            root_tag['Delay']
+        except:
+            root_tag['Delay'] = nbt.TAG_Short(0)
         # Calculate spawner tags from config
         if tier == cfg.max_mob_tier:
             SpawnCount = cfg.treasure_SpawnCount
@@ -854,23 +875,34 @@ class Dungeon (object):
             SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
         # But don't overwrite tags from NBT files
         if (SpawnCount != 0):
-            try: root_tag['SpawnCount']
-            except: root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
+            try:
+                root_tag['SpawnCount']
+            except:
+                root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
         if (SpawnMaxNearbyEntities != 0):
-            try: root_tag['MaxNearbyEntities']
-            except: root_tag['MaxNearbyEntities'] = nbt.TAG_Short(SpawnMaxNearbyEntities)
+            try:
+                root_tag['MaxNearbyEntities']
+            except:
+                root_tag['MaxNearbyEntities'] = nbt.TAG_Short(
+                    SpawnMaxNearbyEntities)
         if (SpawnMinDelay != 0):
-            try: root_tag['MinSpawnDelay']
-            except: root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
+            try:
+                root_tag['MinSpawnDelay']
+            except:
+                root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
         if (SpawnMaxDelay != 0):
-            try: root_tag['MaxSpawnDelay']
-            except: root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
+            try:
+                root_tag['MaxSpawnDelay']
+            except:
+                root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
         if (SpawnRequiredPlayerRange != 0):
-            try: root_tag['RequiredPlayerRange']
-            except: root_tag['RequiredPlayerRange'] = nbt.TAG_Short(SpawnRequiredPlayerRange)
+            try:
+                root_tag['RequiredPlayerRange']
+            except:
+                root_tag['RequiredPlayerRange'] = nbt.TAG_Short(
+                    SpawnRequiredPlayerRange)
         # Finally give the tag to the entity
         self.tile_ents[loc] = root_tag
-
 
     def addnoteblock(self, loc, clicks=0):
         root_tag = nbt.TAG_Compound()
@@ -881,24 +913,33 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-
     def loadrandbooktext(self):
-        if os.path.isdir(os.path.join(sys.path[0],cfg.dir_books)):
-            book_path = os.path.join(sys.path[0],cfg.dir_books)
+        if os.path.isdir(os.path.join(sys.path[0], cfg.dir_books)):
+            book_path = os.path.join(sys.path[0], cfg.dir_books)
         elif os.path.isdir(cfg.dir_books):
             book_path = cfg.dir_books
         else:
             book_path = ''
-        #Make a list of all the txt files in the books directory
+        # Make a list of all the txt files in the books directory
         booklist = []
         if book_path != '':
             for file in os.listdir(book_path):
                 if (str(file.lower()).endswith(".txt") and
-                    file.lower() is not "readme.txt"):
+                        file.lower() is not "readme.txt"):
                     booklist.append(file)
         # Book 'editions'
-        ed_dict = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th']
-        
+        ed_dict = [
+            '1st',
+            '2nd',
+            '3rd',
+            '4th',
+            '5th',
+            '6th',
+            '7th',
+            '8th',
+            '9th',
+            '10th']
+
         item = nbt.TAG_Compound()
         item['id'] = nbt.TAG_Short(387)
         item['Count'] = nbt.TAG_Byte(1)
@@ -914,18 +955,28 @@ class Dungeon (object):
         bookfile.close()
         # Create NBT tag
         item['tag'] = nbt.TAG_Compound()
-        item['tag']['author'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
-        item['tag']['title'] = nbt.TAG_String(filter(lambda x: x in valid_characters, bookdata.pop(0)))
+        item['tag']['author'] = nbt.TAG_String(
+            filter(
+                lambda x: x in valid_characters,
+                bookdata.pop(0)))
+        item['tag']['title'] = nbt.TAG_String(
+            filter(
+                lambda x: x in valid_characters,
+                bookdata.pop(0)))
         item['tag']["pages"] = nbt.TAG_List()
-        # Slice the pages at 50 and the page text at 256 to match minecraft limits
+        # Slice the pages at 50 and the page text at 256 to match minecraft
+        # limits
         for p in bookdata[:50]:
             page = filter(lambda x: x in valid_characters, p)
             item['tag']["pages"].append(nbt.TAG_String(page[:256]))
         # Give the book an edition
-        ed = topheavy_random(0,9)
+        ed = topheavy_random(0, 9)
         item['tag']['display'] = nbt.TAG_Compound()
         item['tag']['display']['Lore'] = nbt.TAG_List()
-        item['tag']['display']['Lore'].append(nbt.TAG_String(ed_dict[ed]+' Edition'))
+        item['tag']['display']['Lore'].append(
+            nbt.TAG_String(
+                ed_dict[ed] +
+                ' Edition'))
         if (ed == 0):
             item['tag']['generation'] = nbt.TAG_Int(0)
         elif (ed == 1):
@@ -935,20 +986,20 @@ class Dungeon (object):
 
         return item
 
-
     def loadrandpainting(self):
-        if os.path.isdir(os.path.join(sys.path[0],cfg.dir_paintings)):
-            paint_path = os.path.join(sys.path[0],cfg.dir_paintings)
+        if os.path.isdir(os.path.join(sys.path[0], cfg.dir_paintings)):
+            paint_path = os.path.join(sys.path[0], cfg.dir_paintings)
         elif os.path.isdir(cfg.dir_paintings):
             paint_path = cfg.dir_paintings
         else:
             paint_path = ''
-        # Make a list of all the pairs of dat and txt files in the paintings directory
+        # Make a list of all the pairs of dat and txt files in the paintings
+        # directory
         paintlist = []
         if paint_path != '':
             for file in os.listdir(paint_path):
                 if str(file.lower()).endswith(".dat"):
-                    if os.path.isfile(os.path.join(paint_path,file[:-3]+'txt')):
+                    if os.path.isfile(os.path.join(paint_path, file[:-3] + 'txt')):
                         paintlist.append(file[:-4])
         # No paintings? Give a blank map (ID: 395)
         if len(paintlist) == 0:
@@ -959,20 +1010,19 @@ class Dungeon (object):
 
         return self.mapstore.add_painting(random.choice(paintlist))
 
-
     def loadrandfortune(self):
-        if os.path.isfile(os.path.join(sys.path[0],cfg.file_fortunes)):
-            forune_path = os.path.join(sys.path[0],cfg.file_fortunes)
+        if os.path.isfile(os.path.join(sys.path[0], cfg.file_fortunes)):
+            forune_path = os.path.join(sys.path[0], cfg.file_fortunes)
         elif os.path.isfile(cfg.file_fortunes):
             forune_path = cfg.file_fortunes
         else:
-            return '...in bed.'     #Fortune file not found
+            return '...in bed.'  # Fortune file not found
 
         # Retrieve a random line from a file, reading through the file once
         # Prevents us from having to load the whole file in to memory
         forune_file = open(forune_path)
         lineNum = 0
-        while 1:
+        while True:
             aLine = forune_file.readline()
             if not aLine:
                 break
@@ -980,11 +1030,10 @@ class Dungeon (object):
                 continue
             lineNum = lineNum + 1
             # How likely is it that this is the last line of the file?
-            if random.uniform(0,lineNum)<1:
+            if random.uniform(0, lineNum) < 1:
                 fortune = aLine.rstrip()
         forune_file.close()
         return fortune
-
 
     def buildItemTag(self, i):
         item_tag = nbt.TAG_Compound()
@@ -1007,7 +1056,8 @@ class Dungeon (object):
                 elist.append(e_tag)
         # Custom Potion Effects
         if i.p_effect != '':
-            try: item_tag['tag']
+            try:
+                item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
             item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
@@ -1021,40 +1071,53 @@ class Dungeon (object):
                 elist.append(e_tag)
         # Naming
         if i.customname != '':
-            try: item_tag['tag']
+            try:
+                item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
             item_tag['tag']['display'] = nbt.TAG_Compound()
             item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
         # Lore Text
         if i.lore != '' or i.flag == 'FORTUNE':
-            try: item_tag['tag']
+            try:
+                item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
-            try: item_tag['tag']['display']
+            try:
+                item_tag['tag']['display']
             except:
                 item_tag['tag']['display'] = nbt.TAG_Compound()
             item_tag['tag']['display']['Lore'] = nbt.TAG_List()
             if i.flag == 'FORTUNE':
-                item_tag['tag']['display']['Name'] = nbt.TAG_String('Fortune Cookie')
+                item_tag['tag']['display'][
+                    'Name'] = nbt.TAG_String('Fortune Cookie')
                 i.lore = self.loadrandfortune()
-                loredata = textwrap.wrap(i.lore,40)
+                loredata = textwrap.wrap(i.lore, 40)
                 for loretext in loredata[:10]:
-                    item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext))
+                    item_tag['tag']['display']['Lore'].append(
+                        nbt.TAG_String(loretext))
             else:
                 loredata = i.lore.split(':')
                 for loretext in loredata[:10]:
-                    item_tag['tag']['display']['Lore'].append(nbt.TAG_String(loretext[:50]))
+                    item_tag['tag']['display']['Lore'].append(
+                        nbt.TAG_String(
+                            loretext[
+                                :50]))
         # Dyed
         if (i.flag == 'DYED'):
-            try: item_tag['tag']
+            try:
+                item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
-            try: item_tag['tag']['display']
+            try:
+                item_tag['tag']['display']
             except:
                 item_tag['tag']['display'] = nbt.TAG_Compound()
             if i.flagparam == '':
-                item_tag['tag']['display']['color'] = nbt.TAG_Int(random.randint(0, 16777215))
+                item_tag['tag']['display']['color'] = nbt.TAG_Int(
+                    random.randint(
+                        0,
+                        16777215))
             else:
                 item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
         # special cases for written books and paintings
@@ -1064,19 +1127,18 @@ class Dungeon (object):
             item_tag = self.loadrandpainting()
         return item_tag
 
-
     def addchest(self, loc, tier=-1, loot=[], name=''):
-        level = loc.y/self.room_height
+        level = loc.y / self.room_height
         if (tier < 0):
             if (self.levels > 1):
                 tierf = (float(level) /
-                         float(self.levels-1) *
-                         float(loottable._maxtier-2))+1.5
-                tierf = min(loottable._maxtier-1, tierf)
+                         float(self.levels - 1) *
+                         float(loottable._maxtier - 2)) + 1.5
+                tierf = min(loottable._maxtier - 1, tierf)
             else:
-                tierf = loottable._maxtier-1
+                tierf = loottable._maxtier - 1
             tier = max(1, int(tierf))
-            #print 'Adding chest: level',level+1,'tier',tier
+            # print 'Adding chest: level',level+1,'tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -1087,7 +1149,7 @@ class Dungeon (object):
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         if len(loot) == 0:
-            loot = list(loottable.rollLoot(tier, level+1))
+            loot = list(loottable.rollLoot(tier, level + 1))
         for i in loot:
             if i.file != '':
                 item_tag = item_tag = nbt.load(i.file)
@@ -1099,12 +1161,11 @@ class Dungeon (object):
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 
-
     def addchestitem_tag(self, loc, item_tag):
         '''Add an item to an existing chest'''
         # No chest here!
         if (loc not in self.tile_ents or
-            self.tile_ents[loc]['id'].value != 'Chest'):
+                self.tile_ents[loc]['id'].value != 'Chest'):
             return False
         root_tag = self.tile_ents[loc]
         slot = len(root_tag['Items'])
@@ -1121,12 +1182,12 @@ class Dungeon (object):
         self.addtrap(loc, name=name, count=count)
 
     def addtrap(self, loc, name=None, count=None):
-        if name == None:
+        if name is None:
             name = weighted_choice(cfg.master_chest_traps)
-        if count == None:
+        if count is None:
             count = int(cfg.lookup_chest_traps[name][1])
         # sanity check for count
-        if count > 9*64:
+        if count > 9 * 64:
             print '\nFATAL: Item count for dispenser trap too large! Max number of items is 9x64 = 576! Check config file.'
             print 'Item name:', name
             print 'Count:', count
@@ -1149,7 +1210,8 @@ class Dungeon (object):
                 item_tag['Count'] = nbt.TAG_Byte(count)
             count -= 64
             item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
-            item_tag['Damage'] = nbt.TAG_Short(loottable.items.byName(name).data)
+            item_tag['Damage'] = nbt.TAG_Short(
+                loottable.items.byName(name).data)
             inv_tag.append(item_tag)
             slot += 1
         self.tile_ents[loc] = root_tag
@@ -1168,7 +1230,7 @@ class Dungeon (object):
     def setroom(self, coord, room):
         if coord not in self.rooms:
             self.rooms[coord] = room
-            #print 'setroom:', coord
+            # print 'setroom:', coord
             return room.placed()
         print 'FATAL: Tried to place a room in a filled location!'
         print coord
@@ -1179,26 +1241,26 @@ class Dungeon (object):
 
     def genrooms(self):
         # Generate the maze used for room and hall placement.
-        # stairwells contains the lower half of a stairwell. 
+        # stairwells contains the lower half of a stairwell.
         self.stairwells = []
         entrance_pos = None
         exit_pos = None
         # The size of our dungeon. Note this is once less in the depth
         # dimension, because for most of the dungeon we don't want multilevel
-        # rooms to extend to the last level. 
-        dsize = Vec(self.xsize, self.levels-1, self.zsize)
+        # rooms to extend to the last level.
+        dsize = Vec(self.xsize, self.levels - 1, self.zsize)
         # Some convenient lookups.
         # dirs holds vectors for moving in a cardinal direction.
-        dirs = {'N': Vec(0,0,-1),
-                'E': Vec(1,0,0),
-                'S': Vec(0,0,1),
-                'W': Vec(-1,0,0)}
+        dirs = {'N': Vec(0, 0, -1),
+                'E': Vec(1, 0, 0),
+                'S': Vec(0, 0, 1),
+                'W': Vec(-1, 0, 0)}
         # sides maps a dir to a room side for hall placement.
         sides = {'N': 0,
                  'E': 1,
                  'S': 2,
                  'W': 3}
-        # opposite sides for setting the matching hall in the adjacent room. 
+        # opposite sides for setting the matching hall in the adjacent room.
         osides = {'N': 2,
                   'E': 3,
                   'S': 0,
@@ -1209,38 +1271,38 @@ class Dungeon (object):
         state = MazeCell.states
 
         # Start in a random location on level 1, unless the -e
-        # options was used. 
+        # options was used.
         if (self.args.entrance is not None):
             x = self.args.entrance[0]
             z = self.args.entrance[1]
         else:
-            x = random.randint(0, self.xsize-1)
-            z = random.randint(0, self.zsize-1)
+            x = random.randint(0, self.xsize - 1)
+            z = random.randint(0, self.zsize - 1)
 
         # A maximum "depth" value. (depth being distance from the level
-        # entrance) No one room can be this deep on a single # level. 
+        # entrance) No one room can be this deep on a single # level.
         maxdepth = self.xsize * self.zsize * self.levels + 1
-        # A disjoint set in which to keep our room sets. 
+        # A disjoint set in which to keep our room sets.
         ds = DisjointSet()
-        # Generate a maze for each level. 
+        # Generate a maze for each level.
         for y in xrange(self.levels):
             # If we are on the last level, allow rooms on this level. Normally
             # we don't allow rooms to extend to the last level to prevent multi
-            # level rooms from crossing the treasure chamber. 
-            if (y == self.levels-1):
+            # level rooms from crossing the treasure chamber.
+            if (y == self.levels - 1):
                 dsize = dsize.down(1)
             # The level starts here.
-            level_start = Vec(x,y,z)
+            level_start = Vec(x, y, z)
             # The first cell contains an entrance. This is a tower if we are on
-            # level 1, otherwise it's a stairwell. 
+            # level 1, otherwise it's a stairwell.
             if (y == 0):
                 # Add the entrance cell to the stairwells list.
-                self.stairwells.append(Vec(x,y,z))
+                self.stairwells.append(Vec(x, y, z))
                 # For all levels except the last level, rooms can be as big as
                 # they want. For the last level it has to be 1x1x1.
-                maxsize = Vec(10,18,10)
-                if (y == self.levels-1):
-                    maxsize = Vec(1,1,1)
+                maxsize = Vec(10, 18, 10)
+                if (y == self.levels - 1):
+                    maxsize = Vec(1, 1, 1)
                 # Pick an entrance capable room, place it, find the room that
                 # contains the actual entrance (for multi-tile rooms) and place
                 # the entrance feature there. Record the entrance feature for
@@ -1254,12 +1316,12 @@ class Dungeon (object):
                 eroom.features.append(feature)
                 feature.placed()
                 self.entrance = feature
-                # Mark cell as connected or used. 
+                # Mark cell as connected or used.
                 # Cells on this level are marked as connected so we can branch
                 # off of them as needed. Cells on other levels are marked as
                 # used, so they can be connected to later. Each set of cells on
                 # other levels is its own set in the disjoint set so we can
-                # mange connections to them later. 
+                # mange connections to them later.
                 roots = {}
                 for p in ps:
                     if p.y == y:
@@ -1278,11 +1340,11 @@ class Dungeon (object):
                 x = p.x
                 z = p.z
             else:
-                #Any other start cell on a lower level is a stairwell
-                self.stairwells.append(Vec(x,y,z))
-                maxsize = Vec(10,18,10)
-                if (y == self.levels-1):
-                    maxsize = Vec(1,1,1)
+                # Any other start cell on a lower level is a stairwell
+                self.stairwells.append(Vec(x, y, z))
+                maxsize = Vec(10, 18, 10)
+                if (y == self.levels - 1):
+                    maxsize = Vec(1, 1, 1)
                 room, pos = rooms.pickRoom(self, dsize, level_start,
                                            stairwell=True, maxsize=maxsize)
                 ps = self.setroom(pos, room)
@@ -1309,25 +1371,25 @@ class Dungeon (object):
                 x = p.x
                 z = p.z
                 # Upstairs. Override the feature of the room above to blank so
-                # it can hold the stairwell. 
+                # it can hold the stairwell.
                 posup = level_start.up(1)
                 room = self.rooms[posup]
                 feature = features.new('blank', room)
                 room.features.append(feature)
                 feature.placed()
-            # If we are on the last level, place a treasure room. 
-            if (y == self.levels-1):
+            # If we are on the last level, place a treasure room.
+            if (y == self.levels - 1):
                 # Try to find a location as far away from the level_start as
                 # possible.
-                pos = Vec(0,y,0)
-                if (level_start.x < self.xsize/2):
-                    pos.x = self.xsize-1
-                if (level_start.z < self.zsize/2):
-                    pos.z = self.zsize-1
+                pos = Vec(0, y, 0)
+                if (level_start.x < self.xsize / 2):
+                    pos.x = self.xsize - 1
+                if (level_start.z < self.zsize / 2):
+                    pos.z = self.zsize - 1
                 exit_pos = pos
                 # Pick a treasure capable room
                 room, pos = rooms.pickRoom(self, dsize, pos, treasure=True,
-                                           room_list = cfg.master_treasure,
+                                           room_list=cfg.master_treasure,
                                            default='pitwitharchers')
                 ps = self.setroom(pos, room)
                 feature = features.new('blank', room)
@@ -1337,7 +1399,7 @@ class Dungeon (object):
                 # Place all these cells into a RESTRICTED set for connection
                 # later. These have a depth of zero, since we don't want to
                 # count them in the depth calculation. This helps keep shortcuts
-                # to the treasure room to a minimum. 
+                # to the treasure room to a minimum.
                 root1 = ds.find(pos)
                 for p in ps:
                     root2 = ds.find(p)
@@ -1346,32 +1408,34 @@ class Dungeon (object):
                     self.maze[p].state = state.RESTRICTED
                     if self.maze[p].depth >= 0:
                         self.maze[p].depth = 0
-            while 1:
+            while True:
                 # Walk the maze.
-                if self.args.debug == True:
-                    self.printmaze(y, cursor=Vec(x,y,z))
+                if self.args.debug:
+                    self.printmaze(y, cursor=Vec(x, y, z))
                 # Shuffle the directions.
                 random.shuffle(dkeys)
-                # Store the last known cell. 
+                # Store the last known cell.
                 lx = x
                 lz = z
                 # Work through all possible directions, looking for a valid
-                # one. 
+                # one.
                 for d in dkeys:
-                    # (nx, nz) is the next cell to consider. 
+                    # (nx, nz) is the next cell to consider.
                     nx = x + dirs[d].x
                     nz = z + dirs[d].z
                     # Check to see if the next cell is valid. It must
-                    # be within the bounds of the level, and not yet connected. 
+                    # be within the bounds of the level, and not yet connected.
                     if (nx >= 0 and
                         nz >= 0 and
                         nx < self.xsize and
                         nz < self.zsize and
-                        (self.maze[Vec(nx,y,nz)].state == state.BLANK or
-                         self.maze[Vec(nx,y,nz)].state == state.USED)):
+                        (self.maze[Vec(nx, y, nz)].state == state.BLANK or
+                         self.maze[Vec(nx, y, nz)].state == state.USED)):
                         # For blank cells, we generate a new room
-                        if self.maze[Vec(nx,y,nz)].state == state.BLANK:
-                            room, pos = rooms.pickRoom(self, dsize, Vec(nx,y,nz))
+                        if self.maze[Vec(nx, y, nz)].state == state.BLANK:
+                            room, pos = rooms.pickRoom(
+                                self, dsize, Vec(
+                                    nx, y, nz))
                             ps = self.setroom(pos, room)
                             roots = {}
                             for p in ps:
@@ -1391,17 +1455,17 @@ class Dungeon (object):
                         # For used rooms, we grab the set of rooms and pick a
                         # random one. Reset all the room to connected.
                         else:
-                            root = ds.find(Vec(nx,y,nz))
+                            root = ds.find(Vec(nx, y, nz))
                             sets = ds.split_sets()
                             ps = sets[root]
                             for p in ps:
                                 self.maze[p].state = state.CONNECTED
                         # Mark the halls leaving the current cell and the
                         # next cell as connected. We'll set the hall class
-                        # later. 
+                        # later.
                         self.halls[x][y][z][sides[d]] = 1
                         self.halls[nx][y][nz][osides[d]] = 1
-                        # Set the current cell. 
+                        # Set the current cell.
                         p = choice(ps)
                         x = p.x
                         z = p.z
@@ -1411,42 +1475,44 @@ class Dungeon (object):
                 # If we're stuck, hunt for a new starting cell. If
                 # the above loop found a direction to move then we skip
                 # this. Otherwise we start at (0,0) and try to find an
-                # disconnected cell that has a connected neighbor we can 
-                # connect to.  
+                # disconnected cell that has a connected neighbor we can
+                # connect to.
                 if (lx == x and lz == z):
-                    #print 'Hunting...'
-                    for p in iterate_plane(Vec(0,y,0),
-                                           Vec(self.xsize-1,y,self.zsize-1)):
+                    # print 'Hunting...'
+                    for p in iterate_plane(Vec(0, y, 0),
+                                           Vec(self.xsize - 1, y, self.zsize - 1)):
                         # Cell was connected, keep looking.
-                        if (self.maze[Vec(p.x,y,p.z)].state ==
-                            state.CONNECTED
-                            or
-                            self.maze[Vec(p.x,y,p.z)].state ==
-                            state.RESTRICTED):
+                        if (self.maze[Vec(p.x, y, p.z)].state ==
+                                state.CONNECTED
+                                or
+                                self.maze[Vec(p.x, y, p.z)].state ==
+                                state.RESTRICTED):
                             continue
                         # Cell is disconnected. Let's try to connect it to a
                         # neighbor. First, catalog which directions have a
-                        # connected neighbor. 
+                        # connected neighbor.
                         neighbors = []
                         for d in dkeys:
-                            key = Vec(p.x,y,p.z)+dirs[d]
+                            key = Vec(p.x, y, p.z) + dirs[d]
                             if(key in self.maze and
                                self.maze[key].state == state.CONNECTED):
                                 neighbors.append(d)
-                        # If there are no connected neighbors, keep looking. 
+                        # If there are no connected neighbors, keep looking.
                         if (len(neighbors) == 0):
                             continue
                         # We found one! Pick a random connected neighbor cell
                         # and connect the halls. Set our current cell and move
-                        # on like nothing is wrong. 
+                        # on like nothing is wrong.
                         d = random.choice(neighbors)
                         x = p.x
                         z = p.z
                         ox = x + dirs[d].x
                         oz = z + dirs[d].z
                         # If this is a BLANK cell, generate a new room.
-                        if (self.maze[Vec(x,y,z)].state == state.BLANK):
-                            room, pos = rooms.pickRoom(self, dsize, Vec(x,y,z))
+                        if (self.maze[Vec(x, y, z)].state == state.BLANK):
+                            room, pos = rooms.pickRoom(
+                                self, dsize, Vec(
+                                    x, y, z))
                             ps = self.setroom(pos, room)
                             roots = {}
                             for p in ps:
@@ -1464,7 +1530,7 @@ class Dungeon (object):
                         # For used rooms, we grab the set of rooms and pick a
                         # random one. Set all the rooms to connected.
                         else:
-                            root = ds.find(Vec(x,y,z))
+                            root = ds.find(Vec(x, y, z))
                             sets = ds.split_sets()
                             ps = sets[root]
                             for p in ps:
@@ -1477,133 +1543,135 @@ class Dungeon (object):
                         break
 
                 # If the last cell and current cell are still the same (we could
-                # not move, and the hunt failed) then we've filled the level. 
+                # not move, and the hunt failed) then we've filled the level.
                 # Recalculate the depth tree, find the deepest cell on
                 # this level, and use it for the stairwell (starting point)
                 # on the next.
                 if (lx == x and lz == z):
                     # Sprinkle some extra hallways into the dungeon using the
-                    # loops config parameter. 
-                    for p in iterate_plane(Vec(0,y,0),
-                                           Vec(self.xsize-1,y,self.zsize-1)):
+                    # loops config parameter.
+                    for p in iterate_plane(Vec(0, y, 0),
+                                           Vec(self.xsize - 1, y, self.zsize - 1)):
                         for d in dirs.keys():
                             nx = p.x + dirs[d].x
                             nz = p.z + dirs[d].z
                             if (nx >= 0 and
-                                nz >= 0 and
-                                nx < self.xsize and
-                                nz < self.zsize):
+                                    nz >= 0 and
+                                    nx < self.xsize and
+                                    nz < self.zsize):
                                 if (self.halls[p.x][y][p.z][sides[d]] is not 1 and
-                                    self.halls[nx][y][nz][osides[d]] is not 1 and
-                                    random.randint(1,100) <= cfg.loops):
+                                        self.halls[nx][y][nz][osides[d]] is not 1 and
+                                        random.randint(1, 100) <= cfg.loops):
                                     self.halls[p.x][y][p.z][sides[d]] = 1
                                     self.halls[nx][y][nz][osides[d]] = 1
-                    if self.args.debug == True:
+                    if self.args.debug:
                         print 'Post loops:'
-                        self.printmaze(y, cursor=Vec(x,y,z))
+                        self.printmaze(y, cursor=Vec(x, y, z))
                     # Rebuild the depth tree.
                     # The first room on this level has a depth of 1
                     self.maze[level_start].depth = 1
                     recurse = True
-                    while (recurse == True):
+                    while (recurse):
                         recurse = False
-                        for p in iterate_plane(Vec(0,y,0),
-                                           Vec(self.xsize-1,y,self.zsize-1)):
-                            if (self.maze[Vec(p.x,y,p.z)].depth == maxdepth):
+                        for p in iterate_plane(Vec(0, y, 0),
+                                               Vec(self.xsize - 1, y, self.zsize - 1)):
+                            if (self.maze[Vec(p.x, y, p.z)].depth == maxdepth):
                                 recurse = True
                                 depth = maxdepth
                                 for d in dirs.keys():
-                                    if (self.halls[p.x][y][p.z][sides[d]]==1):
+                                    if (self.halls[p.x][y][p.z][sides[d]] == 1):
                                         depth = min(
-                                self.maze[Vec(p.x,y,p.z)+dirs[d]].depth+1,
-                                self.maze[Vec(p.x,y,p.z)].depth)
-                                        self.maze[Vec(p.x,y,p.z)].depth = depth
+                                            self.maze[Vec(p.x, y, p.z) + dirs[d]].depth + 1,
+                                            self.maze[Vec(p.x, y, p.z)].depth)
+                                        self.maze[
+                                            Vec(p.x, y, p.z)].depth = depth
                     # Find the deepest cell on this level that can contain a
                     # stairwell.
                     depth = 0
-                    for p in iterate_plane(Vec(0,y,0),
-                                           Vec(self.xsize-1,y,self.zsize-1)):
-                        if (self.maze[Vec(p.x,y,p.z)].depth > depth and
-                            self.rooms[Vec(p.x,y,p.z)]._is_stairwell == True):
-                            depth = self.maze[Vec(p.x,y,p.z)].depth
+                    for p in iterate_plane(Vec(0, y, 0),
+                                           Vec(self.xsize - 1, y, self.zsize - 1)):
+                        if (self.maze[Vec(p.x, y, p.z)].depth > depth and
+                                self.rooms[Vec(p.x, y, p.z)]._is_stairwell):
+                            depth = self.maze[Vec(p.x, y, p.z)].depth
                             x = p.x
                             z = p.z
                     break
 
         # Connect the treasure room. Find the deepest cell that has a neighbor
-        # with a depth of zero and connect it. 
+        # with a depth of zero and connect it.
         depth = 0
-        point = Vec(0,0,0)
-        opoint = Vec(0,0,0)
+        point = Vec(0, 0, 0)
+        opoint = Vec(0, 0, 0)
         dr = 'N'
-        for p in iterate_plane(Vec(0,y,0), Vec(self.xsize-1,y,self.zsize-1)):
-            if (self.maze[Vec(p.x,y,p.z)].depth > depth):
-                for d,v in dirs.items():
-                    if (p+v in self.maze and self.maze[p+v].depth == 0):
+        for p in iterate_plane(Vec(0, y, 0), Vec(self.xsize - 1, y, self.zsize - 1)):
+            if (self.maze[Vec(p.x, y, p.z)].depth > depth):
+                for d, v in dirs.items():
+                    if (p + v in self.maze and self.maze[p + v].depth == 0):
                         point = p
-                        opoint = p+v
-                        depth = self.maze[Vec(p.x,y,p.z)].depth
+                        opoint = p + v
+                        depth = self.maze[Vec(p.x, y, p.z)].depth
                         dr = d
         self.halls[point.x][y][point.z][sides[dr]] = 1
         self.halls[opoint.x][y][opoint.z][osides[dr]] = 1
-        if self.args.debug == True:
+        if self.args.debug:
             print 'Post treasure:'
-            self.printmaze(y, cursor=Vec(x,y,z))
+            self.printmaze(y, cursor=Vec(x, y, z))
 
         self.entrance_pos = entrance_pos
         if self.args.debug:
             print 'Entrance:', entrance_pos
             print 'Exit:', exit_pos
 
-
     def genhalls(self):
         '''Step through all rooms and generate halls where possible'''
         for y in xrange(self.levels):
             for x in xrange(self.xsize):
                 for z in xrange(self.zsize):
-                    pos = Vec(x,y,z)
+                    pos = Vec(x, y, z)
                     if (pos not in self.rooms):
                         continue
                     for d in xrange(4):
                         if (self.halls[x][y][z][d] == 1 and
-                           self.rooms[pos].hallLength[d] > 0):
-                               hall_list = weighted_shuffle(cfg.master_halls)
-                               hall_list.insert(0, 'Blank')
-                               while (len(hall_list)):
-                                   newhall = hall_list.pop()
-                                   newsize = halls.sizeByName(newhall)
-                                   nextpos = pos+pos.d(d)
-                                   nextd = (d+2)%4
-                                   # Get valid offsets for this room
-                                   # and the adjoining room.
-                                   # First test the current room.
-                                   result1 = self.rooms[pos].testHall(
-                                       d,
-                                       newsize,
-                                       self.rooms[nextpos].hallSize[nextd][0],
-                                       self.rooms[nextpos].hallSize[nextd][1])
-                                   result2 = self.rooms[nextpos].testHall(
-                                       nextd,
-                                       newsize,
-                                       self.rooms[pos].hallSize[d][0],
-                                       self.rooms[pos].hallSize[d][1])
-                                   if (result1 is not False and
-                                       result2 is not False):
-                                       offset = randint(min(result1[0],
-                                                            result2[0]),
-                                                        max(result1[1],
-                                                            result2[1]))
-                                       self.rooms[pos].halls[d] = \
-                                       halls.new(newhall, self.rooms[pos], d,
-                                                 offset)
-                                       self.rooms[nextpos].halls[nextd] = \
-                                       halls.new(newhall, self.rooms[nextpos],
-                                                 nextd, offset)
-                                       hall_list = []
+                                self.rooms[pos].hallLength[d] > 0):
+                            hall_list = weighted_shuffle(cfg.master_halls)
+                            hall_list.insert(0, 'Blank')
+                            while (len(hall_list)):
+                                newhall = hall_list.pop()
+                                newsize = halls.sizeByName(newhall)
+                                nextpos = pos + pos.d(d)
+                                nextd = (d + 2) % 4
+                                # Get valid offsets for this room
+                                # and the adjoining room.
+                                # First test the current room.
+                                result1 = self.rooms[pos].testHall(
+                                    d,
+                                    newsize,
+                                    self.rooms[nextpos].hallSize[nextd][0],
+                                    self.rooms[nextpos].hallSize[nextd][1])
+                                result2 = self.rooms[nextpos].testHall(
+                                    nextd,
+                                    newsize,
+                                    self.rooms[pos].hallSize[d][0],
+                                    self.rooms[pos].hallSize[d][1])
+                                if (result1 is not False and
+                                        result2 is not False):
+                                    offset = randint(min(result1[0],
+                                                         result2[0]),
+                                                     max(result1[1],
+                                                         result2[1]))
+                                    self.rooms[pos].halls[d] = \
+                                        halls.new(newhall, self.rooms[pos], d,
+                                                  offset)
+                                    self.rooms[nextpos].halls[nextd] = \
+                                        halls.new(newhall, self.rooms[nextpos],
+                                                  nextd, offset)
+                                    hall_list = []
                         else:
-                            self.rooms[pos].halls[d] = halls.new('blank',
-                                                             self.rooms[pos],
-                                                             d, 6)
+                            self.rooms[pos].halls[d] = halls.new(
+                                'blank',
+                                self.rooms[pos],
+                                d,
+                                6)
 
     def genhalltraps(self):
         '''Place hallway traps'''
@@ -1626,7 +1694,7 @@ class Dungeon (object):
                     r1 = self.rooms[p1]
                     # W-E hall
                     if (r1.halls[d.E]._name is not 'blank'):
-                        r2 = self.rooms[p1+dv[d.E]]
+                        r2 = self.rooms[p1 + dv[d.E]]
                         if (
                             r1.features[0]._is_secret is not True and
                             r2.features[0]._is_secret is not True
@@ -1634,11 +1702,11 @@ class Dungeon (object):
                             offset = r1.halls[d.E].offset
                             size = r1.halls[d.E].size
                             pos = Vec(
-                                p1.x*16,
-                                p1.y*6,
-                                p1.z*16
-                            ) +Vec(
-                                16-r1.hallLength[d.E],
+                                p1.x * 16,
+                                p1.y * 6,
+                                p1.z * 16
+                            ) + Vec(
+                                16 - r1.hallLength[d.E],
                                 0,
                                 offset
                             )
@@ -1651,7 +1719,7 @@ class Dungeon (object):
                             })
                     # N-S hall
                     if (r1.halls[d.S]._name is not 'blank'):
-                        r2 = self.rooms[p1+dv[d.S]]
+                        r2 = self.rooms[p1 + dv[d.S]]
                         if (
                             r1.features[0]._is_secret is not True and
                             r2.features[0]._is_secret is not True
@@ -1659,13 +1727,13 @@ class Dungeon (object):
                             offset = r1.halls[d.S].offset
                             size = r1.halls[d.S].size
                             pos = Vec(
-                                p1.x*16,
-                                p1.y*6,
-                                p1.z*16
-                            ) +Vec(
+                                p1.x * 16,
+                                p1.y * 6,
+                                p1.z * 16
+                            ) + Vec(
                                 offset,
                                 0,
-                                16-r1.hallLength[d.S]
+                                16 - r1.hallLength[d.S]
                             )
                             length = r1.hallLength[d.S] + r2.hallLength[d.N]
                             halls.append({
@@ -1674,7 +1742,6 @@ class Dungeon (object):
                                 'length': length,
                                 'direction': d.S,
                             })
-
 
         # Assign a hall trap class to each hall.
         for hall in halls:
@@ -1699,7 +1766,6 @@ class Dungeon (object):
                     self.hall_traps.append(trap)
                     trap_list = []
 
-
     def genfloors(self):
         for pos in self.rooms:
             if (len(self.rooms[pos].floors) == 0):
@@ -1718,54 +1784,59 @@ class Dungeon (object):
     def genruins(self):
         for pos in self.rooms:
             if (pos.y == 0 and
-                len(self.rooms[pos].ruins) == 0):
+                    len(self.rooms[pos].ruins) == 0):
                 if pos == self.entrance.parent.pos:
                     try:
-                        ruin = ruins.new(weighted_choice(cfg.master_entrances[self.biome]),
-                                         self.rooms[pos])
+                        ruin = ruins.new(
+                            weighted_choice(
+                                cfg.master_entrances[
+                                    self.biome]),
+                            self.rooms[pos])
                     except KeyError:
-                        ruin = ruins.new(weighted_choice(cfg.default_entrances),
-                                         self.rooms[pos])
+                        ruin = ruins.new(
+                            weighted_choice(
+                                cfg.default_entrances),
+                            self.rooms[pos])
                     self.dinfo['dungeon_name'] = ruin.nameDungeon()
                 else:
                     ruin = ruins.new(weighted_choice(cfg.master_ruins),
-                                 self.rooms[pos])
+                                     self.rooms[pos])
                 self.rooms[pos].ruins.append(ruin)
                 ruin.placed(self.world)
 
     def placetorches(self, level=0):
         '''Place a proportion of the torches where possible'''
         if (self.levels > 1):
-            perc = int(float(level) / float(self.levels-1) *
-                (cfg.torches_bottom-cfg.torches_top) +
-                cfg.torches_top)
+            perc = int(float(level) / float(self.levels - 1) *
+                       (cfg.torches_bottom - cfg.torches_top) +
+                       cfg.torches_top)
         else:
             perc = cfg.torches_top
         count = 0
         maxcount = 0
         for pos, val in self.torches.items():
-            if (pos.up(1).y/self.room_height == level):
+            if (pos.up(1).y / self.room_height == level):
                 maxcount += 1
         maxcount = perc * maxcount / 100
         offset = 3 - cfg.torches_position
         dirs = {
-            '1': Vec(-1,0,0),
-            '2': Vec(1,0,0),
-            '3': Vec(0,0,-1),
-            '4': Vec(0,0,1)
+            '1': Vec(-1, 0, 0),
+            '2': Vec(1, 0, 0),
+            '3': Vec(0, 0, -1),
+            '4': Vec(0, 0, 1)
         }
         for pos, val in self.torches.items():
             attach_pos = pos.down(offset) + dirs[str(val)]
             if (count < maxcount and
-                pos in self.blocks and
-                self.blocks[pos.down(offset)].material == materials.Air and
-                self.blocks[attach_pos].material == materials._wall and
-                pos.up(1).y/self.room_height == level):
+                    pos in self.blocks and
+                    self.blocks[pos.down(offset)].material == materials.Air and
+                    self.blocks[attach_pos].material == materials._wall and
+                    pos.up(1).y / self.room_height == level):
                 #self.blocks[pos.down(offset)].material = materials.Torch
                 self.setblock(pos.down(offset), materials.Torch, val)
                 count += 1
-        if (level < self.levels-1):
-            self.placetorches(level+1)
+        if (level < self.levels - 1):
+            self.placetorches(level + 1)
 
     def placedoors(self, perc):
         '''Place a proportion of the doors where possible'''
@@ -1774,19 +1845,23 @@ class Dungeon (object):
         # doors are populated N->S and W->E
         # This holds direction and starting hinge side
         #           N      E      S      W
-        doordat = ((1,1), (2,1), (3,0), (0,0))
+        doordat = ((1, 1), (2, 1), (3, 0), (0, 0))
         maxcount = perc * len(self.doors) / 100
         for pos, door in self.doors.items():
             if (count < maxcount):
                 x = doordat[door.direction][1]
                 for dpos in door.doors:
-                    if(dpos in self.blocks and  self.blocks[dpos].material == materials.Air):
+                    if(dpos in self.blocks and self.blocks[dpos].material == materials.Air):
                         self.setblock(dpos, materials._wall, hide=True)
                         self.blocks[dpos.down(1)].material = door.material
-                        #self.blocks[dpos.down(1)].data = doordat[door.direction][x] | 8 # Top door
-                        self.blocks[dpos.down(1)].data = 8+x # Top door & hinge
+                        # self.blocks[dpos.down(1)].data =
+                        # doordat[door.direction][x] | 8 # Top door
+                        self.blocks[
+                            dpos.down(1)].data = 8 + x  # Top door & hinge
                         self.blocks[dpos.down(2)].material = door.material
-                        self.blocks[dpos.down(2)].data = doordat[door.direction][0]
+                        self.blocks[
+                            dpos.down(2)].data = doordat[
+                            door.direction][0]
                     x = 1 - x
                 count += 1
 
@@ -1807,10 +1882,10 @@ class Dungeon (object):
                     hcount += 1
             # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
-                self.rooms[room].canvasLength() < 2):
+                    self.rooms[room].canvasLength() < 2):
                 hcount = 0
             # The weight is exponential. Base 20 seems to work well.
-            candidates.append((room, 20**hcount-1))
+            candidates.append((room, 20 ** hcount - 1))
         # Shuffle potential locations.
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and chests > 0):
@@ -1821,9 +1896,9 @@ class Dungeon (object):
             for point in iterate_points_inside_flat_poly(*room.canvas):
                 point += room.loc
                 if (point not in self.blocks or
-                    point.up(1) not in self.blocks or
-                    point.up(2) not in self.blocks or
-                    point.down(1) not in self.blocks):
+                        point.up(1) not in self.blocks or
+                        point.up(2) not in self.blocks or
+                        point.down(1) not in self.blocks):
                     continue
                 if(
                     self.blocks[point].material.val in materials.vine_solids and
@@ -1841,7 +1916,7 @@ class Dungeon (object):
             if (len(points) > 0):
                 point = random.choice(points)
                 # Decide if we are a trap
-                if randint(1,100) <= cfg.chest_traps:
+                if randint(1, 100) <= cfg.chest_traps:
                     self.setblock(point.up(1), materials.TrappedChest)
                     self.setblock(point, materials.Dispenser, 1)
                     self.addchesttrap(point)
@@ -1850,9 +1925,8 @@ class Dungeon (object):
                 # Add the chest entity either way
                 self.addchest(point.up(1))
                 chests -= 1
-        if (level < self.levels-1):
-            self.placechests(level+1)
-
+        if (level < self.levels - 1):
+            self.placechests(level + 1)
 
     def placespawners(self, level=0):
         '''Place spawners in the dungeon. This is called with no arguments,
@@ -1871,10 +1945,10 @@ class Dungeon (object):
                     hcount += 1
             # If the canvas is too small, don't bother.
             if (self.rooms[room].canvasWidth() < 2 or
-                self.rooms[room].canvasLength() < 2):
+                    self.rooms[room].canvasLength() < 2):
                 hcount = 0
             # The weight is exponential. Base 20 seems to work well.
-            candidates.append((room, 20**hcount-1))
+            candidates.append((room, 20 ** hcount - 1))
         # Shuffle potential locations.
         locations = weighted_shuffle(candidates)
         while (len(locations) > 0 and spawners > 0):
@@ -1887,9 +1961,9 @@ class Dungeon (object):
                 for point in iterate_points_inside_flat_poly(*room.canvas):
                     point += room.loc
                     if (point not in self.blocks or
-                        point.up(1) not in self.blocks or
-                        point.up(2) not in self.blocks or
-                        point.down(1) not in self.blocks):
+                            point.up(1) not in self.blocks or
+                            point.up(2) not in self.blocks or
+                            point.down(1) not in self.blocks):
                         continue
                     if(
                         self.blocks[point].material.val in materials.vine_solids and
@@ -1901,16 +1975,16 @@ class Dungeon (object):
                 y = room.canvasHeight()
                 for x in xrange(self.room_size):
                     for z in xrange(self.room_size):
-                        p = room.loc+Vec(x,y,z)
-                        adj = [Vec(1,0,0), Vec(0,0,1),
-                               Vec(-1,0,0), Vec(0,0,-1)]
+                        p = room.loc + Vec(x, y, z)
+                        adj = [Vec(1, 0, 0), Vec(0, 0, 1),
+                               Vec(-1, 0, 0), Vec(0, 0, -1)]
                         walls = 0
                         for q in adj:
-                            if (p+q in self.blocks and
-                                self.getblock(p+q) == materials._wall):
+                            if (p + q in self.blocks and
+                                    self.getblock(p + q) == materials._wall):
                                 walls += 1
                         if (p.up(1) not in self.blocks and
-                            walls > 0):
+                                walls > 0):
                             points.append(p)
 
             # Pick a spot, if one exists.
@@ -1919,8 +1993,8 @@ class Dungeon (object):
                 self.setblock(point, materials.Spawner)
                 self.addspawner(point)
                 spawners -= 1
-        if (level < self.levels-1):
-            self.placespawners(level+1)
+        if (level < self.levels - 1):
+            self.placespawners(level + 1)
 
     def renderhalltraps(self):
         '''Render hallway traps'''
@@ -1944,12 +2018,12 @@ class Dungeon (object):
 
     def renderhalls(self):
         ''' Call render() on all halls'''
-        count = len(self.rooms)*4
+        count = len(self.rooms) * 4
         self.pm.init(count, label='Rendering halls:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 4
-            for x in xrange(0,4):
+            for x in xrange(0, 4):
                 if (self.rooms[pos].halls[x]):
                     self.rooms[pos].halls[x].render()
         self.pm.set_complete()
@@ -1957,7 +2031,7 @@ class Dungeon (object):
     def renderfloors(self):
         ''' Call render() on all floors'''
         count = len(self.rooms)
-        self.pm.init(count,label='Rendering floors:')
+        self.pm.init(count, label='Rendering floors:')
         for pos in self.rooms:
             self.pm.update_left(count)
             count -= 1
@@ -1991,29 +2065,28 @@ class Dungeon (object):
         '''Print a slice (or layer) of the dungeon block buffer to the termial.
         We "look-through" any air blocks to blocks underneath'''
         floor = self.args.term
-        layer = (floor-1)*self.room_height
-        for z in xrange(self.zsize*self.room_size):
-            for x in xrange(self.xsize*self.room_size):
+        layer = (floor - 1) * self.room_height
+        for z in xrange(self.zsize * self.room_size):
+            for x in xrange(self.xsize * self.room_size):
                 y = layer
                 while (y < layer + self.room_height - 1 and
-                       Vec(x,y,z) in self.blocks and
-                         (self.blocks[Vec(x,y,z)].hide == True or
-                          self.blocks[Vec(x,y,z)].material == materials.Air or
-                          self.blocks[Vec(x,y,z)].material == materials._ceiling)):
+                       Vec(x, y, z) in self.blocks and
+                       (self.blocks[Vec(x, y, z)].hide or
+                        self.blocks[Vec(x, y, z)].material == materials.Air or
+                        self.blocks[Vec(x, y, z)].material == materials._ceiling)):
                     y += 1
-                if (Vec(x,y,z) in self.blocks and
-                    self.blocks[Vec(x,y,z)].hide == False):
-                    mat = self.blocks[Vec(x,y,z)].material
-                    if (mat._meta == True):
-                        mat.update(x,y,z,
-                                   self.xsize*self.room_size,
-                                   self.levels*self.room_height,
-                                   self.zsize*self.room_size)
+                if (Vec(x, y, z) in self.blocks and
+                        self.blocks[Vec(x, y, z)].hide == False):
+                    mat = self.blocks[Vec(x, y, z)].material
+                    if (mat._meta):
+                        mat.update(x, y, z,
+                                   self.xsize * self.room_size,
+                                   self.levels * self.room_height,
+                                   self.zsize * self.room_size)
                     sys.stdout.write(mat.c)
                 else:
                     sys.stdout.write(materials.NOBLOCK)
             print
-
 
     def outputhtml(self):
         '''Print all levels of the dungeon block buffer to html.
@@ -2023,7 +2096,7 @@ class Dungeon (object):
         # First search for existing files
         if (force == False):
             for floor in xrange(self.levels):
-                filename = basename+'-'+str(floor+1)+'.html'
+                filename = basename + '-' + str(floor + 1) + '.html'
                 if (os.path.isfile(filename)):
                     sys.exit('File %s exists. Use --force to overwrite.' %
                              (filename))
@@ -2045,52 +2118,52 @@ class Dungeon (object):
         footer = '''</body></html>'''
         # Output each level file.
         for floor in xrange(self.levels):
-            layer = floor*self.room_height
+            layer = floor * self.room_height
             # Build the form.
             form = '''
             <form action="foo">
             <select name="newurl" onchange="menu_goto(this.form)">
             '''
             for menufloor in xrange(self.levels):
-                path = basename+'-'+str(menufloor+1)+'.html'
+                path = basename + '-' + str(menufloor + 1) + '.html'
                 (head, tail) = os.path.split(path)
                 selected = ''
                 if (floor == menufloor):
                     selected = ' selected="selected"'
                 form += '<option value="%s"%s>Level %d</option>' % (
-                    tail, selected, menufloor+1)
+                    tail, selected, menufloor + 1)
             form += '</select></form><br>'
             # Write the floor file.
-            filename = basename+'-'+str(floor+1)+'.html'
-            print 'Writing:',filename
+            filename = basename + '-' + str(floor + 1) + '.html'
+            print 'Writing:', filename
             f = open(filename, 'w')
-            f.write(header+form)
+            f.write(header + form)
             f.write('<table border=0 cellpadding=0 cellspacing=0>')
-            for z in xrange(self.zsize*self.room_size):
+            for z in xrange(self.zsize * self.room_size):
                 f.write('<tr>')
-                for x in xrange(self.xsize*self.room_size):
+                for x in xrange(self.xsize * self.room_size):
                     y = layer
-                    while (Vec(x,y,z) in self.blocks and
-                            (self.blocks[Vec(x,y,z)].hide == True or
-                             self.blocks[Vec(x,y,z)].material ==
+                    while (Vec(x, y, z) in self.blocks and
+                            (self.blocks[Vec(x, y, z)].hide or
+                             self.blocks[Vec(x, y, z)].material ==
                              materials.Air or
-                             self.blocks[Vec(x,y,z)].material ==
+                             self.blocks[Vec(x, y, z)].material ==
                              materials._ceiling)):
                         y += 1
-                    if (Vec(x,y,z) in self.blocks):
-                        mat = self.blocks[Vec(x,y,z)].material
-                        if (mat._meta == True):
-                            mat.update(x,y,z,
-                                       self.xsize*self.room_size,
-                                       self.levels*self.room_height,
-                                       self.zsize*self.room_size)
-                            self.blocks[Vec(x,y,z)].data = mat.data
-                        dat = self.blocks[Vec(x,y,z)].data
+                    if (Vec(x, y, z) in self.blocks):
+                        mat = self.blocks[Vec(x, y, z)].material
+                        if (mat._meta):
+                            mat.update(x, y, z,
+                                       self.xsize * self.room_size,
+                                       self.levels * self.room_height,
+                                       self.zsize * self.room_size)
+                            self.blocks[Vec(x, y, z)].data = mat.data
+                        dat = self.blocks[Vec(x, y, z)].data
 
                         # Doors are ... different
                         if (mat == materials.WoodenDoor or
-                            mat == materials.IronDoor):
-                            dat2 = self.blocks[Vec(x,y+1,z)].data
+                                mat == materials.IronDoor):
+                            dat2 = self.blocks[Vec(x, y + 1, z)].data
                             dat = ((dat & 1) << 3) + dat2
 
                         f.write('<td><img src=d/%d-%d.png>' %
@@ -2104,21 +2177,21 @@ class Dungeon (object):
     def findsecretrooms(self):
         # Secret rooms must satisfy the following...
         # 1. The room cannot be an entrance, stairwell, or above a stairwell
-        # 2. Must be a 1x1x1 room. 
+        # 2. Must be a 1x1x1 room.
         # 3. Must not be a blank room.
         # 4. Must have exactly one hallway.
         # 5. Must not connect to a corridor.
-        # 6. ... That's it. 
+        # 6. ... That's it.
         #
         # If found, the room will have its feature overridden with SecretRoom
-        # the hallway will be reduced to 1 and move away from the edge if 
-        # required. 
+        # the hallway will be reduced to 1 and move away from the edge if
+        # required.
 
         # hall positions to grid direction
-        dirs = {3: Vec(-1,0,0),
-                1: Vec(1,0,0),
-                2: Vec(0,0,1),
-                0: Vec(0,0,-1)}
+        dirs = {3: Vec(-1, 0, 0),
+                1: Vec(1, 0, 0),
+                2: Vec(0, 0, 1),
+                0: Vec(0, 0, -1)}
 
         # Find them
         for p in self.rooms:
@@ -2127,22 +2200,22 @@ class Dungeon (object):
                 continue
             if room.features[0]._is_stairwell:
                 continue
-            if p.y < self.levels-1:
+            if p.y < self.levels - 1:
                 droom = self.rooms[p.down(1)]
                 if droom.features[0]._is_stairwell:
                     continue
-            if room.size != Vec(1,1,1):
+            if room.size != Vec(1, 1, 1):
                 continue
             if (room._name == 'blank' or
-                room._name == 'cblank' or
-                room._name == 'blankstairwell' or
-                room._name == 'circularpit' or
-                room._name == 'circularpitmid' or
-                room._name == 'circularpitbottom' or
-                room._name == 'pit' or
-                room._name == 'pitmid' or
-                room._name == 'pitbottom'
-               ):
+                        room._name == 'cblank' or
+                        room._name == 'blankstairwell' or
+                        room._name == 'circularpit' or
+                        room._name == 'circularpitmid' or
+                        room._name == 'circularpitbottom' or
+                        room._name == 'pit' or
+                        room._name == 'pitmid' or
+                        room._name == 'pitbottom'
+                    ):
                 continue
             hallsum = 0
             d = 0
@@ -2152,25 +2225,29 @@ class Dungeon (object):
                     hallsum += 1
             if hallsum != 1:
                 continue
-            room2 = self.rooms[p+dirs[d]]
+            room2 = self.rooms[p + dirs[d]]
             if (room2._name == 'corridor' or
-                room2._name == 'cblank' or
-                room2._name == 'sandstonecavern' or
-                room2._name == 'sandstonecavernlarge' or
-                room2._name == 'cavern' or
-                room2._name == 'cavernlarge' or
-                room2._name == 'naturalcavern' or
-                room2._name == 'naturalcavernlarge'
-               ):
+                        room2._name == 'cblank' or
+                        room2._name == 'sandstonecavern' or
+                        room2._name == 'sandstonecavernlarge' or
+                        room2._name == 'cavern' or
+                        room2._name == 'cavernlarge' or
+                        room2._name == 'naturalcavern' or
+                        room2._name == 'naturalcavernlarge'
+                    ):
                 continue
-            if random.randint(1,100) > cfg.secret_rooms:
+            if random.randint(1, 100) > cfg.secret_rooms:
                 continue
 
-            if self.args.debug == True:
-                print 'Secret room from',room._name, 'to', room2._name
+            if self.args.debug:
+                print 'Secret room from', room._name, 'to', room2._name
             # Override this room's feature
             room.features = []
-            room.features.append(features.new(weighted_choice(cfg.master_srooms), room))
+            room.features.append(
+                features.new(
+                    weighted_choice(
+                        cfg.master_srooms),
+                    room))
             room.features[0].placed()
             # override this room's hallway
             offset = room.halls[d].offset
@@ -2181,7 +2258,7 @@ class Dungeon (object):
             room.halls[d] = halls.new('single', room, d, offset)
             room.hallLength[d] = 3
             # override the other room's hallway
-            od = (d+2)%4
+            od = (d + 2) % 4
             offset = room2.halls[od].offset
             if offset < 4:
                 offset = 4
@@ -2189,62 +2266,64 @@ class Dungeon (object):
                 offset = 9
             room2.halls[od] = halls.new('single', room2, od, offset)
 
-
     def setentrance(self):
-        if self.args.debug: print 'Extending entrance to the surface...'
-        wcoord=Vec(self.entrance.parent.loc.x + self.position.x,
-                   self.position.y - self.entrance.parent.loc.y,
-                   self.entrance.parent.loc.z + self.position.z)
-        if self.args.debug: print '   World coord:',wcoord
-        baseheight = wcoord.y + 2 # plenum + floor
+        if self.args.debug:
+            print 'Extending entrance to the surface...'
+        wcoord = Vec(self.entrance.parent.loc.x + self.position.x,
+                     self.position.y - self.entrance.parent.loc.y,
+                     self.entrance.parent.loc.z + self.position.z)
+        if self.args.debug:
+            print '   World coord:', wcoord
+        baseheight = wcoord.y + 2  # plenum + floor
         #newheight = baseheight
         low_height = self.world.Height
         high_height = baseheight
-        if self.args.debug: print '   Base height:',baseheight
-        chunk = self.world.getChunk(wcoord.x>>4, wcoord.z>>4)
-        for x in xrange(wcoord.x+4, wcoord.x+12):
-            for z in xrange(wcoord.z+4, wcoord.z+12):
+        if self.args.debug:
+            print '   Base height:', baseheight
+        chunk = self.world.getChunk(wcoord.x >> 4, wcoord.z >> 4)
+        for x in xrange(wcoord.x + 4, wcoord.x + 12):
+            for z in xrange(wcoord.z + 4, wcoord.z + 12):
                 xInChunk = x & 0xf
                 zInChunk = z & 0xf
                 # Heightmap is a good starting place, but I need to look
                 # down through foliage.
-                y = chunk.HeightMap[zInChunk, xInChunk]-1
+                y = chunk.HeightMap[zInChunk, xInChunk] - 1
                 while (
                     chunk.Blocks[xInChunk, zInChunk, y] not in materials.heightmap_solids
                 ):
                     y -= 1
                 if (chunk.Blocks[xInChunk, zInChunk, y] == 9 or
-                    chunk.Blocks[xInChunk, zInChunk, y] == 79):
+                        chunk.Blocks[xInChunk, zInChunk, y] == 79):
                     self.entrance.inwater = True
                 high_height = max(y, high_height)
                 low_height = min(y, low_height)
         if self.args.debug:
-            print "    Low height:",low_height
-            print "   High height:",high_height
-            if (self.entrance.inwater == True):
+            print "    Low height:", low_height
+            print "   High height:", high_height
+            if (self.entrance.inwater):
                 print "   Entrance is in water."
         if (low_height - baseheight > 0):
             self.entrance.height += low_height - baseheight
             self.entrance.low_height += low_height - baseheight
         if (high_height - baseheight > 0):
             self.entrance.high_height += high_height - baseheight
-        self.entrance.u = int(cfg.tower*self.entrance.u)
+        self.entrance.u = int(cfg.tower * self.entrance.u)
         # Check the upper bounds of the tower
         if (high_height + self.entrance.u >= self.world.Height):
             self.entrance.u = self.world.Height - 3 - high_height
 
     def generatemaps(self):
-        for level in xrange(1, self.levels+1):
+        for level in xrange(1, self.levels + 1):
             if randint(1, 100) > cfg.maps:
                 next
             m = self.mapstore.generate_map(self, level)
-            self.addplaceditem(m, max_lev=level-1)
+            self.addplaceditem(m, max_lev=level - 1)
 
     def addplaceditem(self, item_tags, min_lev=-100, max_lev=100):
         self.placed_items.append({
             'item': item_tags,
             'min_lev': min_lev,
-            'max_lev':  max_lev
+            'max_lev': max_lev
         })
 
     def placeitems(self):
@@ -2253,11 +2332,11 @@ class Dungeon (object):
             random.shuffle(ents)
             for loc in ents:
                 ent = self.tile_ents[loc]
-                if (repr(loc) == repr(Vec(0,0,0)) or
-                    ent['id'].value != 'Chest'):
+                if (repr(loc) == repr(Vec(0, 0, 0)) or
+                        ent['id'].value != 'Chest'):
                     next
-                if (loc.y//self.room_height >= item['min_lev']-1 and
-                    loc.y//self.room_height <= item['max_lev']-1):
+                if (loc.y // self.room_height >= item['min_lev'] - 1 and
+                        loc.y // self.room_height <= item['max_lev'] - 1):
                     if self.addchestitem_tag(loc, item['item']):
                         break
 
@@ -2268,41 +2347,41 @@ class Dungeon (object):
         num_blocks = len(self.blocks)
         # Fill caves
         if (self.dinfo['fill_caves'] is True):
-            num = (self.zsize+10) * (self.xsize+10)
+            num = (self.zsize + 10) * (self.xsize + 10)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Filling in caves:')
-            for z in xrange((self.position.z>>4)-5,
-                            (self.position.z>>4)+self.zsize+5):
-                for x in xrange((self.position.x>>4)-5,
-                                (self.position.x>>4)+self.xsize+5):
+            for z in xrange((self.position.z >> 4) - 5,
+                            (self.position.z >> 4) + self.zsize + 5):
+                for x in xrange((self.position.x >> 4) - 5,
+                                (self.position.x >> 4) + self.xsize + 5):
                     pm.update_left(num)
                     num -= 1
-                    if ((x,z) in self.good_chunks):
-                        p = Vec(x,0,z)
+                    if ((x, z) in self.good_chunks):
+                        p = Vec(x, 0, z)
                         chunk = world.getChunk(x, z)
-                        miny = self.good_chunks[(x,z)]
-                        air = ( chunk.Blocks[:,:,0:miny] == 0)
+                        miny = self.good_chunks[(x, z)]
+                        air = (chunk.Blocks[:, :, 0:miny] == 0)
                         chunk.Blocks[air] = materials._floor.val
                         changed_chunks.add(chunk)
-                        del(self.good_chunks[(x,z)])
+                        del(self.good_chunks[(x, z)])
             pm.set_complete()
         # Regeneration
         if self.args.command == 'regenerate':
             num = (self.zsize) * (self.xsize)
             pm = pmeter.ProgressMeter()
             pm.init(num, label='Regenerating resources/chests:')
-            for z in xrange((self.position.z>>4),
-                             (self.position.z>>4)+self.zsize):
-                for x in xrange(self.position.x>>4,
-                                 (self.position.x>>4)+self.xsize):
+            for z in xrange((self.position.z >> 4),
+                            (self.position.z >> 4) + self.zsize):
+                for x in xrange(self.position.x >> 4,
+                                (self.position.x >> 4) + self.xsize):
                     pm.update_left(num)
                     num -= 1
-                    p = Vec(x,0,z)
+                    p = Vec(x, 0, z)
                     chunk = world.getChunk(x, z)
                     # Repopulate any above ground chests
                     for tileEntity in chunk.TileEntities:
                         if (tileEntity["id"].value == "Chest"):
-                            p = Vec(0,0,0)
+                            p = Vec(0, 0, 0)
                             for name, tag in tileEntity.items():
                                 if (name == 'x'):
                                     p.x = int(tag.value) - self.position.x
@@ -2320,26 +2399,26 @@ class Dungeon (object):
                     # some random ones based on known ore distributions to fill
                     # in ores.
                     # Stone
-                    chunk.Blocks[:,:,0:self.position.y] = materials.Stone.val
+                    chunk.Blocks[:, :, 0:self.position.y] = materials.Stone.val
                     # Coal. 1% between 5 and 60
                     distribute(chunk, 5, min(self.position.y, 60),
                                1, materials.CoalOre)
-                    ## Iron. .6% between 5 and 55
+                    # Iron. .6% between 5 and 55
                     distribute(chunk, 5, min(self.position.y, 55),
                                .6, materials.IronOre)
-                    ## Redstone. .8% between 5 and 20
+                    # Redstone. .8% between 5 and 20
                     distribute(chunk, 5, min(self.position.y, 20),
                                .8, materials.RedstoneOre)
-                    ## Gold. .1% between 5 and 35
+                    # Gold. .1% between 5 and 35
                     distribute(chunk, 5, min(self.position.y, 35),
                                .1, materials.GoldOre)
-                    ## Lapis. .1% between 5 and 35
+                    # Lapis. .1% between 5 and 35
                     distribute(chunk, 5, min(self.position.y, 35),
                                .1, materials.LapisLazuliOre)
-                    ## Diamond. .1% between 5 and 20
+                    # Diamond. .1% between 5 and 20
                     distribute(chunk, 5, min(self.position.y, 20),
                                .1, materials.DiamondOre)
-                    ## Bedrock. 60% between 0 and 4
+                    # Bedrock. 60% between 0 and 4
                     distribute(chunk, 0, min(self.position.y, 4),
                                60, materials.Bedrock)
             pm.set_complete()
@@ -2362,8 +2441,8 @@ class Dungeon (object):
                 print 'WARN: Block outside height bounds. y =', y
                 continue
             # Figure out the chunk and chunk offset
-            chunk_z = z>>4
-            chunk_x = x>>4
+            chunk_z = z >> 4
+            chunk_x = x >> 4
             xInChunk = x & 0xf
             zInChunk = z & 0xf
             # get the chunk
@@ -2377,45 +2456,45 @@ class Dungeon (object):
                 continue
             # Don't render soft blocks if there is something there already
             if (block.soft is True and
-                chunk.Blocks[xInChunk, zInChunk, y] > 0):
+                    chunk.Blocks[xInChunk, zInChunk, y] > 0):
                 continue
             mat = block.material
             dat = block.data
             # Update meta materials
-            if (mat._meta == True):
-                mat.update(block.loc.x,block.loc.y,block.loc.z,
-                           self.xsize*self.room_size,
-                           self.levels*self.room_height,
-                           self.zsize*self.room_size)
+            if (mat._meta):
+                mat.update(block.loc.x, block.loc.y, block.loc.z,
+                           self.xsize * self.room_size,
+                           self.levels * self.room_height,
+                           self.zsize * self.room_size)
                 dat = mat.data
             # Sandbars only render over water
             if (mat == materials._sandbar and
-                chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
-                chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and
-                chunk.Blocks[xInChunk, zInChunk, y] != materials.Ice.val):
+                    chunk.Blocks[xInChunk, zInChunk, y] != materials.Water.val and
+                    chunk.Blocks[xInChunk, zInChunk, y] != materials.StillWater.val and
+                    chunk.Blocks[xInChunk, zInChunk, y] != materials.Ice.val):
                 continue
             # Natural just looks like the existing world block
             if (mat == materials._natural):
                 continue
 
             val = mat.val
-            #Silverfish egg pass
+            # Silverfish egg pass
             if (cfg.silverfish > 0 and
-                (val == 1 or val == 4 or val == 98) and
-                random.randint(1,100) <= cfg.silverfish):
+                    (val == 1 or val == 4 or val == 98) and
+                    random.randint(1, 100) <= cfg.silverfish):
                 if (val == 4):
-                    dat = 1 # Cobblestone
+                    dat = 1  # Cobblestone
                 elif (val == 1):
-                    dat = 0 # Smooth Stone
+                    dat = 0  # Smooth Stone
                 elif (val == 98):
                     if (dat == 0):
-                        dat = 2 # Bricks
+                        dat = 2  # Bricks
                     elif (dat == 1):
-                        dat = 3 # Mossy Bricks
+                        dat = 3  # Mossy Bricks
                     elif (dat == 2):
-                        dat = 4 # Cracked Bricks
+                        dat = 4  # Cracked Bricks
                     elif (dat == 3):
-                        dat = 5 # Chiseled Bricks
+                        dat = 5  # Chiseled Bricks
                 val = 97    # Switch to egg brick
 
             # Write the block.
@@ -2423,9 +2502,9 @@ class Dungeon (object):
             chunk.Data[xInChunk, zInChunk, y] = dat
             # Add this to the list we want to relight later.
             changed_chunks.add(chunk)
-            # Make sure we don't overwrite this chunk in the future. 
+            # Make sure we don't overwrite this chunk in the future.
             if ((chunk_x, chunk_z) in self.good_chunks and
-                 mat != materials._sandbar):
+                    mat != materials._sandbar):
                 del(self.good_chunks[(chunk_x, chunk_z)])
         pm.set_complete()
         # Copy over tile entities

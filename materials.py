@@ -36,7 +36,7 @@ if (platform.system() == 'Windows'):
 def valByName(name):
     '''Return a material block value given a name string.'''
     for oname, obj in sys.modules[__name__].__dict__.items():
-        if type(obj) == Material:
+        if isinstance(obj, Material):
             if (obj.name.lower() == name):
                 return obj.val
     return -1
@@ -126,7 +126,7 @@ except:
 
 try:
     parser.readfp(open(filename))
-except Exception, e:
+except Exception as e:
     print "Failed to read materials config file!"
     sys.exit(e.message)
 
@@ -157,14 +157,14 @@ print 'Loaded', num_materials, 'materials.'
 # Create a convenience set of blockids for heightmap blocks.
 heightmap_solids = set()
 for oname, obj in sys.modules[__name__].__dict__.items():
-    if type(obj) == Material:
+    if isinstance(obj, Material):
         if obj.heightmap is True:
             heightmap_solids.add(obj.val)
 
 # Create a convenience set of blockids for vine blocks.
 vine_solids = set()
 for oname, obj in sys.modules[__name__].__dict__.items():
-    if type(obj) == Material:
+    if isinstance(obj, Material):
         if obj.attach_vines is True:
             vine_solids.add(obj.val)
 
@@ -274,12 +274,12 @@ class meta_class_stonedungeon(MetaMaterial):
 
     def update(self, x, y, z, maxx, maxy, maxz):
         n = self.pn.noise3(x / 100.0, y / 100.0, z / 100.0)
-        n = n + (float(y)/float(maxy))*2
+        n = n + (float(y) / float(maxy)) * 2
 
         # Random broken stone brick in stone brick and cobble zones.
         if n <= 1.5:
-            broken = .1+(float(y)/float(maxy))*.5
-            if random.randint(1, 100) < broken*10+5:
+            broken = .1 + (float(y) / float(maxy)) * .5
+            if random.randint(1, 100) < broken * 10 + 5:
                 self.val = CrackedStoneBrick.val
                 self.data = CrackedStoneBrick.data
                 self.c = CrackedStoneBrick.c

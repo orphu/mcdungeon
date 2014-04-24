@@ -98,7 +98,7 @@ class Blank(object):
         debugging.'''
         for p in iterate_cube(
             self.position,
-            self.position+self.dw*(self.size-1)+self.dl*(self.length-1)
+            self.position + self.dw * (self.size - 1) + self.dl * (self.length - 1)
         ):
             self.parent.setblock(p, mat)
 
@@ -137,12 +137,13 @@ class ArrowTrap(Blank):
         # Commands
         cmds = {
             'C1': '/summon {0} ~ ~3 ~1.8 {{Motion:{1},direction:{1},{2}}}'.format(
-                name, '[0.0,0.2,1.0]', data_tag
-            ),
+                name,
+                '[0.0,0.2,1.0]',
+                data_tag),
             'C2': '/summon {0} ~ ~3 ~-1.8 {{Motion:{1},direction:{1},{2}}}'.format(
-                name, '[0.0,0.2,-1.0]', data_tag
-            )
-        }
+                name,
+                '[0.0,0.2,-1.0]',
+                data_tag)}
 
         # If looking South, rotate some materials, and adjust the command
         # blocks.
@@ -151,12 +152,13 @@ class ArrowTrap(Blank):
             mat['<*'][1] = 3
             cmds = {
                 'C1': '/summon {0} ~1.8 ~3 ~ {{Motion:{1},direction:{1},{2}}}'.format(
-                    name, '[1.0,0.2,0.0]', data_tag
-                ),
+                    name,
+                    '[1.0,0.2,0.0]',
+                    data_tag),
                 'C2': '/summon {0} ~-1.8 ~3 ~ {{Motion:{1},direction:{1},{2}}}'.format(
-                    name, '[-1.0,0.2,0.0]', data_tag
-                )
-            }
+                    name,
+                    '[-1.0,0.2,0.0]',
+                    data_tag)}
 
         # Trap template.
         # tmpl[level][dl][dw]
@@ -178,8 +180,8 @@ class ArrowTrap(Blank):
 
         # Repetitions for each template row and column.
         reps = {
-            'w': [1, 1, self.size-2, 1, 1],
-            'l': [self.length-2],
+            'w': [1, 1, self.size - 2, 1, 1],
+            'l': [self.length - 2],
         }
 
         self.apply_template(tmpl, cmds, mat, reps, pos)
@@ -187,7 +189,7 @@ class ArrowTrap(Blank):
         # Vary the timing on the repeaters
         for p in iterate_cube(
             self.position.down(5),
-            self.position.down(5)+self.dw*(self.size-1)+self.dl*(self.length-1)
+            self.position.down(5) + self.dw * (self.size - 1) + self.dl * (self.length - 1)
         ):
             if (
                 p in self.parent.blocks and
@@ -212,7 +214,7 @@ class LavaTrap(Blank):
 
     def render(self):
         # Length of the actual trap door part.
-        tlength = self.length-8
+        tlength = self.length - 8
 
         # Materials lookup
         # Default is looking East
@@ -223,10 +225,10 @@ class LavaTrap(Blank):
             'RB': [materials.BlockOfRedstone, 0],
             '-*': [materials.RedstoneTorchOn, 3],
             '*-': [materials.RedstoneTorchOn, 4],
-            'P>': [materials.StickyPiston, 3+8],
-            '-|': [materials.PistonExtension, 3+8],
-            '<P': [materials.StickyPiston, 2+8],
-            '|-': [materials.PistonExtension, 2+8],
+            'P>': [materials.StickyPiston, 3 + 8],
+            '-|': [materials.PistonExtension, 3 + 8],
+            '<P': [materials.StickyPiston, 2 + 8],
+            '|-': [materials.PistonExtension, 2 + 8],
             'C1': [materials.CommandBlock, 0],
             'C2': [materials.CommandBlock, 0],
             'C3': [materials.CommandBlock, 0],
@@ -241,68 +243,34 @@ class LavaTrap(Blank):
             'ST': [materials.Stone, 0],
         }
         # Commands that open and close the trap.
-        cmds = {
-            'C1': '/fill ~2 ~1 ~-1 ~{} ~1 ~-1 minecraft:stone 0 replace'.format(
-                tlength+1
-            ),
-            'C2': '/fill ~2 ~1 ~1 ~{} ~1 ~1 minecraft:stone 0 replace'.format(
-                tlength+1
-            ),
-            'C3': '/fill ~-2 ~1 ~-1 ~-{} ~1 ~-1 minecraft:stone 0 replace'.format(
-                tlength+1
-            ),
-            'C4': '/fill ~-2 ~1 ~1 ~-{} ~1 ~1 minecraft:stone 0 replace'.format(
-                tlength+1
-            ),
-            'C5': '/fill ~2 ~0 ~0 ~{} ~0 ~0 minecraft:redstone_block 0 replace'.format(
-                tlength+1
-            ),
-            'C6': '/fill ~2 ~0 ~0 ~{} ~0 ~0 minecraft:redstone_block 0 replace'.format(
-                tlength+1
-            ),
-            'C7': '/fill ~-2 ~0 ~0 ~-{} ~0 ~0 minecraft:redstone_block 0 replace'.format(
-                tlength+1
-            ),
-            'C8': '/fill ~-2 ~0 ~0 ~-{} ~0 ~0 minecraft:redstone_block 0 replace'.format(
-                tlength+1
-            ),
-        }
+        cmds = {'C1': '/fill ~2 ~1 ~-1 ~{} ~1 ~-1 minecraft:stone 0 replace'.format(tlength + 1),
+                'C2': '/fill ~2 ~1 ~1 ~{} ~1 ~1 minecraft:stone 0 replace'.format(tlength + 1),
+                'C3': '/fill ~-2 ~1 ~-1 ~-{} ~1 ~-1 minecraft:stone 0 replace'.format(tlength + 1),
+                'C4': '/fill ~-2 ~1 ~1 ~-{} ~1 ~1 minecraft:stone 0 replace'.format(tlength + 1),
+                'C5': '/fill ~2 ~0 ~0 ~{} ~0 ~0 minecraft:redstone_block 0 replace'.format(tlength + 1),
+                'C6': '/fill ~2 ~0 ~0 ~{} ~0 ~0 minecraft:redstone_block 0 replace'.format(tlength + 1),
+                'C7': '/fill ~-2 ~0 ~0 ~-{} ~0 ~0 minecraft:redstone_block 0 replace'.format(tlength + 1),
+                'C8': '/fill ~-2 ~0 ~0 ~-{} ~0 ~0 minecraft:redstone_block 0 replace'.format(tlength + 1),
+                }
 
         # If looking South, rotate some materials, and adjust the command
         # blocks.
         if self.direction == dirs.S:
             mat['-*'][1] = 1
             mat['*-'][1] = 2
-            mat['P>'][1] = 5+8
-            mat['-|'][1] = 5+8
-            mat['<P'][1] = 4+8
-            mat['|-'][1] = 4+8
-            cmds = {
-                'C1': '/fill ~-1 ~1 ~2 ~-1 ~1 ~{} minecraft:stone 0 replace'.format(
-                    tlength+1
-                ),
-                'C2': '/fill ~1 ~1 ~2 ~1 ~1 ~{} minecraft:stone 0 replace'.format(
-                    tlength+1
-                ),
-                'C3': '/fill ~-1 ~1 ~-2 ~-1 ~1 ~-{} minecraft:stone 0 replace'.format(
-                    tlength+1
-                ),
-                'C4': '/fill ~1 ~1 ~-2 ~1 ~1 ~-{} minecraft:stone 0 replace'.format(
-                    tlength+1
-                ),
-                'C5': '/fill ~0 ~0 ~2 ~0 ~0 ~{} minecraft:redstone_block 0 replace'.format(
-                    tlength+1
-                ),
-                'C6': '/fill ~0 ~0 ~2 ~0 ~0 ~{} minecraft:redstone_block 0 replace'.format(
-                    tlength+1
-                ),
-                'C7': '/fill ~0 ~0 ~-2 ~0 ~0 ~-{} minecraft:redstone_block 0 replace'.format(
-                    tlength+1
-                ),
-                'C8': '/fill ~0 ~0 ~-2 ~0 ~0 ~-{} minecraft:redstone_block 0 replace'.format(
-                    tlength+1
-                ),
-            }
+            mat['P>'][1] = 5 + 8
+            mat['-|'][1] = 5 + 8
+            mat['<P'][1] = 4 + 8
+            mat['|-'][1] = 4 + 8
+            cmds = {'C1': '/fill ~-1 ~1 ~2 ~-1 ~1 ~{} minecraft:stone 0 replace'.format(tlength + 1),
+                    'C2': '/fill ~1 ~1 ~2 ~1 ~1 ~{} minecraft:stone 0 replace'.format(tlength + 1),
+                    'C3': '/fill ~-1 ~1 ~-2 ~-1 ~1 ~-{} minecraft:stone 0 replace'.format(tlength + 1),
+                    'C4': '/fill ~1 ~1 ~-2 ~1 ~1 ~-{} minecraft:stone 0 replace'.format(tlength + 1),
+                    'C5': '/fill ~0 ~0 ~2 ~0 ~0 ~{} minecraft:redstone_block 0 replace'.format(tlength + 1),
+                    'C6': '/fill ~0 ~0 ~2 ~0 ~0 ~{} minecraft:redstone_block 0 replace'.format(tlength + 1),
+                    'C7': '/fill ~0 ~0 ~-2 ~0 ~0 ~-{} minecraft:redstone_block 0 replace'.format(tlength + 1),
+                    'C8': '/fill ~0 ~0 ~-2 ~0 ~0 ~-{} minecraft:redstone_block 0 replace'.format(tlength + 1),
+                    }
 
         # Trap template.
         # tmpl[level][dl][dw]
@@ -331,7 +299,7 @@ class LavaTrap(Blank):
             'l': [1, 1, tlength, 1, 1],
         }
         # Starting position. Always the NW corner.
-        pos = self.position.down(5)-self.dw+self.dl*2
+        pos = self.position.down(5) - self.dw + self.dl * 2
 
         # 1 width hallway
         if self.size < 4:
@@ -348,11 +316,11 @@ class Portcullis(Blank):
     def render(self):
         pos = self.position.down(4) \
             - self.dw * 2 \
-            + self.dl * (random.randint(0, max(0, self.length-7)))
+            + self.dl * (random.randint(0, max(0, self.length - 7)))
 
         mat = {
             'RW': [materials.RedstoneWire, 0],
-            '^^': [materials.RedstoneRepeaterOff, 1+12],
+            '^^': [materials.RedstoneRepeaterOff, 1 + 12],
             ']]': [materials.WoodenButton, 3],
             '[[': [materials.WoodenButton, 4],
             'C1': [materials.CommandBlock, 0],
@@ -376,9 +344,9 @@ class Portcullis(Blank):
         cmds = {
             'C1': '/playsound tile.piston.in @p',
             'C2': '/playsound tile.piston.out @p',
-            'C3': '/fill ~-2 ~2 ~2 ~-2 ~2 ~{} minecraft:{} 0 replace'.format(self.size-1, gate[1]),
-            'C4': '/fill ~-2 ~0 ~2 ~-2 ~0 ~{} minecraft:{} 0 replace'.format(self.size-1, gate[1]),
-            'C5': '/fill ~-2 ~1 ~-2 ~-2 ~1 ~-{} minecraft:air 0 replace'.format(self.size-1),
+            'C3': '/fill ~-2 ~2 ~2 ~-2 ~2 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
+            'C4': '/fill ~-2 ~0 ~2 ~-2 ~0 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
+            'C5': '/fill ~-2 ~1 ~-2 ~-2 ~1 ~-{} minecraft:air 0 replace'.format(self.size - 1),
         }
 
         tmpl = [[
@@ -409,17 +377,20 @@ class Portcullis(Blank):
         ]]
 
         reps = {
-            'w': [1, 1, 1, 1, self.size-4, 1, 1, 1, 1],
+            'w': [1, 1, 1, 1, self.size - 4, 1, 1, 1, 1],
             'l': [1, 1, 1, 1],
         }
 
         if self.direction == dirs.S:
             mat[']]'][1] = 1
             mat['[['][1] = 2
-            mat['^^'][1] = 2+12
-            cmds['C3'] = '/fill ~2 ~2 ~-2 ~{} ~2 ~-2 minecraft:{} 0 replace'.format(self.size-1, gate[1])
-            cmds['C4'] = '/fill ~2 ~0 ~-2 ~{} ~0 ~-2 minecraft:{} 0 replace'.format(self.size-1, gate[1])
-            cmds['C5'] = '/fill ~-2 ~1 ~-2 ~-{} ~1 ~-2 minecraft:air 0 replace'.format(self.size-1)
+            mat['^^'][1] = 2 + 12
+            cmds[
+                'C3'] = '/fill ~2 ~2 ~-2 ~{} ~2 ~-2 minecraft:{} 0 replace'.format(self.size - 1, gate[1])
+            cmds[
+                'C4'] = '/fill ~2 ~0 ~-2 ~{} ~0 ~-2 minecraft:{} 0 replace'.format(self.size - 1, gate[1])
+            cmds[
+                'C5'] = '/fill ~-2 ~1 ~-2 ~-{} ~1 ~-2 minecraft:air 0 replace'.format(self.size - 1)
 
         self.apply_template(tmpl, cmds, mat, reps, pos)
 

@@ -10,6 +10,7 @@ _by_id = {}
 
 
 class ItemInfo (object):
+
     def __init__(self, name, value, data=0, maxstack=64, ench='', p_effect='',
                  customname='', flag='', flagparam='', lore='', file=''):
         self.name = str(name)
@@ -61,7 +62,7 @@ def LoadItems(filename='items.txt'):
     try:
         with file(filename) as f:
             items_txt = f.read()
-    except Exception, e:
+    except Exception as e:
         print "Error reading items file: ", e
     for line in items_txt.split("\n"):
         try:
@@ -92,14 +93,14 @@ def LoadItems(filename='items.txt'):
                 flag=flag
             )
             items += 1
-        except Exception, e:
+        except Exception as e:
             print "Error reading line:", e
             print "Line: ", line
 
     # Now import items from materials
     for material, obj in inspect.getmembers(materials):
         if (
-            type(obj) == materials.Material and
+            isinstance(obj, materials.Material) and
             obj.name not in _items
         ):
             _items[obj.name] = ItemInfo(
@@ -139,7 +140,7 @@ def LoadMagicItems(filename='magic_items.txt'):
     try:
         with file(filename) as f:
             items_txt = f.read()
-    except Exception, e:
+    except Exception as e:
         print "Error reading items file: ", e
     for line in items_txt.split("\n"):
         try:
@@ -173,9 +174,9 @@ def LoadMagicItems(filename='magic_items.txt'):
                 flag=flag,
                 flagparam=flagparam, lore=lore
             )
-            #print _items[name]
+            # print _items[name]
             items += 1
-        except Exception, e:
+        except Exception as e:
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'magic items.'
@@ -200,7 +201,7 @@ def LoadPotions(filename='potions.txt'):
     try:
         with file(filename) as f:
             items_txt = f.read()
-    except Exception, e:
+    except Exception as e:
         print "Error reading custom potions file: ", e
     for line in items_txt.split("\n"):
         try:
@@ -218,9 +219,9 @@ def LoadPotions(filename='potions.txt'):
 
             _items[name] = ItemInfo(name, value, data=data, maxstack=1,
                                     p_effect=p_effect, customname=customname)
-            #print _items[name]
+            # print _items[name]
             items += 1
-        except Exception, e:
+        except Exception as e:
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'custom potions.'
@@ -245,9 +246,9 @@ def LoadDyedArmour(filename='dye_colors.txt'):
     try:
         with file(filename) as f:
             color_txt = f.read()
-    except Exception, e:
+    except Exception as e:
         print "Error reading dyes file: ", e
-    #leather armour types
+    # leather armour types
     arms = ['leather helmet',
             'leather chestplate',
             'leather leggings',
@@ -269,9 +270,9 @@ def LoadDyedArmour(filename='dye_colors.txt'):
                 name = '%s %s' % (colorname.lower(), _items[arm].name)
                 _items[name] = ItemInfo(name, value, data=0, maxstack=1,
                                         flag=flag, flagparam=flagparam)
-            #print _items[name]
+            # print _items[name]
             items += 1
-        except Exception, e:
+        except Exception as e:
             print "Error reading line:", e
             print "Line: ", line
     print 'Loaded', items, 'dye colors.'
@@ -287,7 +288,7 @@ def LoadNBTFiles(dirname='items'):
     else:
         print 'Could not find the NBT items folder!'
         return
-    #Make a list of all the NBT files in the items directory
+    # Make a list of all the NBT files in the items directory
     itemlist = []
     for file in os.listdir(item_path):
         if (file.endswith(".nbt")):
@@ -295,7 +296,7 @@ def LoadNBTFiles(dirname='items'):
     items_count = 0
     for item in itemlist:
         # SomeItem.nbt would be referenced in loot as file_some_item
-        name = 'file_'+item[:-4].lower()
+        name = 'file_' + item[:-4].lower()
         full_path = os.path.join(item_path, item)
         # Load the nbt file and do some basic validation
         try:
@@ -310,25 +311,25 @@ def LoadNBTFiles(dirname='items'):
         except:
             stack = 1
         _items[name] = ItemInfo(name, 0, maxstack=stack, file=full_path)
-        #print _items[name]
+        # print _items[name]
         items_count += 1
     print 'Loaded', items_count, 'items from NBT files.'
 
 
 def byName(name):
-        try:
-            return _items[name]
-        except:
-            print 'Unknown item:', name
-            return None
+    try:
+        return _items[name]
+    except:
+        print 'Unknown item:', name
+        return None
 
 
 def byID(id):
-        try:
-            return _by_id[id]
-        except:
-            print 'Unknown item ID:', id
-            return None
+    try:
+        return _by_id[id]
+    except:
+        print 'Unknown item ID:', id
+        return None
 
 LoadItems()
 LoadNBTFiles()
