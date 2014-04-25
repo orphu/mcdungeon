@@ -5,25 +5,29 @@
 # =======
 #
 # Format is:
-# <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...
+# <name>:<data value>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...<:flag (optional)>
 #
 # The data value is just for appearance. Any effects are overridden by
-# those provided. Duration is the time of the effect in game ticks.
-# (20 ticks = 1 second, 1200 ticks = 1 minute)
+# those provided.
 #
+# You can provide any number of potion effects. Effects require three values:
+# the id, level and duration. Duration is the time of the effect in game ticks.
+# (20 ticks = 1 second, 1200 ticks = 1 minute)
 # Potion Data values and effect ids can be found on the minecraft wiki:
 # * http://www.minecraftwiki.net/wiki/Potions
 # * http://www.minecraftwiki.net/wiki/Potion_effect
 #
-# Potions with a data value of 0 (water) have their effects hidden in game.
+# The flag can be omitted. Use HIDE_EFFECTS to hide the potion effects
+# in-game, HIDE_PARTICLES to hide the player particles after drinking, or
+# HIDE_ALL to hide both. (Potions with a data value of 0 also have their
+# effects hidden.)
 #
 # Potions can be referenced by the provided name in loot tables. Make sure
-# you use unique names. The name will also be used in game.
+# you use unique names. The name will also be used in-game.
 #
 # Examples:
-Bottle of Ale:8195,9-0-1200
-Potion of Wonder:0,8-0-1200,12-1-2400,3-2-600
-Potion of Raw Chaos:0,7-22-1
+Potion of Wonder:8200,8-0-1200,12-1-2400,3-2-600:HIDE_EFFECTS
+Potion of Raw Chaos:8206,7-22-1
 
 # Basic potions that are normally unobtainable
 Potion of Haste:8193,3-0-3600
@@ -34,7 +38,7 @@ Potion of Blindness:8202,15-0-1800
 Potion of Hunger:8201,17-0-1800
 Potion of Decay:8204,20-0-1800
 Potion of Boosting:8196,21-0-900
-Potion of Absorption:8194,22-0-900
+Potion of Absorption:8205,22-0-900
 
 # Level II versions
 Potion of Haste II:8193,3-1-1800
@@ -45,4 +49,9 @@ Potion of Blindness II:8202,15-1-900
 Potion of Hunger II:8201,17-1-900
 Potion of Decay II:8204,20-1-900
 Potion of Boosting II:8196,21-1-450
-Potion of Absorption II:8194,22-1-450
+Potion of Absorption II:8205,22-1-450
+
+# Booze
+Bottle of Ale:8195,9-0-600:HIDE_PARTICLES
+Bottle of Mulled Wine:8204,9-0-300,2-0-300,21-0-1200,3-0-1200:HIDE_ALL
+Bottle of Absinthe:8196,9-0-300,15-0-300,2-1-300,5-2-500:HIDE_ALL

@@ -211,14 +211,19 @@ def LoadPotions(filename='potions.txt'):
             if line[0] == "#":
                 continue
 
-            name, stuff = line.split(':')
+            # Fill in optional flag param
+            if line.count(':') == 1:
+                line = line + ':'
+            name, stuff, flag = line.split(':')
+
             data, p_effect = stuff.split(',', 1)
             customname = name
             name = (name.lower())
             value = _items['water bottle'].value
 
             _items[name] = ItemInfo(name, value, data=data, maxstack=1,
-                                    p_effect=p_effect, customname=customname)
+                                    p_effect=p_effect, customname=customname,
+                                    flag=flag)
             # print _items[name]
             items += 1
         except Exception as e:

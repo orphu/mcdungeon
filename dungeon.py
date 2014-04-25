@@ -1068,7 +1068,17 @@ class Dungeon (object):
                 e_tag['Id'] = nbt.TAG_Byte(id)
                 e_tag['Amplifier'] = nbt.TAG_Byte(amp)
                 e_tag['Duration'] = nbt.TAG_Int(dur)
+                # Flags for hiding potion particles
+                if i.flag == 'HIDE_PARTICLES' or i.flag == 'HIDE_ALL':
+                    e_tag['ShowParticles'] = nbt.TAG_Byte(0)
                 elist.append(e_tag)
+        # Flag for hiding additional text
+        if i.flag == 'HIDE_EFFECTS' or i.flag == 'HIDE_ALL':
+            try:
+                item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['HideFlags'] = nbt.TAG_Int(63)    # 63 = Hide everything
         # Naming
         if i.customname != '':
             try:
