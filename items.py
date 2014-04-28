@@ -217,7 +217,8 @@ def LoadPotions(filename='potions.txt'):
             name, stuff, flag = line.split(':')
 
             data, p_effect = stuff.split(',', 1)
-            customname = name
+            # Append section sign and r to name to reset style
+            customname = u"\u00A7r".encode('utf8')+name
             name = (name.lower())
             value = _items['water bottle'].value
 
