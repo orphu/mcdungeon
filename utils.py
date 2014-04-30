@@ -1238,7 +1238,7 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     return root_tag
 
 
-# Convert escape characters in a string. The following are avalible:
+# Convert escape characters in a string. The following are available:
 # \n - Line Return
 # \s - Section Sign (used for formatting in minecraft)
 # \\ - Backslash
