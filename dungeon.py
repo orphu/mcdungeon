@@ -968,6 +968,7 @@ class Dungeon (object):
         # limits
         for p in bookdata[:50]:
             page = filter(lambda x: x in valid_characters, p)
+            page = ConvertEscapeChars(page)
             item['tag']["pages"].append(nbt.TAG_String(page[:256]))
         # Give the book an edition
         ed = topheavy_random(0, 9)
@@ -1102,7 +1103,7 @@ class Dungeon (object):
                 item_tag['tag']['display'][
                     'Name'] = nbt.TAG_String('Fortune Cookie')
                 i.lore = self.loadrandfortune()
-                loredata = textwrap.wrap(i.lore, 40)
+                loredata = textwrap.wrap(ConvertEscapeChars(i.lore), 30)
                 for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(
                         nbt.TAG_String(loretext))
@@ -1110,9 +1111,7 @@ class Dungeon (object):
                 loredata = i.lore.split(':')
                 for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(
-                        nbt.TAG_String(
-                            loretext[
-                                :50]))
+                        nbt.TAG_String(ConvertEscapeChars(loretext[:50])))
         # Dyed
         if (i.flag == 'DYED'):
             try:

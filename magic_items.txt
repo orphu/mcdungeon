@@ -23,14 +23,18 @@
 # Lore text is limited to 50 characters per line and 10 lines. It is recommended
 # that you check how the lore text looks in-game.
 #
+# You can add formatting to lore text using "\s", this will be substituted
+# with the section sign. For information on minecraft's use of the section
+# sign in formatting see: http://www.minecraftwiki.net/wiki/Formatting_Codes
+#
 # Examples:
 
-# A golden sword with every legal enchantment and lore text:
-Masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3:Cosmic Blade Masamune.:Sharp.
+# A golden sword with every legal enchantment and gold lore text:
+Masamune:Gold Sword,16-5,17-5,18-5,19-2,20-2,21-3:\s6Cosmic Blade Masamune.:Sharp.
 #
 # A feather of feather fall five:
 # Does not actually work, but funny anyway.
-Parachute:Feather,2-5:Warning!:Not responsible for:death due to falling.
+Parachute:Feather,2-5:\s4\slWarning!:Not responsible for:death due to falling.
 
 # A Diamond Sword of Smite X named smitten:
 Smitten:Diamond Sword,17-10
@@ -63,50 +67,50 @@ Aegis Breastplate:Gold Chestplate,0-5:Crafted by the God Hephaestus:A hundred ta
 Eros' Bow:Bow,49-2,51-1:Crafted by the God Hephaestus:Be careful not to prick yourself:with the bow of the god Eros.
 Achilles' Leggings:Diamond Leggings,0-4:Crafted by the God Hephaestus:Not quite as nice as Achilles':shield, but still pretty nice.
 # Hazmat Suit
-Hazmat Helmet:White Leather Helmet,1-4,34-3:An item from another world.:Part of a complete suit.
-Hazmat Suit:White Leather Chestplate,1-4,34-3:An item from another world.:Part of a complete suit.
-Hazmat Trousers:White Leather Leggings,1-4,34-3:An item from another world.:Part of a complete suit.
-Hazmat Boots:White Leather Boots,1-4,34-3:An item from another world.:Part of a complete suit.
+Hazmat Helmet:White Leather Helmet,1-4,34-3:An item from another world.
+Hazmat Suit:White Leather Chestplate,1-4,34-3:An item from another world.:\sePart of a complete suit.
+Hazmat Trousers:White Leather Leggings,1-4,34-3:An item from another world.:\sePart of a complete suit.
+Hazmat Boots:White Leather Boots,1-4,34-3:An item from another world.:\sePart of a complete suit.
 # Obsidian Suit
-Obsidian Helmet:Black Leather Helmet,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
-Obsidian Chestplate:Black Leather Chestplate,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
-Obsidian Leggings:Black Leather Leggings,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
-Obsidian Boots:Black Leather Boots,3-4,34-3:Crafted from wafer thin obsidian.:Part of a complete suit.
+Obsidian Helmet:Black Leather Helmet,3-4,34-3:Crafted from wafer thin obsidian.:\sePart of a complete suit.
+Obsidian Chestplate:Black Leather Chestplate,3-4,34-3:Crafted from wafer thin obsidian.:\sePart of a complete suit.
+Obsidian Leggings:Black Leather Leggings,3-4,34-3:Crafted from wafer thin obsidian.:\sePart of a complete suit.
+Obsidian Boots:Black Leather Boots,3-4,34-3:Crafted from wafer thin obsidian.:\sePart of a complete suit.
 # Magnetic Suit
-Magnetic Helm:Yellow Leather Helmet,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
-Magnetic Chestplate:Yellow Leather Chestplate,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
-Magnetic Leggings:Yellow Leather Leggings,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
-Magnetic Shoes:Yellow Leather Boots,4-4,34-3:Has a magnetic field that repels arrows.:Part of a complete suit.
+Magnetic Helm:Yellow Leather Helmet,4-4,34-3:Has a magnetic field that repels arrows.:\sePart of a complete suit.
+Magnetic Chestplate:Yellow Leather Chestplate,4-4,34-3:Has a magnetic field that repels arrows.:\sePart of a complete suit.
+Magnetic Leggings:Yellow Leather Leggings,4-4,34-3:Has a magnetic field that repels arrows.:\sePart of a complete suit.
+Magnetic Shoes:Yellow Leather Boots,4-4,34-3:Has a magnetic field that repels arrows.:\sePart of a complete suit.
 # Cactus Suit
-Cactus Helmet:Green Leather Helmet,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
-Cactus Chestplate:Green Leather Chestplate,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
-Cactus Leggings:Green Leather Leggings,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
-Cactus Boots:Green Leather Boots,7-3,34-3:Crafted from a cactus.:Part of a complete suit.
+Cactus Helmet:Green Leather Helmet,7-3,34-3:Crafted from a cactus.:\sePart of a complete suit.
+Cactus Chestplate:Green Leather Chestplate,7-3,34-3:Crafted from a cactus.:\sePart of a complete suit.
+Cactus Leggings:Green Leather Leggings,7-3,34-3:Crafted from a cactus.:\sePart of a complete suit.
+Cactus Boots:Green Leather Boots,7-3,34-3:Crafted from a cactus.:\sePart of a complete suit.
 # Diving Helmet
 Diving Helmet:Orange Leather Helmet,5-3,6-1:An item from another world.
 
 # Enchanted Books
-Book of The High Priestess:Enchanted Book,0-4:- II -
-Book of The Fool:Enchanted Book,1-4:- 0 -
-Book of The Chariot:Enchanted Book,2-4:- VII -
-Book of The Sun:Enchanted Book,3-4:- XIX -
-Book of Temperance:Enchanted Book,4-4:- XIV -
-Book of The Empress:Enchanted Book,5-3:- III -
-Book of The Emperor:Enchanted Book,6-1:- IV -
-Book of Justice:Enchanted Book,7-3:- XI -
-Book of Death:Enchanted Book,16-5:- XIII -
-Book of The Hierophant:Enchanted Book,17-5:- V -
-Book of The Moon:Enchanted Book,18-5:- XVIII -
-Book of Strength:Enchanted Book,19-2:- VIII -
-Book of The Devil:Enchanted Book,20-2:- XV -
-Book of The Hanged Man:Enchanted Book,21-3:- XII -
-Book of The Hermit:Enchanted Book,32-5:- IX -
-Book of The Lovers:Enchanted Book,33-1:- VI -
-Book of The Star:Enchanted Book,34-3:- XVII -
-Book of The Fates:Enchanted Book,35-3:- X -
-Book of The Tower:Enchanted Book,48-5:- XVI -
-Book of Judgement:Enchanted Book,49-2:- XX -
-Book of The Magician:Enchanted Book,50-1:- I -
-Book of The World:Enchanted Book,51-1:- XXI -
+Book of The High Priestess:Enchanted Book,0-4:\s2- II -
+Book of The Fool:Enchanted Book,1-4:\s2- 0 -
+Book of The Chariot:Enchanted Book,2-4:\s2- VII -
+Book of The Sun:Enchanted Book,3-4:\s2- XIX -
+Book of Temperance:Enchanted Book,4-4:\s2- XIV -
+Book of The Empress:Enchanted Book,5-3:\s2- III -
+Book of The Emperor:Enchanted Book,6-1:\s2- IV -
+Book of Justice:Enchanted Book,7-3:\s2- XI -
+Book of Death:Enchanted Book,16-5:\s2- XIII -
+Book of The Hierophant:Enchanted Book,17-5:\s2- V -
+Book of The Moon:Enchanted Book,18-5:\s2- XVIII -
+Book of Strength:Enchanted Book,19-2:\s2- VIII -
+Book of The Devil:Enchanted Book,20-2:\s2- XV -
+Book of The Hanged Man:Enchanted Book,21-3:\s2- XII -
+Book of The Hermit:Enchanted Book,32-5:\s2- IX -
+Book of The Lovers:Enchanted Book,33-1:\s2- VI -
+Book of The Star:Enchanted Book,34-3:\s2- XVII -
+Book of The Fates:Enchanted Book,35-3:\s2- X -
+Book of The Tower:Enchanted Book,48-5:\s2- XVI -
+Book of Judgement:Enchanted Book,49-2:\s2- XX -
+Book of The Magician:Enchanted Book,50-1:\s2- I -
+Book of The World:Enchanted Book,51-1:\s2- XXI -
 Book of Fish Stories Vol 1:Enchanted Book,61-3
 Book of Fish Stories Vol 2:Enchanted Book,62-3

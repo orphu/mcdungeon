@@ -19,11 +19,15 @@ You may add your own books using the following guide:
       characters. It is still possible for the text on a page to be too
       long which will make it look funny in Minecraft. The default texts
       were split using the help of the Multiplayer Book Paster tool.
-      (http://ray3k.com/site/downloads/minecraft/mbp/) Another option would
-      be to input the text in to a book in Minecraft to check what works.
-      
-    * For the moment, there is currently no way to put line-returns or
-      formatting in the text.
+      (http://ray3k.com/site/?page_id=13) Another option would be to input
+      the text in to a book in Minecraft to check what works.
+
+    * The following escape characters can be used:
+        \n - Produces a new line
+        \s - Produces the section sign
+        \\ - Produces a backslash
+      For information about using the section sign for formatting, see:
+      http://www.minecraftwiki.net/wiki/Formatting_Codes
 
     * For the moment, only the following characters are supported:
         0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ

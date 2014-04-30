@@ -1238,6 +1238,18 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     return root_tag
 
 
+# Convert escape characters in a string. The following are avalible:
+# \n - Line Return
+# \s - Section Sign (used for formatting in minecraft)
+# \\ - Backslash
+def ConvertEscapeChars(input):
+    out = input.replace('\\\\','<[BACKSLASH]>')
+    out = out.replace('\\n','\n')
+    out = out.replace('\\s',u"\u00A7".encode('utf8'))
+    out = out.replace('<[BACKSLASH]>','\\')
+    return out
+
+
 def DebugBreakpoint(banner="Debugger started (CTRL-D to quit)"):
     '''Drop to the python console for some debugging'''
 
