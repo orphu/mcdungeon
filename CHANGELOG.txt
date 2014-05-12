@@ -26,6 +26,10 @@ v0.14.0 -
 
    * Added editions to books. Most books will be late editions and cannot
      be copied. (JiFish)
+     
+   * Potion effects and particles can now be hidden in potions.txt. (JiFish)
+   
+   * Text formatting is now possible in books and lore text. (JiFish)
 
 v0.13.0 - 10/26/2013
 
