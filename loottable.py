@@ -162,8 +162,8 @@ _ench_items_table_book = {
     PUNCH: ['book', 'bow'],
     FLAME: ['book', 'bow'],
     INFINITY: ['book', 'bow'],
-    LUCK_OF_THE_SEA: ['fishing rod'],
-    LURE: ['fishing rod']
+    LUCK_OF_THE_SEA: ['book', 'fishing rod'],
+    LURE: ['book', 'fishing rod']
 }
 
 # Table: Only enchants that can be achieved with an enchanting table.
@@ -191,8 +191,8 @@ _ench_items_table = {
     PUNCH: ['book', 'bow'],
     FLAME: ['book', 'bow'],
     INFINITY: ['book', 'bow'],
-    LUCK_OF_THE_SEA: ['fishing rod'],
-    LURE: ['fishing rod']
+    LUCK_OF_THE_SEA: ['book', 'fishing rod'],
+    LURE: ['book', 'fishing rod']
 }
 
 # Extended: As normal, but all weapon enchants can appear on axes,
