@@ -510,8 +510,6 @@ def enchant(item, level, debug=False):
         ench = utils.weighted_choice(prob)
         # Add it.
         final[ench] = enchantments[ench]
-        if (type == 'book'):
-            break
         # Remove it so we don't pick again.
         prob.remove((ench, _ench_prob[ench]))
         # Some enchantments conflict with each other. If we picked one, remove
