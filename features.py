@@ -941,13 +941,16 @@ class SecretStudy(SecretRoom):
             else:
                 sb(self.c1 + p, materials.Air)
 
-        # A Clock!
+        # Framed study stuff
+        loot = weighted_choice((("clock", 4),
+                                ("written book", 1),
+                                ("custom painting", 1)))
         sb(self.c1 + Vec(2, -3, 1), materials._wall)
         self.parent.parent.addentity(
             get_entity_other_tags("ItemFrame",
                                   Pos=self.c1 + Vec(2, -3, 1),
                                   Direction="S",
-                                  ItemInfo=items.byName("clock")
+                                  ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot)
                                   )
         )
 
@@ -1293,7 +1296,7 @@ class SecretSepulchure(SecretRoom):
             else:
                 d = gems[1]
             tags = get_entity_other_tags("ItemFrame",
-                                         ItemInfo=items.byName(loot),
+                                         ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot),
                                          Pos=q,
                                          Direction=d)
             dungeon.addentity(tags)
@@ -1364,10 +1367,10 @@ class SecretArmory(SecretRoom):
 
         # Now, add a random item to each frame.
         gear = (
-            ("leather helmet", 16),
-            ("leather chestplate", 16),
-            ("leather leggings", 16),
-            ("leather boots", 16),
+            ("random leather helmet", 16),
+            ("random leather chestplate", 16),
+            ("random leather leggings", 16),
+            ("random leather boots", 16)
             ("chainmail helmet", 8),
             ("chainmail chestplate", 8),
             ("chainmail leggings", 8),
@@ -1459,15 +1462,7 @@ class SecretArmory(SecretRoom):
                                 item_name,
                                 ''
                                 )
-            # Build the frame tags
-            tags = get_entity_other_tags("ItemFrame",
-                                         Pos=self.c1 + p[2],
-                                         Direction=p[3],
-                                         ItemRotation=ItemRotation,
-                                         ItemInfo=items.byName(item))
             # Name the item
-            tags['Item']['tag'] = nbt.TAG_Compound()
-            tags['Item']['tag']['display'] = nbt.TAG_Compound()
             # Special case, tags should just have the name
             if (item == 'name tag'):
                 displayname = name
@@ -1475,13 +1470,12 @@ class SecretArmory(SecretRoom):
                 displayname = item_name.capitalize() + ' of ' + name
             else:
                 displayname = name + "'s " + item_name
-            tags['Item']['tag']['display'][
-                'Name'] = nbt.TAG_String(displayname)
-            # Color leather things.
-            if 'leather' in item and 'horse' not in item:
-                tags['Item']['tag']['display']['color'] = nbt.TAG_Int(
-                    random.randrange(16777215))
-
+            # Build the frame tags
+            tags = get_entity_other_tags("ItemFrame",
+                                         Pos=self.c1 + p[2],
+                                         Direction=p[3],
+                                         ItemRotation=ItemRotation,
+                                         ItemTags=self.parent.parent.inventory.buildFrameItemTag(item,customname=displayname))
             # Place the item frame.
             dungeon.addentity(tags)
 

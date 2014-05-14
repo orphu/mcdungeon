@@ -1128,13 +1128,13 @@ def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
     return root_tag
 
 
-def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
+def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemTags=None,
                           ItemDropChance=1.0, ItemRotation=0, Motive='Kebab',
                           Pos=Vec(0, 0, 0), Damage=0,
                           **kwargs):
     '''Returns an nbt.TAG_Compound for "other" type entities. These include
     EnderCrystal, EyeOfEnder, ItemFrame, and Painting. Chunk offsets will be
-    calculated. ItemInfo should contain an item object from items.'''
+    calculated. ItemTags should contain an item as NBT tags.'''
 
     # Convert Vec types so we can use either
     if isinstance(Pos, Vec):
@@ -1225,29 +1225,14 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemInfo=None,
     if eid == 'ItemFrame':
         root_tag['ItemDropChance'] = nbt.TAG_Float(ItemDropChance)
         root_tag['ItemRotation'] = nbt.TAG_Byte(ItemRotation)
-        if ItemInfo is not None:
-            root_tag['Item'] = nbt.TAG_Compound()
-            root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
-            root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
-            root_tag['Item']['Count'] = nbt.TAG_Byte(1)
+        if ItemTags is not None:
+            root_tag['Item'] = ItemTags
 
     # Set the painting.
     if eid == 'Painting':
         root_tag['Motive'] = nbt.TAG_String(Motive)
 
     return root_tag
-
-
-# Convert escape characters in a string. The following are available:
-# \n - Line Return
-# \s - Section Sign (used for formatting in minecraft)
-# \\ - Backslash
-def ConvertEscapeChars(input):
-    out = input.replace('\\\\','<[BACKSLASH]>')
-    out = out.replace('\\n','\n')
-    out = out.replace('\\s',u"\u00A7".encode('utf8'))
-    out = out.replace('<[BACKSLASH]>','\\')
-    return out
 
 
 def DebugBreakpoint(banner="Debugger started (CTRL-D to quit)"):

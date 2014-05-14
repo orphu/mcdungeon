@@ -18,6 +18,7 @@ import features
 import ruins
 import pmeter
 import namegenerator
+import inventory
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
@@ -87,6 +88,7 @@ class Dungeon (object):
         self.dungeon_cache = dungeon_cache
         self.good_chunks = good_chunks
         self.mapstore = mapstore
+        self.inventory = inventory.new(mapstore)
         self.pm = pmeter.ProgressMeter()
         self.rooms = {}
         self.halls = []
@@ -913,229 +915,6 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-    def loadrandbooktext(self):
-        if os.path.isdir(os.path.join(sys.path[0], cfg.dir_books)):
-            book_path = os.path.join(sys.path[0], cfg.dir_books)
-        elif os.path.isdir(cfg.dir_books):
-            book_path = cfg.dir_books
-        else:
-            book_path = ''
-        # Make a list of all the txt files in the books directory
-        booklist = []
-        if book_path != '':
-            for file in os.listdir(book_path):
-                if (str(file.lower()).endswith(".txt") and
-                        file.lower() is not "readme.txt"):
-                    booklist.append(file)
-        # Book 'editions'
-        ed_dict = [
-            '1st',
-            '2nd',
-            '3rd',
-            '4th',
-            '5th',
-            '6th',
-            '7th',
-            '8th',
-            '9th',
-            '10th']
-
-        item = nbt.TAG_Compound()
-        item['id'] = nbt.TAG_Short(387)
-        item['Count'] = nbt.TAG_Byte(1)
-        # No books? Give a book and quill instead
-        if len(booklist) == 0:
-            item['id'] = nbt.TAG_Short(386)
-            return item
-        # Prevent unusual characters from being used
-        valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
-        # Open the book's text file
-        bookfile = open(os.path.join(book_path, random.choice(booklist)))
-        bookdata = bookfile.read().splitlines()
-        bookfile.close()
-        # Create NBT tag
-        item['tag'] = nbt.TAG_Compound()
-        item['tag']['author'] = nbt.TAG_String(
-            filter(
-                lambda x: x in valid_characters,
-                bookdata.pop(0)))
-        item['tag']['title'] = nbt.TAG_String(
-            filter(
-                lambda x: x in valid_characters,
-                bookdata.pop(0)))
-        item['tag']["pages"] = nbt.TAG_List()
-        # Slice the pages at 50 and the page text at 256 to match minecraft
-        # limits
-        for p in bookdata[:50]:
-            page = filter(lambda x: x in valid_characters, p)
-            page = ConvertEscapeChars(page)
-            item['tag']["pages"].append(nbt.TAG_String(page[:256]))
-        # Give the book an edition
-        ed = topheavy_random(0, 9)
-        item['tag']['display'] = nbt.TAG_Compound()
-        item['tag']['display']['Lore'] = nbt.TAG_List()
-        item['tag']['display']['Lore'].append(
-            nbt.TAG_String(
-                ed_dict[ed] +
-                ' Edition'))
-        if (ed == 0):
-            item['tag']['generation'] = nbt.TAG_Int(0)
-        elif (ed == 1):
-            item['tag']['generation'] = nbt.TAG_Int(1)
-        else:
-            item['tag']['generation'] = nbt.TAG_Int(2)
-
-        return item
-
-    def loadrandpainting(self):
-        if os.path.isdir(os.path.join(sys.path[0], cfg.dir_paintings)):
-            paint_path = os.path.join(sys.path[0], cfg.dir_paintings)
-        elif os.path.isdir(cfg.dir_paintings):
-            paint_path = cfg.dir_paintings
-        else:
-            paint_path = ''
-        # Make a list of all the pairs of dat and txt files in the paintings
-        # directory
-        paintlist = []
-        if paint_path != '':
-            for file in os.listdir(paint_path):
-                if str(file.lower()).endswith(".dat"):
-                    if os.path.isfile(os.path.join(paint_path, file[:-3] + 'txt')):
-                        paintlist.append(file[:-4])
-        # No paintings? Give a blank map (ID: 395)
-        if len(paintlist) == 0:
-            item = nbt.TAG_Compound()
-            item['id'] = nbt.TAG_Short(395)
-            item['Count'] = nbt.TAG_Byte(1)
-            return item
-
-        return self.mapstore.add_painting(random.choice(paintlist))
-
-    def loadrandfortune(self):
-        if os.path.isfile(os.path.join(sys.path[0], cfg.file_fortunes)):
-            forune_path = os.path.join(sys.path[0], cfg.file_fortunes)
-        elif os.path.isfile(cfg.file_fortunes):
-            forune_path = cfg.file_fortunes
-        else:
-            return '...in bed.'  # Fortune file not found
-
-        # Retrieve a random line from a file, reading through the file once
-        # Prevents us from having to load the whole file in to memory
-        forune_file = open(forune_path)
-        lineNum = 0
-        while True:
-            aLine = forune_file.readline()
-            if not aLine:
-                break
-            if aLine[0] == '#' or aLine == '':
-                continue
-            lineNum = lineNum + 1
-            # How likely is it that this is the last line of the file?
-            if random.uniform(0, lineNum) < 1:
-                fortune = aLine.rstrip()
-        forune_file.close()
-        return fortune
-
-    def buildItemTag(self, i):
-        item_tag = nbt.TAG_Compound()
-        # Standard stuff
-        item_tag['id'] = nbt.TAG_Short(i.id)
-        item_tag['Damage'] = nbt.TAG_Short(i.damage)
-        # Enchantments
-        if len(i.enchantments) > 0:
-            item_tag['tag'] = nbt.TAG_Compound()
-            if (i.flag == 'ENCH_BOOK'):
-                item_tag['tag']['StoredEnchantments'] = nbt.TAG_List()
-                elist = item_tag['tag']['StoredEnchantments']
-            else:
-                item_tag['tag']['ench'] = nbt.TAG_List()
-                elist = item_tag['tag']['ench']
-            for e in i.enchantments:
-                e_tag = nbt.TAG_Compound()
-                e_tag['id'] = nbt.TAG_Short(e['id'])
-                e_tag['lvl'] = nbt.TAG_Short(e['lvl'])
-                elist.append(e_tag)
-        # Custom Potion Effects
-        if i.p_effect != '':
-            try:
-                item_tag['tag']
-            except:
-                item_tag['tag'] = nbt.TAG_Compound()
-            item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
-            elist = item_tag['tag']['CustomPotionEffects']
-            for e in i.p_effect.split(','):
-                id, amp, dur = e.split('-')
-                e_tag = nbt.TAG_Compound()
-                e_tag['Id'] = nbt.TAG_Byte(id)
-                e_tag['Amplifier'] = nbt.TAG_Byte(amp)
-                e_tag['Duration'] = nbt.TAG_Int(dur)
-                # Flags for hiding potion particles
-                if i.flag == 'HIDE_PARTICLES' or i.flag == 'HIDE_ALL':
-                    e_tag['ShowParticles'] = nbt.TAG_Byte(0)
-                elist.append(e_tag)
-        # Flag for hiding additional text
-        if i.flag == 'HIDE_EFFECTS' or i.flag == 'HIDE_ALL':
-            try:
-                item_tag['tag']
-            except:
-                item_tag['tag'] = nbt.TAG_Compound()
-            item_tag['tag']['HideFlags'] = nbt.TAG_Int(63)    # 63 = Hide everything
-        # Naming
-        if i.customname != '':
-            try:
-                item_tag['tag']
-            except:
-                item_tag['tag'] = nbt.TAG_Compound()
-            item_tag['tag']['display'] = nbt.TAG_Compound()
-            item_tag['tag']['display']['Name'] = nbt.TAG_String(i.customname)
-        # Lore Text
-        if i.lore != '' or i.flag == 'FORTUNE':
-            try:
-                item_tag['tag']
-            except:
-                item_tag['tag'] = nbt.TAG_Compound()
-            try:
-                item_tag['tag']['display']
-            except:
-                item_tag['tag']['display'] = nbt.TAG_Compound()
-            item_tag['tag']['display']['Lore'] = nbt.TAG_List()
-            if i.flag == 'FORTUNE':
-                item_tag['tag']['display'][
-                    'Name'] = nbt.TAG_String('Fortune Cookie')
-                i.lore = self.loadrandfortune()
-                loredata = textwrap.wrap(ConvertEscapeChars(i.lore), 30)
-                for loretext in loredata[:10]:
-                    item_tag['tag']['display']['Lore'].append(
-                        nbt.TAG_String(loretext))
-            else:
-                loredata = i.lore.split(':')
-                for loretext in loredata[:10]:
-                    item_tag['tag']['display']['Lore'].append(
-                        nbt.TAG_String(ConvertEscapeChars(loretext[:50])))
-        # Dyed
-        if (i.flag == 'DYED'):
-            try:
-                item_tag['tag']
-            except:
-                item_tag['tag'] = nbt.TAG_Compound()
-            try:
-                item_tag['tag']['display']
-            except:
-                item_tag['tag']['display'] = nbt.TAG_Compound()
-            if i.flagparam == '':
-                item_tag['tag']['display']['color'] = nbt.TAG_Int(
-                    random.randint(
-                        0,
-                        16777215))
-            else:
-                item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
-        # special cases for written books and paintings
-        if (i.flag == 'WRITTEN'):
-            item_tag = self.loadrandbooktext()
-        if (i.flag == 'PAINT'):
-            item_tag = self.loadrandpainting()
-        return item_tag
-
     def addchest(self, loc, tier=-1, loot=[], name=''):
         level = loc.y / self.room_height
         if (tier < 0):
@@ -1160,13 +939,7 @@ class Dungeon (object):
         if len(loot) == 0:
             loot = list(loottable.rollLoot(tier, level + 1))
         for i in loot:
-            if i.file != '':
-                item_tag = item_tag = nbt.load(i.file)
-            else:
-                item_tag = self.buildItemTag(i)
-            # Set the slot and count
-            item_tag['Slot'] = nbt.TAG_Byte(i.slot)
-            item_tag['Count'] = nbt.TAG_Byte(i.count)
+            item_tag = self.inventory.buildItemTag(i)
             inv_tag.append(item_tag)
         self.tile_ents[loc] = root_tag
 
