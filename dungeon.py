@@ -4,7 +4,6 @@ import operator
 from pprint import pprint
 import random
 from random import *
-import textwrap
 import logging
 
 import cfg

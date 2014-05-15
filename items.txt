@@ -72,7 +72,7 @@
 318,Flint,0,64
 319,Raw Porkchop,0,64
 320,Cooked Porkchop,0,64
-321,Paintings,0,64
+321,Painting,0,64
 322,Golden Apple,0,64
 322,Enchanted Golden Apple,1,64
 323,Sign,0,16

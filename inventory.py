@@ -1,6 +1,7 @@
 import os
 import sys
 import random
+import textwrap
 
 import cfg
 import mapstore

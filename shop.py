@@ -2,7 +2,7 @@ import ConfigParser
 import os
 import sys
 import random
-import copy
+from copy import copy
 
 import items
 import loottable
@@ -40,12 +40,21 @@ class TradeInfo(object):
             return None
         loot = inloot.lower().split(',')
         item = items.byName(loot[0])
+        if item == None:
+            sys.exit('%s not found'% loot[0])
         if len(loot) < 2:
             count = 1
         else:
             count = int(loot[1])
         if len(loot) < 3:
             enchantments = []
+            if item.name.startswith('magic_'):
+                ench_level = 0
+                if len(item.ench) > 0:
+                    for e in item.ench.split(','):
+                        k = int(e.split('-')[0])
+                        v = int(e.split('-')[-1])
+                        enchantments.append(dict({'id': k, 'lvl': v}))
         else:
             enchantments = list(loottable.enchant(item.name, int(loot[2])))
         return loottable.Loot(0,
@@ -109,12 +118,12 @@ def LoadShop(filename):
     _shops.append(shop)
 
 
-def Load():
+def Load(dir_shops):
     # Make a list of all the cfg files in the books directory
-    if os.path.isdir(os.path.join(sys.path[0], 'shops')):
-        shop_path = os.path.join(sys.path[0], 'shops')
-    elif os.path.isdir('shops'):
-        shop_path = 'shops'
+    if os.path.isdir(os.path.join(sys.path[0], dir_shops)):
+        shop_path = os.path.join(sys.path[0], dir_shops)
+    elif os.path.isdir(dir_shops):
+        shop_path = dir_shops
     else:
         shop_path = ''
     shoplist = []
@@ -128,7 +137,7 @@ def Load():
 
 # A Random shop with random trades
 def rollShop():
-    shop = copy.copy(random.choice(_shops))
+    shop = copy(random.choice(_shops))
     trades = []
     # Roll random trades
     for t in shop.trades:
@@ -136,5 +145,3 @@ def rollShop():
             trades.append(t)
     shop.trades = trades
     return shop
-    
-Load()

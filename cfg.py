@@ -6,6 +6,7 @@ import sys
 
 import items
 import materials
+import shop
 from utils import Vec
 cache_dir = 'mcdungeon_cache'
 
@@ -84,6 +85,7 @@ file_magic_items = 'magic_items.txt'
 file_fortunes = 'fortunes.txt'
 dir_paintings = 'paintings'
 dir_books = 'books'
+dir_shops = 'shops'
 dir_extra_spawners = ''
 dir_extra_items = ''
 
@@ -176,8 +178,8 @@ def Load(filename='default.cfg'):
         treasure_SpawnMinDelay, treasure_SpawnMaxDelay, \
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
-        dir_books, dir_extra_spawners, dir_extra_items, river_biomes, \
-        ocean_biomes, master_hall_traps
+        dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
+        river_biomes, ocean_biomes, master_hall_traps
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -206,6 +208,7 @@ def Load(filename='default.cfg'):
     file_fortunes = getPath('locations', 'file_fortunes', file_fortunes)
     dir_paintings = getPath('locations', 'dir_paintings', dir_paintings)
     dir_books = getPath('locations', 'dir_books', dir_books)
+    dir_shops = getPath('locations', 'dir_shops', dir_shops)
     dir_extra_spawners = getPath('locations',
                                  'dir_extra_spawners',
                                  dir_extra_spawners)
@@ -219,6 +222,8 @@ def Load(filename='default.cfg'):
         print "Warning: paintings directory '" + dir_paintings + "' not found."
     if isDir(dir_books) is False:
         print "Warning: books directory '" + dir_books + "' not found."
+    if isDir(dir_shops) is False:
+        print "Warning: shops directory '" + dir_shops + "' not found."
     if dir_extra_spawners != '':
         if isDir(dir_extra_spawners) is False:
             print "Warning: extra spawners directory '" +\
@@ -240,6 +245,7 @@ def Load(filename='default.cfg'):
     items.LoadDyedArmour(file_dyes)
     items.LoadPotions(file_potions)
     items.LoadMagicItems(file_magic_items)
+    shop.Load(dir_shops)
 
     LoadSpawners()
     if dir_extra_spawners != '':
