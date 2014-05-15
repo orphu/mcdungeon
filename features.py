@@ -4,6 +4,7 @@ import inspect
 import materials
 import loottable
 import items
+import shop
 from utils import *
 import perlin
 from pymclevel import nbt
@@ -1308,7 +1309,46 @@ class SecretSepulchure(SecretRoom):
 
         # Cobwebs
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
+        
+        
+class SecretShop(SecretRoom):
+    _name = 'secretshop'
 
+    def renderSecretPost(self):
+        dungeon = self.parent.parent
+        sb = dungeon.setblock
+        blocks = dungeon.blocks
+        
+        s = shop.rollShop()
+
+        pos = self.c1 + Vec(3, -2, 3)
+        tags = get_entity_mob_tags('Villager',
+                                   Pos=pos,
+                                   Profession=s.profession,
+                                   CustomName=dungeon.namegen.genname())
+        # Setting the CareerLevel to a value higher than Career will
+        # prevent new trades from being added, according to the wiki
+        tags['Career'] = nbt.TAG_Int(1)
+        tags['CareerLevel'] = nbt.TAG_Int(100)
+        tags['Offers'] = nbt.TAG_Compound()
+        tags['Offers']['Recipes'] = nbt.TAG_List()
+        for trade in s.trades:
+            rec = nbt.TAG_Compound()
+            rec['rewardExp'] = nbt.TAG_Byte(0)
+            # If the trade is limited, we utilise the upper Int limit
+            # to prevent the maxUses from increasing
+            if (trade.limited):
+                rec['maxUses'] = nbt.TAG_Int(2147483647)
+                rec['uses'] = nbt.TAG_Int(2147483647-trade.max_uses)
+            else:
+                rec['maxUses'] = nbt.TAG_Int(trade.max_uses)
+            rec['buy'] = dungeon.inventory.buildItemTag(trade.input)
+            rec['sell'] = dungeon.inventory.buildItemTag(trade.output)
+            if trade.input2 != None:
+                rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2)
+            tags['Offers']['Recipes'].append(rec)
+        dungeon.addentity(tags)
+        return
 
 class SecretArmory(SecretRoom):
     _name = 'secretarmory'
