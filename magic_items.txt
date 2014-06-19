@@ -88,6 +88,7 @@ Cactus Leggings:Green Leather Leggings,7-3,34-3:Crafted from a cactus.:\sePart o
 Cactus Boots:Green Leather Boots,7-3,34-3:Crafted from a cactus.:\sePart of a complete suit.
 # Diving Helmet
 Diving Helmet:Orange Leather Helmet,5-3,6-1:An item from another world.
+Diving Boots:Black Leather Boots,8-3:An item from another world.
 
 # Enchanted Books
 Book of The High Priestess:Enchanted Book,0-4:\s2- II -
@@ -114,3 +115,4 @@ Book of The Magician:Enchanted Book,50-1:\s2- I -
 Book of The World:Enchanted Book,51-1:\s2- XXI -
 Book of Fish Stories Vol 1:Enchanted Book,61-3
 Book of Fish Stories Vol 2:Enchanted Book,62-3
+Book of Fish Stories Vol 3:Enchanted Book,8-3

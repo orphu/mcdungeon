@@ -209,6 +209,8 @@
 406,Nether Quartz,0,64
 407,Minecart with TNT,0,1
 408,Minecart with Hopper,0,1
+409,Prismarine Shard,0,64
+410,Prismarine Crystals,0,64
 417,Iron Horse Armor,0,1
 418,Gold Horse Armor,0,1
 419,Diamond Horse Armor,0,1

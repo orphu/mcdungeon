@@ -15,6 +15,7 @@ PROJECTILE_PROTECTION = 4
 RESPIRATION = 5
 AQUA_AFFINITY = 6
 THORNS = 7
+DEPTH_STRIDER = 8
 
 # Weapon enchantments
 SHARPNESS = 16
@@ -50,6 +51,7 @@ _ench_name = {
     RESPIRATION: 'Respiration',
     AQUA_AFFINITY: 'Aqua Affinity',
     THORNS: 'Thorns',
+    DEPTH_STRIDER: 'Depth Strider',
     SHARPNESS: 'Sharpness',
     SMITE: 'Smite',
     BANE_OF_ARTHROPODS: 'Bane of Arthropods',
@@ -87,6 +89,7 @@ _ench_prob = {
     RESPIRATION: 2,
     AQUA_AFFINITY: 2,
     THORNS: 1,
+    DEPTH_STRIDER: 1,
     SHARPNESS: 10,
     SMITE: 5,
     BANE_OF_ARTHROPODS: 5,
@@ -116,6 +119,7 @@ _ench_level = {
     RESPIRATION: [(10, 40), (20, 50), (30, 60), (0, 0), (0, 0)],
     AQUA_AFFINITY: [(1, 41), (0, 0), (0, 0), (0, 0), (0, 0)],
     THORNS: [(10, 60), (30, 80), (50, 100), (0, 0), (0, 0)],
+    DEPTH_STRIDER: [(10, 60), (30, 80), (50, 100), (0, 0), (0, 0)],
     SHARPNESS: [(1, 21), (12, 32), (23, 43), (34, 54), (45, 65)],
     SMITE: [(5, 25), (13, 33), (21, 41), (29, 49), (37, 57)],
     BANE_OF_ARTHROPODS: [(5, 25), (13, 33), (21, 41), (29, 49), (37, 57)],
@@ -146,6 +150,7 @@ _ench_items_table_book = {
     RESPIRATION: ['book', 'helmet'],
     AQUA_AFFINITY: ['book', 'helmet'],
     THORNS: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    DEPTH_STRIDER: ['book','boots'],
     SHARPNESS: ['book', 'sword', 'axe'],
     SMITE: ['book', 'sword', 'axe'],
     BANE_OF_ARTHROPODS: ['book', 'sword', 'axe'],
@@ -177,6 +182,7 @@ _ench_items_table = {
     RESPIRATION: ['book', 'helmet'],
     AQUA_AFFINITY: ['book', 'helmet'],
     THORNS: ['book', 'chestplate'],
+    DEPTH_STRIDER: ['book', 'boots'],
     SHARPNESS: ['book', 'sword'],
     SMITE: ['book', 'sword'],
     BANE_OF_ARTHROPODS: ['book', 'sword'],
