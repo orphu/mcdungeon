@@ -400,7 +400,6 @@ class Columns(Blank):
         materials.Jungle,
         materials.Acacia,
         materials.DarkOak,
-        materials.Bedrock,
         materials.ChiseledSandstone,
         materials.StoneDoubleSlab,
         materials.Obsidian,
@@ -412,7 +411,10 @@ class Columns(Blank):
         materials.Fence,
         materials.NetherBrick,
         materials.NetherBrickFence,
-        materials.Glowstone
+        materials.Glowstone,
+        materials.Prismarine,
+        materials.PrismarineBricks,
+        materials.DarkPrismarine
     )
 
     def render(self):
@@ -1410,7 +1412,7 @@ class SecretArmory(SecretRoom):
             ("random leather helmet", 16),
             ("random leather chestplate", 16),
             ("random leather leggings", 16),
-            ("random leather boots", 16)
+            ("random leather boots", 16),
             ("chainmail helmet", 8),
             ("chainmail chestplate", 8),
             ("chainmail leggings", 8),

@@ -537,7 +537,7 @@ class GreatHallNS(Basic):
                     self.parent.setblock(p, materials.Fence)
                     self.parent.setblock(p.down(1), materials.Fence)
                     self.parent.setblock(p.down(2), materials.Piston, 1)
-                    self.parent.setblock(p.down(3), materials.Glowstone)
+                    self.parent.setblock(p.down(3), materials.SeaLantern)
                     self.parent.setblock(p.down(4), materials.Piston, 0)
                     self.parent.setblock(p.down(5), materials.Fence)
                     p = p.down(3)
