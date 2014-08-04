@@ -278,6 +278,10 @@
 373,Splash Potion of Night Vision,32694,1
 373,Potion of Invisibility,8206,1
 373,Splash Potion of Invisibility,32702,1
+373,Potion of Leaping,8203,1
+373,Splash Potion of Leaping,16395,1
+373,Potion of Leaping II,8235,1
+373,Splash Potion of Leaping II,16427,1
 # Negative Potions
 373,Potion of Poison,8196,1
 373,Splash Potion of Poison,16388,1
