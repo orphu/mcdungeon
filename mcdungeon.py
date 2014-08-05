@@ -200,6 +200,14 @@ parser_list.add_argument('world',
                          metavar='SAVEDIR',
                          help='Target world (path to save directory)')
 
+# GenPOI subcommand parser
+parser_genpoi = subparsers.add_parser('genpoi',
+                                    help='Create OverViewer POI list for known dungeons in a map.')
+parser_genpoi.set_defaults(command='genpoi')
+parser_genpoi.add_argument('world',
+                         metavar='SAVEDIR',
+                         help='Target world (path to save directory)')
+						 
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
                                    help='Delete dungeons from a map.')
@@ -339,7 +347,7 @@ def loadWorld(world_name):
     return world, oworld
 
 
-def listDungeons(world, oworld, expand_fill_caves=False):
+def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     '''Scan a world for dungeons. Try to cache the results and only look at
     chunks that have changed since the last run.'''
     global cache_path
@@ -402,6 +410,12 @@ def listDungeons(world, oworld, expand_fill_caves=False):
     )
     output += '+-----------+----------------+---------+-------+----+'\
               '-------------------------+\n'
+			  
+    if ( genpoi is True ):
+        output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
+        output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
+        output += 'renders["mcdungeon"] = {\n\t\'world\': \'My World\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n'
+	
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
 
@@ -428,16 +442,29 @@ def listDungeons(world, oworld, expand_fill_caves=False):
                          info["position"].y,
                          info["position"].z,
                          version))
-        output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
-            '%d %d' % (info["position"].x, info["position"].z),
-            time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
-            info['version'],
-            '%dx%d' % (xsize, zsize),
-            levels,
-            info.get('full_name', 'Dungeon')[:23]
-        )
-    output += '+-----------+----------------+---------+-------+----+'\
-              '-------------------------+\n'
+        if  genpoi is True :
+            output += '\t\t\t{\'id\':\'MCDungeon\',\n\t\t\t\'x\':%d,\n\t\t\t\'y\':%d,\n\t\t\t\'z\':%d,\n\t\t\t\'name\':\'%s\',\n\t\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
+                info["position"].x,info["position"].y,info["position"].z,
+                info.get('full_name', 'Dungeon'),
+				info.get('full_name', 'Dungeon'),levels,xsize,zsize
+            )
+        else:
+			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
+				'%d %d' % (info["position"].x, info["position"].z),
+				time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
+				info['version'],
+				'%dx%d' % (xsize, zsize),
+				levels,
+				info.get('full_name', 'Dungeon')[:23]
+			)
+		
+		
+    if genpoi is True:
+        output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png")]\n}\n'
+    else:
+        output += '+-----------+----------------+---------+-------+----+'\
+            '-------------------------+\n'
+			
     if len(dungeons) > 0:
         print output
     else:
@@ -487,6 +514,7 @@ if (args.command == 'interactive'):
     print '\t[l] List dungeons already in this map.'
     print '\t[d] Delete dungeons from this map.'
     print '\t[r] Regenerate a dungeon in this map.'
+    print '\t[p] Generate OverViewer POI file for dungeons already in this map.'
     command = raw_input('\nEnter choice or q to quit: ')
 
     if command == 'a':
@@ -630,6 +658,8 @@ if (args.command == 'interactive'):
 
     elif command == 'l':
         args.command = 'list'
+    elif command == 'p':
+        args.command = 'genpoi'
     elif command == 'd':
         args.command = 'delete'
         args.dungeons = []
@@ -692,6 +722,12 @@ if world is None:
 if (args.command == 'list'):
     # List the known dungeons and exit
     dungeons = listDungeons(world, oworld)
+    sys.exit()
+
+# GenPOI mode
+if (args.command == 'genpoi'):
+    # List the known dungeons and exit
+    dungeons = listDungeons(world, oworld, genpoi=True)
     sys.exit()
 
 # Delete mode
