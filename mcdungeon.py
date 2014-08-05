@@ -413,8 +413,10 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 			  
     if ( genpoi is True ):
         output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
+        output += 'worlds[\'%s\'] = "%s\\%s"\n' % ( args.world, mclevel.saveFileDir, args.world )
+        output += 'outputdir = "C:\\overviewer"\n\n'
         output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
-        output += 'renders["mcdungeon"] = {\n\t\'world\': \'My World\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n'
+        output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n' % ( args.world )
 	
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
@@ -443,7 +445,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                          info["position"].z,
                          version))
         if  genpoi is True :
-            output += '\t\t\t{\'id\':\'MCDungeon\',\n\t\t\t\'x\':%d,\n\t\t\t\'y\':%d,\n\t\t\t\'z\':%d,\n\t\t\t\'name\':\'%s\',\n\t\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
+            output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
                 info["position"].x,info["position"].y,info["position"].z,
                 info.get('full_name', 'Dungeon'),
 				info.get('full_name', 'Dungeon'),levels,xsize,zsize
