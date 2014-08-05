@@ -462,7 +462,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 		
 		
     if genpoi is True:
-        output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png")]\n}\n'
+        output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
     else:
         output += '+-----------+----------------+---------+-------+----+'\
             '-------------------------+\n'
