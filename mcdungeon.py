@@ -99,6 +99,67 @@ parser_inter.add_argument('--mapstore',
                           metavar='PATH',
                           help='Provide an alternate world to store maps.')
 
+# AddTH subcommand parser
+parser_addth = subparsers.add_parser('addth', help='Add new treasure hunts.')
+parser_addth.set_defaults(command='addth')
+parser_addth.add_argument('world',
+                        metavar='SAVEDIR',
+                        help='Target world (path to save directory)')
+parser_addth.add_argument('distance',
+                        help='Number of chunks per step, or provide a \
+                        range.')
+parser_addth.add_argument('steps',
+                        metavar='LEVELS',
+                        help='Number of steps. Enter a positive value, or \
+                        provide a range.')
+parser_addth.add_argument('-c', '--config',
+                        dest='config',
+                        metavar='CFGFILE',
+                        default='default.cfg',
+                        help='Alternate config file. Default: default.cfg')
+parser_addth.add_argument('--write',
+                        action='store_true',
+                        dest='write',
+                        help='Write the treasure hunt to disk')
+parser_addth.add_argument('--debug',
+                        action='store_true',
+                        dest='debug',
+                        help='Provide additional debug info')
+parser_addth.add_argument('-s', '--seed',
+                        dest='seed',
+                        metavar='SEED',
+                        help='Provide a seed for this treasure hunt. This can be \
+                        anything')
+parser_addth.add_argument('-o', '--offset',
+                        dest='offset',
+                        nargs=3,
+                        type=int,
+                        metavar=('X', 'Y', 'Z'),
+                        help='Provide a location offset in blocks')
+parser_addth.add_argument('--force-bury',
+                        action='store_true',
+                        dest='bury',
+                        help='Attempt to calculate Y when using --offset')
+parser_addth.add_argument('--spawn',
+                        dest='spawn',
+                        nargs=2,
+                        type=int,
+                        metavar=('X', 'Z'),
+                        help='Override spawn point')
+parser_addth.add_argument('-n',
+                        '--number',
+                        type=int,
+                        dest='number',
+                        metavar='NUM',
+                        default=1,
+                        help='Number of treasure hunts to generate. -1 will \
+                        create as many as possible given X, Z, and STEPS \
+                        settings.')
+parser_addth.add_argument('--mapstore',
+                        dest='mapstore',
+                        metavar='PATH',
+                        help='Provide an alternate world to store maps.')
+
 # Add subcommand parser
 parser_add = subparsers.add_parser('add', help='Add new dungeons.')
 parser_add.set_defaults(command='add')
@@ -191,7 +252,8 @@ parser_add.add_argument('--mapstore',
                         dest='mapstore',
                         metavar='PATH',
                         help='Provide an alternate world to store maps.')
-
+						
+						
 # List subcommand parser
 parser_list = subparsers.add_parser('list',
                                     help='List known dungeons in a map.')
@@ -202,11 +264,15 @@ parser_list.add_argument('world',
 
 # GenPOI subcommand parser
 parser_genpoi = subparsers.add_parser('genpoi',
-                                    help='Create OverViewer POI list for known dungeons in a map.')
+                                    help='Create OverViewer POI configuration for known dungeons in a map.')
 parser_genpoi.set_defaults(command='genpoi')
 parser_genpoi.add_argument('world',
                          metavar='SAVEDIR',
                          help='Target world (path to save directory)')
+parser_genpoi.add_argument('--outputdir',
+                          dest='outputdir',
+                          metavar='PATH',
+                          help='Give the location for the OverViewer output path.')
 						 
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
@@ -221,7 +287,8 @@ parser_del.add_argument('-d', '--dungeon',
                         action='append',
                         dest='dungeons',
                         type=int,
-                        help='The X Z coordinates of a dungeon to delete. \
+                        help='The X Z coordinates of a dungeon or treasure \
+                        hunt to delete. \
                         NOTE: These will be rounded to the nearest chunk. \
                         Multiple -d flags can be specified.')
 parser_del.add_argument('-a', '--all',
@@ -362,12 +429,14 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     count = world.chunkCount
     cached = 0
     notcached = 0
-    print 'Scanning world for existing dungeons:'
-    print 'cache mtime: %d' % (mtime)
-    pm.init(count, label='')
+    if genpoi is False:
+        print 'Scanning world for existing dungeons:'
+        print 'cache mtime: %d' % (mtime)
+        pm.init(count, label='')
     for cx, cz, cmtime in regions.iterate_chunks():
         count -= 1
-        pm.update_left(count)
+        if genpoi is False:
+            pm.update_left(count)
         key = '%s,%s' % (cx * 16, cz * 16)
         if (cmtime > mtime or key in dungeonCacheOld):
             notcached += 1
@@ -388,8 +457,9 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
         else:
             cached += 1
             continue
-    pm.set_complete()
-    print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
+    if genpoi is False:
+        pm.set_complete()
+        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100 * cached / world.chunkCount)
 
     utils.saveDungeonCache(cache_path, dungeonCache)
@@ -397,27 +467,21 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     # Process the dungeons
     dungeons = []
     output = ''
-    output += "Known dungeons on this map:\n"
-    output += '+-----------+----------------+---------+-------+----+'\
-              '-------------------------+\n'
-    output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
-        'Pos',
-        'Date/Time',
-        'Ver',
-        'Size',
-        'Lv',
-        'Name'
-    )
-    output += '+-----------+----------------+---------+-------+----+'\
-              '-------------------------+\n'
-			  
-    if ( genpoi is True ):
-        output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
-        output += 'worlds[\'%s\'] = "%s\\%s"\n' % ( args.world, mclevel.saveFileDir, args.world )
-        output += 'outputdir = "C:\\overviewer"\n\n'
-        output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
-        output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n' % ( args.world )
-	
+    if genpoi is False:
+        output += "Known dungeons on this map:\n"
+        output += '+-----------+----------------+---------+-------+----+'\
+                  '-------------------------+\n'
+        output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
+            'Pos',
+            'Date/Time',
+            'Ver',
+            'Size',
+            'Lv',
+            'Name'
+        )
+        output += '+-----------+----------------+---------+-------+----+'\
+                  '-------------------------+\n'
+			  	
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
 
@@ -444,11 +508,15 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                          info["position"].y,
                          info["position"].z,
                          version))
-        if  genpoi is True :
+        if genpoi is True:
+            # For coordinates, use dungeon location, add entrance point chunk offset, then 
+            # add (8,0,8) to get to middle of chunk.  This is the closest approximation we can do.
             output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
-                info["position"].x,info["position"].y,info["position"].z,
+                info["position"].x + ( info["entrance_pos"].x << 4 ) + 8,
+                info["position"].y + ( info["entrance_height"] ),
+                info["position"].z + ( info["entrance_pos"].z << 4 ) + 8,
                 info.get('full_name', 'Dungeon'),
-				info.get('full_name', 'Dungeon'),levels,xsize,zsize
+                info.get('full_name', 'Dungeon'),levels,xsize,zsize
             )
         else:
 			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
@@ -460,24 +528,149 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 				info.get('full_name', 'Dungeon')[:23]
 			)
 		
-		
-    if genpoi is True:
-        output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
-    else:
+    if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
-            '-------------------------+\n'
+                  '-------------------------+\n'
 			
     if len(dungeons) > 0:
         print output
     else:
-        print 'No dungeons found!'
+        if genpoi is False:
+            print 'No dungeons found!'
     return dungeons
 
+def listTHunts(world, oworld, genpoi=False):
+    '''Scan a world for treasure hunts. Try to cache the results and only look at
+    chunks that have changed since the last run.'''
+	# This would be more efficient if merged into the listDungeons function somehow
+    global cache_path
+    pm = pmeter.ProgressMeter()
+
+    # Try to load the cache
+    tHuntCacheOld, mtime = utils.loadTHuntCache(cache_path)
+    tHuntCache = {}
+
+    # Scan with overviewer
+    regions = oworld.get_regionset(None)
+    count = world.chunkCount
+    cached = 0
+    notcached = 0
+    if genpoi is False:
+        print 'Scanning world for existing treasure hunts:'
+        print 'cache mtime: %d' % (mtime)
+        pm.init(count, label='')
+    for cx, cz, cmtime in regions.iterate_chunks():
+        count -= 1
+        if genpoi is False:
+            pm.update_left(count)
+        key = '%s,%s' % (cx * 16, cz * 16)
+        if (cmtime > mtime or key in tHuntCacheOld):
+            notcached += 1
+            for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
+                if (
+                    tileEntity['id'] == 'Chest' and
+                    'CustomName' in tileEntity and
+                    tileEntity['CustomName'] == 'MCDungeon THunt Data Library'
+                ):
+                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    tHuntCache[key] = tileEntity
+        else:
+            cached += 1
+            continue
+    if genpoi is False:
+        pm.set_complete()
+        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
+                                             100 * cached / world.chunkCount)
+
+    utils.saveTHuntCache(cache_path, tHuntCache)
+
+    # Process the treasure hunts
+    tHunts = []
+    output = ''
+    if genpoi is False:
+        output += "Known treasure hunts on this map:\n"
+        output += '+-----------+----------------+---------+-------+----+'\
+                  '-------------------------+\n'
+        output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
+            'Pos',    
+            'Date/Time',
+            'Ver',
+            'Range',
+            'Steps',
+            'Name'
+        )
+        output += '+-----------+----------------+---------+-------+----+'\
+                  '-------------------------+\n'
+	
+    for tileEntity in tHuntCache.values():
+        info = utils.decodeTHuntInfo(tileEntity)
+
+        (major, minor, patch) = info['version'].split('.')
+        version = float(major + '.' + minor)
+
+        minrange = info['min_distance']
+        maxrange = info['max_distance']
+        steps = info['steps']
+        offset = 0
+
+        tHunts.append(( 
+                         info["position"].x,
+                         info["position"].z,
+                         minrange,
+                         maxrange,
+                         info,
+                         steps,
+                         info["position"].x,
+                         info["position"].y,
+                         info["position"].z,
+                         version))
+        if genpoi is True :
+            output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Steps, Range %d - %d\'},\n' % (
+                info["position"].x,
+                info["position"].y,
+                info["position"].z,
+                info.get('full_name', 'Treasure Hunt'),
+                info.get('full_name', 'Treasure Hunt'), steps, minrange, maxrange
+            )
+            # Here, we should also iterate through the waypoints
+            i = 0
+            for l in info["landmarks"]:
+                i = i + 1
+                output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s (Step %d)\',\n\t\t\'description\':\'%s\\nStep %d of %d\'},\n' % (
+                    l.x,
+                    l.y,
+                    l.z,
+                    info.get('full_name', 'Treasure Hunt'), i,
+                    info.get('full_name', 'Treasure Hunt'), i, steps
+                )			    
+        else:
+			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
+				'%d %d' % (info["position"].x, info["position"].z),
+				time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
+				info['version'],
+				'%d-%d' % (minrange,maxrange),
+				steps,
+				info.get('full_name', 'Treasure')[:23]
+			)
+		
+		
+    if genpoi is False:
+        output += '+-----------+----------------+---------+-------+----+'\
+            '-------------------------+\n'
+			
+    if len(tHunts) > 0:
+        print output
+    else:
+        if genpoi is False:
+            print 'No treasure hunts found!'
+    return tHunts
+	
 # Globals
 world = None
 oworld = None
 cache_path = None
 dungeons = []
+tHunts = []
 dungeon_positions = {}
 total_rooms = 0
 chunk_cache = {}
@@ -513,10 +706,12 @@ if (args.command == 'interactive'):
     # Pick a mode
     print '\nChoose an action:\n-----------------\n'
     print '\t[a] Add new dungeon(s) to this map.'
-    print '\t[l] List dungeons already in this map.'
-    print '\t[d] Delete dungeons from this map.'
-    print '\t[r] Regenerate a dungeon in this map.'
-    print '\t[p] Generate OverViewer POI file for dungeons already in this map.'
+    print '\t[t] Add new treasure hunt(s) to this map.'
+    print '\t[l] List dungeons and treasure hunts already in this map.'
+    print '\t[d] Delete dungeons or treasure hunts from this map.'
+    print '\t[r] Regenerate a dungeon or treasure hunt in this map.'
+    print '\t[p] Generate OverViewer POI file for dungeons and treasure hunts'
+    print '\t    already in this map.'
     command = raw_input('\nEnter choice or q to quit: ')
 
     if command == 'a':
@@ -588,6 +783,76 @@ if (args.command == 'interactive'):
         print 'dungeons, the actual number placed may be less.'
         print 'Enter -1 to add as many dungeons as possible.'
         args.number = raw_input('Number of dungeons (leave blank for 1): ')
+        if (args.number == ''):
+            args.number = 1
+        try:
+            args.number = int(args.number)
+        except ValueError:
+            sys.exit('You must enter an integer.')
+
+        args.write = True
+    elif command == 't':
+        args.command = 'addth'
+        # Pick a config
+        configDir = os.path.join(sys.path[0], 'configs')
+        if (os.path.isdir(configDir) is False):
+            configDir = 'configs'
+        if (os.path.isdir(configDir) is False):
+            sys.exit('\nI cannot find your configs directory! Aborting!')
+        print '\nConfigurations in your configs directory:\n'
+        for file in os.listdir(configDir):
+            file_path = os.path.join(configDir, file)
+            file = file.replace('.cfg', '')
+            if (os.path.isfile(file_path) and
+                    file_path.endswith('.cfg')):
+                print '   ', file
+        print '\nEnter the name of the configuration you wish to use.'
+        config = raw_input('(leave blank for default): ')
+        if (config == ''):
+            config = 'default'
+        args.config = str(config) + '.cfg'
+        cfg.Load(args.config)
+
+        # Prompt for a mapstore if we need to
+        if (cfg.mapstore == '' and args.mapstore is None):
+            print '\nSome configurations may generate dungeon maps. If you are'
+            print 'using bukkit/multiverse you need supply the name of your'
+            print 'primary world for this to work. You can also provide this'
+            print 'in the config file or as a command switch.'
+            print '\n(if you don\'t use bukkit, just hit enter)'
+            cfg.mapstore = raw_input('Name of primary bukkit world: ')
+
+        # Prompt for max_dist
+        print '\nEnter the maximum distance (in chunks) from spawn to the start'
+        print 'of the treasure hunt. Take care to pick a value that matches'
+        print 'your needs.  If this value is too high and you add few hunts,'
+        print 'they may be hard to find. If this value is too low and you'
+        print 'add many hunts, they will overlap too much.\n'
+        input_max_dist = raw_input(
+            'Max Distance (leave blank for config value, ' +
+            str(cfg.max_dist) + '): '
+        )
+        if (input_max_dist != ''):
+            try:
+                cfg.max_dist = int(input_max_dist)
+            except ValueError:
+                sys.exit('You must enter an integer.')
+
+        m = cfg.max_dist - cfg.min_dist
+
+        print '\nEnter the distance between waypoints in a hunt in chunks'
+        print 'You can enter a fixed value >= 1, or a range (ie: 2-7)'
+        args.distance = raw_input('Step distance: ')
+
+        print '\nEnter a number of steps.'
+        print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
+        args.steps = raw_input('Steps: ')
+
+        print '\nEnter the maximum number of treasure hunts to add.'
+        print 'Depending on the characteristics of your world, and' 
+        print 'the number of steps, the actual number placed may be less.'
+        print 'Enter -1 to add as many hunts as possible.'
+        args.number = raw_input('Number of treasure hunts (leave blank for 1): ')
         if (args.number == ''):
             args.number = 1
         try:
@@ -681,24 +946,38 @@ if (args.command == 'interactive'):
 
         world, oworld = loadWorld(args.world)
         dungeons = listDungeons(world, oworld)
+        tHunts = listTHunts(world, oworld)
 
-        if len(dungeons) == 0:
+        if len(dungeons) == 0 and len(tHunts) == 0:
             sys.exit()
-        print 'Choose dungeon(s) to delete:\n----------------------------\n'
-        print '\t[a] Delete ALL dungeons from this map.'
-        for i in xrange(len(dungeons)):
-            print '\t[%d] Dungeon at %d %d.' % (
-                i + 1,
-                dungeons[i][0],
-                dungeons[i][1]
-            )
+			
+        print 'Choose object(s) to delete:\n----------------------------\n'
+        print '\t[a] Delete ALL dungeons and hunts from this map.'
+        if len(dungeons) > 0:
+            for i in xrange(len(dungeons)):
+                print '\t[%d] Dungeon at %d %d.' % (
+                    i + 1,
+                    dungeons[i][0],
+                    dungeons[i][1]
+                )
+        if len(tHunts) > 0:
+            for i in xrange(len(tHunts)):
+                print '\t[%d] Treasure Hunt at %d %d.' % (
+                    i + 1 + len(dungeons),
+                    tHunts[i][0],
+                    tHunts[i][1]
+                )
+	
         while (args.all is False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
                 args.all = True
-            elif d.isdigit() and int(d) > 0 and int(d) <= len(dungeons):
+            elif d.isdigit() and int(d) > 0 and int(d) <= (len(dungeons)+len(tHunts)):
                 d = int(d)
-                args.dungeons = [[dungeons[d - 1][0], dungeons[d - 1][1]]]
+                if d <= len(dungeons):
+                    args.dungeons = [[dungeons[d - 1][0], dungeons[d - 1][1]]]
+                else:
+                    args.dungeons = [[tHunts[d - 1 - len(dungeons)][0], tHunts[d - 1 - len(dungeons)][1]]]
             elif d == 'q':
                 print 'Quitting...'
                 sys.exit()
@@ -707,7 +986,7 @@ if (args.command == 'interactive'):
     else:
         print 'Quitting...'
         sys.exit()
-elif(args.command == 'add' or args.command == 'regenerate'):
+elif(args.command == 'add' or args.command == 'regenerate' or args.command == 'addth' ):
     cfg.Load(args.config)
 
 # Check to see if mapstore is being overridden
@@ -724,12 +1003,28 @@ if world is None:
 if (args.command == 'list'):
     # List the known dungeons and exit
     dungeons = listDungeons(world, oworld)
+    tHunts = listTHunts(world, oworld)
     sys.exit()
 
 # GenPOI mode
 if (args.command == 'genpoi'):
     # List the known dungeons and exit
+    if args.outputdir is None:
+        args.outputdir = 'C:\\overview'
+    output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
+    output += 'worlds[\'%s\'] = "%s\\%s"\n' % ( args.world, mclevel.saveFileDir, args.world )
+    output += 'outputdir = "%s"\n\n' % ( args.outputdir )
+    output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
+    output += 'def tHuntFilter(poi):\n\tif poi[\'id\'] == \'MCDungeonTH\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
+    output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
+    print output
     dungeons = listDungeons(world, oworld, genpoi=True)
+    tHunts = listTHunts(world, oworld, genpoi=True)
+    output = '\t],\n\t\'markers\': [\n'
+    output += '\t\tdict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True),\n'
+    output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest_red.png", checked=True)\n'
+    output += '\t]\n}\n'
+    print output
     sys.exit()
 
 # Delete mode
@@ -737,18 +1032,22 @@ if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
     if args.dungeons == [] and args.all is False:
         print 'You must specify either --all or at least one -d option' \
-              ' when deleting dungeons.'
+              ' when deleting dungeons or treasure hunts.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
         dungeons = listDungeons(world, oworld)
+    if tHunts == []:
+        tHunts = listTHunts(world, oworld)
     # No dungeons. Exit.
-    if len(dungeons) == 0:
+    if len(dungeons) == 0 and len(tHunts) == 0:
         sys.exit()
     # A list of existing dungeon positions for convenience.
     existing = set()
     for d in dungeons:
         existing.add((d[0], d[1]))
+    for t in tHunts:
+        existing.add((t[0], t[1]))
     # Populate a list of dungeons to delete.
     # If --all was specified, populate the delete list will all known dungeons.
     # Otherwise just validate the -d options.
@@ -756,25 +1055,30 @@ if (args.command == 'delete'):
     if args.all is True:
         for d in dungeons:
             to_delete.append((d[0], d[1]))
+        for t in tHunts:
+            to_delete.append((t[0], t[1]))
     else:
         for d in args.dungeons:
             if (d[0], d[1]) not in existing:
-                sys.exit('Unable to locate dungeon at %d %d.' % (d[0], d[1]))
+                sys.exit('Unable to locate dungeon/hunt at %d %d.' % (d[0], d[1]))
             to_delete.append(d)
     # Build a list of chunks to delete from the dungeon info.
     chunks = []
     # We need to update the caches for the chunks we are affecting
     dcache, dmtime = utils.loadDungeonCache(cache_path)
+    tcache, tmtime = utils.loadTHuntCache(cache_path)
     ms = mapstore.new(cfg.mapstore, cfg.dir_paintings)
     for d in to_delete:
         p = [d[0] / 16, d[1] / 16]
-        print 'Deleting dungeon at %d %d...' % (d[0], d[1])
+        print 'Deleting dungeon/hunt at %d %d...' % (d[0], d[1])
         dkey = '%s,%s' % (d[0], d[1])
         ms.delete_maps(dkey)
         if dkey in dcache:
             del dcache[dkey]
+        elif dkey in tcache:
+            del tcache[dkey]
         else:
-            print 'WARN: Dungeon not in dungeon cache! ' + dkey
+            print 'WARN: Object not in dungeon cache or thunt cache! ' + dkey
         xsize = 0
         zsize = 0
         for e in dungeons:
@@ -787,10 +1091,18 @@ if (args.command == 'delete'):
                     p[1] -= 5
                     xsize += 10
                     zsize += 10
+                for x in xrange(xsize):
+                    for z in xrange(zsize):
+                        chunks.append((p[0] + x, p[1] + z))
                 break
-        for x in xrange(xsize):
-            for z in xrange(zsize):
-                chunks.append((p[0] + x, p[1] + z))
+        for e in tHunts:
+            if e[0] == d[0] and e[1] == d[1]:
+                xsize = 1
+                zsize = 1
+                for l in e[4]:
+                    chunks.append((l.x>>4,l.z>>4))
+                chunks.append((p[0], p[1]))
+                break
     # We need to update the caches for the chunks we are affecting
     ccache, cmtime = utils.loadChunkCache(cache_path)
     # Delete the chunks
@@ -806,6 +1118,7 @@ if (args.command == 'delete'):
     print "Saving..."
     world.saveInPlace()
     utils.saveDungeonCache(cache_path, dcache)
+    utils.saveTHuntCache(cache_path, tcache)
     utils.saveChunkCache(cache_path, ccache)
     sys.exit()
 
@@ -882,7 +1195,6 @@ if (args.command == 'regenerate'):
             sys.ext(1)
     sys.exit()
 
-
 # Validate size settings
 cfg.min_x = 4
 cfg.max_x = cfg.max_dist - cfg.min_dist
@@ -941,6 +1253,42 @@ if (cfg.min_levels < 1):
 if (cfg.max_levels > 42):
     sys.exit('Maximum levels must be equal or less than 42.')
 
+# Step count range for treasure hunts
+result = re.search('(\d+)-(\d+)', args.steps)
+if (result):
+    cfg.min_steps = int(result.group(1))
+    cfg.max_steps = int(result.group(2))
+    if (cfg.min_steps > cfg.max_steps):
+        sys.exit('Minimum steps must be equal or less than maximum steps.')
+else:
+    try:
+        cfg.min_steps = int(args.steps)
+        cfg.max_steps = int(args.steps)
+    except ValueError:
+        sys.exit('Steps doesn\'t appear to be an integer!')
+if (cfg.min_steps < 1):
+    sys.exit('Minimum steps must be equal or greater than 1.')
+if (cfg.max_steps > 20):
+    sys.exit('Maximum steps must be equal or less than 20.')
+
+# Step distance for treasure hunts
+result = re.search('(\d+)-(\d+)', args.distance)
+if (result):
+    cfg.min_distance = int(result.group(1))
+    cfg.max_distance = int(result.group(2))
+    if (cfg.min_distance > cfg.max_distance):
+        sys.exit('Minimum step distance must be equal or less than maximum distance.')
+else:
+    try:
+        cfg.min_distance = int(args.distance)
+        cfg.max_distance = int(args.distance)
+    except ValueError:
+        sys.exit('Distance doesn\'t appear to be an integer!')
+if (cfg.min_distance < 1):
+    sys.exit('Minimum distance must be equal or greater than 1.')
+if (cfg.max_distance > 10):
+    sys.exit('Maximum distance must be equal or less than 10.')
+	
 # Everything below is add/regen mode
 
 # Override bury
@@ -1000,6 +1348,12 @@ if args.debug:
     print 'L:', args.levels
     print '   ', cfg.min_levels
     print '   ', cfg.max_levels
+    print 'S:', args.steps
+    print '   ', cfg.min_steps
+    print '   ', cfg.max_steps
+    print 'D:', args.distance
+    print '   ', cfg.min_distance
+    print '   ', cfg.max_distance
 
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
@@ -1164,6 +1518,20 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunk_stats[4][1] += 1
                     chunk_stats[8][1] -= 1
 
+    # Find old hunts
+    old_thunts = listTHunts(world, oworld)
+    for t in old_thunts:
+        if args.debug:
+            print 'old treasure hunt:', t
+        p = (t[0] / 16, t[1] / 16)
+        for l in t[4]:
+            if (l.x, l.z) in good_chunks:
+                del(good_chunks[(l.x,l.z)])
+                key = '%s,%s' % (l.x,l.z)
+                chunk_cache[key] = ['S', -1, 0]
+                chunk_stats[4][1] += 1
+                chunk_stats[8][1] -= 1
+					
     # Funky little chunk map
     if args.debug:
         for cz in xrange(chunk_min[1], chunk_max[1] + 1):
@@ -1202,6 +1570,7 @@ if (cfg.offset is None or cfg.offset is ''):
 
 # Load the dungeon cache for updates later.
 dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
+thunt_cache, tmtime = utils.loadTHuntCache(cache_path)
 # Create a map store
 map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings)
 
