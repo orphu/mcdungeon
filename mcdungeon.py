@@ -30,6 +30,11 @@ parser.add_argument('-v',
                     action='version',
                     version=_vstring,
                     help='Print version and exit')
+parser.add_argument('-q',
+                    '--quiet',
+                    action='store_true',
+                    dest='quiet',
+                    help='Suppress progress messages')
 subparsers = parser.add_subparsers(
     description='See "COMMAND --help" for additional help.',
     title='Available commands')
@@ -207,6 +212,10 @@ parser_genpoi.set_defaults(command='genpoi')
 parser_genpoi.add_argument('world',
                          metavar='SAVEDIR',
                          help='Target world (path to save directory)')
+parser_genpoi.add_argument('--outputdir',
+                        dest='outputdir',
+                        metavar='PATH',
+                        help='Provide the location for the OverViewer generated map')
 						 
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
@@ -314,20 +323,23 @@ def loadWorld(world_name):
 
     world = None
     try:
-        print "Trying to open:", world_name
+        if quiet_mode is False:
+            print "Trying to open:", world_name
         world = mclevel.fromFile(world_name)
         oworld = ov_world.World(world_name)
     except:
         saveFileDir = mclevel.saveFileDir
         world_name = os.path.join(saveFileDir, world_name)
-        print "Trying to open:", world_name
+        if quiet_mode is False:
+            print "Trying to open:", world_name
         try:
             world = mclevel.fromFile(world_name)
             oworld = ov_world.World(world_name)
         except:
             print "Failed to open world:", world_name
             sys.exit(1)
-    print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
+    if quiet_mode is False:
+        print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
                                                             world.chunkCount,
                                                             world.Height)
     # Create the mcdungeon cache dir if needed.
@@ -336,10 +348,12 @@ def loadWorld(world_name):
         os.makedirs(cache_path)
 
     # Find the mapstore path
-    print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+    if quiet_mode is False:
+        print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
     if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
         cfg.mapstore = os.path.join(mclevel.saveFileDir, cfg.mapstore)
-        print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+        if quiet_mode is False:
+            print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
         if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
             print "Cannot find world data directory!"
             sys.exit(1)
@@ -362,12 +376,14 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     count = world.chunkCount
     cached = 0
     notcached = 0
-    print 'Scanning world for existing dungeons:'
-    print 'cache mtime: %d' % (mtime)
-    pm.init(count, label='')
+    if quiet_mode is False:
+        print 'Scanning world for existing dungeons:'
+        print 'cache mtime: %d' % (mtime)
+        pm.init(count, label='')
     for cx, cz, cmtime in regions.iterate_chunks():
         count -= 1
-        pm.update_left(count)
+        if quiet_mode is False:
+            pm.update_left(count)
         key = '%s,%s' % (cx * 16, cz * 16)
         if (cmtime > mtime or key in dungeonCacheOld):
             notcached += 1
@@ -388,8 +404,9 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
         else:
             cached += 1
             continue
-    pm.set_complete()
-    print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
+    if quiet_mode is False:
+        pm.set_complete()
+        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100 * cached / world.chunkCount)
 
     utils.saveDungeonCache(cache_path, dungeonCache)
@@ -412,9 +429,10 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
               '-------------------------+\n'
 			  
     if ( genpoi is True ):
+        # POI format header
         output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
         output += 'worlds[\'%s\'] = "%s\\%s"\n' % ( args.world, mclevel.saveFileDir, args.world )
-        output += 'outputdir = "C:\\overviewer"\n\n'
+        output += 'outputdir = "%s"\n\n' % ( args.outputdir )
         output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
         output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n' % ( args.world )
 	
@@ -445,8 +463,20 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                          info["position"].z,
                          version))
         if  genpoi is True :
+            # If we have a 'new' format, with a defined portal_exit,
+            # then we use that.  Otherwise, identify the top of the
+            # entrance stairway and use that instead.
+            if ((info["portal_exit"] is None) or (info["portal_exit"].x==0 and info["portal_exit"].y==0 and info["portal_exit"].z==0)):
+                px = info["position"].x + ( info["entrance_pos"].x * info["room_size"] ) + 8
+                py = info["position"].y + info["entrance_height"]
+                pz = info["position"].z + ( info["entrance_pos"].z * info["room_size"] ) + 8
+            else:
+                px = info["position"].x + info["portal_exit"].x
+                py = info["position"].y - info["portal_exit"].y # Why??!
+                pz = info["position"].z + info["portal_exit"].z
+            # Output the POI format for OverViewer
             output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
-                info["position"].x,info["position"].y,info["position"].z,
+                px,py,pz,
                 info.get('full_name', 'Dungeon'),
 				info.get('full_name', 'Dungeon'),levels,xsize,zsize
             )
@@ -462,6 +492,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 		
 		
     if genpoi is True:
+        # End the POI format, and add the marker definition
         output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
     else:
         output += '+-----------+----------------+---------+-------+----+'\
@@ -482,6 +513,10 @@ dungeon_positions = {}
 total_rooms = 0
 chunk_cache = {}
 good_chunks = {}
+if args.quiet is not True:
+    quiet_mode = False
+else:
+    quiet_mode = True
 
 # Interactive mode
 if (args.command == 'interactive'):
@@ -728,7 +763,9 @@ if (args.command == 'list'):
 
 # GenPOI mode
 if (args.command == 'genpoi'):
-    # List the known dungeons and exit
+    # List the known dungeons in Overviewer POI format, and exit
+    if args.outputdir is None:
+        args.outputdir = "C:\\overview"
     dungeons = listDungeons(world, oworld, genpoi=True)
     sys.exit()
 
