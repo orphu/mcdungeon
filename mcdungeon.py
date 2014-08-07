@@ -467,12 +467,13 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
             # then we use that.  Otherwise, identify the top of the
             # entrance stairway and use that instead.
             if ((info["portal_exit"] is None) or (info["portal_exit"].x==0 and info["portal_exit"].y==0 and info["portal_exit"].z==0)):
-                px = info["position"].x + ( info["entrance_pos"].x * info["room_size"] ) + 8
+                # use <<4 instead of room_size because we can't get that
+                px = info["position"].x + ( info["entrance_pos"].x << 4 ) + 8
                 py = info["position"].y + info["entrance_height"]
-                pz = info["position"].z + ( info["entrance_pos"].z * info["room_size"] ) + 8
+                pz = info["position"].z + ( info["entrance_pos"].z << 4 ) + 8
             else:
                 px = info["position"].x + info["portal_exit"].x
-                py = info["position"].y - info["portal_exit"].y # Why??!
+                py = info["position"].y - info["portal_exit"].y # reversed!
                 pz = info["position"].z + info["portal_exit"].z
             # Output the POI format for OverViewer
             output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
