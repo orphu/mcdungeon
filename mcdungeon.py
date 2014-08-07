@@ -216,7 +216,7 @@ parser_genpoi.add_argument('--outputdir',
                         dest='outputdir',
                         metavar='PATH',
                         help='Provide the location for the OverViewer generated map')
-						 
+
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
                                    help='Delete dungeons from a map.')
@@ -427,7 +427,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     )
     output += '+-----------+----------------+---------+-------+----+'\
               '-------------------------+\n'
-			  
+
     if ( genpoi is True ):
         # POI format header
         output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
@@ -435,7 +435,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
         output += 'outputdir = "%s"\n\n' % ( args.outputdir )
         output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
         output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n' % ( args.world )
-	
+
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
 
@@ -490,15 +490,14 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 				levels,
 				info.get('full_name', 'Dungeon')[:23]
 			)
-		
-		
+
     if genpoi is True:
         # End the POI format, and add the marker definition
         output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
     else:
         output += '+-----------+----------------+---------+-------+----+'\
             '-------------------------+\n'
-			
+
     if len(dungeons) > 0:
         print output
     else:

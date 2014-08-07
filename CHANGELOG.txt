@@ -1,7 +1,11 @@
 v0.14.0 - 
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
-	
+
+   * New command mode: genpoi
+     This will generate Minecraft Overviewer point of interest data for your
+     maps.	
+
    * New Floors: RadialRug, BrokenRadialRug, RadialClay, BrokenRadialClay,
      StoneTile, and BrokenStoneTile.
      (huderlem, orphu)
