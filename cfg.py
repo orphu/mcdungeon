@@ -77,6 +77,8 @@ master_mobs = {}
 max_mob_tier = 0
 structure_values = []
 custom_spawners = {}
+default_landmarks = []
+master_landmarks = {}
 
 file_extra_items = ''
 file_dyes = 'dye_colors.txt'
@@ -179,7 +181,8 @@ def Load(filename='default.cfg'):
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
-        river_biomes, ocean_biomes, master_hall_traps
+        river_biomes, ocean_biomes, master_hall_traps, \
+        master_landmarks, default_landmarks
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -298,6 +301,20 @@ def Load(filename='default.cfg'):
             for biome in match.group(1).split(','):
                 master_entrances[int(biome)] = parser.items(name)
 
+    # Load per-biome landmarks.
+    # First, the default
+    try:
+        default_landmarks = parser.items('landmarks')
+    except:
+        default_landmarks = [('SignPost', 10)]
+    # Try to find any biome specific landmark definitions.
+    lmmatch = re.compile('landmarks.([0-9,]+)')
+    for name in parser.sections():
+        match = lmmatch.search(name)
+        if match:
+            for biome in match.group(1).split(','):
+                master_landmarks[int(biome)] = parser.items(name)
+				
     # Load the mob spawner tables
     max_mob_tier = 0
     if parser.has_section('mobs'):
