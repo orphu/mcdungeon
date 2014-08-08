@@ -1797,7 +1797,8 @@ class Forge(Blank):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
             return
 
-        sb = self.parent.parent.setblock
+        dungeon = self.parent.parent
+        sb = dungeon.setblock
 
         # Note: Anvil block damage values are different from when they are
         # in the player's inventory
@@ -1843,12 +1844,34 @@ class Forge(Blank):
                                   self.parent.canvasHeight() - 1,
                                   center.z - 2)
 
+        # item, probability, max stack amount
+        supply_items = [(items.byName('charcoal'), .8, 10),
+                        (items.byName('coal'), .8, 10),
+                        (items.byName('iron ore'), .3, 5),
+                        (items.byName('gold ore'), .1, 1),
+                        (items.byName('iron sword'), .3, 1)]
+        # Generate loot and place chest
+        supplyloot = []
+        for s in supply_items:
+            if (random.random() < s[1]):
+                amount = random.randint(1, min(s[2], s[0].maxstack))
+                supplyloot.append(
+                    loottable.Loot(
+                        len(supplyloot),
+                        amount,
+                        s[0].value,
+                        s[0].data,
+                        '',
+                        flag=s[0].flag))
+
         for x in xrange(4):
             for z in xrange(6):
                 p = o.trans(x, 0, z)
                 sb(p,
                    mats[template[x][z]][0],
                    mats[template[x][z]][1])
+                if mats[template[x][z]][0] == materials.Chest:
+                    dungeon.addchest(p, loot=supplyloot)
 
         sb(o.trans(0, 0, 3), materials.StoneStairs, 0)
         sb(o.trans(0, 0, 4), materials.StoneStairs, 0)
