@@ -1942,8 +1942,10 @@ class Dungeon (object):
                         dat = self.blocks[Vec(x, y, z)].data
 
                         # Doors are ... different
-                        if (mat == materials.WoodenDoor or
-                                mat == materials.IronDoor):
+                        if (mat in [materials.WoodenDoor, materials.IronDoor,
+                                    materials.SpruceDoor, materials.BirchDoor,
+                                    materials.JungleDoor, materials.DarkOakDoor,
+                                    materials.AcaciaDoor]):
                             dat2 = self.blocks[Vec(x, y + 1, z)].data
                             dat = ((dat & 1) << 3) + dat2
 

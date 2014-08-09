@@ -228,6 +228,11 @@
 423,Raw Mutton,0,64
 424,Cooked Mutton,0,64
 425,Banner,0,16
+427,Spruce Door,0,64
+428,Birch Door,0,64
+429,Jungle Door,0,64
+430,Acacia Door,0,64
+431,Dark Oak Door,0,64
 # Disks
 #
 2256,Music Disc 13,0,1
