@@ -976,7 +976,13 @@ class ThroneRoom(Basic):
         # Column materials
         cmat = random.choice([
             [materials.ChiseledSandstone, materials.SandstoneSlab],
+            [materials.ChiseledRedSandstone, materials.RedSandstoneSlab],
             [materials.meta_mossycobble, materials.CobblestoneSlab],
+            [materials.NetherBrick, materials.NetherBrickSlab],
+            [materials.NetherBrick, materials.QuartzSlab],
+            [materials.Prismarine, materials.CobblestoneSlab],
+            [materials.PrismarineBricks, materials.CobblestoneSlab],
+            [materials.DarkPrismarine, materials.CobblestoneSlab],
             [materials.Stone, materials.StoneSlab]
         ])
 
