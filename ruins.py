@@ -312,11 +312,11 @@ class StepPyramid(Blank):
             mat_slab = materials.QuartzSlab
             mat_floor = materials.PackedIce
         elif self.parent.parent.biome in _mesa_biomes:
-            mat_ext = materials.HardenedClay
-            mat_block = materials.HardenedClay
-            mat_ruins = materials.RedStainedClay
-            mat_stair = materials.OakWoodStairs
-            mat_slab = materials.HardenedClay
+            mat_ext = materials.SmoothRedSandstone
+            mat_block = materials.meta_decoratedredsandstone
+            mat_ruins = materials.meta_decoratedredsandstone
+            mat_stair = materials.RedSandstoneStairs
+            mat_slab = materials.RedSandstoneSlab
             mat_floor = materials.RedSand
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat_ext = materials.meta_mossycobble
@@ -625,13 +625,18 @@ class StepPyramid(Blank):
             self.parent.parent.biome in _desert_biomes or
             self.parent.parent.biome in _mesa_biomes
         ):
+            # Orange glass in mesas
+            if (self.parent.parent.biome in _mesa_biomes):
+                topperglass = materials.OrangeStainedGlass
+            else:
+                topperglass = materials.Glass
             for y in xrange(29, 33):
                 for p in iterate_cube(c1.trans(y, -y, y),
                                       c3.trans(-y, -y, -y)):
                     self.parent.parent.setblock(p, materials.Air)
                 for p in iterate_four_walls(c1.trans(y - 1, -y, y - 1),
                                             c3.trans(-y + 1, -y, -y + 1), 0):
-                    self.parent.parent.setblock(p, materials.Glass)
+                    self.parent.parent.setblock(p, topperglass)
             for p in iterate_cube(c1.trans(29, -28, 29),
                                   c3.trans(-29, -28, -29)):
                 self.parent.parent.setblock(p, mat_block)
