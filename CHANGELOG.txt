@@ -41,6 +41,12 @@ v0.14.0 -
 
    * Books and paintings can appear in studies. (JiFish)
 
+   * Hallways use new door types. (JiFish)
+
+   * Additional columns in throne rooms. (orphu)
+
+   * Pyramids use red sandstone in mesa biomes. (JiFish)
+
    * Added many 1.8 items and materials (various)
 
 v0.13.0 - 10/26/2013
