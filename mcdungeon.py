@@ -109,7 +109,7 @@ parser_addth.add_argument('distance',
                         help='Number of chunks per step, or provide a \
                         range.')
 parser_addth.add_argument('steps',
-                        metavar='LEVELS',
+                        metavar='STEPS',
                         help='Number of steps. Enter a positive value, or \
                         provide a range.')
 parser_addth.add_argument('-c', '--config',
@@ -135,11 +135,7 @@ parser_addth.add_argument('-o', '--offset',
                         nargs=3,
                         type=int,
                         metavar=('X', 'Y', 'Z'),
-                        help='Provide a location offset in blocks')
-parser_addth.add_argument('--force-bury',
-                        action='store_true',
-                        dest='bury',
-                        help='Attempt to calculate Y when using --offset')
+                        help='Provide a location offset in blocks for start')
 parser_addth.add_argument('--spawn',
                         dest='spawn',
                         nargs=2,
@@ -363,6 +359,7 @@ args = parser.parse_args()
 import cfg
 import loottable
 from dungeon import Dungeon
+from treasure_hunt import TreasureHunt
 import utils
 from utils import Vec
 import mapstore
@@ -484,8 +481,11 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 			  	
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
-
-        (major, minor, patch) = info['version'].split('.')
+        try:
+            (major, minor, patch) = info['version'].split('.')
+        except KeyError:
+            print 'Strange Dungeon Info cache found?'
+            continue
         version = float(major + '.' + minor)
 
         xsize = info['xsize']
@@ -511,7 +511,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
         if genpoi is True:
             # For coordinates, use dungeon location, add entrance point chunk offset, then 
             # add (8,0,8) to get to middle of chunk.  This is the closest approximation we can do.
-            output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
+            output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s",\n\t\t\'description\':"%s\\n%d Levels, Size %dx%d"},\n' % (
                 info["position"].x + ( info["entrance_pos"].x << 4 ) + 8,
                 info["position"].y + ( info["entrance_height"] ),
                 info["position"].z + ( info["entrance_pos"].z << 4 ) + 8,
@@ -596,7 +596,7 @@ def listTHunts(world, oworld, genpoi=False):
             'Date/Time',
             'Ver',
             'Range',
-            'Steps',
+            'St',
             'Name'
         )
         output += '+-----------+----------------+---------+-------+----+'\
@@ -604,12 +604,19 @@ def listTHunts(world, oworld, genpoi=False):
 	
     for tileEntity in tHuntCache.values():
         info = utils.decodeTHuntInfo(tileEntity)
-
-        (major, minor, patch) = info['version'].split('.')
+        try: 
+		    (major, minor, patch) = info['version'].split('.')
+        except KeyError:
+            continue
         version = float(major + '.' + minor)
 
-        minrange = info['min_distance']
-        maxrange = info['max_distance']
+        try:
+            minrange = info['min_distance']
+            maxrange = info['max_distance']
+        except KeyError:
+            minrange = 1
+            maxrange = 20
+
         steps = info['steps']
         offset = 0
 
@@ -625,23 +632,29 @@ def listTHunts(world, oworld, genpoi=False):
                          info["position"].z,
                          version))
         if genpoi is True :
-            output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Steps, Range %d - %d\'},\n' % (
-                info["position"].x,
-                info["position"].y,
-                info["position"].z,
+            output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s",\n\t\t\'description\':"%s\\n%d Steps, Range %d - %d"},\n' % (
+                info["landmarks"][0].x+8,
+                info["landmarks"][0].y,
+                info["landmarks"][0].z+8,
                 info.get('full_name', 'Treasure Hunt'),
-                info.get('full_name', 'Treasure Hunt'), steps, minrange, maxrange
+                info.get('full_name', 'Treasure Hunt'), steps-1, minrange, maxrange
             )
             # Here, we should also iterate through the waypoints
             i = 0
             for l in info["landmarks"]:
                 i = i + 1
-                output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s (Step %d)\',\n\t\t\'description\':\'%s\\nStep %d of %d\'},\n' % (
-                    l.x,
+                if i == 1:
+                    continue
+                if i == steps:
+                    stepname = "Final location"
+                else:
+                    stepname = "Waypoint %d" % (i-1)
+                output += '\t\t{\'id\':\'MCDungeonTHW\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s (%s)",\n\t\t\'description\':"%s\\n%s\\n(%d steps)"},\n' % (
+                    l.x+8,
                     l.y,
-                    l.z,
-                    info.get('full_name', 'Treasure Hunt'), i,
-                    info.get('full_name', 'Treasure Hunt'), i, steps
+                    l.z+8,
+                    info.get('full_name', 'Treasure Hunt'), stepname,
+                    info.get('full_name', 'Treasure Hunt'), stepname, steps-1
                 )			    
         else:
 			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
@@ -697,11 +710,15 @@ if (args.command == 'interactive'):
         ):
             print '   ', file
             count += 1
+            args.world = file_path
     if count == 0:
         sys.exit('There do not appear to be any worlds in your save direcory. \
                  Aborting!')
-    w = raw_input('\nEnter the name of the world you wish to modify: ')
-    args.world = os.path.join(saveFileDir, w)
+    if count > 1:
+        w = raw_input('\nEnter the name of the world you wish to modify: ')
+        args.world = os.path.join(saveFileDir, w)
+    else:
+        print '\nOnly one world available.  Using this one.'
 
     # Pick a mode
     print '\nChoose an action:\n-----------------\n'
@@ -841,7 +858,7 @@ if (args.command == 'interactive'):
         m = cfg.max_dist - cfg.min_dist
 
         print '\nEnter the distance between waypoints in a hunt in chunks'
-        print 'You can enter a fixed value >= 1, or a range (ie: 2-7)'
+        print 'You can enter a fixed value >= 1 and <=16, or a range (eg: 5-10)'
         args.distance = raw_input('Step distance: ')
 
         print '\nEnter a number of steps.'
@@ -1016,13 +1033,15 @@ if (args.command == 'genpoi'):
     output += 'outputdir = "%s"\n\n' % ( args.outputdir )
     output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
     output += 'def tHuntFilter(poi):\n\tif poi[\'id\'] == \'MCDungeonTH\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
+    output += 'def tHuntWPFilter(poi):\n\tif poi[\'id\'] == \'MCDungeonTHW\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
     output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
     print output
     dungeons = listDungeons(world, oworld, genpoi=True)
     tHunts = listTHunts(world, oworld, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
     output += '\t\tdict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True),\n'
-    output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest_red.png", checked=True)\n'
+    output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest.png", checked=True),\n'
+    output += '\t\tdict(name="Waypoints", filterFunction=tHuntWPFilter, icon="icons/marker_chest.png", checked=False),\n'
     output += '\t]\n}\n'
     print output
     sys.exit()
@@ -1099,8 +1118,8 @@ if (args.command == 'delete'):
             if e[0] == d[0] and e[1] == d[1]:
                 xsize = 1
                 zsize = 1
-                for l in e[4]:
-                    chunks.append((l.x>>4,l.z>>4))
+                for l in e[4]['landmarks']:
+                    chunks.append(((l.x+e[0])>>4,(l.z+e[1])>>4))
                 chunks.append((p[0], p[1]))
                 break
     # We need to update the caches for the chunks we are affecting
@@ -1195,125 +1214,132 @@ if (args.command == 'regenerate'):
             sys.ext(1)
     sys.exit()
 
-# Validate size settings
-cfg.min_x = 4
-cfg.max_x = cfg.max_dist - cfg.min_dist
-cfg.min_z = 4
-cfg.max_z = cfg.max_dist - cfg.min_dist
-cfg.min_levels = 1
-cfg.max_levels = 8
+if (args.command == 'add'):
+	# Validate size settings
+	cfg.min_x = 4
+	cfg.max_x = cfg.max_dist - cfg.min_dist
+	cfg.min_z = 4
+	cfg.max_z = cfg.max_dist - cfg.min_dist
+	cfg.min_levels = 1
+	cfg.max_levels = 8
 
-# Range for X
-result = re.search('(\d+)-(\d+)', args.x)
-if (result):
-    cfg.min_x = int(result.group(1))
-    cfg.max_x = int(result.group(2))
-    if (cfg.min_x > cfg.max_x):
-        sys.exit('Minimum X must be equal or less than maximum X.')
-else:
-    try:
-        cfg.min_x = int(args.x)
-        cfg.max_x = int(args.x)
-    except ValueError:
-        sys.exit('X doesn\'t appear to be an integer!')
-if (cfg.min_x < 4):
-    sys.exit('Minimum X must be equal or greater than 4.')
+	# Range for X
+	result = re.search('(\d+)-(\d+)', args.x)
+	if (result):
+		cfg.min_x = int(result.group(1))
+		cfg.max_x = int(result.group(2))
+		if (cfg.min_x > cfg.max_x):
+			sys.exit('Minimum X must be equal or less than maximum X.')
+	else:
+		try:
+			cfg.min_x = int(args.x)
+			cfg.max_x = int(args.x)
+		except ValueError:
+			sys.exit('X doesn\'t appear to be an integer!')
+	if (cfg.min_x < 4):
+		sys.exit('Minimum X must be equal or greater than 4.')
 
-# Range for Z
-result = re.search('(\d+)-(\d+)', args.z)
-if (result):
-    cfg.min_z = int(result.group(1))
-    cfg.max_z = int(result.group(2))
-    if (cfg.min_z > cfg.max_z):
-        sys.exit('Minimum Z must be equal or less than maximum Z.')
-else:
-    try:
-        cfg.min_z = int(args.z)
-        cfg.max_z = int(args.z)
-    except ValueError:
-        sys.exit('Z doesn\'t appear to be an integer!')
-if (cfg.min_z < 4):
-    sys.exit('Minimum Z must be equal or greater than 4.')
+	# Range for Z
+	result = re.search('(\d+)-(\d+)', args.z)
+	if (result):
+		cfg.min_z = int(result.group(1))
+		cfg.max_z = int(result.group(2))
+		if (cfg.min_z > cfg.max_z):
+			sys.exit('Minimum Z must be equal or less than maximum Z.')
+	else:
+		try:
+			cfg.min_z = int(args.z)
+			cfg.max_z = int(args.z)
+		except ValueError:
+			sys.exit('Z doesn\'t appear to be an integer!')
+	if (cfg.min_z < 4):
+		sys.exit('Minimum Z must be equal or greater than 4.')
 
-# Range for Levels
-result = re.search('(\d+)-(\d+)', args.levels)
-if (result):
-    cfg.min_levels = int(result.group(1))
-    cfg.max_levels = int(result.group(2))
-    if (cfg.min_levels > cfg.max_levels):
-        sys.exit('Minimum levels must be equal or less than maximum levels.')
-else:
-    try:
-        cfg.min_levels = int(args.levels)
-        cfg.max_levels = int(args.levels)
-    except ValueError:
-        sys.exit('Levels doesn\'t appear to be an integer!')
-if (cfg.min_levels < 1):
-    sys.exit('Minimum levels must be equal or greater than 1.')
-if (cfg.max_levels > 42):
-    sys.exit('Maximum levels must be equal or less than 42.')
+	# Range for Levels
+	result = re.search('(\d+)-(\d+)', args.levels)
+	if (result):
+		cfg.min_levels = int(result.group(1))
+		cfg.max_levels = int(result.group(2))
+		if (cfg.min_levels > cfg.max_levels):
+			sys.exit('Minimum levels must be equal or less than maximum levels.')
+	else:
+		try:
+			cfg.min_levels = int(args.levels)
+			cfg.max_levels = int(args.levels)
+		except ValueError:
+			sys.exit('Levels doesn\'t appear to be an integer!')
+	if (cfg.min_levels < 1):
+		sys.exit('Minimum levels must be equal or greater than 1.')
+	if (cfg.max_levels > 42):
+		sys.exit('Maximum levels must be equal or less than 42.')
 
-# Step count range for treasure hunts
-result = re.search('(\d+)-(\d+)', args.steps)
-if (result):
-    cfg.min_steps = int(result.group(1))
-    cfg.max_steps = int(result.group(2))
-    if (cfg.min_steps > cfg.max_steps):
-        sys.exit('Minimum steps must be equal or less than maximum steps.')
-else:
-    try:
-        cfg.min_steps = int(args.steps)
-        cfg.max_steps = int(args.steps)
-    except ValueError:
-        sys.exit('Steps doesn\'t appear to be an integer!')
-if (cfg.min_steps < 1):
-    sys.exit('Minimum steps must be equal or greater than 1.')
-if (cfg.max_steps > 20):
-    sys.exit('Maximum steps must be equal or less than 20.')
+	# Override bury
+	if (args.bury is not None):
+		cfg.bury = args.bury
 
-# Step distance for treasure hunts
-result = re.search('(\d+)-(\d+)', args.distance)
-if (result):
-    cfg.min_distance = int(result.group(1))
-    cfg.max_distance = int(result.group(2))
-    if (cfg.min_distance > cfg.max_distance):
-        sys.exit('Minimum step distance must be equal or less than maximum distance.')
-else:
-    try:
-        cfg.min_distance = int(args.distance)
-        cfg.max_distance = int(args.distance)
-    except ValueError:
-        sys.exit('Distance doesn\'t appear to be an integer!')
-if (cfg.min_distance < 1):
-    sys.exit('Minimum distance must be equal or greater than 1.')
-if (cfg.max_distance > 10):
-    sys.exit('Maximum distance must be equal or less than 10.')
+	# Override offset
+	if (args.offset is not None):
+		cfg.offset = '%d, %d, %d' % (args.offset[0],
+									 args.offset[1],
+									 args.offset[2])
+
+	if (
+		args.entrance is not None and
+			(
+				args.entrance[0] >= args.x or
+				args.entrance[0] < 0 or
+				args.entrance[1] >= args.z or
+				args.entrance[1] < 0
+			)
+	):
+		print 'Entrance offset values out of range.'
+		print 'These should be >= 0 and < the maximum width or length of' \
+			  ' the dungeon.'
+		sys.exit(1)
+
+		
+if (args.command == 'addth'):
+    # Step count range for treasure hunts
+    result = re.search('(\d+)-(\d+)', args.steps)
+    if (result):
+        cfg.min_steps = int(result.group(1))
+        cfg.max_steps = int(result.group(2))
+        if (cfg.min_steps > cfg.max_steps):
+            sys.exit('Minimum steps must be equal or less than maximum steps.')
+    else:
+        try:
+            cfg.min_steps = int(args.steps)
+            cfg.max_steps = int(args.steps)
+        except ValueError:
+            sys.exit('Steps doesn\'t appear to be an integer!')
+    if (cfg.min_steps < 1):
+        sys.exit('Minimum steps must be equal or greater than 1.')
+    if (cfg.max_steps > 20):
+        sys.exit('Maximum steps must be equal or less than 20.')
+
+    # Step distance for treasure hunts
+    result = re.search('(\d+)-(\d+)', args.distance)
+    if (result):
+        cfg.min_distance = int(result.group(1))
+        cfg.max_distance = int(result.group(2))
+        if (cfg.min_distance > cfg.max_distance):
+            sys.exit('Minimum step distance must be equal or less than maximum distance.')
+    else:
+        try:
+            cfg.min_distance = int(args.distance)
+            cfg.max_distance = int(args.distance)
+        except ValueError:
+            sys.exit('Distance doesn\'t appear to be an integer!')
+    if (cfg.min_distance < 1):
+        sys.exit('Minimum distance must be equal or greater than 1.')
+    if (cfg.max_distance > 20):
+        sys.exit('Maximum distance must be equal or less than 20.')
+    args.min_levels = args.max_levels = 1
+    args.min_x = args.max_x = 1
+    args.min_z = args.max_z = 1
 	
 # Everything below is add/regen mode
 
-# Override bury
-if (args.bury is not None):
-    cfg.bury = args.bury
-
-# Override offset
-if (args.offset is not None):
-    cfg.offset = '%d, %d, %d' % (args.offset[0],
-                                 args.offset[1],
-                                 args.offset[2])
-
-if (
-    args.entrance is not None and
-        (
-            args.entrance[0] >= args.x or
-            args.entrance[0] < 0 or
-            args.entrance[1] >= args.z or
-            args.entrance[1] < 0
-        )
-):
-    print 'Entrance offset values out of range.'
-    print 'These should be >= 0 and < the maximum width or length of' \
-          ' the dungeon.'
-    sys.exit(1)
 
 # Some options don't work with multidungeons
 if (args.number is not 1):
@@ -1339,21 +1365,23 @@ loottable.Load()
 print "MCDungeon", __version__, "startup complete. "
 
 if args.debug:
-    print 'Z:', args.z
-    print '   ', cfg.min_z
-    print '   ', cfg.max_z
-    print 'X:', args.x
-    print '   ', cfg.min_x
-    print '   ', cfg.max_x
-    print 'L:', args.levels
-    print '   ', cfg.min_levels
-    print '   ', cfg.max_levels
-    print 'S:', args.steps
-    print '   ', cfg.min_steps
-    print '   ', cfg.max_steps
-    print 'D:', args.distance
-    print '   ', cfg.min_distance
-    print '   ', cfg.max_distance
+    if (args.command == 'addth'):
+		print 'S:', args.steps
+		print '   ', cfg.min_steps
+		print '   ', cfg.max_steps
+		print 'D:', args.distance
+		print '   ', cfg.min_distance
+		print '   ', cfg.max_distance
+    else:
+		print 'Z:', args.z
+		print '   ', cfg.min_z
+		print '   ', cfg.max_z
+		print 'X:', args.x
+		print '   ', cfg.min_x
+		print '   ', cfg.max_x
+		print 'L:', args.levels
+		print '   ', cfg.min_levels
+		print '   ', cfg.max_levels
 
 # Look for good chunks
 if (cfg.offset is None or cfg.offset is ''):
@@ -1524,10 +1552,18 @@ if (cfg.offset is None or cfg.offset is ''):
         if args.debug:
             print 'old treasure hunt:', t
         p = (t[0] / 16, t[1] / 16)
-        for l in t[4]:
-            if (l.x, l.z) in good_chunks:
-                del(good_chunks[(l.x,l.z)])
-                key = '%s,%s' % (l.x,l.z)
+        if (p[0], p[1]) in good_chunks:
+            del(good_chunks[(p[0], p[1])])
+            key = '%s,%s' % (p[0], p[1])
+            chunk_cache[key] = ['S', -1, 0]
+            chunk_stats[4][1] += 1
+            chunk_stats[8][1] -= 1
+        for l in t[4]['landmarks']:
+            cx = l.x >> 4
+            cz = l.z >> 4
+            if (cx, cz) in good_chunks:
+                del(good_chunks[(cx, cz)])
+                key = '%s,%s' % (cx, cz)
                 chunk_cache[key] = ['S', -1, 0]
                 chunk_stats[4][1] += 1
                 chunk_stats[8][1] -= 1
@@ -1584,30 +1620,55 @@ while (
         args.number == -1
     )
 ):
-    if args.number == -1:
-        print '\n***** Placing dungeon {0} *****\n'.format(count + 1)
-    else:
-        print '\n***** Placing dungeon {0} of {1} *****\n'.format(count + 1,
+    if (args.command == 'addth'):
+        if args.number == -1:
+            print '\n***** Placing treasure hunt {0} *****\n'.format(count + 1)
+        else:
+            print '\n***** Placing treasure hunt {0} of {1} *****\n'.format(count + 1,
                                                                   args.number)
-
-    dungeon = Dungeon(args,
+        thunt = TreasureHunt(args,
+                      world,
+                      oworld,
+                      chunk_cache,
+                      thunt_cache,
+                      good_chunks,
+                      map_store)
+        result = thunt.generate(cache_path, __version__)
+        del(thunt)
+    else:
+        if args.number == -1:
+            print '\n***** Placing dungeon {0} *****\n'.format(count + 1)
+        else:
+            print '\n***** Placing dungeon {0} of {1} *****\n'.format(count + 1,
+                                                                  args.number)
+        dungeon = Dungeon(args,
                       world,
                       oworld,
                       chunk_cache,
                       dungeon_cache,
                       good_chunks,
                       map_store)
-    result = dungeon.generate(cache_path, __version__)
+        result = dungeon.generate(cache_path, __version__)
+        del(dungeon)
     if result:
         count += 1
-    del(dungeon)
+
 
 if (count == 0):
-    print 'No dungeons were generated!'
-    print 'You may have requested too deep or too large a dungeon, or your '
-    print 'allowed spawn region is too small. If using fill_caves, remember '
-    print 'to add 10 chunks in each direction to the size of your dungeon.'
-    print 'Check min_dist, max_dist, and fill_caves settings in your config.'
+    if (args.command == 'addth'):
+        print 'No treasure hunts were generated!'
+        print 'You may have asked for too many steps, or your allowed spawn'
+        print 'region is too small.  Try disabling fill_caves, and check'
+        print 'your min_dist and max_dist settings in your config.'
+    else:
+        print 'No dungeons were generated!'
+        print 'You may have requested too deep or too large a dungeon, or your '
+        print 'allowed spawn region is too small. If using fill_caves, remember '
+        print 'to add 10 chunks in each direction to the size of your dungeon.'
+        print 'Check min_dist, max_dist, and fill_caves settings in your config.'
     sys.exit(1)
 
-print 'Placed', count, 'dungeons!'
+if (args.command == 'addth'):
+    print 'Placed', count, 'treasure hunts!'
+else:
+    print 'Placed', count, 'dungeons!'
