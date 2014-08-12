@@ -792,6 +792,65 @@ def saveChunkCache(cache_path, chunkCache):
         print e
         sys.exit('Failed to write dungeon_scan_version.'
                  'Check permissions and try again.')
+				 
+def encodeTHuntInfo(thunt, version):
+    '''Takes a dungeon object and Returns an NBT structure for a
+    chest+book encoding a lot of things to remember about this
+    dungeon.'''
+    # Some old things need to be added.
+    items = thunt.dinfo
+    items['version'] = version
+    items['steps'] = thunt.steps
+    items['timestamp'] = int(time.time())
+    items['landmarks'] = []
+    items['min_distance'] = thunt.min_distance
+    items['max_distance'] = thunt.max_distance
+	
+    for l in thunt.landmarks:
+        items['landmarks'].append( l.pos )
+	
+    # Create the base tags
+    root_tag = nbt.TAG_Compound()
+    root_tag['id'] = nbt.TAG_String('Chest')
+    root_tag['CustomName'] = nbt.TAG_String('MCDungeon THunt Data Library')
+    root_tag['x'] = nbt.TAG_Int(0)
+    root_tag['y'] = nbt.TAG_Int(0)
+    root_tag['z'] = nbt.TAG_Int(0)
+    inv_tag = nbt.TAG_List()
+    root_tag['Items'] = inv_tag
+
+    # Populate the pages
+    slot = 0
+    page = 0
+    newslot = True
+    for key in items:
+        # Make a new book
+        if newslot is True:
+            if slot >= 27:
+                sys.exit('Too many values to store, and not enough slots!')
+            item_tag = nbt.TAG_Compound()
+            inv_tag.append(item_tag)
+            item_tag['Slot'] = nbt.TAG_Byte(slot)
+            item_tag['Count'] = nbt.TAG_Byte(1)
+            item_tag['id'] = nbt.TAG_Short(387)
+            item_tag['Damage'] = nbt.TAG_Short(0)
+            tag_tag = nbt.TAG_Compound()
+            item_tag['tag'] = tag_tag
+            tag_tag['title'] = nbt.TAG_String(
+                'MCDungeon Data Volume %d' % (slot + 1)
+            )
+            tag_tag['author'] = nbt.TAG_String('Various')
+            tag_tag['pages'] = nbt.TAG_List()
+            newslot = False
+            page = 0
+        slot += 1
+        tag_tag['pages'].append(
+            nbt.TAG_String(cPickle.dumps({key: items[key]}))
+        )
+        page += 1
+        if page >= 50:
+            newslot = True
+    return root_tag
 
 
 def encodeDungeonInfo(dungeon, version):
@@ -886,9 +945,19 @@ def decodeDungeonInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            book['id'] != 387 or
+            (book['id'] != 387 and book['id'] != 'minecraft:written_book')
+        ):
+            #print 'Non-book found in cache chest: %s' % ( book['id'] )
+            continue
+        if (
+			'title' not in book['tag']
+        ):
+            print 'Strange book with no title found in cache chest' 
+            continue
+        if (
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
+            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
             continue
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))
@@ -912,9 +981,19 @@ def decodeTHuntInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            book['id'] != 387 or
+            (book['id'] != 387 and book['id'] != 'minecraft:written_book')
+        ):
+            #print 'Non-book found in cache chest: %s' % ( book['id'] )
+            continue
+        if (
+			'title' not in book['tag']
+        ):
+            print 'Strange book with no title found in cache chest' 
+            continue
+        if (
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
+            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
             continue
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))

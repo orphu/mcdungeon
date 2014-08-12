@@ -537,7 +537,7 @@ class Dungeon (object):
             print 'No positions', p
         return False
 
-    def worldmap(self, world, positions):
+    def worldmap(self, world, positions, note=None):
         #rows, columns = os.popen('stty size', 'r').read().split()
         columns = 39
         bounds = world.bounds
@@ -548,6 +548,10 @@ class Dungeon (object):
             scx = self.args.spawn[0]
             scz = self.args.spawn[1]
         spawn_chunk = Vec(scx, 0, scz)
+        if note is not None:
+            note_chunk = Vec( note.x >> 4, 0, note.z >> 4 )
+        else:
+            note_chunk = Vec(0,0,0)
         # Draw a nice little map of the dungeon location
         map_min_x = bounds.maxcx
         map_max_x = bounds.mincx
@@ -583,6 +587,8 @@ class Dungeon (object):
                     sys.stdout.write('00')
                 elif (Vec(x, 0, z) == Vec(sx, 0, sz)):
                     sys.stdout.write('XX')
+                elif (Vec(x, 0, z) == note_chunk):
+                    sys.stdout.write('@@')
                 elif (d_box.containsPoint(Vec(x, 64, z))):
                     sys.stdout.write('##')
                 elif ((x, z) in positions.keys()):
@@ -2332,3 +2338,42 @@ class Dungeon (object):
             spin(num)
             num -= 1
             chunk.chunkChanged()
+
+    def keyName(self):
+        ''' Generate a random name for a key 
+        This is used by TreasureHunt and Dungeon classes where a new name 
+        is required.  It includes colours codes to make it unduplicateable
+        using an anvil '''
+        _magic = '\u00A7'
+        _knamesA = (
+            ('big', 1),
+            ('small', 1),
+            ('ornate', 1),
+            ('long', 1),
+            ('rusty', 1),
+            ('complex', 1),
+            ('secret', 1),
+            ('lost', 1),
+        )
+        _kcolours = {
+			'black': '0',
+			'blue': '1',
+			'jade': '2',
+			'red': '4',
+			'purple': '5',
+			'golden': '6',
+			'silver': '7',
+			'yellow': 'e',
+			'aqua': '3',
+			'steel': '8',
+        }
+        _knames = (
+            ('{{owners}} {A} {{_magic}}{C}{{_magic}}r key', 5),
+            ('{{owners}} {{_magic}}{C}{{_magic}}r key', 1),
+            ('The {A} {{_magic}}{C}{{_magic}}r key of {{owner}}', 2),
+        )
+        A = weighted_choice(_knamesA)
+        C = _kcolours[ random.choice( _kcolours.keys() ) ]
+        name = weighted_choice(_knames).format(A=A,C=C)
+        return name
+	
