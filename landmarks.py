@@ -45,12 +45,13 @@ class Clearing(object):
 
     # Add a chest to this location, with specified loot
     # this should only be called after render()
-    def addchest (self, tier=0, name=''):
+    def addchest (self, tier=0, name='', locked=None):
         # Add a chest to the map: this is called after rendering
         # only one possible location (at varying depth) in this feature
         # position is y-reversed voxels relative to pos
         self.chest = Vec( 8, random.randint(1,3) , 8 ) + self.offset
         self.chestdesc = "in the middle"
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier, [] , name )
 
     # add an item to the chest, if one exists
@@ -81,6 +82,8 @@ class Clearing(object):
         if mat is None or mat is False: # or mat not in materials.heightmap_solids:
             print 'Center material is %s' % mat
             mat = materials.Stone
+        if mat is materials.Air:
+            mat = materials.Dirt
         for p in iterate_disc(p0,p1):
             self.parent.setblock(p,mat,lock=True)
             self.parent.setblock(p.up(1),materials.Air)
@@ -91,11 +94,12 @@ class Clearing(object):
             self.parent.setblock(p.down(2),mat,soft=True)
             self.parent.setblock(p.down(3),mat,soft=True)    
 
-    def addcluechest (self, tier=0, name='', items=[]):
+    def addcluechest (self, tier=0, name='', items=[], locked=None):
         # Add a chest to the map: this is called after rendering
         # only one possible location (at varying depth) in this feature
         # position is y-reversed voxels relative to pos
         self.cluechest = Vec( 8, -1 , 8 ) + self.offset
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier, items , name )
 
     def addcluechestitem_tag ( self, item_tag ):
@@ -165,26 +169,46 @@ class SmallCottage(Clearing):
         self.addclearing(center,size)
 		
         # create cottage
-        # XXXXX
+        for p in iterate_four_walls(Vec(6,0,6), Vec(11,0,10),2):
+            self.parent.setblock(self.offset + p, materials.Stone,1)
+        for p in iterate_plane(Vec(6,-1,6), Vec(11,0,10)):
+            self.parent.setblock(self.offset + p, materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(6,-3,7),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(6,-3,8),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(6,-4,8),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(6,-3,9),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(11,-3,7),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(11,-3,8),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(11,-4,8),materials.Stone,1)
+        self.parent.setblock(self.offset+Vec(11,-3,9),materials.Stone,1)
+        # doorway
+        self.parent.setblock(self.offset+Vec(9,-1,10),materials.Air)
+        self.parent.setblock(self.offset+Vec(9,-2,10),materials.Air)
+        # window
+        self.parent.setblock(self.offset+Vec(7,-2,10),materials.Air)
+        # fireplace
+        self.parent.setblock(self.offset+Vec(6,-1,8),materials.Air)
+        self.parent.setblock(self.offset+Vec(5,-1,8),materials.Stone,1)
 
         # add bed and table
         # XXXXX
 		
         if not self._ruined:
             # if not ruined, add roof, door and window
+            self.parent.setblock(self.offset+Vec(7,-2,10),materials.Glass)
             # XXXXX
             if self._abandoned:
                 # if abandoned, add cobwebs (parent function) voxels relative
-                self.parent.cobwebs(self.offset+Vec(-2,0,2), self.offset+Vec(2,-4,2))
+                self.parent.cobwebs(self.offset + Vec(8,0,8) + Vec(-2,0,2), self.offset + Vec(8,0,8) + Vec(2,-4,2))
             else:
                 # if not abandoned, add torches inside (parent fn?)
-                self.parent.setblock(self.offset + Vec(2,-3,0), materials.Torch, 2)
-                self.parent.setblock(self.offset + Vec(-2,-3,0), materials.Torch, 1)
+                self.parent.setblock(self.offset + Vec(8,0,8) + Vec(2,-3,0), materials.Torch, 2)
+                self.parent.setblock(self.offset + Vec(8,0,8) + Vec(-2,-3,0), materials.Torch, 1)
     
     def describe (self):
         return "a small cottage"
 
-    def addchest ( self, tier=0, name='' ):
+    def addchest ( self, tier=0, name='', locked=None ):
         _chestpos = (
             ('under the fireplace"',Vec(-2,1,0)),
             ('under the bed',Vec(2,1,1)),
@@ -194,10 +218,12 @@ class SmallCottage(Clearing):
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier, [] , name )
 
-    def addcluechest ( self, tier=0, name='', items=[] ):
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(10,-1,9)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier, items , name )
 
 		
@@ -215,21 +241,31 @@ class SignPost(Clearing):
     
     def render (self):
         # add a signpost at groundlevel
-        self.parent.addsign(self.offset + Vec(8,-1,8), "", self.parent.owner, "was here", "")
+        try:
+            chunk = self.parent.world.getChunk(self.pos.x>>4, self.pos.z>>4)
+            mat = materials.materialById(chunk.Blocks[8,8,self.pos.y])
+            if mat is materials.Air:
+                self.parent.setblock(self.offset + Vec(8, 0, 8), materials.Stone,0)
+        except:
+            print 'Cannot identify central material'
+        self.parent.setblock(self.offset + Vec(8, -1, 8), materials.SignPost, random.randint(0,7))
+        self.parent.addsign(self.offset + Vec(8,-1,8), "", self.parent.owner, "- was here -", "Keep away!")
 		
     def describe (self):
         return "a signpost"
 
-    def addchest ( self, tier=0, name='' ):
+    def addchest ( self, tier=0, name='', locked=None ):
         # Add a chest to the map: this is called after rendering
         # only one possible location (at varying depth) in this feature
         # position is y-reversed voxels relative to pos
         self.chest = self.offset + Vec( 8, random.randint(1,3) , 8 )
         self.chestdesc = "below"
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier, [] , name )
     
-    def addcluechest ( self, tier=0, name='', items=[] ):
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(9,-1,9)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier, items , name )
 
                 

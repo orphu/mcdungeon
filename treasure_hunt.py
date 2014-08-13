@@ -235,12 +235,16 @@ class TreasureHunt (Dungeon):
                     (x, z) = thunt.split(",")
                     dpos = Vec(int(x) >> 4, 0, int(z) >> 4)
                     d = min(d, (dpos - chunk).mag2d())
-                    tileEntity = self.thunt_cache[thunt]
-                    if tileEntity is not True:
-                        info = decodeTHuntInfo(tileEntity)
-                        for lm in info['landmarks']:
-                            dpos = Vec(lm.x>>4,0,lm.z>>4)
-                            d = min(d, (dpos - chunk).mag2d())
+                    try:
+                        tileEntity = self.thunt_cache[thunt]
+                        if tileEntity is not True:
+                            info = decodeTHuntInfo(tileEntity)
+                            for lm in info['landmarks']:
+                                dpos = Vec(lm.x>>4,0,lm.z>>4)
+                                d = min(d, (dpos - chunk).mag2d())
+                    except:
+                        #print 'Invalid treasure hunt cache item ignored.'
+                        pass
                 for lm in self.landmarks:
                     dpos = Vec(lm.pos.x>>4,0,lm.pos.z>>4)
                     d = min(d, (dpos - chunk).mag2d())
@@ -298,7 +302,7 @@ class TreasureHunt (Dungeon):
                 if self.args.debug:
                     print 'Found: ', p
                 pos = Vec((p[0] + (offset / 2)) * self.room_size,
-                                    0,
+                                    miny,
                                     (p[1] + (offset / 2)) * self.room_size)
                 self.worldmap(world, positions, note = pos)
                 del(self.good_chunks[p])
@@ -314,7 +318,8 @@ class TreasureHunt (Dungeon):
             if self.args.debug:
                 print 'Final: ', self.position
             if self.bury():
-                self.position.y += 20
+                # make it deeper!
+                self.position = self.position + Vec(0,-20,0)
                 return True
         if self.args.debug:
             print 'No positions', p
@@ -362,12 +367,114 @@ class TreasureHunt (Dungeon):
 
     def placechests(self, level=0):
         # Place chests, create clue books and keys
-		
+        _directions = (
+            ( 'Wander {D} til ye find {L}, which be the next step in yer search.', 1 ),
+            ( 'Walk as the crow flies {D} without rest until ye find {L}', 1 ),
+            ( 'Travel towards the {D} to {L}, then follow the next step', 1 ),
+            ( 'I hid the next step at {L}, {D} of here.', 1 ),
+            ( 'Find {L} to the {D}, and be wary of zombies as ye travel', 1 ),
+            ( 'Now walk ye {D}, keeping yer eyes peeled for {L}', 1 ),
+            ( 'To the {D} there do lie {L}.  Thy next step be to find it.', 1 ),
+            ( 'There do lie {L} to the {D}, and that is where ye must needs go next.', 1 ),
+        )
         # Iterate through the landmarks from the end back.  
         # Generate a clue book and possible key as we go as extra chest loot.
         # At each location, randomly either make a chest and store items or
-        # continue one. XXXXXX
-        pass
+        # continue one.
+        fromstep=1
+        tostep=1
+        pages = []
+        pages.append( self.dungeon_name )
+        if cfg.th_locked is True:
+            keyname = self.keyName()
+            chestkey = nbt.TAG_Compound()
+            chestkey['Count'] = nbt.TAG_Byte(1)
+            chestkey['id'] = nbt.TAG_Short(280)
+            chestkey['name'] = nbt.TAG_String( keyname )
+        else:
+            keyname = None
+
+        while tostep < self.steps:
+            tostep += 1
+            print 'Processing step %d -> %d' % (fromstep, tostep )
+            if self.landmarks[fromstep-1].pos.z < self.landmarks[tostep-1].pos.z:
+                direction = 'South'
+            elif self.landmarks[fromstep-1].pos.z > self.landmarks[tostep-1].pos.z:
+                direction = 'North'
+            else:
+                direction = ''			
+            if self.landmarks[fromstep-1].pos.x < self.landmarks[tostep-1].pos.x:
+                direction = '%sEast' % ( direction )
+            elif self.landmarks[fromstep-1].pos.x > self.landmarks[tostep-1].pos.x:
+                direction = '%sWest' % ( direction )
+            landmark_name = self.landmarks[tostep-1].describe()
+            p = weighted_choice(_directions).format(D=direction,L=landmark_name)
+            print "%d: %d, %d\n   %s" % ( tostep-1, self.landmarks[fromstep-1].pos.x, self.landmarks[fromstep-1].pos.z, p )
+            pages.append( p )
+            if tostep == self.steps:
+                break
+            if random.randint(1,100) > cfg.th_intermediate:
+                if random.randint(1,100) < cfg.th_bonus:
+                    self.landmarks[tostep-1].addcluechest(tier=int(tostep/cfg.th_multiplier))
+                continue
+			# save book and restart 
+            self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
+            print 'Placed an intermediate chest at step %d!' % ( tostep )
+            pages.append( 'When ye reach this place, seek ye another clue %s' 
+                % ( self.landmarks[tostep-1].chestlocdesc() ) )
+            if cfg.th_locked is True:
+                pages.append( 'But take ye heed -- tis only %s as can open the chest' % ( keyname ) )
+            cluebook_tag = nbt.TAG_Compound()
+            cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
+            cluebook_tag['author'] = nbt.TAG_String(self.owner)
+            cluebook_tag['pages'] = nbt.TAG_List()
+            for p in pages:
+                cluebook_tag['pages'].append( nbt.TAG_String(p) )
+            cluebook = nbt.TAG_Compound()
+            cluebook['Count'] = nbt.TAG_Byte(1)
+            cluebook['id'] = nbt.TAG_Short(387)
+            cluebook['Damage'] = nbt.TAG_Short(0)
+            cluebook['tag'] = cluebook_tag
+            # write clue for this stage
+            if fromstep == 1:
+                self.landmarks[fromstep-1].addcluechest(name=self.dungeon_name,tier=0)
+                self.landmarks[fromstep-1].addcluechestitem_tag(cluebook)
+                if cfg.th_locked is True:
+                    self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
+            else:
+                self.landmarks[fromstep-1].addchestitem_tag(cluebook)
+            print 'Placed a clue chest at step %d!' % ( fromstep )
+            fromstep = tostep
+            pages = []
+            pages.append( self.dungeon_name )
+
+        # write treasure
+        self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
+        print 'Placed a treasure chest at step %d!' % ( tostep )
+        pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s' 
+            % ( self.landmarks[tostep-1].chestlocdesc() ) )
+        if cfg.th_locked is True:
+            pages.append( 'Take heed!  For \'tis only %s that can open the chest that holds my treasure.' % ( keyname ) )
+        cluebook_tag = nbt.TAG_Compound()
+        cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
+        cluebook_tag['author'] = nbt.TAG_String(self.owner)
+        cluebook_tag['pages'] = nbt.TAG_List()
+        for p in pages:
+            cluebook_tag['pages'].append( nbt.TAG_String(p) )
+        cluebook = nbt.TAG_Compound()
+        cluebook['Count'] = nbt.TAG_Byte(1)
+        cluebook['id'] = nbt.TAG_Short(387)
+        cluebook['Damage'] = nbt.TAG_Short(0)
+        cluebook['tag'] = cluebook_tag
+        # write clue for this stage
+        if fromstep == 1:
+            self.landmarks[fromstep-1].addcluechest(name=self.dungeon_name,tier=0)
+            self.landmarks[fromstep-1].addcluechestitem_tag(cluebook)
+            if cfg.th_locked is True:
+                self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
+        else:
+            self.landmarks[fromstep-1].addchestitem_tag(cluebook)
+        print 'Placed a clue chest at step %d!' % ( fromstep )
 
     def renderlandmarks(self):
         '''Call render() on all landmarks to populate the block buffer'''

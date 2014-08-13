@@ -91,6 +91,10 @@ dir_shops = 'shops'
 dir_extra_spawners = ''
 dir_extra_items = ''
 
+th_locked = False
+th_bonus = 0
+th_multiplier = 1
+th_intermediate = 0
 
 parser = ConfigParser.SafeConfigParser()
 
@@ -182,7 +186,8 @@ def Load(filename='default.cfg'):
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
         river_biomes, ocean_biomes, master_hall_traps, \
-        master_landmarks, default_landmarks
+        master_landmarks, default_landmarks, \
+        th_locked, th_bonus, th_multiplier, th_intermediate
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:

@@ -861,8 +861,8 @@ if (args.command == 'interactive'):
         print 'You can enter a fixed value >= 1 and <=16, or a range (eg: 5-10)'
         args.distance = raw_input('Step distance: ')
 
-        print '\nEnter a number of steps.'
-        print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
+        print '\nEnter a number of steps (including the start).'
+        print 'You can enter a fixed value > 1, or a range (ie: 3-5)'
         args.steps = raw_input('Steps: ')
 
         print '\nEnter the maximum number of treasure hunts to add.'
@@ -1312,8 +1312,8 @@ if (args.command == 'addth'):
             cfg.max_steps = int(args.steps)
         except ValueError:
             sys.exit('Steps doesn\'t appear to be an integer!')
-    if (cfg.min_steps < 1):
-        sys.exit('Minimum steps must be equal or greater than 1.')
+    if (cfg.min_steps <= 1):
+        sys.exit('Minimum steps must be greater than 1.')
     if (cfg.max_steps > 20):
         sys.exit('Maximum steps must be equal or less than 20.')
 
