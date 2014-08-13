@@ -833,7 +833,7 @@ def decodeDungeonInfo(lib):
 def get_tile_entity_tags(
                          eid='Chest', Pos=Vec( 0, 0, 0),
                          CustomName=None, Lock='', Base=0,
-                         Pattern=(), Levels=0, Primary=0,
+                         Patterns=(), Levels=0, Primary=0,
                          Secondary=0, BrewTime=0, OutputSignal=0,
                          Command='', SuccessCount=0, LastOutput='',
                          Item='', Data=0, BurnTime=0, CookTime=0,
