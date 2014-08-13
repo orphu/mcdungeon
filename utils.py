@@ -744,6 +744,7 @@ def encodeDungeonInfo(dungeon, version):
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String('Chest')
     root_tag['CustomName'] = nbt.TAG_String('MCDungeon Data Library')
+    root_tag['Lock'] = nbt.TAG_String(str(uuid.uuid4()))
     root_tag['x'] = nbt.TAG_Int(0)
     root_tag['y'] = nbt.TAG_Int(0)
     root_tag['z'] = nbt.TAG_Int(0)
