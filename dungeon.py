@@ -2262,8 +2262,9 @@ class Dungeon (object):
 
             val = mat.val
             # Silverfish egg pass
+            # Look for cobblestone, stone (normal variant only) and all stone bricks
             if (cfg.silverfish > 0 and
-                    (val == 1 or val == 4 or val == 98) and
+                    ((val == 1 and dat == 0) or val == 4 or val == 98) and
                     random.randint(1, 100) <= cfg.silverfish):
                 if (val == 4):
                     dat = 1  # Cobblestone
