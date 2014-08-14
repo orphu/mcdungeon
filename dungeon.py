@@ -2361,7 +2361,7 @@ class Dungeon (object):
             ('hidden', 1),
         )
         _kcolours = {
-			'black': '0',
+			#'black': '0',
 			'blue': '1',
 			'jade': '2',
 			'red': '4',

@@ -142,6 +142,8 @@ class TreasureHunt (Dungeon):
             print "Treasure hunt name:", self.dungeon_name
             self.renderlandmarks()
             self.placechests()
+            if cfg.th_spawners is True:
+                self.placespawners()
             self.processBiomes()
 
             # Signature
@@ -366,14 +368,15 @@ class TreasureHunt (Dungeon):
     def placechests(self, level=0):
         # Place chests, create clue books and keys
         _directions = (
-            ( 'Wander {D} til ye find {L}, which be the next step in yer search.', 1 ),
+            ( 'Wander {D} til ye find {L}, which be the next step in thy search.', 1 ),
             ( 'Walk as the crow flies {D} without rest until ye find {L}', 1 ),
             ( 'Travel towards the {D} to {L}, then follow the next step', 1 ),
             ( 'I hid the next step at {L}, {D} of here.', 1 ),
             ( 'Find {L} to the {D}, and be wary of zombies as ye travel', 1 ),
-            ( 'Now walk ye {D}, keeping yer eyes peeled for {L}', 1 ),
+            ( 'Now walk ye {D}, and do keep thy eyes peeled for {L}', 1 ),
             ( 'To the {D} there do lie {L}.  Thy next step be to find it.', 1 ),
             ( 'There do lie {L} to the {D}, and that is where ye must needs go next.', 1 ),
+            ( 'Turn ye to the {D}, and march forrard \'til ye find {L}', 1),
         )
         # Iterate through the landmarks from the end back.  
         # Generate a clue book and possible key as we go as extra chest loot.
@@ -442,7 +445,7 @@ class TreasureHunt (Dungeon):
                 cluebook_tag['pages'].append( nbt.TAG_String(p) )
             cluebook = nbt.TAG_Compound()
             cluebook['Count'] = nbt.TAG_Byte(1)
-            cluebook['id'] = nbt.TAG_Short(387)
+            cluebook['id'] = nbt.TAG_Short(387) # change to String minecraft:book
             cluebook['Damage'] = nbt.TAG_Short(0)
             cluebook['tag'] = cluebook_tag
             # write clue for this stage
@@ -490,6 +493,60 @@ class TreasureHunt (Dungeon):
             print 'Placed a clue chest at step %d!' % ( fromstep )
         self.pm.set_complete()
 
+    def placespawners(self, level=0):
+        self.pm.init(self.steps, label='Placing spawners:')
+        count = self.steps
+        for lm in self.landmarks:
+            count -= 1
+            self.pm.update_left(count)
+            loc = lm.pos - self.position + Vec(9,1,9)
+            self.setblock(loc, materials.Spawner)
+            entity = weighted_choice(cfg.master_landmark_mobs)
+            root_tag = self.getspawnertags(entity)
+            root_tag['id'] = nbt.TAG_String('MobSpawner')
+            root_tag['x'] = nbt.TAG_Int(loc.x)
+            root_tag['y'] = nbt.TAG_Int(loc.y)
+            root_tag['z'] = nbt.TAG_Int(loc.z)
+            root_tag['Delay'] = nbt.TAG_Short(0)
+            SpawnCount = cfg.SpawnCount
+            SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities
+            SpawnMinDelay = cfg.SpawnMinDelay
+            SpawnMaxDelay = cfg.SpawnMaxDelay
+            SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
+            # But don't overwrite tags from NBT files
+            if (SpawnCount != 0):
+                try:
+                    root_tag['SpawnCount']
+                except:
+                    root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
+            if (SpawnMaxNearbyEntities != 0):
+                try:
+                    root_tag['MaxNearbyEntities']
+                except:
+                    root_tag['MaxNearbyEntities'] = nbt.TAG_Short(
+                        SpawnMaxNearbyEntities)
+            if (SpawnMinDelay != 0):
+                try:
+                    root_tag['MinSpawnDelay']
+                except:
+                    root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
+            if (SpawnMaxDelay != 0):
+                try:
+                    root_tag['MaxSpawnDelay']
+                except:
+                    root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
+            if (SpawnRequiredPlayerRange != 0):
+                try:
+                    root_tag['RequiredPlayerRange']
+                except:
+                    root_tag['RequiredPlayerRange'] = nbt.TAG_Short(
+                        SpawnRequiredPlayerRange)
+            # Finally give the tag to the entity
+            self.tile_ents[loc] = root_tag
+
+
+        self.pm.set_complete()
+		
     def renderlandmarks(self):
         '''Call render() on all landmarks to populate the block buffer'''
         count = len(self.landmarks)
