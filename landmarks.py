@@ -217,6 +217,9 @@ class SmallCottage(Clearing):
                 # if not abandoned, add torches inside (parent fn?)
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(2,-3,0), materials.Torch, 2)
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(-1,-3,0), materials.Torch, 1)
+        # chimney
+        self.parent.setblock(self.offset+Vec(6,-5,8),materials.meta_stonedungeon)
+
     
     def describe (self):
         return "a small cottage"
@@ -330,8 +333,75 @@ class Monolith(Clearing):
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
-		
-                
+class Memorial(Clearing):
+    _name = 'memorial'
+    description = 'a memorial'
+
+    def render (self):
+        # add a memorial
+        center = self.pos + Vec(8,0,8)
+        size = 3
+        self.addclearing(center,size)
+
+        self.parent.setblock(self.offset + Vec(8, -4, 8), materials.meta_stonedungeon)
+        for p in iterate_plane(Vec(7,-1,8), Vec(9,-3,8)):
+            self.parent.setblock(self.offset + p, materials.meta_stonedungeon)
+        self.parent.setblock(self.offset + Vec(7,-4,8), materials.StoneStairs,0)
+        self.parent.setblock(self.offset + Vec(9,-4,8), materials.StoneStairs,1)
+        self.parent.setblock(self.offset + Vec(6,-1,8), materials.StoneStairs,0)
+        self.parent.setblock(self.offset + Vec(10,-1,8), materials.StoneStairs,1)
+        self.parent.setblock(self.offset + Vec(6,-1,9), materials.StoneStairs,3)
+        self.parent.setblock(self.offset + Vec(7,-1,9), materials.StoneStairs,3)
+        self.parent.setblock(self.offset + Vec(8,-1,9), materials.StoneStairs,3)
+        self.parent.setblock(self.offset + Vec(9,-1,9), materials.StoneStairs,3)
+        self.parent.setblock(self.offset + Vec(10,-1,9), materials.StoneStairs,3)
+
+        picof = 'a picture'
+        painting = self.parent.inventory.mapstore.add_painting(random.choice(self.parent.inventory.paintlist))
+        picof = painting['tag']['display']['Name'].value
+        self.description = 'a memorial to %s' % ( picof )
+        framed_painting = get_entity_other_tags("ItemFrame",
+                                         Pos=self.offset + Vec(8,-3,8),
+                                         Direction=0,
+                                         ItemRotation=0,
+                                         ItemTags=painting)
+        framed_painting['Motive'] = painting['tag']['display']['Name']
+        framed_painting['Invulnerable'] = nbt.TAG_Byte(1)
+        # Place the item frame.
+        self.parent.addentity(framed_painting)
+
+        self.parent.setblock(self.offset + Vec(8, -2, 9), materials.WallSign, 0)
+        self.parent.addsign(self.offset + Vec(8,-2,9), "In memory of", picof, "",self.parent.owner)
+
+    def describe (self):
+        return self.description
+
+    def addchest ( self, tier=0, name='', locked=None ):
+        # Add a chest to the map: this is called after rendering
+        # position is y-reversed voxels relative to pos
+        _position = (
+            ( 'buried behind', Vec(0,random.randint(1,3),-1)),
+            ( 'buried in front', Vec(0,random.randint(1,3),2)),
+            ( 'buried to the left', Vec(3,random.randint(1,3),0)),
+            ( 'buried to the right', Vec(-3,random.randint(1,3),0)),
+        )
+        p = random.choice(_position)
+        self.chest = self.offset + Vec( 8, 0 , 8 ) + p[1]
+        self.chestdesc = p[0]
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+    
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
+        self.cluechest = self.offset + Vec(8,-1,7)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+
+#class Well(Clearing):
+#    _name = 'well'		               
+
+#class Forge(Clearing):
+#    _name = 'forge'
+
 # Catalog the features we know about. 
 _landmarks = {}
 # List of classes in this module.

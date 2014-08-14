@@ -543,8 +543,6 @@ class TreasureHunt (Dungeon):
                         SpawnRequiredPlayerRange)
             # Finally give the tag to the entity
             self.tile_ents[loc] = root_tag
-
-
         self.pm.set_complete()
 		
     def renderlandmarks(self):

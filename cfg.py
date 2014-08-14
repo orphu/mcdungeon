@@ -450,11 +450,11 @@ def Load(filename='default.cfg'):
     maps = int(get('dungeon', 'maps', maps))
     mapstore = get('dungeon', 'mapstore', mapstore)
 
-    th_locked = str2bool(get('dungeon', 'th_locked', th_locked))
-    th_bonus = int(get('dungeon', 'th_bonus', th_bonus))
-    th_multiplier = int(get('dungeon', 'th_multiplier', th_multiplier))
-    th_intermediate = int(get('dungeon', 'th_intermediate', th_intermediate))
-    th_spawners = str2bool(get('dungeon', 'th_spawners', th_spawners))
+    th_locked = str2bool(get('treasure hunt', 'locked', th_locked))
+    th_bonus = int(get('treasure hunt', 'bonus', th_bonus))
+    th_multiplier = int(get('treasure hunt', 'multiplier', th_multiplier))
+    th_intermediate = int(get('treasure hunt', 'intermediate', th_intermediate))
+    th_spawners = str2bool(get('treasure hunt', 'spawners', th_spawners))
 	
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be '
