@@ -91,7 +91,7 @@ dir_shops = 'shops'
 dir_extra_spawners = ''
 dir_extra_items = ''
 
-th_locked = False
+th_locked = 'False'
 th_bonus = 0
 th_multiplier = 1
 th_intermediate = 0
@@ -442,6 +442,11 @@ def Load(filename='default.cfg'):
     maps = int(get('dungeon', 'maps', maps))
     mapstore = get('dungeon', 'mapstore', mapstore)
 
+    th_locked = str2bool(get('dungeon', 'th_locked', th_locked))
+    th_bonus = int(get('dungeon', 'th_bonus', th_bonus))
+    th_multiplier = int(get('dungeon', 'th_multiplier', th_multiplier))
+    th_intermediate = int(get('dungeon', 'th_intermediate', th_intermediate))
+	
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be '
                  ' >= 1.0. Check the cfg file.')

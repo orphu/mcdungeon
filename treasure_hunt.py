@@ -69,15 +69,15 @@ class TreasureHunt (Dungeon):
     def generate(self, cache_path, version):
         '''Generate a treasure hunt'''
         # the treasure hunt name is stored in dungeon_name and is built here
-        # because we dont have a ruins[] section
+        # because we don't have a ruins[] section
         _thnames = (
             ('{owners} treasure',10),
             ('{owners} secret loot', 10),
             ('Lost treasure of {owner}',10),
             ('Hidden gold of {owner}',10),
             ('{owners} hidden gold', 10),
-            ('The secret stash of {owner}',10),
-            ('Buried treasure of {owner} the pirate',10),
+            ('The secret hoard of {owner}',10),
+            ('Buried treasure of {owner} the Pirate',10),
             ('{owners} college fund',1)
         )
         # Pick a starting size.
@@ -140,11 +140,8 @@ class TreasureHunt (Dungeon):
                 owners=owners)
             self.dinfo['full_name'] = self.dungeon_name
             print "Treasure hunt name:", self.dungeon_name
-            print "Generating landmarks..."
             self.renderlandmarks()
-            print "Placing chests..."
             self.placechests()
-            print "Biome-specific changes..."
             self.processBiomes()
 
             # Signature
@@ -304,7 +301,8 @@ class TreasureHunt (Dungeon):
                 pos = Vec((p[0] + (offset / 2)) * self.room_size,
                                     miny,
                                     (p[1] + (offset / 2)) * self.room_size)
-                self.worldmap(world, positions, note = pos)
+                if self.args.debug:
+                    self.worldmap(world, positions, note = pos)
                 del(self.good_chunks[p])
                 return pos
         return None
@@ -360,9 +358,9 @@ class TreasureHunt (Dungeon):
 			
         self.pm.set_complete()
         print 'Placed %d landmarks.' % ( self.steps )
-        for lm in self.landmarks:
-            print '  %d, %d' % ( lm.pos.x, lm.pos.z )
         if self.args.debug:
+            for lm in self.landmarks:
+                print '  %d, %d' % ( lm.pos.x, lm.pos.z )
             print 'Complete'
 
     def placechests(self, level=0):
@@ -387,16 +385,25 @@ class TreasureHunt (Dungeon):
         pages.append( self.dungeon_name )
         if cfg.th_locked is True:
             keyname = self.keyName()
+            print "Creating key %s" % ( keyname )
             chestkey = nbt.TAG_Compound()
             chestkey['Count'] = nbt.TAG_Byte(1)
-            chestkey['id'] = nbt.TAG_Short(280)
-            chestkey['name'] = nbt.TAG_String( keyname )
+            chestkey['id'] = nbt.TAG_Short(280) # Change to string: minecraft:stick
+            chestkey['tag'] = nbt.TAG_Compound()
+            chestkey['tag']['Unbreakable'] = nbt.TAG_Byte(1) 
+            chestkey['tag']['display'] = nbt.TAG_Compound()
+            chestkey['tag']['display']['Name'] = nbt.TAG_String( keyname )
+            chestkey['tag']['display']['Lore'] = nbt.TAG_List()
+            chestkey['tag']['display']['Lore'].append( nbt.TAG_String( "Key found with treasure map" ) )
         else:
             keyname = None
 
+        self.pm.init(self.steps, label='Placing chests:')
         while tostep < self.steps:
+            self.pm.update_left(self.steps - tostep)
             tostep += 1
-            print 'Processing step %d -> %d' % (fromstep, tostep )
+            if self.args.debug:
+                print 'Processing step %d -> %d' % (fromstep, tostep )
             if self.landmarks[fromstep-1].pos.z < self.landmarks[tostep-1].pos.z:
                 direction = 'South'
             elif self.landmarks[fromstep-1].pos.z > self.landmarks[tostep-1].pos.z:
@@ -409,7 +416,9 @@ class TreasureHunt (Dungeon):
                 direction = '%sWest' % ( direction )
             landmark_name = self.landmarks[tostep-1].describe()
             p = weighted_choice(_directions).format(D=direction,L=landmark_name)
-            print "%d: %d, %d\n   %s" % ( tostep-1, self.landmarks[fromstep-1].pos.x, self.landmarks[fromstep-1].pos.z, p )
+            if self.args.debug:
+                print "%d: %d, %d, %d\n   %s" % ( tostep-1, self.landmarks[tostep-1].pos.x, 
+                    self.landmarks[tostep-1].pos.y, self.landmarks[tostep-1].pos.z, p )
             pages.append( p )
             if tostep == self.steps:
                 break
@@ -419,7 +428,8 @@ class TreasureHunt (Dungeon):
                 continue
 			# save book and restart 
             self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
-            print 'Placed an intermediate chest at step %d!' % ( tostep )
+            if self.args.debug:
+                print 'Placed an intermediate chest at step %d!' % ( tostep )
             pages.append( 'When ye reach this place, seek ye another clue %s' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
             if cfg.th_locked is True:
@@ -443,14 +453,16 @@ class TreasureHunt (Dungeon):
                     self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
             else:
                 self.landmarks[fromstep-1].addchestitem_tag(cluebook)
-            print 'Placed a clue chest at step %d!' % ( fromstep )
+            if self.args.debug:
+                print 'Placed a clue chest at step %d!' % ( fromstep )
             fromstep = tostep
             pages = []
             pages.append( self.dungeon_name )
 
         # write treasure
         self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
-        print 'Placed a treasure chest at step %d!' % ( tostep )
+        if self.args.debug:
+            print 'Placed a treasure chest at step %d!' % ( tostep )
         pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )
         if cfg.th_locked is True:
@@ -474,7 +486,9 @@ class TreasureHunt (Dungeon):
                 self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
         else:
             self.landmarks[fromstep-1].addchestitem_tag(cluebook)
-        print 'Placed a clue chest at step %d!' % ( fromstep )
+        if self.args.debug:
+            print 'Placed a clue chest at step %d!' % ( fromstep )
+        self.pm.set_complete()
 
     def renderlandmarks(self):
         '''Call render() on all landmarks to populate the block buffer'''

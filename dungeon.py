@@ -920,7 +920,7 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-    def addchest(self, loc, tier=-1, loot=[], name=''):
+    def addchest(self, loc, tier=-1, loot=[], name='', lock=None):
         level = loc.y / self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -931,7 +931,9 @@ class Dungeon (object):
             else:
                 tierf = loottable._maxtier - 1
             tier = max(1, int(tierf))
-            # print 'Adding chest: level',level+1,'tier',tier
+        elif tier >= loottable._maxtier:
+            tier = loottable._maxtier - 1            
+        #print 'Adding chest: level',level+1,'tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -939,6 +941,8 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         if (name != ''):
             root_tag['CustomName'] = nbt.TAG_String(name)
+        if (lock is not None and lock != ''):
+            root_tag['Lock'] = nbt.TAG_String(lock)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         if len(loot) == 0:
@@ -2344,16 +2348,17 @@ class Dungeon (object):
         This is used by TreasureHunt and Dungeon classes where a new name 
         is required.  It includes colours codes to make it unduplicateable
         using an anvil '''
-        _magic = '\u00A7'
+        _magic = u'\u00a7'
         _knamesA = (
             ('big', 1),
             ('small', 1),
             ('ornate', 1),
             ('long', 1),
-            ('rusty', 1),
+            ('worn', 1),
             ('complex', 1),
             ('secret', 1),
             ('lost', 1),
+            ('hidden', 1),
         )
         _kcolours = {
 			'black': '0',
@@ -2368,12 +2373,18 @@ class Dungeon (object):
 			'steel': '8',
         }
         _knames = (
-            ('{{owners}} {A} {{_magic}}{C}{{_magic}}r key', 5),
-            ('{{owners}} {{_magic}}{C}{{_magic}}r key', 1),
-            ('The {A} {{_magic}}{C}{{_magic}}r key of {{owner}}', 2),
+            (u'{M}r{owners} {A} {M}{CC}{C}{M}r key', 5),
+            (u'{M}r{owners} {M}{CC}{C}{M}r key', 1),
+            (u'{M}rThe {A} {M}{CC}{C}{M}r key of {owner}', 2),
         )
+        if self.owner.endswith("s"):
+            owners = self.owner + "'"
+        else:
+            owners = self.owner + "'s"
         A = weighted_choice(_knamesA)
-        C = _kcolours[ random.choice( _kcolours.keys() ) ]
-        name = weighted_choice(_knames).format(A=A,C=C)
+        C = random.choice( _kcolours.keys() ) 
+        CC = _kcolours[ C ]
+        name = weighted_choice(_knames).format(A=A,C=C,CC=CC,M=_magic,
+            owner=self.owner,owners=owners)
         return name
 	
