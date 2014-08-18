@@ -122,7 +122,7 @@ class TreasureHunt (Dungeon):
                 print 'Seed:', self.args.seed
 
             # Now we know the biome, we can setup a name generator
-            self.namegen = namegenerator.namegenerator(self.biome, theme='pirate')
+            self.namegen = namegenerator.namegenerator(None, theme='pirate')
             print 'Theme:', self.namegen.theme
             self.owner = self.namegen.genroyalname()
             print 'Owner:', self.owner
@@ -262,8 +262,8 @@ class TreasureHunt (Dungeon):
         # set. When recording the position, we'll center the chunk in this
         # area.
         offset = 0
-        if self.dinfo['fill_caves']:
-            offset = 2
+        #if self.dinfo['fill_caves']:
+        #    offset = 2
         for p, d in sorted_p:
             d_chunks = set()
             for x in xrange(1 + offset):
@@ -281,7 +281,7 @@ class TreasureHunt (Dungeon):
                         #print '  check - x,z = y %d,%d = %d'%(x,z,y)
                         while y>-64 and chunk.Blocks[x,z,y] not in heightmap_solids:
                             mat = chunk.Blocks[x,z,y]
-                            if mat == materials.Lava or mat == materials.Water:
+                            if mat == materials.Lava.val or mat == materials.Water.val:
                                 hasliquid = True
                             y = y - 1
                         #print '  check - x,z = y %d,%d = %d'%(x,z,y)
@@ -300,9 +300,7 @@ class TreasureHunt (Dungeon):
                     continue
                 if self.args.debug:
                     print 'Found: ', p
-                pos = Vec((p[0] + (offset / 2)) * self.room_size,
-                                    miny,
-                                    (p[1] + (offset / 2)) * self.room_size)
+                pos = Vec(p[0]<<4, miny, p[1]<<4)
                 if self.args.debug:
                     self.worldmap(world, positions, note = pos)
                 del(self.good_chunks[p])
@@ -315,12 +313,10 @@ class TreasureHunt (Dungeon):
         p = self.findlandmarklocation()
         if p is not None:
             self.position = p
+            self.position.y = -128
             if self.args.debug:
                 print 'Final: ', self.position
-            if self.bury():
-                # make it deeper!
-                self.position = self.position + Vec(0,-20,0)
-                return True
+            return True
         if self.args.debug:
             print 'No positions', p
         return False
@@ -378,7 +374,7 @@ class TreasureHunt (Dungeon):
             ( 'There do lie {L} to the {D}, and that is where ye must needs go next.', 1 ),
             ( 'Turn ye to the {D}, and march forrard \'til ye find {L}', 1),
         )
-        # Iterate through the landmarks from the end back.  
+        # Iterate through the landmarks from the end back.
         # Generate a clue book and possible key as we go as extra chest loot.
         # At each location, randomly either make a chest and store items or
         # continue one.
@@ -391,7 +387,7 @@ class TreasureHunt (Dungeon):
             print "Creating key %s" % ( keyname )
             chestkey = nbt.TAG_Compound()
             chestkey['Count'] = nbt.TAG_Byte(1)
-            chestkey['id'] = nbt.TAG_Short(280) # Change to string: minecraft:stick
+            chestkey['id'] = nbt.TAG_String('minecraft:stick') # ID 280
             chestkey['tag'] = nbt.TAG_Compound()
             chestkey['tag']['Unbreakable'] = nbt.TAG_Byte(1) 
             chestkey['tag']['display'] = nbt.TAG_Compound()
@@ -433,6 +429,7 @@ class TreasureHunt (Dungeon):
             self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
             if self.args.debug:
                 print 'Placed an intermediate chest at step %d!' % ( tostep )
+                print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
             pages.append( 'When ye reach this place, seek ye another clue %s' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
             if cfg.th_locked is True:
@@ -442,10 +439,10 @@ class TreasureHunt (Dungeon):
             cluebook_tag['author'] = nbt.TAG_String(self.owner)
             cluebook_tag['pages'] = nbt.TAG_List()
             for p in pages:
-                cluebook_tag['pages'].append( nbt.TAG_String(p) )
+                cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
             cluebook = nbt.TAG_Compound()
             cluebook['Count'] = nbt.TAG_Byte(1)
-            cluebook['id'] = nbt.TAG_Short(387) # change to String minecraft:book
+            cluebook['id'] = nbt.TAG_Short(387) # change to String minecraft:written_book
             cluebook['Damage'] = nbt.TAG_Short(0)
             cluebook['tag'] = cluebook_tag
             # write clue for this stage
@@ -465,7 +462,8 @@ class TreasureHunt (Dungeon):
         # write treasure
         self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
         if self.args.debug:
-            print 'Placed a treasure chest at step %d!' % ( tostep )
+            print 'Placed a treasure chest at step %d, tier %d!' % ( tostep, int(tostep/cfg.th_multiplier) )
+            print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
         pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )
         if cfg.th_locked is True:
@@ -475,7 +473,7 @@ class TreasureHunt (Dungeon):
         cluebook_tag['author'] = nbt.TAG_String(self.owner)
         cluebook_tag['pages'] = nbt.TAG_List()
         for p in pages:
-            cluebook_tag['pages'].append( nbt.TAG_String(p) )
+            cluebook_tag['pages'].append( nbt.TAG_String('"%s"'%(p)) )
         cluebook = nbt.TAG_Compound()
         cluebook['Count'] = nbt.TAG_Byte(1)
         cluebook['id'] = nbt.TAG_Short(387)
@@ -499,14 +497,14 @@ class TreasureHunt (Dungeon):
         for lm in self.landmarks:
             count -= 1
             self.pm.update_left(count)
-            loc = lm.pos - self.position + Vec(9,1,9)
+            loc = lm.offset + Vec(9,1,9)
             self.setblock(loc, materials.Spawner)
             entity = weighted_choice(cfg.master_landmark_mobs)
             root_tag = self.getspawnertags(entity)
             root_tag['id'] = nbt.TAG_String('MobSpawner')
-            root_tag['x'] = nbt.TAG_Int(loc.x)
-            root_tag['y'] = nbt.TAG_Int(loc.y)
-            root_tag['z'] = nbt.TAG_Int(loc.z)
+            root_tag['x'] = nbt.TAG_Int(loc.x )
+            root_tag['y'] = nbt.TAG_Int(loc.y )
+            root_tag['z'] = nbt.TAG_Int(loc.z )
             root_tag['Delay'] = nbt.TAG_Short(0)
             SpawnCount = cfg.SpawnCount
             SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities

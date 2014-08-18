@@ -19,12 +19,22 @@ class Clearing(object):
 
     # pos is the corner of the chunk containing the location, ground level,
     # in y-reversed voxels relative to parent.position
-    def __init__ (self, parent, pos):
+    def __init__ (self, parent, pos, biome=None):
         self.parent = parent
         self.pos = pos
         self.chestdesc = 'nowhere'
         self.offset = pos - parent.position
         self.offset.y = -self.offset.y
+        self.biome = biome
+        self.stone = materials.meta_stonedungeon
+        self.stonesteps = materials.StoneStairs
+        self.stoneslab = materials.StoneSlab
+        # If we're in a desert biome, change to sandstone
+        if biome is not None and ( biome == 2 or biome == 130 ):
+            self.stone = materials.Sandstone
+            self.stonesteps = materials.SandstoneStairs
+            self.stoneslab = materials.SandstoneSlab
+        # If we're in a mesa biome, change to red clay
 
     def placed(self):
         return [self.pos]
@@ -92,7 +102,12 @@ class Clearing(object):
             self.parent.setblock(p.up(4),materials.Air)
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
-            self.parent.setblock(p.down(3),mat,soft=True)    
+            self.parent.setblock(p.down(3),mat,soft=True)
+            i = 5
+            while chunk.Blocks[p.x & 15, p.z & 15, center.y - i] == materials.Wood.val:
+                # delete the tree
+              	self.parent.setblock(p.up(i), materials.Air)
+                i = i + 1
 
     def addcluechest (self, tier=0, name='', items=[], locked=None):
         # Add a chest to the map: this is called after rendering
@@ -131,8 +146,9 @@ class CircleOfSkulls(Clearing):
                  center.z - size/2 + 1 - self.parent.position.z) 
         p1 = p0.trans(size-1, 0, size-1)
         skulls = (
-            (0, 50), # Plain Skull
-            (1, 1),  # Wither Skull
+            (0, 100), # Plain Skull
+            (1, 5),  # Wither Skull
+            (3, 1),  # Steve Head
         )
         counter = 0
         for p in iterate_ellipse(p0, p1):
@@ -170,18 +186,18 @@ class SmallCottage(Clearing):
 		
         # create cottage
         for p in iterate_four_walls(Vec(6,0,6), Vec(11,0,10),2):
-            self.parent.setblock(self.offset + p, materials.meta_stonedungeon, soft=False)
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
         for p in iterate_plane(Vec(6,0,6), Vec(11,0,10)):
-            self.parent.setblock(self.offset + p, materials.meta_stonedungeon, soft=False)
-        self.parent.setblock(self.offset+Vec(6,-3,7),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(6,-3,8),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(6,-4,8),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(6,-3,9),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(6,-5,8),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(11,-3,7),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(11,-3,8),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(11,-4,8),materials.meta_stonedungeon)
-        self.parent.setblock(self.offset+Vec(11,-3,9),materials.meta_stonedungeon)
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
+        self.parent.setblock(self.offset+Vec(6,-3,7),self.stone)
+        self.parent.setblock(self.offset+Vec(6,-3,8),self.stone)
+        self.parent.setblock(self.offset+Vec(6,-4,8),self.stone)
+        self.parent.setblock(self.offset+Vec(6,-3,9),self.stone)
+        self.parent.setblock(self.offset+Vec(6,-5,8),self.stone)
+        self.parent.setblock(self.offset+Vec(11,-3,7),self.stone)
+        self.parent.setblock(self.offset+Vec(11,-3,8),self.stone)
+        self.parent.setblock(self.offset+Vec(11,-4,8),self.stone)
+        self.parent.setblock(self.offset+Vec(11,-3,9),self.stone)
         # doorway
         self.parent.setblock(self.offset+Vec(9,-1,10),materials.Air)
         self.parent.setblock(self.offset+Vec(9,-2,10),materials.Air)
@@ -189,7 +205,7 @@ class SmallCottage(Clearing):
         self.parent.setblock(self.offset+Vec(7,-2,10),materials.Air)
         # fireplace
         self.parent.setblock(self.offset+Vec(6,-1,8),materials.Air)
-        self.parent.setblock(self.offset+Vec(5,-1,8),materials.meta_stonedungeon)
+        self.parent.setblock(self.offset+Vec(5,-1,8),self.stone)
 
         # add bed and table
         self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.BedBlock,3)
@@ -214,11 +230,11 @@ class SmallCottage(Clearing):
                 # if abandoned, add cobwebs (parent function) voxels relative
                 self.parent.cobwebs(self.offset + Vec(8,0,8) + Vec(-2,0,2), self.offset + Vec(8,0,8) + Vec(3,-4,-2))
             else:
-                # if not abandoned, add torches inside (parent fn?)
+                # if not abandoned, add torches inside
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(2,-3,0), materials.Torch, 2)
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(-1,-3,0), materials.Torch, 1)
         # chimney
-        self.parent.setblock(self.offset+Vec(6,-5,8),materials.meta_stonedungeon)
+        self.parent.setblock(self.offset+Vec(6,-5,8),self.stone)
 
     
     def describe (self):
@@ -234,7 +250,7 @@ class SmallCottage(Clearing):
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
 
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
@@ -261,7 +277,7 @@ class SignPost(Clearing):
             chunk = self.parent.world.getChunk(self.pos.x>>4, self.pos.z>>4)
             mat = materials.materialById(chunk.Blocks[8,8,self.pos.y])
             if mat is materials.Air:
-                self.parent.setblock(self.offset + Vec(8, 0, 8), materials.meta_stonedungeon,0)
+                self.parent.setblock(self.offset + Vec(8, 0, 8), self.stone,0)
         except:
             print 'Cannot identify central material'
         self.parent.setblock(self.offset + Vec(8, -1, 8), materials.SignPost, random.randint(0,7))
@@ -274,14 +290,30 @@ class SignPost(Clearing):
         # Add a chest to the map: this is called after rendering
         # only one possible location (at varying depth) in this feature
         # position is y-reversed voxels relative to pos
-        self.chest = self.offset + Vec( 8, random.randint(1,3) , 8 )
-        self.chestdesc = "below"
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        if random.randint(0,100) < 5:
+            self.chest = self.offset + Vec( 8, random.randint(1,2) , 8 )
+            self.chestdesc = "right below"
+        else:
+            xoff = random.randint(1,6)
+            zoff = random.randint(1,6)
+            if random.randint(0,1) < 1:
+                ew = 'East'
+            else:
+                ew = 'West'
+                xoff = -xoff
+            if random.randint(0,1) < 1:
+                ns = 'South'
+            else:
+                ns = 'North'
+                zoff = -zoff
+            self.chest = self.offset + Vec( 8 + xoff, random.randint(1,2), 8 + zoff )
+            self.chestdesc = "%d steps to the %s, then %d steps to the %s" % ( xoff, ew, zoff, ns )
+        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(9,-1,9)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
 class Monolith(Clearing):
@@ -293,20 +325,20 @@ class Monolith(Clearing):
         size = 3
         self.addclearing(center,size)
 
-        self.parent.setblock(self.offset + Vec(8, -1, 8), materials.meta_stonedungeon)
+        self.parent.setblock(self.offset + Vec(8, -1, 8), self.stone)
         for p in iterate_plane(Vec(7,-1,7), Vec(9,-1,9)):
-            self.parent.setblock(self.offset + p, materials.meta_stonedungeon)
+            self.parent.setblock(self.offset + p, self.stone)
         h = -random.randint(7,14)
         for p in iterate_plane(Vec(8,-2,8), Vec(8,h,8)):
-            self.parent.setblock(self.offset + p, materials.meta_stonedungeon)
-        self.parent.setblock(self.offset + Vec(8,-2,7), materials.StoneStairs,2)
-        self.parent.setblock(self.offset + Vec(9,-2,7), materials.StoneStairs,2)
-        self.parent.setblock(self.offset + Vec(7,-2,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(8,-2,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(9,-2,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(7,-2,8), materials.StoneStairs,0)
-        self.parent.setblock(self.offset + Vec(9,-2,8), materials.StoneStairs,1)
-        self.parent.setblock(self.offset + Vec(7,-2,7), materials.StoneStairs,2)
+            self.parent.setblock(self.offset + p, self.stone)
+        self.parent.setblock(self.offset + Vec(8,-2,7), self.stonesteps,2)
+        self.parent.setblock(self.offset + Vec(9,-2,7), self.stonesteps,2)
+        self.parent.setblock(self.offset + Vec(7,-2,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(8,-2,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(9,-2,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(7,-2,8), self.stonesteps,0)
+        self.parent.setblock(self.offset + Vec(9,-2,8), self.stonesteps,1)
+        self.parent.setblock(self.offset + Vec(7,-2,7), self.stonesteps,2)
         self.parent.setblock(self.offset + Vec(8,h-1,8), materials.CobblestoneWall)
 
     def describe (self):
@@ -325,7 +357,7 @@ class Monolith(Clearing):
         p = random.choice(_position)
         self.chest = self.offset + Vec( 8, 0 , 8 ) + p[1]
         self.chestdesc = p[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
@@ -343,18 +375,18 @@ class Memorial(Clearing):
         size = 3
         self.addclearing(center,size)
 
-        self.parent.setblock(self.offset + Vec(8, -4, 8), materials.meta_stonedungeon)
+        self.parent.setblock(self.offset + Vec(8, -4, 8), self.stone)
         for p in iterate_plane(Vec(7,-1,8), Vec(9,-3,8)):
-            self.parent.setblock(self.offset + p, materials.meta_stonedungeon)
-        self.parent.setblock(self.offset + Vec(7,-4,8), materials.StoneStairs,0)
-        self.parent.setblock(self.offset + Vec(9,-4,8), materials.StoneStairs,1)
-        self.parent.setblock(self.offset + Vec(6,-1,8), materials.StoneStairs,0)
-        self.parent.setblock(self.offset + Vec(10,-1,8), materials.StoneStairs,1)
-        self.parent.setblock(self.offset + Vec(6,-1,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(7,-1,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(8,-1,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(9,-1,9), materials.StoneStairs,3)
-        self.parent.setblock(self.offset + Vec(10,-1,9), materials.StoneStairs,3)
+            self.parent.setblock(self.offset + p, self.stone)
+        self.parent.setblock(self.offset + Vec(7,-4,8), self.stonesteps,0)
+        self.parent.setblock(self.offset + Vec(9,-4,8), self.stonesteps,1)
+        self.parent.setblock(self.offset + Vec(6,-1,8), self.stonesteps,0)
+        self.parent.setblock(self.offset + Vec(10,-1,8), self.stonesteps,1)
+        self.parent.setblock(self.offset + Vec(6,-1,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(7,-1,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(8,-1,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(9,-1,9), self.stonesteps,3)
+        self.parent.setblock(self.offset + Vec(10,-1,9), self.stonesteps,3)
 
         picof = 'a picture'
         painting = self.parent.inventory.mapstore.add_painting(random.choice(self.parent.inventory.paintlist))
@@ -382,8 +414,8 @@ class Memorial(Clearing):
         _position = (
             ( 'buried behind', Vec(0,random.randint(1,3),-1)),
             ( 'buried in front', Vec(0,random.randint(1,3),2)),
-            ( 'buried to the left', Vec(3,random.randint(1,3),0)),
-            ( 'buried to the right', Vec(-3,random.randint(1,3),0)),
+            ( 'buried to the right', Vec(3,random.randint(1,3),0)),
+            ( 'buried to the left', Vec(-3,random.randint(1,3),0)),
         )
         p = random.choice(_position)
         self.chest = self.offset + Vec( 8, 0 , 8 ) + p[1]
@@ -410,12 +442,12 @@ for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass):
     if issubclass(obj, Clearing):
         _landmarks[obj._name] = obj
 
-def new (name, parent, pos):
+def new (name, parent, pos, biome=None):
     '''Return a new instance of the feature of a given name. Supply the parent
     treasurehunt object.'''
     if name in _landmarks.keys():
-        return _landmarks[name](parent,pos)
-    return Blank(parent,pos)
+        return _landmarks[name](parent,pos,biome)
+    return Clearing(parent,pos,biome)
     
 def pickLandmark(thunt, pos,
              landmark_list=None,
@@ -435,7 +467,10 @@ def pickLandmark(thunt, pos,
             landmark_list = weighted_shuffle(cfg.master_landmarks[biome])
         except KeyError:
             landmark_list = weighted_shuffle(cfg.default_landmarks)
+        if thunt.args.debug:
+            print "Landmark biome ID is %d" % biome
     else:
+        biome = None
         landmark_list = weighted_shuffle(landmark_list)
     name = ''
     # Cycle through the weighted shuffled list of names.
@@ -453,4 +488,4 @@ def pickLandmark(thunt, pos,
         name = default
     # print 'picked:', name
     # Return the landmark instance 
-    return new(name, thunt, pos)
+    return new(name, thunt, pos, biome)
