@@ -10,16 +10,25 @@ import loottable
 _shops = []
 
 class ShopInfo(object):
-    def __init__(self, name, profession = 0, trades = []):
+    def __init__(self, name, profession = 0, trades = [], free_sample = 'air'):
         self.name = str(name)
         self.profession = int(profession)
+        self.free_sample = free_sample
         self.trades = []
         for t in trades:
             self.AddTrade(t)
-        
+
+    def prepareShop(self):
+        trades = []
+        for t in self.trades:
+            if random.randint(1, 100) <= t.chance:
+                t.prepareTrade()
+                trades.append(t)
+        self.trades = trades
+
     def addTrade(self, trade):
         self.trades.append(trade)
-        
+
     def __str__ (self):
         return 'Name: %s, Prof: %d, Trades: %s'%(
             self.name,
@@ -30,18 +39,24 @@ class TradeInfo(object):
     def __init__(self, chance, max_uses, output, input, input2 = None, limited = False):
         self.chance = int(chance)
         self.max_uses = int(max_uses)
-        self.output = self.stringToLoot(output)
-        self.input  = self.stringToLoot(input)
-        self.input2 = self.stringToLoot(input2)
+        self.output = output
+        self.input  = input
+        self.input2 = input2
         self.limited = limited
         
+    def prepareTrade(self):
+        self.outputLoot = self.stringToLoot(self.output)
+        self.inputLoot  = self.stringToLoot(self.input)
+        self.input2Loot = self.stringToLoot(self.input2)
+
     def stringToLoot(self,inloot):
         if inloot == None:
             return None
         loot = inloot.lower().split(',')
-        item = items.byName(loot[0])
+        i = random.choice(loot[0].split('/'))
+        item = items.byName(i)
         if item == None:
-            sys.exit('%s not found'% loot[0])
+            sys.exit('%s not found'% i)
         if len(loot) < 2:
             count = 1
         else:
@@ -99,7 +114,8 @@ def LoadShop(filename):
     
     name = parser.get('shop', 'name')
     profession = parser.get('shop', 'profession_id')
-    shop = ShopInfo(name,profession)
+    free_sample = parser.get('shop', 'free_sample')
+    shop = ShopInfo(name,profession,free_sample=free_sample)
     maxtrade = 1
     while (parser.has_section('trade%d' % maxtrade)):
         chance = parser.get('trade%d' % maxtrade, 'chance')
@@ -138,10 +154,5 @@ def Load(dir_shops):
 # A Random shop with random trades
 def rollShop():
     shop = copy(random.choice(_shops))
-    trades = []
-    # Roll random trades
-    for t in shop.trades:
-        if random.randint(1, 100) <= t.chance:
-            trades.append(t)
-    shop.trades = trades
+    shop.prepareShop()
     return shop

@@ -1323,14 +1323,170 @@ class SecretShop(SecretRoom):
         dungeon = self.parent.parent
         sb = dungeon.setblock
         blocks = dungeon.blocks
-        
         s = shop.rollShop()
+        shopkeeper_name = dungeon.namegen.genname()
+        name_post = "'" if shopkeeper_name.endswith("s") else "'s"
 
-        pos = self.c1 + Vec(3, -2, 3)
+        # We also a frame of reference for the back left corner
+        # (bl) and vectors for crossing the room (rt) and (fw) so we can draw
+        # everything relative to the hallway orientation.
+        # Hall on North side
+        if self.direction == 0:
+            bl = self.c3
+            rt = Vec(-1, 0, 0)
+            fw = Vec(0, 0, -1)
+            orient = {'L':3,'R':2,'U':4,'D':5}
+            frame_or = 'N'
+        # Hall on East side
+        if self.direction == 1:
+            bl = Vec(self.c1.x, self.c1.y, self.c3.z)
+            rt = Vec(0, 0, -1)
+            fw = Vec(1, 0, 0)
+            orient = {'L':4,'R':5,'U':2,'D':3}
+            frame_or = 'E'
+        # Hall on South side
+        if self.direction == 2:
+            bl = self.c1
+            rt = Vec(1, 0, 0)
+            fw = Vec(0, 0, 1)
+            orient = {'L':2,'R':3,'U':5,'D':4}
+            frame_or = 'S'
+        # Hall on West Side
+        if self.direction == 3:
+            bl = Vec(self.c3.x, self.c1.y, self.c1.z)
+            rt = Vec(0, 0, 1)
+            fw = Vec(-1, 0, 0)
+            orient = {'L':5,'R':4,'U':3,'D':2}
+            frame_or = 'W'
+
+        # materials by profession id
+        if (s.profession == 0): # Farmer
+            upperslab = materials.UpperOakWoodSlab
+            pillers = materials.Wood
+            floor = materials.BirchWoodPlanks
+            banner_cols = [15,1]
+        elif (s.profession == 1): # Librarian
+            upperslab = materials.UpperDarkOakWoodSlab
+            pillers = materials.DarkOak
+            floor = materials.JungleWoodPlanks
+            banner_cols = [15,4]
+        elif (s.profession == 2): # Priest
+            upperslab = materials.UpperAcaciaWoodSlab
+            pillers = materials.AcaciaWoodPlanks
+            floor = materials.NetherBrick
+            banner_cols = [0,14]
+        elif (s.profession == 3): # Blacksmith
+            upperslab = materials.UpperStoneSlab
+            pillers = materials.ChiseledStoneBrick
+            floor = materials.PolishedGranite
+            banner_cols = [15,2]
+        else: # Butcher (4 and future)
+            upperslab = materials.UpperQuartzSlab
+            pillers = materials.PillarQuartzBlock
+            floor = materials.PolishedDiorite
+            banner_cols = [15,0]
+       
+        # Floor
+        for q in iterate_cube(self.c1, self.c3):
+            sb(q, floor)
+
+        # Ceiling
+        for q in iterate_cube(self.c1.up(4), self.c3.up(4)):
+            sb(q, floor)
+
+        # Pillers
+        pillers_loc = [bl+(rt*5)+(fw*5),bl+rt+(fw*5),bl+(rt*5)+fw]
+        for p in pillers_loc:
+            for i in range(1,4):
+                sb(p.up(i), pillers)
+
+        # Banners
+        banner_pos = [[bl.up(3)+(rt*6)+(fw*5),orient['U']],
+                      [bl.up(3)+(rt*6)+(fw*1),orient['U']],
+                      [bl.up(3)+(rt*8)+(fw*1),orient['D']],
+                      [bl.up(3)+(rt*5)+(fw*6),orient['R']],
+                      [bl.up(3)+(rt*1)+(fw*6),orient['R']],
+                      [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
+        for b in banner_pos:
+            sb(b[0], materials.WallBanner,b[1])
+            dungeon.addtileentity(get_tile_entity_tags(
+                                    eid='Banner',
+                                    Pos=b[0],
+                                    Base=banner_cols[0],
+                                    Patterns=[[banner_cols[1],'ss']]))
+
+        # Desks
+        for q in iterate_cube(bl.up(1)+rt+(fw*6), bl.up(1)+rt+(fw*8)):
+            sb(q, upperslab)
+        for q in iterate_cube(bl.up(1)+(rt*6)+fw, bl.up(1)+(rt*8)+fw):
+            sb(q, upperslab)
+        # Ender chest
+        p = bl.up(2)+rt+(fw*7)
+        sb(p, materials.EnderChest, orient['U'])
+        dungeon.addtileentity(get_tile_entity_tags(
+                                    eid='EnderChest',
+                                    Pos=p))
+                                    
+        # Free sample!
+        p = bl.up(3)+(rt*7)
+        dungeon.addentity(
+            get_entity_other_tags("ItemFrame",
+                                  Pos=p,
+                                  Direction=frame_or,
+                                  ItemTags=dungeon.inventory.buildFrameItemTag(s.free_sample.lower())
+                                  )
+        )
+        
+        # Workshop blocks
+        sb(bl.up(1)+(rt*1)+(fw*1), materials.Furnace, orient['U'])
+        sb(bl.up(1)+(rt*1)+(fw*2), materials.CraftingTable)
+
+        # Top of booth
+        for q in iterate_cube(bl.up(3)+(rt*5)+(fw*4), bl.up(3)+(rt*5)+(fw*2)):
+            sb(q, upperslab)
+        for q in iterate_cube(bl.up(3)+(rt*4)+(fw*5), bl.up(3)+(rt*2)+(fw*5)):
+            sb(q, upperslab)
+        # Bottom of booth
+        for q in iterate_cube(bl.up(1)+(rt*5)+(fw*4), bl.up(1)+(rt*5)+(fw*2)):
+            sb(q, upperslab)
+        for q in iterate_cube(bl.up(1)+(rt*4)+(fw*5), bl.up(1)+(rt*2)+(fw*5)):
+            sb(q, upperslab)
+            
+        # Desk plant
+        sb(bl.up(2)+(rt*2)+(fw*5), materials.FlowerPot, random.randrange(1, 12))
+            
+        # lights
+        redstonepos = ([1,0],[7,0],[0,7],[9,8],[5,5])
+        lamppos =     ([1,1],[7,1],[1,7],[8,8],[6,5],[5,6])
+        for p in redstonepos:
+            sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneTorchOn, 5)
+        for p in lamppos:
+            sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneLampOn)
+        
+        
+        signtext = s.name.replace('{{name}}', shopkeeper_name+name_post).split(' ')
+        if (len(signtext) == 0):
+            signtext = ['','','Shop','']
+        elif (len(signtext) == 1):
+            signtext = ['','',signtext[0],'']
+        elif (len(signtext) == 2):
+            signtext = ['',signtext[0],signtext[1],'']
+        elif (len(signtext) == 3):
+            signtext = ['',signtext[0],signtext[1],signtext[2]]
+        
+        spos = bl.up(3)+(rt*6)+(fw*3)
+        sb(spos, materials.WallSign, orient['U'])
+        dungeon.addsign(spos,signtext[0],signtext[1],signtext[2],signtext[3])
+        spos = bl.up(3)+(rt*3)+(fw*6)
+        sb(spos, materials.WallSign, orient['R'])
+        dungeon.addsign(spos,signtext[0],signtext[1],signtext[2],signtext[3])
+
+        # Create the shopkeeper
+        pos = bl.up(1) +(rt*3)+(fw*3)
         tags = get_entity_mob_tags('Villager',
                                    Pos=pos,
                                    Profession=s.profession,
-                                   CustomName=dungeon.namegen.genname())
+                                   CustomName=shopkeeper_name)
         # Setting the CareerLevel to a value higher than Career will
         # prevent new trades from being added, according to the wiki
         tags['Career'] = nbt.TAG_Int(1)
@@ -1347,10 +1503,10 @@ class SecretShop(SecretRoom):
                 rec['uses'] = nbt.TAG_Int(2147483647-trade.max_uses)
             else:
                 rec['maxUses'] = nbt.TAG_Int(trade.max_uses)
-            rec['buy'] = dungeon.inventory.buildItemTag(trade.input)
-            rec['sell'] = dungeon.inventory.buildItemTag(trade.output)
+            rec['buy'] = dungeon.inventory.buildItemTag(trade.inputLoot)
+            rec['sell'] = dungeon.inventory.buildItemTag(trade.outputLoot)
             if trade.input2 != None:
-                rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2)
+                rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2Loot)
             tags['Offers']['Recipes'].append(rec)
         dungeon.addentity(tags)
         return
