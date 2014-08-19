@@ -1261,7 +1261,7 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
                           ItemRotation=0, Motive='Kebab', Pos=Vec(0, 0,
                           0), Damage=0, DisabledSlots=0, Invisible=0,
                           NoBasePlate=0, NoGravity=0, ShowArms=0,
-                          Small=0, **kwargs):
+                          Small=0, Health=None, Pose=None, **kwargs):
     '''Returns an nbt.TAG_Compound for "other" type entities. These
     include EnderCrystal, EyeOfEnderSignal, ItemFrame,
     Painting, LeashKnot, and ArmorStand. Chunk offsets will be
@@ -1286,6 +1286,12 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
         root_tag['NoGravity'] = nbt.TAG_Byte(NoGravity)
         root_tag['ShowArms'] = nbt.TAG_Byte(ShowArms)
         root_tag['Small'] = nbt.TAG_Byte(Small)
+        if Health is not None:
+            root_tag['Health'] = nbt.TAG_Short(Health)
+        else:
+            root_tag['Health'] = nbt.TAG_Short(20)
+        if Pose is not None:
+            root_tag['Pose'] = Pose
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
     # painting/ItemFrame is attached to, and Pos is the actual position in the
