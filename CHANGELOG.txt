@@ -1,7 +1,13 @@
 v0.14.0 - 
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
-	
+
+   * New command mode: genpoi
+     This will generate Minecraft Overviewer point of interest data for your
+     maps. (sshipway)
+
+   * New option: --quiet suppresses many progress outputs. (sshipway)
+
    * New Floors: RadialRug, BrokenRadialRug, RadialClay, BrokenRadialClay,
      StoneTile, and BrokenStoneTile.
      (huderlem, orphu)
@@ -30,6 +36,20 @@ v0.14.0 -
    * Potion effects and particles can now be hidden in potions.txt. (JiFish)
    
    * Text formatting is now possible in books and lore text. (JiFish)
+
+   * Forges now have a loot table and can contain global items. (orphu)
+
+   * Books and paintings can appear in studies. (JiFish)
+
+   * Hallways use new door types. (JiFish)
+
+   * Additional columns in throne rooms. (orphu)
+
+   * Pyramids use red sandstone in mesa biomes. (JiFish)
+
+   * Fancied up Barrows with corpses. (orphu)
+
+   * Added many 1.8 items and materials (various)
 
 v0.13.0 - 10/26/2013
 

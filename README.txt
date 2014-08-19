@@ -4,7 +4,9 @@ MCDungeon will create a procedurally generated dungeon in a preexisting
 Minecraft map. It is not yet feature complete, but can already generate
 dungeons with quite a bit of variety. 
 
-http://mcdungeon.bubblemod.org
+Website: http://mcdungeon.bubblemod.org
+
+Documentation: http://mcdungeon-docs.bubblemod.org
 
 CURRENT FEATURES:
 
@@ -154,5 +156,5 @@ ideas!  (in no particular order)
 BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
 Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
 SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
-janxious, compgurusteve, Meindratheal, ChosenLama, JiFish, djchrisblue.
-
+janxious, compgurusteve, Meindratheal, ChosenLama, JiFish, djchrisblue,
+sshipway.

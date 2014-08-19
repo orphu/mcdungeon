@@ -6,6 +6,7 @@ import random
 import re
 import sys
 import time
+import uuid
 
 import numpy
 
@@ -871,6 +872,7 @@ def encodeDungeonInfo(dungeon, version):
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String('Chest')
     root_tag['CustomName'] = nbt.TAG_String('MCDungeon Data Library')
+    root_tag['Lock'] = nbt.TAG_String(str(uuid.uuid4()))
     root_tag['x'] = nbt.TAG_Int(0)
     root_tag['y'] = nbt.TAG_Int(0)
     root_tag['z'] = nbt.TAG_Int(0)
@@ -945,7 +947,7 @@ def decodeDungeonInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and book['id'] != 'minecraft:written_book')
+            (book['id'] != 387 and 'minecraft:written_book' not in book['id'])
         ):
             #print 'Non-book found in cache chest: %s' % ( book['id'] )
             continue
@@ -1000,39 +1002,20 @@ def decodeTHuntInfo(lib):
     return items
 
 # Some entity helpers
+
 def get_tile_entity_tags(
-        eid='Chest',
-        Pos=Vec(
-            0,
-            0,
-            0),
-    CustomName='',
-    Lock='',
-    Levels=0,
-    Primary=0,
-    Secondary=0,
-    BrewTime=0,
-    OutputSignal=0,
-    Command='',
-    SuccessCount=0,
-    LastOutput='',
-    Item='',
-    Data=0,
-    BurnTime=0,
-    CookTime=0,
-    TransferCooldown=0,
-    note=0,
-    Record=0,
-    RecordItem='',
-    Text1='',
-    Text2='',
-    Text3='',
-    Text4='',
-    SkullType=0,
-    ExtraType='',
-        Rot=0):
-    '''Returns an nbt.TAG_Compound containing tags for tile entities'''
-    # Convert Vec types so we can use either
+                         eid='Chest', Pos=Vec( 0, 0, 0),
+                         CustomName=None, Lock='', Base=0,
+                         Patterns=(), Levels=0, Primary=0,
+                         Secondary=0, BrewTime=0, OutputSignal=0,
+                         Command='', SuccessCount=0, LastOutput='',
+                         Item='', Data=0, BurnTime=0, CookTime=0,
+                         CookTimeTotal=0, TransferCooldown=0,
+                         note=0, Record=0, RecordItem=None, Text1='',
+                         Text2='', Text3='', Text4='', SkullType=0,
+                         ExtraType='', Rot=0):
+    '''Returns an nbt.TAG_Compound containing tags for tile
+    entities''' # Convert Vec types into a tuple so we can use either.
     if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
 
@@ -1041,10 +1024,29 @@ def get_tile_entity_tags(
     root_tag['x'] = nbt.TAG_Int(Pos[0])
     root_tag['y'] = nbt.TAG_Int(Pos[1])
     root_tag['z'] = nbt.TAG_Int(Pos[2])
-    root_tag['CustomName'] = nbt.TAG_String(CustomName)
-    root_tag['Lock'] = nbt.TAG_String(Lock)
 
-    if eid == 'Beacon':
+    if (eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'Trap', 'Cauldron',
+                'EnchantTable', 'Control') and CustomName is not None):
+        root_tag['CustomName'] = nbt.TAG_String(CustomName)
+
+    if eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'Trap', 'Cauldron',
+               'Beacon'):
+        root_tag['Lock'] = nbt.TAG_String(Lock)
+
+    if eid is 'Banner':
+        root_tag['Base'] = nbt.TAG_Int(Base)
+        root_tag['Patterns'] = nbt.TAG_List()
+        # Supply a list of patterns as a list of tuples. Info is here
+        # http://www.reddit.com/r/Minecraft/comments/2bhz8o/banner_nbt_a_quick_guide/
+        # For example, red vertical stripes, followed by a yellow skull:
+        # Pattern = ((1, 'ss'),(11, 'sku'))
+        for p in Patterns:
+            q = nbt.TAG_Compound()
+            q['Color'] = nbt.TAG_Int(p[0])
+            q['Pattern'] = nbt.TAG_String(p[1])
+            root_tag['Patterns'].append(q)
+
+    if eid is 'Beacon':
         root_tag['Levels'] = nbt.TAG_Int(Levels)
         root_tag['Primary'] = nbt.TAG_Int(Primary)
         root_tag['Secondary'] = nbt.TAG_Int(Secondary)
@@ -1052,27 +1054,45 @@ def get_tile_entity_tags(
     if eid in ('Cauldron', 'Chest', 'Furnace', 'Hopper', 'Trap'):
         root_tag['Items'] = nbt.TAG_List()
 
-    if eid == 'Cauldron':
+    if eid is 'Cauldron':
         root_tag['BrewTime'] = nbt.TAG_Int(BrewTime)
 
     if eid == 'Comparator':
         root_tag['OutputSignal'] = nbt.TAG_Int(OutputSignal)
 
-    if eid == 'Control':
+    if eid is 'Control':
         root_tag['Command'] = nbt.TAG_String(Command)
         root_tag['SuccessCount'] = nbt.TAG_Int(SuccessCount)
         root_tag['LastOutput'] = nbt.TAG_String(LastOutput)
 
-    if eid == 'FlowerPot':
+    if eid is 'FlowerPot':
         root_tag['Item'] = nbt.TAG_String(Item)
+        root_tag['Data'] = nbt.TAG_Int(Data)
 
-    if eid == 'Sign':
+    if eid is 'Furnace':
+        root_tag['BurnTime'] = nbt.TAG_Short(BurnTime)
+        root_tag['CookTime'] = nbt.TAG_Short(CookTime)
+        root_tag['CookTimeTotal'] = nbt.TAG_Short(CookTimeTotal)
+
+    if eid is 'Hopper':
+        root_tag['TransferCooldown'] = nbt.TAG_Int(TransferCooldown)
+
+    if eid is 'Music':
+        root_tag['note'] = nbt.TAG_Byte(note)
+
+    if eid == 'RecordPlayer':
+        root_tag['Record'] = nbt.TAG_Int(Record)
+        # Should be a full nbt.TAG_Compound item
+        if RecordItem is not None:
+            root_tag['RecordItem'] = RecordItem
+
+    if eid is 'Sign':
         root_tag['Text1'] = nbt.TAG_String(Text1)
         root_tag['Text2'] = nbt.TAG_String(Text2)
         root_tag['Text3'] = nbt.TAG_String(Text3)
         root_tag['Text4'] = nbt.TAG_String(Text4)
 
-    if eid == 'Skull':
+    if eid is 'Skull':
         root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
         root_tag['ExtraType'] = nbt.TAG_String(ExtraType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
@@ -1084,9 +1104,11 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
                          Motion=Vec(0, 0, 0), Rotation=Vec(0, 0, 0),
                          FallDistance=0.0, Fire=-1, Air=300, OnGround=0,
                          Dimension=0, Invulnerable=0, PortalCooldown=0,
-                         CustomName=''):
+                         UUIDMost=None, UUIDLeast = None,
+                         CustomName='', CustomNameVisible=0, Silent=0,
+                         Riding=None):
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
-    # Convert Vec types so we can use either
+    # Convert Vec types into a tuple so we can use either
     if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
 
@@ -1110,23 +1132,49 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
     root_tag['Dimension'] = nbt.TAG_Int(Dimension)
     root_tag['Invulnerable'] = nbt.TAG_Byte(Invulnerable)
     root_tag['PortalCooldown'] = nbt.TAG_Int(PortalCooldown)
+    # Generate a UUID if one was not supplied. Most and Least are the high and
+    # low 64 bit of the UUID 128 bit number. They are stored as signed 64 bit
+    # integers.
+    if (UUIDMost is None or UUIDLeast is None):
+        u = uuid.uuid4().int
+        UUIDMost = u>>64
+        if (UUIDMost & 0x8000000000000000):
+            UUIDMost = -0x10000000000000000 + UUIDMost
+        UUIDLeast = u & (1<<64)-1
+        if (UUIDLeast & 0x8000000000000000):
+            UUIDLeast = -0x10000000000000000 + UUIDLeast
+    root_tag['UUIDMost'] = nbt.TAG_Long(UUIDMost)
+    root_tag['UUIDLeast'] = nbt.TAG_Long(UUIDLeast)
     root_tag['CustomName'] = nbt.TAG_String(CustomName)
+    root_tag['CustomNameVisible'] = nbt.TAG_Byte(CustomNameVisible)
+    root_tag['Silent'] = nbt.TAG_Byte(Silent)
+    # Riding should be supplied as a TAG_Compound of another entity.
+    # If it was supplied, we use it directly here.
+    if Riding is not None:
+        root_tag['Riding'] = Riding
     return root_tag
 
 
 def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
                         HurtTime=0, DeathTime=0, CanPickUpLoot=0,
-                        PersistenceRequired=0, CustomNameVisible=0,
-                        InLove=0, Age=0, Owner='', Sitting=0, Size=4,
+                        NoAI=0, PersistenceRequired=0, InLove=0, Age=0,
+                        Owner='', Sitting=0, Size=3, wasOnGround=1,
                         BatFlags=0, powered=0, ExplosionRadius=3,
-                        Fuse=30, carried=0, carriedData=0, ExplosionPower=1,
-                        CatType=0, Saddle=0, Sheared=0, Color=0,
-                        SkeletonType=0, Invul=0, Angry=0, CollarColor=14,
-                        Profession=5, Riches=0, PlayerCreated=0, IsVillager=0,
-                        IsBaby=0, ConversionTime=-1, Anger=0,
-                        **kwargs):
+                        Fuse=30, ignited=0, carried=0, carriedData=0,
+                        EndermiteCount=0, Lifetime=0, Bred=0,
+                        ChestedHorse=0, EatingHaystack=0, Tame=0,
+                        Temper=0, Type=0, Variant=None, OwnerUUID=None,
+                        ExplosionPower=1, Elder=0, CatType=0, Saddle=0,
+                        RabbitType=None, MoreCarrotTicks=0, Sheared=0,
+                        Color=0, SkeletonType=0, Invul=0, Angry=0,
+                        CollarColor=14, Profession=None, Riches=0,
+                        Career=None, CareerLevel=1, Willing=0,
+                        PlayerCreated=0, IsVillager=0, IsBaby=0,
+                        ConversionTime=-1, CanBreakDoors=0, Anger=0,
+                        Leashed=0, Leash=None, **kwargs):
     '''Returns an nbt.TAG_Compound for a specific mob id'''
 
+    # Be nice, and figure out the health of common entities for us.
     if Health is None:
         if eid == 'Chicken':
             Health = 4
@@ -1136,6 +1184,7 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
         ):
             Health = 6
         elif eid in (
+            'Endermite',
             'Sheep',
             'Silverfish'
         ):
@@ -1150,12 +1199,15 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             'MushroomCow',
             'Ozelot',
             'Pig',
+            'Rabbit',
             'Squid',
             'Ghast'
         ):
             Health = 10
         elif eid in ('CaveSpider'):
             Health = 12
+        elif eid in ('EntityHorse'):
+            Health = 15
         elif eid in ('Spider'):
             Health = 16
         elif eid in (
@@ -1168,6 +1220,8 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             Health = 20
         elif eid == 'Witch':
             Health = 26
+        elif eid == 'Guardian':
+            Health = 30
         elif eid == 'Enderman':
             Health = 40
         elif eid in (
@@ -1175,7 +1229,10 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             'LavaSlime'
         ):
             Health = Size * Size
-        elif eid == 'VillagerGolem':
+        elif eid in (
+            'Giant',
+            'VillagerGolem'
+        ):
             Health = 100
         elif eid == 'EnderDragon':
             Health = 200
@@ -1205,17 +1262,33 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
     root_tag['DropChances'].append(nbt.TAG_Float(0.05))
 
     root_tag['CanPickUpLoot'] = nbt.TAG_Byte(CanPickUpLoot)
+    root_tag['NoAI'] = nbt.TAG_Byte(NoAI)
     root_tag['PersistenceRequired'] = nbt.TAG_Byte(PersistenceRequired)
-    root_tag['CustomNameVisible'] = nbt.TAG_Byte(CustomNameVisible)
+    root_tag['Leashed'] = nbt.TAG_Byte(Leashed)
+
+    # If Leashed, figure out what we are leashed to. Leash can be provided as a
+    # world coordinate of a block (Vec ot tuple), or another entity.
+    if (Leashed == 1 and Leash is not None):
+        root_tag['Leash'] = nbt.TAG_Compound()
+        # Convert to tuple if Vec.
+        if isinstance(Leash, Vec):
+            Leash = (Leash.x, Leash.y, Leash.z)
+        if isinstance(Leash, nbt.TAG_Compound):
+            root_tag['Leash']['UUIDMost'] = Leash['UUIDMost']
+            root_tag['Leash']['UUIDLeast'] = Leash['UUIDLeast']
+        else:
+            root_tag['Leash']['X'] = Leash[0]
+            root_tag['Leash']['Y'] = Leash[1]
+            root_tag['Leash']['Z'] = Leash[2]
 
     # Breeders
     if eid in ('Chicken', 'Cow', 'MushroomCow', 'Ozelot', 'Pig', 'Sheep',
-               'Villager', 'Wolf'):
+               'Villager', 'Wolf', 'Horse'):
         root_tag['InLove'] = nbt.TAG_Int(InLove)
         root_tag['Age'] = nbt.TAG_Int(Age)
 
     # Can be tamed
-    if eid in ('Ozelot', 'Wolf'):
+    if eid in ('Ozelot', 'Wolf', 'Horse'):
         root_tag['Owner'] = nbt.TAG_String(Owner)
         root_tag['Sitting'] = nbt.TAG_Byte(Sitting)
 
@@ -1227,19 +1300,53 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
         root_tag['powered'] = nbt.TAG_Byte(powered)
         root_tag['ExplosionRadius'] = nbt.TAG_Byte(ExplosionRadius)
         root_tag['Fuse'] = nbt.TAG_Short(Fuse)
+        root_tag['ignited'] = nbt.TAG_Byte(ignited)
 
     if eid == 'Enderman':
         root_tag['carried'] = nbt.TAG_Short(carried)
         root_tag['carriedData'] = nbt.TAG_Short(carriedData)
+        root_tag['EndermiteCount'] = nbt.TAG_Int(EndermiteCount)
+
+    if eid == 'Endermite':
+        root_tag['Lifetime'] = nbt.TAG_Int(Lifetime)
+
+    if eid == 'Horse':
+        root_tag['Bred'] = nbt.TAG_Byte(Bred)
+        if (Type == 1 or Type == 2):
+            root_tag['ChestedHorse'] = nbt.TAG_Byte(ChestedHorse)
+        else:
+            root_tag['ChestedHorse'] = nbt.TAG_Byte(0)
+        root_tag['EatingHaystack'] = nbt.TAG_Byte(EatingHaystack)
+        root_tag['Tame'] = nbt.TAG_Byte(Tame)
+        root_tag['Temper'] = nbt.TAG_Int(Temper)
+        root_tag['Type'] = nbt.TAG_Int(Type)
+        # If Variant is not supplied, pick a random one.
+        if Variant is None:
+            Variant = random.randint(0, 6) | (random.randint(0, 4)*256)<<8
+        root_tag['Variant'] = nbt.TAG_Int(Variant)
+        root_tag['OwnerUUID'] = nbt.TAG_String(OwnerUUID)
+        root_tag['Items'] = nbt.TAG_List()
+        root_tag['ArmorItem'] = nbt.TAG_Compound()
+        root_tag['SaddleItem'] = nbt.TAG_Compound()
+        root_tag['Saddle'] = nbt.TAG_Byte(Saddle)
 
     if eid == 'Ghast':
         root_tag['ExplosionPower'] = nbt.TAG_Int(ExplosionPower)
+
+    if eid == 'Guardian':
+        root_tag['Elder'] = nbt.TAG_Byte(Elder)
 
     if eid == 'Ozelot':
         root_tag['CatType'] = nbt.TAG_Int(CatType)
 
     if eid == 'Pig':
         root_tag['Saddle'] = nbt.TAG_Byte(Saddle)
+
+    if eid == 'Rabbit':
+        if RabbitType is None:
+            RabbitType = random.randint(0,5)
+        root_tag['RabbitType'] = nbt.TAG_Int(RabbitType)
+        root_tag['MoreCarrotTicks'] = nbt.TAG_Int(MoreCarrotTicks)
 
     if eid == 'Sheep':
         root_tag['Sheared'] = nbt.TAG_Byte(Sheared)
@@ -1250,6 +1357,7 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
 
     if eid in ('Slime', 'LavaSlime'):
         root_tag['Size'] = nbt.TAG_Int(Size)
+        root_tag['wasOnGround'] = nbt.TAG_Byte(wasOnGround)
 
     if eid == 'WitherBoss':
         root_tag['Invul'] = nbt.TAG_Int(Invul)
@@ -1259,8 +1367,20 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
         root_tag['CollarColor'] = nbt.TAG_Byte(CollarColor)
 
     if eid == 'Villager':
-        root_tag['Profession'] = nbt.TAG_Int(Profession)
         root_tag['Riches'] = nbt.TAG_Int(Riches)
+        if Profession is None:
+            Profession = random.randint(0,5)
+        root_tag['Profession'] = nbt.TAG_Int(Profession)
+        if Career is None:
+            if Profession == 0:
+                Career = random.randint(0,3)
+            elif Profession in (3, 4):
+                Career = random.randint(0,1)
+            else:
+                Career = 0
+        root_tag['Career'] = nbt.TAG_Int(Profession)
+        root_tag['CareerLevel'] = nbt.TAG_Int(CareerLevel)
+        root_tag['Willing'] = nbt.TAG_Byte(Willing)
 
     if eid == 'VillagerGolem':
         root_tag['PlayerCreated'] = nbt.TAG_Byte(PlayerCreated)
@@ -1269,6 +1389,7 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
         root_tag['IsVillager'] = nbt.TAG_Byte(IsVillager)
         root_tag['IsBaby'] = nbt.TAG_Byte(IsBaby)
         root_tag['ConversionTime'] = nbt.TAG_Int(ConversionTime)
+        root_tag['CanBreakDoors'] = nbt.TAG_Byte(CanBreakDoors)
 
     if eid == 'PigZombie':
         root_tag['Anger'] = nbt.TAG_Short(Anger)
@@ -1277,10 +1398,10 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
 
 
 def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
-                         Damage=0, Health=5, Age=0,
-                         **kwargs):
-    '''Returns an nbt.TAG_Compound for a specific item. ItemInfo should contain
-    an item object from items.'''
+                         Damage=0, Health=5, Age=0, PickupDelay=0,
+                         Owner=None, Thrower=None, **kwargs):
+    '''Returns an nbt.TAG_Compound for a specific item. ItemInfo
+    should contain an item object from items.'''
 
     root_tag = get_entity_base_tags(eid, **kwargs)
 
@@ -1292,21 +1413,31 @@ def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
     # an extra 'tag' compound tag to work right.
     if eid == 'XPOrb':
         root_tag['Value'] = nbt.TAG_Short(Value)
-    elif (eid == "Item" and ItemInfo is not None):
-        root_tag['Item'] = nbt.TAG_Compound()
-        root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
-        root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
-        root_tag['Item']['Count'] = nbt.TAG_Byte(Count)
+
+    if eid == "Item":
+        root_tag['PickupDelay'] = nbt.TAG_Short(PickupDelay)
+        if ItemInfo is not None:
+            root_tag['Item'] = nbt.TAG_Compound()
+            root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
+            root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
+            root_tag['Item']['Count'] = nbt.TAG_Byte(Count)
+        if Owner is not None:
+            root_tag['Owner'] = nbt.TAG_String(Owner)
+        if Thrower is not None:
+            root_tag['Thrower'] = nbt.TAG_String(Thrower)
 
     return root_tag
 
 
-def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemTags=None,
-                          ItemDropChance=1.0, ItemRotation=0, Motive='Kebab',
-                          Pos=Vec(0, 0, 0), Damage=0,
-                          **kwargs):
-    '''Returns an nbt.TAG_Compound for "other" type entities. These include
-    EnderCrystal, EyeOfEnder, ItemFrame, and Painting. Chunk offsets will be
+def get_entity_other_tags(eid='EnderCrystal', Direction='S',
+                          ItemTags=None, ItemDropChance=1.0,
+                          ItemRotation=0, Motive='Kebab', Pos=Vec(0, 0,
+                          0), Damage=0, DisabledSlots=0, Invisible=0,
+                          NoBasePlate=0, NoGravity=0, ShowArms=0,
+                          Small=0, Health=None, Pose=None, **kwargs):
+    '''Returns an nbt.TAG_Compound for "other" type entities. These
+    include EnderCrystal, EyeOfEnderSignal, ItemFrame,
+    Painting, LeashKnot, and ArmorStand. Chunk offsets will be
     calculated. ItemTags should contain an item as NBT tags.'''
 
     # Convert Vec types so we can use either
@@ -1314,6 +1445,26 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S', ItemTags=None,
         Pos = (Pos.x, Pos.y, Pos.z)
 
     root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
+
+    if eid is 'ArmorStand':
+        root_tag['DisabledSlots'] = nbt.TAG_Int(DisabledSlots)
+        root_tag['Equipment'] = nbt.TAG_List()
+        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['Invisible'] = nbt.TAG_Byte(Invisible)
+        root_tag['NoBasePlate'] = nbt.TAG_Byte(NoBasePlate)
+        root_tag['NoGravity'] = nbt.TAG_Byte(NoGravity)
+        root_tag['ShowArms'] = nbt.TAG_Byte(ShowArms)
+        root_tag['Small'] = nbt.TAG_Byte(Small)
+        if Health is not None:
+            root_tag['Health'] = nbt.TAG_Short(Health)
+        else:
+            root_tag['Health'] = nbt.TAG_Short(20)
+        if Pose is not None:
+            root_tag['Pose'] = Pose
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
     # painting/ItemFrame is attached to, and Pos is the actual position in the

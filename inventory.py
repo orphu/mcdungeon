@@ -26,7 +26,7 @@ class new:
         if self.book_path != '':
             for file in os.listdir(self.book_path):
                 if (str(file.lower()).endswith(".txt") and
-                        file.lower() is not "readme.txt"):
+                        file.lower() != "readme.txt"):
                     self.booklist.append(file)
 
         # Book 'editions'

@@ -272,6 +272,35 @@ class meta_class_decoratedsandstone(MetaMaterial):
             self.c = Sandstone.c
 
 
+class meta_class_decoratedredsandstone(MetaMaterial):
+    name = 'meta_decoratedredsandstone'
+    val = RedSandstone.val
+    data = RedSandstone.data
+    c = RedSandstone.c
+
+    def update(self, x, y, z, maxx, maxy, maxz):
+        if random.randint(1, 100) < 10:
+            self.val = RedSandstone.val
+            self.data = RedSandstone.data
+            self.c = RedSandstone.c
+            return
+
+        if random.randint(1, 100) < 10:
+            self.val = SmoothRedSandstone.val
+            self.data = SmoothRedSandstone.data
+            self.c = SmoothRedSandstone.c
+            return
+
+        if y % 5 == 0:
+            self.val = ChiseledRedSandstone.val
+            self.data = ChiseledRedSandstone.data
+            self.c = ChiseledRedSandstone.c
+        else:
+            self.val = RedSandstone.val
+            self.data = RedSandstone.data
+            self.c = RedSandstone.c
+
+
 class meta_class_stonedungeon(MetaMaterial):
     name = 'meta_stonedungeon'
     val = StoneBrick.val
@@ -337,6 +366,7 @@ meta_mossycobblewall = meta_class_mossycobblewall()
 meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
 meta_decoratedsandstone = meta_class_decoratedsandstone()
+meta_decoratedredsandstone = meta_class_decoratedredsandstone()
 
 _wall = copy(Cobblestone)
 _secret_door = copy(Cobblestone)

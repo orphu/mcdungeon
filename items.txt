@@ -218,14 +218,21 @@
 413,Rabbit Stew,0,1
 414,Rabbit's Foot,0,64
 415,Rabbit Hide,0,64
+416,Armor Stand,0,16
 417,Iron Horse Armor,0,1
 418,Gold Horse Armor,0,1
 419,Diamond Horse Armor,0,1
 420,Lead,0,64
 421,Name Tag,0,64
+422,Minecart with Command Block,0,64
 423,Raw Mutton,0,64
 424,Cooked Mutton,0,64
 425,Banner,0,16
+427,Spruce Door,0,64
+428,Birch Door,0,64
+429,Jungle Door,0,64
+430,Acacia Door,0,64
+431,Dark Oak Door,0,64
 # Disks
 #
 2256,Music Disc 13,0,1

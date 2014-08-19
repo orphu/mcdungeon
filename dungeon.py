@@ -1953,8 +1953,10 @@ class Dungeon (object):
                         dat = self.blocks[Vec(x, y, z)].data
 
                         # Doors are ... different
-                        if (mat == materials.WoodenDoor or
-                                mat == materials.IronDoor):
+                        if (mat in [materials.WoodenDoor, materials.IronDoor,
+                                    materials.SpruceDoor, materials.BirchDoor,
+                                    materials.JungleDoor, materials.DarkOakDoor,
+                                    materials.AcaciaDoor]):
                             dat2 = self.blocks[Vec(x, y + 1, z)].data
                             dat = ((dat & 1) << 3) + dat2
 
@@ -2271,8 +2273,9 @@ class Dungeon (object):
 
             val = mat.val
             # Silverfish egg pass
+            # Look for cobblestone, stone (normal variant only) and all stone bricks
             if (cfg.silverfish > 0 and
-                    (val == 1 or val == 4 or val == 98) and
+                    ((val == 1 and dat == 0) or val == 4 or val == 98) and
                     random.randint(1, 100) <= cfg.silverfish):
                 if (val == 4):
                     dat = 1  # Cobblestone

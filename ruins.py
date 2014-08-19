@@ -6,12 +6,15 @@ import sys
 
 import cave_factory
 import cfg
+import items
 import materials
 import perlin
+from pymclevel import nbt
 from utils import (
     findChunkDepths,
     get_entity_mob_tags,
     get_entity_other_tags,
+    get_entity_item_tags,
     iterate_cube,
     iterate_cylinder,
     iterate_disc,
@@ -312,11 +315,11 @@ class StepPyramid(Blank):
             mat_slab = materials.QuartzSlab
             mat_floor = materials.PackedIce
         elif self.parent.parent.biome in _mesa_biomes:
-            mat_ext = materials.HardenedClay
-            mat_block = materials.HardenedClay
-            mat_ruins = materials.RedStainedClay
-            mat_stair = materials.OakWoodStairs
-            mat_slab = materials.HardenedClay
+            mat_ext = materials.SmoothRedSandstone
+            mat_block = materials.meta_decoratedredsandstone
+            mat_ruins = materials.meta_decoratedredsandstone
+            mat_stair = materials.RedSandstoneStairs
+            mat_slab = materials.RedSandstoneSlab
             mat_floor = materials.RedSand
         elif self.parent.parent.biome in _swamp_jungle_biomes:
             mat_ext = materials.meta_mossycobble
@@ -625,13 +628,18 @@ class StepPyramid(Blank):
             self.parent.parent.biome in _desert_biomes or
             self.parent.parent.biome in _mesa_biomes
         ):
+            # Orange glass in mesas
+            if (self.parent.parent.biome in _mesa_biomes):
+                topperglass = materials.OrangeStainedGlass
+            else:
+                topperglass = materials.Glass
             for y in xrange(29, 33):
                 for p in iterate_cube(c1.trans(y, -y, y),
                                       c3.trans(-y, -y, -y)):
                     self.parent.parent.setblock(p, materials.Air)
                 for p in iterate_four_walls(c1.trans(y - 1, -y, y - 1),
                                             c3.trans(-y + 1, -y, -y + 1), 0):
-                    self.parent.parent.setblock(p, materials.Glass)
+                    self.parent.parent.setblock(p, topperglass)
             for p in iterate_cube(c1.trans(29, -28, 29),
                                   c3.trans(-29, -28, -29)):
                 self.parent.parent.setblock(p, mat_block)
@@ -1898,7 +1906,7 @@ class Barrow(Blank):
                                            '')
 
         matsE = {
-            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodSlab, random.randint(2, 3)),
             '-': (materials.StoneBrickSlab, 5 + 8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 0 + 4),
@@ -1909,7 +1917,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsW = {
-            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodSlab, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5 + 8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 1 + 4),
@@ -1920,7 +1928,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsN = {
-            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodSlab, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5 + 8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 2 + 4),
@@ -1931,7 +1939,7 @@ class Barrow(Blank):
             '*': (materials.Air, 0),
         }
         matsS = {
-            'W': (materials.OakWoodPlanks, random.randint(0, 3)),
+            'W': (materials.OakWoodSlab, random.randint(0, 3)),
             '-': (materials.StoneBrickSlab, 5 + 8),
             '_': (materials.StoneBrickSlab, 5),
             '1': (materials.StoneBrickStairs, 3 + 4),
@@ -1941,11 +1949,124 @@ class Barrow(Blank):
             '#': (materials.meta_mossystonebrick, 0),
             '*': (materials.Air, 0),
         }
-        mid = (('2', '-', '-', '-', '1', '#'),
+        mid = (('2', '*', '*', '*', '1', '#'),
                ('3', 'W', 'W', 'W', '4', '#'))
-        out = (('2', '-', '-', '-', '1', '#'),
+        out = (('2', '-', '*', '-', '1', '#'),
                ('3', '_', '*', '_', '4', '#'))
+
+        def placeCorpse(pos, rot, invisible=0):
+            '''Arrange a couple of ArmorStands to look like a corpse.
+            pos = position. About where the chest should be
+            rot = rotation of the corpse.
+                s = Head facing South
+                w = Head facing West
+                n = head facign North
+                e = head facing East'''
+
+            # Some offsets 
+            # South
+            if rot is 's':
+                off1 = (0.5, 0.0, 1.0)
+                off2 = (0.5, -0.75, -0.5)
+                r = 180
+            # East
+            elif rot is 'e':
+                off1 = (1.0, 0.0, 0.5)
+                off2 = (-0.5, -0.75, 0.5)
+                r = 90
+            # North
+            elif rot is 'n':
+                off1 = (0.5, 0.0, 0.0)
+                off2 = (0.5, -0.75, 1.5)
+                r = 0
+            # West
+            elif rot is 'w':
+                off1 = (0.0, 0.0, 0.5)
+                off2 = (1.5, -0.75, 0.5)
+                r = 270
+            else:
+                return
+
+            # generate some armor and stuff. Some parts might be missing.
+            head = None
+            chest = None
+            legs = None
+            if random.random() < .85:
+                head = items.byName(
+                    random.choice((
+                        "leather helmet",
+                        "skeleton skull",
+                    ))
+                )
+            if random.random() < .85:
+                chest = items.byName("leather chestplate")
+            if random.random() < .85:
+                legs = items.byName("leather leggings")
+
+            # The first ArmorStand covers the head, chest and arms.
+            pose = nbt.TAG_Compound()
+            pose['Body'] = nbt.TAG_List()
+            pose['Body'].append(nbt.TAG_Float(-90))
+            pose['Body'].append(nbt.TAG_Float(0))
+            pose['Body'].append(nbt.TAG_Float(0))
+            pose['Head'] = nbt.TAG_List()
+            pose['Head'].append(nbt.TAG_Float(-90))
+            pose['Head'].append(nbt.TAG_Float(0))
+            pose['Head'].append(nbt.TAG_Float(0))
+            pose['LeftArm'] = nbt.TAG_List()
+            pose['LeftArm'].append(nbt.TAG_Float(-100))
+            pose['LeftArm'].append(nbt.TAG_Float(0))
+            pose['LeftArm'].append(nbt.TAG_Float(0))
+            pose['RightArm'] = nbt.TAG_List()
+            pose['RightArm'].append(nbt.TAG_Float(-100))
+            pose['RightArm'].append(nbt.TAG_Float(0))
+            pose['RightArm'].append(nbt.TAG_Float(0))
+
+            tags = get_entity_other_tags("ArmorStand",
+                                         ShowArms=1,
+                                         NoGravity=1,
+                                         Invisible=invisible,
+                                         Pose=pose,
+                                         DisabledSlots=2039583,
+                                         NoBasePlate=1,
+                                         Rotation=Vec(0,r,0),
+                                         Pos = (pos.x+off1[0],
+                                                pos.y+off1[1],
+                                                pos.z+off1[2]))
+            if chest is not None:
+                tags['Equipment'][3]['id'] = nbt.TAG_Short(chest.value)
+            if head is not None:
+                tags['Equipment'][4]['id'] = nbt.TAG_Short(head.value)
+            self.parent.parent.addentity(tags)
+
+            # The second covers the legs
+            pose = nbt.TAG_Compound()
+            pose['LeftLeg'] = nbt.TAG_List()
+            pose['LeftLeg'].append(nbt.TAG_Float(-90))
+            pose['LeftLeg'].append(nbt.TAG_Float(0))
+            pose['LeftLeg'].append(nbt.TAG_Float(0))
+            pose['RightLeg'] = nbt.TAG_List()
+            pose['RightLeg'].append(nbt.TAG_Float(-90))
+            pose['RightLeg'].append(nbt.TAG_Float(0))
+            pose['RightLeg'].append(nbt.TAG_Float(0))
+
+            tags = get_entity_other_tags("ArmorStand",
+                                         NoGravity=1,
+                                         Invisible=1,
+                                         Pose=pose,
+                                         DisabledSlots=2039583,
+                                         NoBasePlate=1,
+                                         Rotation=Vec(0,r+180,0),
+                                         Pos = (pos.x+off2[0],
+                                                pos.y+off2[1],
+                                                pos.z+off2[2]))
+            if legs is not None:
+                tags['Equipment'][2]['id'] = nbt.TAG_Short(legs.value)
+            self.parent.parent.addentity(tags)
+
+        # Build the tombs.
         for x in xrange(3, 16):
+            # The stone parts
             for y in xrange(4):
                 p = c1 + Vec(16, -4, 16) + Vec(x, y, 0)
                 ssb(p,
@@ -1991,7 +2112,7 @@ class Barrow(Blank):
                     matsS[out[y % 2][(x - 3) % 6]][0],
                     matsS[out[y % 2][(x - 3) % 6]][1])
 
-                # Signs
+                # Name plates
                 if (
                     (x + 1) % 6 == 0 and
                     y % 2 == 1
@@ -2031,6 +2152,32 @@ class Barrow(Blank):
                     ssb(p.w(1), materials.StoneBrickStairs, 1)
                     ssb(p.w(2), materials.WallSign, 4)
                     addnameplate(p.w(2), name)
+
+                # Corpses
+                if (
+                    (x + 1) % 6 == 0 and
+                    y == 1
+                ):
+                    # East
+                    placeCorpse(c1 + Vec(16, -1.5, 16) + Vec(x, y, 0),
+                                'e')
+                    placeCorpse(c1 + Vec(16, -3.5, 16) + Vec(x, y, 0),
+                                'e', invisible=1)
+                    # West
+                    placeCorpse(c1 + Vec(16, -1.5, 16) + Vec(-x, y, 0),
+                                'w')
+                    placeCorpse(c1 + Vec(16, -3.5, 16) + Vec(-x, y, 0),
+                                'w', invisible=1)
+                    # North
+                    placeCorpse(c1 + Vec(16, -1.5, 16) + Vec(0, y, -x),
+                                'n')
+                    placeCorpse(c1 + Vec(16, -3.5, 16) + Vec(0, y, -x),
+                                'n', invisible=1)
+                    # South
+                    placeCorpse(c1 + Vec(16, -1.5, 16) + Vec(0, y, x),
+                                's')
+                    placeCorpse(c1 + Vec(16, -3.5, 16) + Vec(0, y, x),
+                                's', invisible=1)
 
         # Grass
         for x in xrange(32):
