@@ -47,6 +47,8 @@ v0.14.0 -
 
    * Pyramids use red sandstone in mesa biomes. (JiFish)
 
+   * Fancied up Barrows with corpses. (orphu)
+
    * Added many 1.8 items and materials (various)
 
 v0.13.0 - 10/26/2013
