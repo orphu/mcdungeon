@@ -1060,6 +1060,7 @@ if (args.command == 'list'):
 # GenPOI mode
 if (args.command == 'genpoi'):
     # List the known dungeons in OverViewer POI format, and exit
+    quiet_mode = True
     if args.outputdir is None:
         args.outputdir = 'C:\\overview'
     output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
@@ -1074,7 +1075,7 @@ if (args.command == 'genpoi'):
     tHunts = listTHunts(world, oworld, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
     output += '\t\tdict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True),\n'
-    output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest.png", checked=True),\n'
+    output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest_red.png", checked=True),\n'
     output += '\t\tdict(name="Waypoints", filterFunction=tHuntWPFilter, icon="icons/marker_chest.png", checked=False),\n'
     output += '\t]\n}\n'
     print output
