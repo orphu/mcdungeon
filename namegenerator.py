@@ -7,9 +7,12 @@ from namegen import namegen
 
 class namegenerator:
 
-    def __init__(self, biomeid):
-        # Get theme from biome id
-        self.theme = self.gettheme(biomeid)
+    def __init__(self, biomeid, theme=''):
+        if theme == '':
+            # Get theme from biome id
+            self.theme = self.gettheme(biomeid)
+        else:
+            self.theme = theme
         # Choose DICT based on theme
         if (self.theme == 'egyptian'):
             dict = 'egyptian.txt'
@@ -33,6 +36,10 @@ class namegenerator:
             dict = 'greek.txt'
             self.titles = ['King', 'Queen', 'Strategos',
                            'Tyrant', 'Archon']
+        elif (self.theme == 'pirate'):
+            dict = 'pirate.txt'
+            self.titles = ['Captain', 'Captain', 'Commander', 'Black', 
+                           'Dread Pirate', 'Mighty Pirate' ]
         elif (self.theme == 'roman'):
             dict = 'roman.txt'
             self.titles = ['Emperor', 'Empress', 'Praetor',

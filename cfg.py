@@ -77,6 +77,8 @@ master_mobs = {}
 max_mob_tier = 0
 structure_values = []
 custom_spawners = {}
+default_landmarks = []
+master_landmarks = {}
 
 file_extra_items = ''
 file_dyes = 'dye_colors.txt'
@@ -89,6 +91,12 @@ dir_shops = 'shops'
 dir_extra_spawners = ''
 dir_extra_items = ''
 
+th_locked = 'False'
+th_bonus = 0
+th_multiplier = 1
+th_intermediate = 0
+th_spawners = 'False'
+master_landmark_mobs = []
 
 parser = ConfigParser.SafeConfigParser()
 
@@ -179,7 +187,9 @@ def Load(filename='default.cfg'):
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
-        river_biomes, ocean_biomes, master_hall_traps
+        river_biomes, ocean_biomes, master_hall_traps, \
+        master_landmarks, default_landmarks, master_landmark_mobs, \
+        th_locked, th_bonus, th_multiplier, th_intermediate, th_spawners
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -298,6 +308,20 @@ def Load(filename='default.cfg'):
             for biome in match.group(1).split(','):
                 master_entrances[int(biome)] = parser.items(name)
 
+    # Load per-biome landmarks.
+    # First, the default
+    try:
+        default_landmarks = parser.items('landmarks')
+    except:
+        default_landmarks = [('SignPost', 10)]
+    # Try to find any biome specific landmark definitions.
+    lmmatch = re.compile('landmarks.([0-9,]+)')
+    for name in parser.sections():
+        match = lmmatch.search(name)
+        if match:
+            for biome in match.group(1).split(','):
+                master_landmarks[int(biome)] = parser.items(name)
+				
     # Load the mob spawner tables
     max_mob_tier = 0
     if parser.has_section('mobs'):
@@ -320,7 +344,13 @@ def Load(filename='default.cfg'):
         except:
             temp_mobs = []
             max_mob_tier -= 1
-
+			
+	# Landmark spawner mobs table
+    if parser.has_section('landmark_mobs'):
+        master_landmark_mobs = parser.items('landmark_mobs')
+    else:
+        master_landmark_mobs = master_mobs[0]
+			
     # Process projectile traps config
     master_projectile_traps = []
     for d in temp_projectile_traps:
@@ -420,6 +450,12 @@ def Load(filename='default.cfg'):
     maps = int(get('dungeon', 'maps', maps))
     mapstore = get('dungeon', 'mapstore', mapstore)
 
+    th_locked = str2bool(get('treasure hunt', 'locked', th_locked))
+    th_bonus = int(get('treasure hunt', 'bonus', th_bonus))
+    th_multiplier = int(get('treasure hunt', 'multiplier', th_multiplier))
+    th_intermediate = int(get('treasure hunt', 'intermediate', th_intermediate))
+    th_spawners = str2bool(get('treasure hunt', 'spawners', th_spawners))
+	
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be '
                  ' >= 1.0. Check the cfg file.')
