@@ -947,10 +947,12 @@ def decodeDungeonInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and 'minecraft:written_book' not in book['id']) or
+            (book['id'] != 387 and 'minecraft:written_book' not in str(book['id'])) or
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
-            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
+            print 'Non-book or odd book found in chest!', items['position'], 'id:', book['id']
+            if 'tag' in book and 'title' in book['tag']:
+                print '\t', book['tag']['title']
             continue
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))
