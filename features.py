@@ -1464,7 +1464,9 @@ class SecretShop(SecretRoom):
             sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneLampOn)
         
         
-        signtext = s.name.replace('{{name}}', shopkeeper_name+name_post).split(' ')
+        signtext = s.name.replace("{{name's}}", shopkeeper_name+name_post)
+        signtext = signtext.replace("{{name}}", shopkeeper_name)
+        signtext = signtext.split(' ')
         if (len(signtext) == 0):
             signtext = ['','','Shop','']
         elif (len(signtext) == 1):

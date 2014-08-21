@@ -1086,6 +1086,7 @@ def get_tile_entity_tags(
         if RecordItem is not None:
             root_tag['RecordItem'] = RecordItem
 
+
     if eid is 'Sign':
         root_tag['Text1'] = nbt.TAG_String(Text1)
         root_tag['Text2'] = nbt.TAG_String(Text2)

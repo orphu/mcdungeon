@@ -233,6 +233,7 @@
 429,Jungle Door,0,64
 430,Acacia Door,0,64
 431,Dark Oak Door,0,64
+
 # Disks
 #
 2256,Music Disc 13,0,1
@@ -247,6 +248,11 @@
 2265,Music Disc ward,0,1
 2266,Music Disc 11,0,1
 2267,Music Disc wait,0,1
+
+# Materials that have different datavalue when in an inventory
+54,Chest Item,0,64
+130,Ender Chest Item,0,64
+146,Trapped Chest Item,0,64
 
 # Items with special flags.
 # Do not modify unless you really know what you are doing.

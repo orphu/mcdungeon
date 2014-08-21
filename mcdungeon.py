@@ -1059,6 +1059,7 @@ if (args.command == 'list'):
 
 # GenPOI mode
 if (args.command == 'genpoi'):
+
     # List the known dungeons in OverViewer POI format, and exit
     quiet_mode = True
     if args.outputdir is None:
@@ -1071,6 +1072,7 @@ if (args.command == 'genpoi'):
     output += 'def tHuntWPFilter(poi):\n\tif poi[\'id\'] == \'MCDungeonTHW\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
     output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
     print output
+
     dungeons = listDungeons(world, oworld, genpoi=True)
     tHunts = listTHunts(world, oworld, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
