@@ -947,7 +947,7 @@ def decodeDungeonInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and 'minecraft:written_book' not in str(book['id'])) or
+            (book['id'] != 387 and book['id'] != 'minecraft:written_book') or
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
             print 'Non-book or odd book found in chest!', items['position'], 'id:', book['id']
