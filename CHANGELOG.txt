@@ -6,6 +6,10 @@ v0.14.0 -
      This will generate Minecraft Overviewer point of interest data for your
      maps. (sshipway)
 
+   * New command mode: addth
+     This will add a new feature called treasure hunts to the map. A special
+     chest will send you on a scavenger hunt to find a treasure. (sshipway)
+
    * New option: --quiet suppresses many progress outputs. (sshipway)
 
    * New Floors: RadialRug, BrokenRadialRug, RadialClay, BrokenRadialClay,

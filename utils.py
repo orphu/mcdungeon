@@ -618,6 +618,39 @@ def loadDungeonCache(cache_path):
                      ' Check permissions and try again.')
     return dungeonCache, mtime
 
+def loadTHuntCache(cache_path):
+    '''Load the treasure hunt cache given a path'''
+    global cache_version
+    tHuntCache = {}
+    mtime = 0
+    # Try some basic versioning.
+    if not os.path.exists(os.path.join(cache_path,
+                                       'thunt_scan_version_' + cache_version)):
+        print 'Treasure Hunt cache missing, or is an old verision. Resetting...'
+        return tHuntCache, mtime
+
+    # Try to load the cache
+    if os.path.exists(os.path.join(cache_path, 'thunt_scan_cache')):
+        try:
+            FILE = open(os.path.join(cache_path, 'thunt_scan_cache'), 'rb')
+            tHuntCache = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the thunt_scan_cache file. '
+                     ' Check permissions and try again.')
+
+    # Try to read the cache mtime
+    if os.path.exists(os.path.join(cache_path, 'thunt_scan_mtime')):
+        try:
+            FILE = open(os.path.join(cache_path, 'thunt_scan_mtime'), 'rb')
+            mtime = cPickle.load(FILE)
+            FILE.close()
+        except Exception as e:
+            print e
+            sys.exit('Failed to read the thunt_scan_mtime file. '
+                     ' Check permissions and try again.')
+    return tHuntCache, mtime
 
 def saveDungeonCache(cache_path, dungeonCache):
     ''' save the dungeon cache given a path and array'''
@@ -656,6 +689,42 @@ def saveDungeonCache(cache_path, dungeonCache):
         sys.exit('Failed to write dungeon_scan_version.'
                  'Check permissions and try again.')
 
+def saveTHuntCache(cache_path, tHuntCache):
+    ''' save the treasure hunt cache given a path and array'''
+    global cache_version
+    try:
+        FILE = open(os.path.join(cache_path, 'thunt_scan_cache'), 'wb')
+        cPickle.dump(tHuntCache, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write thunt_scan_cache. '
+                 ' Check permissions and try again.')
+    mtime = int(time.time())
+    try:
+        FILE = open(os.path.join(cache_path, 'thunt_scan_mtime'), 'wb')
+        cPickle.dump(mtime, FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write thunt_scan_mtime.'
+                 'Check permissions and try again.')
+    try:
+        for f in os.listdir(cache_path):
+            if re.search('thunt_scan_version_.*', f):
+                os.remove(os.path.join(cache_path, f))
+        FILE = open(
+            os.path.join(
+                cache_path,
+                'thunt_scan_version_' +
+                cache_version),
+            'wb')
+        cPickle.dump('SSsssss....BOOM', FILE, -1)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write thunt_scan_version.'
+                 'Check permissions and try again.')
 
 def loadChunkCache(cache_path):
     '''Load the chunk cache given a path'''
@@ -724,11 +793,70 @@ def saveChunkCache(cache_path, chunkCache):
         print e
         sys.exit('Failed to write dungeon_scan_version.'
                  'Check permissions and try again.')
+				 
+def encodeTHuntInfo(thunt, version):
+    '''Takes a dungeon object and Returns an NBT structure for a
+    chest+book encoding a lot of things to remember about this
+    dungeon.'''
+    # Some old things need to be added.
+    items = thunt.dinfo
+    items['version'] = version
+    items['steps'] = thunt.steps
+    items['timestamp'] = int(time.time())
+    items['landmarks'] = []
+    items['min_distance'] = thunt.min_distance
+    items['max_distance'] = thunt.max_distance
+	
+    for l in thunt.landmarks:
+        items['landmarks'].append( l.pos )
+	
+    # Create the base tags
+    root_tag = nbt.TAG_Compound()
+    root_tag['id'] = nbt.TAG_String('Chest')
+    root_tag['CustomName'] = nbt.TAG_String('MCDungeon THunt Data Library')
+    root_tag['x'] = nbt.TAG_Int(0)
+    root_tag['y'] = nbt.TAG_Int(0)
+    root_tag['z'] = nbt.TAG_Int(0)
+    inv_tag = nbt.TAG_List()
+    root_tag['Items'] = inv_tag
+
+    # Populate the pages
+    slot = 0
+    page = 0
+    newslot = True
+    for key in items:
+        # Make a new book
+        if newslot is True:
+            if slot >= 27:
+                sys.exit('Too many values to store, and not enough slots!')
+            item_tag = nbt.TAG_Compound()
+            inv_tag.append(item_tag)
+            item_tag['Slot'] = nbt.TAG_Byte(slot)
+            item_tag['Count'] = nbt.TAG_Byte(1)
+            item_tag['id'] = nbt.TAG_Short(387)
+            item_tag['Damage'] = nbt.TAG_Short(0)
+            tag_tag = nbt.TAG_Compound()
+            item_tag['tag'] = tag_tag
+            tag_tag['title'] = nbt.TAG_String(
+                'MCDungeon Data Volume %d' % (slot + 1)
+            )
+            tag_tag['author'] = nbt.TAG_String('Various')
+            tag_tag['pages'] = nbt.TAG_List()
+            newslot = False
+            page = 0
+        slot += 1
+        tag_tag['pages'].append(
+            nbt.TAG_String(cPickle.dumps({key: items[key]}))
+        )
+        page += 1
+        if page >= 50:
+            newslot = True
+    return root_tag
 
 
 def encodeDungeonInfo(dungeon, version):
     '''Takes a dungeon object and Returns an NBT structure for a
-    dispenser+book encoding a lot of things to remember about this
+    chest+book encoding a lot of things to remember about this
     dungeon.'''
     # Some old things need to be added.
     items = dungeon.dinfo
@@ -822,11 +950,47 @@ def decodeDungeonInfo(lib):
             (book['id'] != 387 and 'minecraft:written_book' not in book['id']) or
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
+            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
             continue
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))
     return items
 
+def decodeTHuntInfo(lib):
+    '''Takes an NBT tag and tries to decode a Chest object containing
+    MCDungeon info. Returns a dictionary full of key=>value pairs'''
+    items = {}
+
+    # Position is always the x,y,z of the entity
+    items['position'] = Vec(int(lib['x']), int(lib['y']), int(lib['z']))
+
+    # Check the chest name
+    if (
+        'CustomName' not in lib or
+        lib['CustomName'] != 'MCDungeon THunt Data Library'
+    ):
+        sys.exit('Invalid data library NBT.')
+
+    # iterate through the objects in the chest
+    for book in lib['Items']:
+        if (
+            (book['id'] != 387 and book['id'] != 'minecraft:written_book')
+        ):
+            #print 'Non-book found in cache chest: %s' % ( book['id'] )
+            continue
+        if (
+			'title' not in book['tag']
+        ):
+            print 'Strange book with no title found in cache chest' 
+            continue
+        if (
+            book['tag']['title'].startswith('MCDungeon Data Volume') is False
+        ):
+            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
+            continue
+        for page in book['tag']['pages']:
+            items.update(cPickle.loads(str(page)))
+    return items
 
 # Some entity helpers
 

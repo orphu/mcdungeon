@@ -41,6 +41,13 @@ def valByName(name):
                 return obj.val
     return -1
 
+def materialById(id):
+    ''' return a Material object given an object identifier '''
+    for oname, obj in sys.modules[__name__].__dict__.items():
+        if isinstance(obj, Material):
+            if obj.val == id or obj.name == id:
+                return obj
+    return None
 
 # Material class
 class Material(object):

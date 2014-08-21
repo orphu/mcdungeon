@@ -537,7 +537,7 @@ class Dungeon (object):
             print 'No positions', p
         return False
 
-    def worldmap(self, world, positions):
+    def worldmap(self, world, positions, note=None):
         #rows, columns = os.popen('stty size', 'r').read().split()
         columns = 39
         bounds = world.bounds
@@ -548,6 +548,10 @@ class Dungeon (object):
             scx = self.args.spawn[0]
             scz = self.args.spawn[1]
         spawn_chunk = Vec(scx, 0, scz)
+        if note is not None:
+            note_chunk = Vec( note.x >> 4, 0, note.z >> 4 )
+        else:
+            note_chunk = Vec(0,0,0)
         # Draw a nice little map of the dungeon location
         map_min_x = bounds.maxcx
         map_max_x = bounds.mincx
@@ -583,6 +587,8 @@ class Dungeon (object):
                     sys.stdout.write('00')
                 elif (Vec(x, 0, z) == Vec(sx, 0, sz)):
                     sys.stdout.write('XX')
+                elif (Vec(x, 0, z) == note_chunk):
+                    sys.stdout.write('@@')
                 elif (d_box.containsPoint(Vec(x, 64, z))):
                     sys.stdout.write('##')
                 elif ((x, z) in positions.keys()):
@@ -914,7 +920,7 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-    def addchest(self, loc, tier=-1, loot=[], name=''):
+    def addchest(self, loc, tier=-1, loot=[], name='', lock=None):
         level = loc.y / self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -925,7 +931,10 @@ class Dungeon (object):
             else:
                 tierf = loottable._maxtier - 1
             tier = max(1, int(tierf))
-            # print 'Adding chest: level',level+1,'tier',tier
+        elif tier >= loottable._maxtier:
+            tier = loottable._maxtier - 1            
+        if self.args.debug:
+            print 'Adding chest: level',level+1,'tier',tier
         root_tag = nbt.TAG_Compound()
         root_tag['id'] = nbt.TAG_String('Chest')
         root_tag['x'] = nbt.TAG_Int(loc.x)
@@ -933,6 +942,8 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
         if (name != ''):
             root_tag['CustomName'] = nbt.TAG_String(name)
+        if (lock is not None and lock != ''):
+            root_tag['Lock'] = nbt.TAG_String(lock)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         if len(loot) == 0:
@@ -2335,3 +2346,49 @@ class Dungeon (object):
             spin(num)
             num -= 1
             chunk.chunkChanged()
+
+    def keyName(self):
+        ''' Generate a random name for a key 
+        This is used by TreasureHunt and Dungeon classes where a new name 
+        is required.  It includes colours codes to make it unduplicateable
+        using an anvil '''
+        _magic = u'\u00a7'
+        _knamesA = (
+            ('big', 1),
+            ('small', 1),
+            ('ornate', 1),
+            ('long', 1),
+            ('worn', 1),
+            ('complex', 1),
+            ('secret', 1),
+            ('lost', 1),
+            ('hidden', 1),
+        )
+        _kcolours = {
+			#'black': '0',
+			'blue': '1',
+			'jade': '2',
+			'red': '4',
+			'purple': '5',
+			'golden': '6',
+			'silver': '7',
+			'yellow': 'e',
+			'aqua': '3',
+			'steel': '8',
+        }
+        _knames = (
+            (u'{M}r{owners} {A} {M}{CC}{C}{M}r key', 5),
+            (u'{M}r{owners} {M}{CC}{C}{M}r key', 1),
+            (u'{M}rThe {A} {M}{CC}{C}{M}r key of {owner}', 2),
+        )
+        if self.owner.endswith("s"):
+            owners = self.owner + "'"
+        else:
+            owners = self.owner + "'s"
+        A = weighted_choice(_knamesA)
+        C = random.choice( _kcolours.keys() ) 
+        CC = _kcolours[ C ]
+        name = weighted_choice(_knames).format(A=A,C=C,CC=CC,M=_magic,
+            owner=self.owner,owners=owners)
+        return name
+	
