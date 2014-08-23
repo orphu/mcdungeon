@@ -67,7 +67,8 @@ if [ ${1:+1} ]; then
 	echo "Checking out $1..."
 	cd mcdungeon 
 	git checkout --quiet $1 || error 'Failed to checkout branch/tag.' $?
-	git submodule update || error 'Failed to updade pymclevel submodule.' $?
+	git submodule sync || error 'Failed to sync submodules.' $?
+	git submodule update || error 'Failed to update submodules.' $?
 	cd ..
 fi
 
