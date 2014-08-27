@@ -78,32 +78,41 @@ class Clearing(object):
 
     # center is in world voxels 
     def addclearing (self, center, diam):
+        # flatten a disc of ground, erase any trees
+        # centre is in world coordinates
         p0 = Vec(center.x - diam/2 - self.parent.position.x,
                  self.parent.position.y - center.y,
                  center.z - diam/2 - self.parent.position.z ) 
         p1 = p0.trans(diam+1, 0, diam+1)
-        #mat = self.parent.getblock(center)
+        # identify the ground material at the centre
         try:
             chunk = self.parent.world.getChunk(center.x>>4, center.z>>4)
             mat = materials.materialById(chunk.Blocks[center.x & 15, center.z & 15, center.y])
         except:
             print 'Cannot identify central material'
             mat = materials.Dirt
+        # Now make sure we have something solid
         if mat is None or mat is False: # or mat not in materials.heightmap_solids:
             print 'Center material is %s' % mat
             mat = materials.meta_stonedungeon
-        if mat is materials.Air:
+        if mat.val == materials.Air.val:
             mat = materials.Dirt
+        # Iterate around the entire disc
         for p in iterate_disc(p0,p1):
-            self.parent.setblock(p,mat,lock=True)
+            # At least 4 clear blocks above
             self.parent.setblock(p.up(1),materials.Air)
             self.parent.setblock(p.up(2),materials.Air)
             self.parent.setblock(p.up(3),materials.Air)
             self.parent.setblock(p.up(4),materials.Air)
+            # Set the disc to the base material
+            self.parent.setblock(p,mat,lock=True)
+            # In case ground is sloping or has gaps, add underlying blocks
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
             self.parent.setblock(p.down(3),mat,soft=True)
-            i = 5
+            # Iterate up to remove any trees
+            # This seems to not be working correctly?
+            i = 1
             while chunk.Blocks[p.x & 15, p.z & 15, center.y - i] == materials.Wood.val:
                 # delete the tree
               	self.parent.setblock(p.up(i), materials.Air)
@@ -122,8 +131,6 @@ class Clearing(object):
             self.addcluechest
         self.parent.addchestitem_tag( self.cluechest, item_tag )
 
-
-        
 # An empty, flat circular area, with a circle of skulls on sticks
 # chest can be under the centre of the circle
 class CircleOfSkulls(Clearing):
@@ -172,12 +179,13 @@ class CircleOfSkulls(Clearing):
                 
     def describe (self):
         return "a circle of skulls"
-    
+
+# This class handles the cottage, either occupied, abandoned, or ruined        
 class SmallCottage(Clearing):
     _name = 'smallcottage'
     _ruined = False
     _abandoned = False
-    # randomise NS or EW
+    # randomise NS or EW - to be done
     
     def render (self):
         center = self.pos + Vec(8,0,8)
@@ -185,10 +193,13 @@ class SmallCottage(Clearing):
         self.addclearing(center,size)
 		
         # create cottage
+        # walls
         for p in iterate_four_walls(Vec(6,0,6), Vec(11,0,10),2):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
+        # floor - this seems to not be working?
         for p in iterate_plane(Vec(6,0,6), Vec(11,0,10)):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
+        # Gable ends
         self.parent.setblock(self.offset+Vec(6,-3,7),self.stone)
         self.parent.setblock(self.offset+Vec(6,-3,8),self.stone)
         self.parent.setblock(self.offset+Vec(6,-4,8),self.stone)
@@ -206,6 +217,7 @@ class SmallCottage(Clearing):
         # fireplace
         self.parent.setblock(self.offset+Vec(6,-1,8),materials.Air)
         self.parent.setblock(self.offset+Vec(5,-1,8),self.stone)
+        self.parent.setblock(self.offset+Vec(5,-2,8),self.stonesteps, 0)
 
         # add bed and table
         self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.BedBlock,3)
@@ -468,7 +480,7 @@ def pickLandmark(thunt, pos,
         except KeyError:
             landmark_list = weighted_shuffle(cfg.default_landmarks)
         if thunt.args.debug:
-            print "Landmark biome ID is %d" % biome
+            print "\nLandmark biome ID is %d" % biome
     else:
         biome = None
         landmark_list = weighted_shuffle(landmark_list)

@@ -126,6 +126,10 @@ parser_addth.add_argument('--write',
                         action='store_true',
                         dest='write',
                         help='Write the treasure hunt to disk')
+parser_addth.add_argument('--skip-relight',
+                          action='store_true',
+                          dest='skiprelight',
+                          help='Skip relighting the level')
 parser_addth.add_argument('--debug',
                         action='store_true',
                         dest='debug',
