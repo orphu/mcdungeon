@@ -367,14 +367,14 @@ class TreasureHunt (Dungeon):
         # Place chests, create clue books and keys
         _directions = (
             ( 'Wander {D} til ye find {L}, which be the next step in thy search.', 1 ),
-            ( 'Walk as the crow flies {D} without rest until ye find {L}', 1 ),
-            ( 'Travel towards the {D} to {L}, then follow the next step', 1 ),
+            ( 'Walk as the crow flies {D} without rest until ye find {L}.', 1 ),
+            ( 'Travel towards the {D} to {L}, then follow the next step.', 1 ),
             ( 'I hid the next step at {L}, {D} of here.', 1 ),
-            ( 'Find {L} to the {D}, and be wary of zombies as ye travel', 1 ),
-            ( 'Now walk ye {D}, and do keep thy eyes peeled for {L}', 1 ),
+            ( 'Find {L} to the {D}, and be wary of zombies as ye travel.', 1 ),
+            ( 'Now walk ye {D}, and do keep thy eyes peeled for {L}.', 1 ),
             ( 'To the {D} there do lie {L}.  Thy next step be to find it.', 1 ),
             ( 'There do lie {L} to the {D}, and that is where ye must needs go next.', 1 ),
-            ( 'Turn ye to the {D}, and march forrard \'til ye find {L}', 1),
+            ( 'Turn ye to the {D}, and march forrard \'til ye find {L}.', 1),
         )
         # Iterate through the landmarks from the end back.
         # Generate a clue book and possible key as we go as extra chest loot.
@@ -387,7 +387,7 @@ class TreasureHunt (Dungeon):
         # If necessary, we create a key to lock the chests with
         if cfg.th_locked is True:
             keyname = self.keyName()
-            print "Creating key %s" % ( keyname )
+            print "Creating key: %s" % ( keyname )
             chestkey = nbt.TAG_Compound()
             chestkey['Count'] = nbt.TAG_Byte(1)
             chestkey['id'] = nbt.TAG_String('minecraft:stick') # ID 280
@@ -396,7 +396,7 @@ class TreasureHunt (Dungeon):
             chestkey['tag']['display'] = nbt.TAG_Compound()
             chestkey['tag']['display']['Name'] = nbt.TAG_String( keyname )
             chestkey['tag']['display']['Lore'] = nbt.TAG_List()
-            chestkey['tag']['display']['Lore'].append( nbt.TAG_String( "Key found with treasure map" ) )
+            chestkey['tag']['display']['Lore'].append( nbt.TAG_String( '"Key found with treasure map"' ) )
         else:
             keyname = None
 
@@ -437,10 +437,10 @@ class TreasureHunt (Dungeon):
             if self.args.debug:
                 print 'Placed an intermediate chest at step %d!' % ( tostep )
                 print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
-            pages.append( 'When ye reach this place, seek ye another clue %s' 
+            pages.append( 'When ye reach this place, seek ye another clue %s.' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
             if cfg.th_locked is True:
-                pages.append( 'But take ye heed -- tis only %s as can open the chest' % ( keyname ) )
+                pages.append( 'But take ye heed -- tis only %s as can open the chest.' % ( keyname ) )
             cluebook_tag = nbt.TAG_Compound()
             cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
             cluebook_tag['author'] = nbt.TAG_String(self.owner)
@@ -471,7 +471,7 @@ class TreasureHunt (Dungeon):
         if self.args.debug:
             print 'Placed a treasure chest at step %d, tier %d!' % ( tostep, int(tostep/cfg.th_multiplier) )
             print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
-        pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s' 
+        pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s.' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )
         if cfg.th_locked is True:
             pages.append( 'Take heed!  For \'tis only %s that can open the chest that holds my treasure.' % ( keyname ) )
@@ -480,7 +480,7 @@ class TreasureHunt (Dungeon):
         cluebook_tag['author'] = nbt.TAG_String(self.owner)
         cluebook_tag['pages'] = nbt.TAG_List()
         for p in pages:
-            cluebook_tag['pages'].append( nbt.TAG_String('"%s"'%(p)) )
+            cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
         cluebook = nbt.TAG_Compound()
         cluebook['Count'] = nbt.TAG_Byte(1)
         cluebook['id'] = nbt.TAG_Short(387)

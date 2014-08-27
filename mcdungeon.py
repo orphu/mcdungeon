@@ -1373,8 +1373,8 @@ if (args.command == 'addth'):
             sys.exit('Distance doesn\'t appear to be an integer!')
     if (cfg.min_distance < 1):
         sys.exit('Minimum distance must be equal or greater than 1.')
-    if (cfg.max_distance > 20):
-        sys.exit('Maximum distance must be equal or less than 20.')
+    if (cfg.max_distance > 40):
+        sys.exit('Maximum distance must be equal or less than 40.')
     args.min_levels = args.max_levels = 1
     args.min_x = args.max_x = 1
     args.min_z = args.max_z = 1
@@ -1700,7 +1700,7 @@ if (count == 0):
         print 'No treasure hunts were generated!'
         print 'You may have asked for too many steps, or your allowed spawn'
         print 'region is too small.  Try disabling fill_caves, and check'
-        print 'your min_dist and max_dist settings in your config.'
+        print 'your min_distance and max_distance settings in your config.'
     else:
         print 'No dungeons were generated!'
         print 'You may have requested too deep or too large a dungeon, or your '

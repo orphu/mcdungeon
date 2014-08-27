@@ -1,6 +1,6 @@
 # Landmarks for Treasure Hunts
 # These have location in voxels relative to the parent.position, and live in a single chunk
-# y values reversed.  THis is so they can utilise the Dungeon.Block functions
+# y values reversed.  This is so they can utilise the Dungeon.Block functions
 
 import sys
 import inspect
@@ -219,11 +219,9 @@ class SmallCottage(Clearing):
         self.parent.setblock(self.offset+Vec(5,-1,8),self.stone)
         self.parent.setblock(self.offset+Vec(5,-2,8),self.stonesteps, 0)
 
-        # add bed and table
+        # add bed
         self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.BedBlock,3)
         self.parent.setblock(self.offset+Vec(10,-1,7),materials.BedBlock,11)
-        self.parent.setblock(self.offset+Vec(8,-1,8),materials.Fence)
-        self.parent.setblock(self.offset+Vec(8,-2,8),materials.WoodenPressurePlate)
 		
         if self._ruined is False:
             # if not ruined, add roof, door and window
@@ -237,6 +235,9 @@ class SmallCottage(Clearing):
                 self.parent.setblock(self.offset+Vec(6+x,-3,6),materials.SpruceWoodStairs,2)
                 self.parent.setblock(self.offset+Vec(6+x,-4,7),materials.SpruceWoodStairs,2)
                 self.parent.setblock(self.offset+Vec(6+x,-5,8),materials.SpruceWoodSlab,soft=True)
+            # add table
+            self.parent.setblock(self.offset+Vec(8,-1,8),materials.Fence)
+            self.parent.setblock(self.offset+Vec(8,-2,8),materials.WoodenPressurePlate)
             
             if self._abandoned is True:
                 # if abandoned, add cobwebs (parent function) voxels relative
@@ -319,7 +320,7 @@ class SignPost(Clearing):
                 ns = 'North'
                 zoff = -zoff
             self.chest = self.offset + Vec( 8 + xoff, random.randint(1,2), 8 + zoff )
-            self.chestdesc = "%d steps to the %s, then %d steps to the %s" % ( xoff, ew, zoff, ns )
+            self.chestdesc = "%d steps to the %s, then %d steps to the %s" % ( abs(xoff), ew, abs(zoff), ns )
         self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
@@ -440,6 +441,73 @@ class Memorial(Clearing):
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
+# An empty, flat circular area, with a circle of mushrooms
+# chest can be under the centre of the circle
+class FairyRing(Clearing):
+    _name = 'fairyring'
+
+    # Render relative to TreasureHunt position in y-reversed coords
+    def render (self):
+        center = self.pos + Vec(8,0,8)
+        size = random.randint(6,10)
+        # Now need to flatten the circle in case it is on a slope
+        self.addclearing(center,size)
+                
+        # Create the circle of shrooms
+        p0 = Vec(center.x - size/2 + 1 - self.parent.position.x,
+                 self.parent.position.y - center.y,
+                 center.z - size/2 + 1 - self.parent.position.z) 
+        p1 = p0.trans(size-1, 0, size-1)
+        _mush = (
+            (materials.RedMushroom, 5),
+            (materials.BrownMushroom, 1),
+        )
+        for p in iterate_ellipse(p0, p1):
+            # Abort if there is no shroom here
+            if (random.randint(0,100) < 20):
+                continue
+            Shroom = weighted_choice(_mush)
+            self.parent.setblock(p.up(1), Shroom, 0)
+                
+    def describe (self):
+        return "a fairy ring"
+
+#class Graveyard(Clearing):
+#    _name = 'graveyard'
+
+class FlowerGarden(Clearing):
+    _name = 'flowergarden'        
+
+    # Render relative to TreasureHunt position in y-reversed coords
+    def render (self):
+        center = self.pos + Vec(8,0,8)
+        size = random.randint(10,14)
+        # Now need to flatten the circle in case it is on a slope
+        self.addclearing(center,size)
+                
+        # Create the flower garden
+        p0 = Vec(center.x - size/2 + 1 - self.parent.position.x,
+                 self.parent.position.y - center.y,
+                 center.z - size/2 + 1 - self.parent.position.z) 
+        p1 = p0.trans(size-1, 0, size-1)
+        _flowers = (
+            (materials.Sunflower, 20),
+            (materials.Lilac, 10),
+            (materials.RoseBush, 10),
+            (materials.Peony, 10),
+            (materials.RedMushroom, 1),
+        )
+        for p in iterate_disc(p0, p1):
+            self.parent.setblock(p,materials.Dirt,lock=True)
+            # Abort if there is no flower here
+            if (random.randint(0,100) < 10):
+                continue
+            flower = weighted_choice(_flowers)
+            self.parent.setblock(p.up(1), flower, 0)
+                
+    def describe (self):
+        return "a flower garden"
+        
 #class Well(Clearing):
 #    _name = 'well'		               
 
