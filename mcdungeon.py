@@ -1708,4 +1708,4 @@ if (count == 0):
 if (args.command == 'addth'):
     print 'Placed', count, 'treasure hunts!'
 else:
-    print 'Placed', count, 'dungeons!'
+    print 'Placed', count, 'dungeons!'    
