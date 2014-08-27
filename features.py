@@ -1451,10 +1451,10 @@ class SecretShop(SecretRoom):
             sb(q, upperslab)
         for q in iterate_cube(bl.up(1)+(rt*4)+(fw*5), bl.up(1)+(rt*2)+(fw*5)):
             sb(q, upperslab)
-            
+
         # Desk plant
         sb(bl.up(2)+(rt*2)+(fw*5), materials.FlowerPot, random.randrange(1, 12))
-            
+
         # lights
         redstonepos = ([1,0],[7,0],[0,7],[9,8],[5,5])
         lamppos =     ([1,1],[7,1],[1,7],[8,8],[6,5],[5,6])
@@ -1462,8 +1462,9 @@ class SecretShop(SecretRoom):
             sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneTorchOn, 5)
         for p in lamppos:
             sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneLampOn)
-        
-        
+
+
+
         signtext = s.name.replace("{{name's}}", shopkeeper_name+name_post)
         signtext = signtext.replace("{{name}}", shopkeeper_name)
         signtext = signtext.split(' ')
@@ -1475,7 +1476,7 @@ class SecretShop(SecretRoom):
             signtext = ['',signtext[0],signtext[1],'']
         elif (len(signtext) == 3):
             signtext = ['',signtext[0],signtext[1],signtext[2]]
-        
+
         spos = bl.up(3)+(rt*6)+(fw*3)
         sb(spos, materials.WallSign, orient['U'])
         dungeon.addsign(spos,signtext[0],signtext[1],signtext[2],signtext[3])

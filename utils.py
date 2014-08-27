@@ -959,7 +959,9 @@ def decodeDungeonInfo(lib):
         if (
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
-            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
+            print 'Non-book or odd book found in chest!', items['position'], 'id:', book['id']
+            if 'tag' in book and 'title' in book['tag']:
+                print '\t', book['tag']['title']
             continue
         for page in book['tag']['pages']:
             items.update(cPickle.loads(str(page)))
@@ -1074,6 +1076,7 @@ def get_tile_entity_tags(
         root_tag['CookTime'] = nbt.TAG_Short(CookTime)
         root_tag['CookTimeTotal'] = nbt.TAG_Short(CookTimeTotal)
 
+
     if eid is 'Hopper':
         root_tag['TransferCooldown'] = nbt.TAG_Int(TransferCooldown)
 
@@ -1085,7 +1088,6 @@ def get_tile_entity_tags(
         # Should be a full nbt.TAG_Compound item
         if RecordItem is not None:
             root_tag['RecordItem'] = RecordItem
-
 
     if eid is 'Sign':
         root_tag['Text1'] = nbt.TAG_String(Text1)

@@ -2126,11 +2126,9 @@ class Dungeon (object):
             random.shuffle(ents)
             for loc in ents:
                 ent = self.tile_ents[loc]
-                if (repr(loc) == repr(Vec(0, 0, 0)) or
-                        ent['id'].value != 'Chest'):
-                    next
-                if (loc.y // self.room_height >= item['min_lev'] - 1 and
-                        loc.y // self.room_height <= item['max_lev'] - 1):
+                if (loc != Vec(0,0,0) and
+                    loc.y // self.room_height >= item['min_lev'] - 1 and
+                    loc.y // self.room_height <= item['max_lev'] - 1):
                     if self.addchestitem_tag(loc, item['item']):
                         break
 

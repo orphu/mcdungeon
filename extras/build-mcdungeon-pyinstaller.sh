@@ -24,7 +24,7 @@
 # desired tag. Passing no options will build the current master HEAD rev,
 # which should be the current release version.
 
-FILES="README.txt LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs books shops spawners items paintings names"
+FILES="README.txt LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs books shops spawners items paintings names overviewer_icons"
 
 function error {
 	echo -e "\nFATAL: $1"
@@ -67,7 +67,8 @@ if [ ${1:+1} ]; then
 	echo "Checking out $1..."
 	cd mcdungeon 
 	git checkout --quiet $1 || error 'Failed to checkout branch/tag.' $?
-	git submodule update || error 'Failed to updade pymclevel submodule.' $?
+	git submodule sync || error 'Failed to sync submodules.' $?
+	git submodule update || error 'Failed to update submodules.' $?
 	cd ..
 fi
 

@@ -1,3 +1,3 @@
 [submodule "pymclevel"]
 	path = pymclevel
-	url = git://github.com/mcedit/pymclevel.git
+	url = https://github.com/orphu/pymclevel.git

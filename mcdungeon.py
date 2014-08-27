@@ -253,8 +253,7 @@ parser_add.add_argument('--mapstore',
                         dest='mapstore',
                         metavar='PATH',
                         help='Provide an alternate world to store maps.')
-						
-						
+
 # List subcommand parser
 parser_list = subparsers.add_parser('list',
                                     help='List known dungeons in a map.')
@@ -1059,6 +1058,7 @@ if (args.command == 'list'):
 
 # GenPOI mode
 if (args.command == 'genpoi'):
+
 
     # List the known dungeons in OverViewer POI format, and exit
     quiet_mode = True
