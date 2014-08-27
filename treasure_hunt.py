@@ -19,7 +19,7 @@ from pymclevel import nbt
 from overviewer_core import cache
 from overviewer_core import world as ov_world
 
-from dungeon import Dungeon
+from dungeon import Dungeon, RelightHandler, Block
 
 # The Treasure Hunt class is a subclass of Dungeon and uses the same 
 # utility functions.  However, unlike Dungeon, self.position only holds the
@@ -71,6 +71,7 @@ class TreasureHunt (Dungeon):
         # the treasure hunt name is stored in dungeon_name and is built here
         # because we don't have a ruins[] section
         _thnames = (
+            ('{owners} lost booty',10),
             ('{owners} treasure',10),
             ('{owners} secret loot', 10),
             ('Lost treasure of {owner}',10),
@@ -126,7 +127,7 @@ class TreasureHunt (Dungeon):
             print 'Theme:', self.namegen.theme
             self.owner = self.namegen.genroyalname()
             print 'Owner:', self.owner
-
+            print "Location: ", self.position
             print "Generating landmarks..."
             self.genlandmarks()
             # Name this place
@@ -141,6 +142,7 @@ class TreasureHunt (Dungeon):
             self.dinfo['full_name'] = self.dungeon_name
             print "Treasure hunt name:", self.dungeon_name
             self.renderlandmarks()
+            
             self.placechests()
             if cfg.th_spawners is True:
                 self.placespawners()
@@ -163,17 +165,17 @@ class TreasureHunt (Dungeon):
             self.applychanges()
 
             # Relight these chunks.
-            #if (self.args.write is True and self.args.skiprelight is False):
-            #    # Super ugly, but does progress bars for lighting.
-            #    for handler in logging.root.handlers[:]:
-            #        logging.root.removeHandler(handler)
-            #    h = RelightHandler()
-            #    logging.basicConfig(stream=h, level=logging.INFO)
-            #    self.world.generateLights()
-            #    h.done()
-            #    logging.getLogger().level = logging.CRITICAL
-            #    for handler in logging.root.handlers[:]:
-            #        logging.root.removeHandler(handler)
+            if (self.args.write is True and self.args.skiprelight is False):
+                # Super ugly, but does progress bars for lighting.
+                for handler in logging.root.handlers[:]:
+                    logging.root.removeHandler(handler)
+                h = RelightHandler()
+                logging.basicConfig(stream=h, level=logging.INFO)
+                self.world.generateLights()
+                h.done()
+                logging.getLogger().level = logging.CRITICAL
+                for handler in logging.root.handlers[:]:
+                    logging.root.removeHandler(handler)
 
             # Saving here allows us to pick up where we left off if we stop.
             if (self.args.write is True):
@@ -313,7 +315,7 @@ class TreasureHunt (Dungeon):
         p = self.findlandmarklocation()
         if p is not None:
             self.position = p
-            self.position.y = -128
+            self.position.y -= 20;
             if self.args.debug:
                 print 'Final: ', self.position
             return True
@@ -330,7 +332,7 @@ class TreasureHunt (Dungeon):
         for s in xrange( self.steps ):
             self.pm.update_left(count)
             if pos is None:
-			    pos = self.position
+			    pos = Vec(self.position.x, self.position.y, self.position.z)
             else:
                 pos = self.findlandmarklocation(previous=pos)
             if pos is not None:
@@ -358,21 +360,21 @@ class TreasureHunt (Dungeon):
         print 'Placed %d landmarks.' % ( self.steps )
         if self.args.debug:
             for lm in self.landmarks:
-                print '  %d, %d' % ( lm.pos.x, lm.pos.z )
+                print '  %d, %d: %s' % ( lm.pos.x, lm.pos.z, lm.describe() )
             print 'Complete'
 
     def placechests(self, level=0):
         # Place chests, create clue books and keys
         _directions = (
             ( 'Wander {D} til ye find {L}, which be the next step in thy search.', 1 ),
-            ( 'Walk as the crow flies {D} without rest until ye find {L}', 1 ),
-            ( 'Travel towards the {D} to {L}, then follow the next step', 1 ),
+            ( 'Walk as the crow flies {D} without rest until ye find {L}.', 1 ),
+            ( 'Travel towards the {D} to {L}, then follow the next step.', 1 ),
             ( 'I hid the next step at {L}, {D} of here.', 1 ),
-            ( 'Find {L} to the {D}, and be wary of zombies as ye travel', 1 ),
-            ( 'Now walk ye {D}, and do keep thy eyes peeled for {L}', 1 ),
+            ( 'Find {L} to the {D}, and be wary of zombies as ye travel.', 1 ),
+            ( 'Now walk ye {D}, and do keep thy eyes peeled for {L}.', 1 ),
             ( 'To the {D} there do lie {L}.  Thy next step be to find it.', 1 ),
             ( 'There do lie {L} to the {D}, and that is where ye must needs go next.', 1 ),
-            ( 'Turn ye to the {D}, and march forrard \'til ye find {L}', 1),
+            ( 'Turn ye to the {D}, and march forrard \'til ye find {L}.', 1),
         )
         # Iterate through the landmarks from the end back.
         # Generate a clue book and possible key as we go as extra chest loot.
@@ -382,9 +384,10 @@ class TreasureHunt (Dungeon):
         tostep=1
         pages = []
         pages.append( self.dungeon_name )
+        # If necessary, we create a key to lock the chests with
         if cfg.th_locked is True:
             keyname = self.keyName()
-            print "Creating key %s" % ( keyname )
+            print "Creating key: %s" % ( keyname )
             chestkey = nbt.TAG_Compound()
             chestkey['Count'] = nbt.TAG_Byte(1)
             chestkey['id'] = nbt.TAG_String('minecraft:stick') # ID 280
@@ -393,25 +396,29 @@ class TreasureHunt (Dungeon):
             chestkey['tag']['display'] = nbt.TAG_Compound()
             chestkey['tag']['display']['Name'] = nbt.TAG_String( keyname )
             chestkey['tag']['display']['Lore'] = nbt.TAG_List()
-            chestkey['tag']['display']['Lore'].append( nbt.TAG_String( "Key found with treasure map" ) )
+            chestkey['tag']['display']['Lore'].append( nbt.TAG_String( '"Key found with treasure map"' ) )
         else:
             keyname = None
 
+        # fromstep = step where we're placing the clue chest
+        # tostep = step we are calculating clue for relative to tostep-1
+        # There are 1-based but the landmarks[] array is 0-based.
+        # If we place an intermediate chest, fromstep is changed else stays as 1
         self.pm.init(self.steps, label='Placing chests:')
         while tostep < self.steps:
             self.pm.update_left(self.steps - tostep)
             tostep += 1
             if self.args.debug:
-                print 'Processing step %d -> %d' % (fromstep, tostep )
-            if self.landmarks[fromstep-1].pos.z < self.landmarks[tostep-1].pos.z:
+                print 'Processing step %d' % ( tostep )
+            if self.landmarks[tostep-2].pos.z < self.landmarks[tostep-1].pos.z:
                 direction = 'South'
-            elif self.landmarks[fromstep-1].pos.z > self.landmarks[tostep-1].pos.z:
+            elif self.landmarks[tostep-2].pos.z > self.landmarks[tostep-1].pos.z:
                 direction = 'North'
             else:
                 direction = ''			
-            if self.landmarks[fromstep-1].pos.x < self.landmarks[tostep-1].pos.x:
+            if self.landmarks[tostep-2].pos.x < self.landmarks[tostep-1].pos.x:
                 direction = '%sEast' % ( direction )
-            elif self.landmarks[fromstep-1].pos.x > self.landmarks[tostep-1].pos.x:
+            elif self.landmarks[tostep-2].pos.x > self.landmarks[tostep-1].pos.x:
                 direction = '%sWest' % ( direction )
             landmark_name = self.landmarks[tostep-1].describe()
             p = weighted_choice(_directions).format(D=direction,L=landmark_name)
@@ -430,10 +437,10 @@ class TreasureHunt (Dungeon):
             if self.args.debug:
                 print 'Placed an intermediate chest at step %d!' % ( tostep )
                 print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
-            pages.append( 'When ye reach this place, seek ye another clue %s' 
+            pages.append( 'When ye reach this place, seek ye another clue %s.' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
             if cfg.th_locked is True:
-                pages.append( 'But take ye heed -- tis only %s as can open the chest' % ( keyname ) )
+                pages.append( 'But take ye heed -- tis only %s as can open the chest.' % ( keyname ) )
             cluebook_tag = nbt.TAG_Compound()
             cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
             cluebook_tag['author'] = nbt.TAG_String(self.owner)
@@ -464,7 +471,7 @@ class TreasureHunt (Dungeon):
         if self.args.debug:
             print 'Placed a treasure chest at step %d, tier %d!' % ( tostep, int(tostep/cfg.th_multiplier) )
             print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
-        pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s' 
+        pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s.' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )
         if cfg.th_locked is True:
             pages.append( 'Take heed!  For \'tis only %s that can open the chest that holds my treasure.' % ( keyname ) )
@@ -473,7 +480,7 @@ class TreasureHunt (Dungeon):
         cluebook_tag['author'] = nbt.TAG_String(self.owner)
         cluebook_tag['pages'] = nbt.TAG_List()
         for p in pages:
-            cluebook_tag['pages'].append( nbt.TAG_String('"%s"'%(p)) )
+            cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
         cluebook = nbt.TAG_Compound()
         cluebook['Count'] = nbt.TAG_Byte(1)
         cluebook['id'] = nbt.TAG_Short(387)

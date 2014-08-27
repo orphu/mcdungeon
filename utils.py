@@ -947,7 +947,7 @@ def decodeDungeonInfo(lib):
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and book['id'] != 'minecraft:written_book') or
+            (book['id'] != 387 and book['id'] != 'minecraft:written_book' ) or
             book['tag']['title'].startswith('MCDungeon Data Volume') is False
         ):
             print 'Non-book or odd book found in chest!', items['position'], 'id:', book['id']
@@ -1066,6 +1066,7 @@ def get_tile_entity_tags(
         root_tag['BurnTime'] = nbt.TAG_Short(BurnTime)
         root_tag['CookTime'] = nbt.TAG_Short(CookTime)
         root_tag['CookTimeTotal'] = nbt.TAG_Short(CookTimeTotal)
+
 
     if eid is 'Hopper':
         root_tag['TransferCooldown'] = nbt.TAG_Int(TransferCooldown)

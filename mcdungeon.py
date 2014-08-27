@@ -126,6 +126,10 @@ parser_addth.add_argument('--write',
                         action='store_true',
                         dest='write',
                         help='Write the treasure hunt to disk')
+parser_addth.add_argument('--skip-relight',
+                          action='store_true',
+                          dest='skiprelight',
+                          help='Skip relighting the level')
 parser_addth.add_argument('--debug',
                         action='store_true',
                         dest='debug',
@@ -1058,6 +1062,8 @@ if (args.command == 'list'):
 
 # GenPOI mode
 if (args.command == 'genpoi'):
+
+
     # List the known dungeons in OverViewer POI format, and exit
     quiet_mode = True
     if args.outputdir is None:
@@ -1070,6 +1076,7 @@ if (args.command == 'genpoi'):
     output += 'def tHuntWPFilter(poi):\n\tif poi[\'id\'] == \'MCDungeonTHW\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
     output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
     print output
+
     dungeons = listDungeons(world, oworld, genpoi=True)
     tHunts = listTHunts(world, oworld, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
@@ -1366,8 +1373,8 @@ if (args.command == 'addth'):
             sys.exit('Distance doesn\'t appear to be an integer!')
     if (cfg.min_distance < 1):
         sys.exit('Minimum distance must be equal or greater than 1.')
-    if (cfg.max_distance > 20):
-        sys.exit('Maximum distance must be equal or less than 20.')
+    if (cfg.max_distance > 40):
+        sys.exit('Maximum distance must be equal or less than 40.')
     args.min_levels = args.max_levels = 1
     args.min_x = args.max_x = 1
     args.min_z = args.max_z = 1
@@ -1693,7 +1700,7 @@ if (count == 0):
         print 'No treasure hunts were generated!'
         print 'You may have asked for too many steps, or your allowed spawn'
         print 'region is too small.  Try disabling fill_caves, and check'
-        print 'your min_dist and max_dist settings in your config.'
+        print 'your min_distance and max_distance settings in your config.'
     else:
         print 'No dungeons were generated!'
         print 'You may have requested too deep or too large a dungeon, or your '
@@ -1705,4 +1712,4 @@ if (count == 0):
 if (args.command == 'addth'):
     print 'Placed', count, 'treasure hunts!'
 else:
-    print 'Placed', count, 'dungeons!'
+    print 'Placed', count, 'dungeons!'    
