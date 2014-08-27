@@ -360,7 +360,7 @@ class TreasureHunt (Dungeon):
         print 'Placed %d landmarks.' % ( self.steps )
         if self.args.debug:
             for lm in self.landmarks:
-                print '  %d, %d' % ( lm.pos.x, lm.pos.z )
+                print '  %d, %d: %s' % ( lm.pos.x, lm.pos.z, lm.describe() )
             print 'Complete'
 
     def placechests(self, level=0):
