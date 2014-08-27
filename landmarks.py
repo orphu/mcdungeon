@@ -495,6 +495,12 @@ class FlowerGarden(Clearing):
             (materials.Lilac, 10),
             (materials.RoseBush, 10),
             (materials.Peony, 10),
+            (materials.Dandelion, 5),
+            (materials.Poppy, 5),
+            (materials.RedTulip, 2),
+            (materials.OrangeTulip, 2),
+            (materials.WhiteTulip, 2),
+            (materials.PinkTulip, 2),
             (materials.RedMushroom, 1),
         )
         for p in iterate_disc(p0, p1):
@@ -504,6 +510,8 @@ class FlowerGarden(Clearing):
                 continue
             flower = weighted_choice(_flowers)
             self.parent.setblock(p.up(1), flower, 0)
+            if ( flower.val == 175 or flower.val == 'minecraft:double_plant' ):
+                self.parent.setblock(p.up(2), flower, flower.data + 8)
                 
     def describe (self):
         return "a flower garden"
