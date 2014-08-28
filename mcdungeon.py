@@ -567,10 +567,7 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
 				info.get('full_name', 'Dungeon')[:23]
 			)
 
-    if genpoi is True:
-        # End the POI format, and add the marker definition
-        poiOutput += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
-    else:
+    if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
             '-------------------------+\n'
 
