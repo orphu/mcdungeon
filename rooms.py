@@ -1206,6 +1206,7 @@ class SpiderLair(Basic):
     _min_size = Vec(1, 1, 2)
     _max_size = Vec(1, 1, 2)
     size = Vec(1, 1, 2)
+    _is_easymode = False
 
     def placed(self):
         self.canvas = (
@@ -1353,24 +1354,25 @@ class SpiderLair(Basic):
             pit_blocks.remove(c)
             self.parent.setblock(c, materials.Chest)
             self.parent.addchest(c, loottable._maxtier)
-        # Spider spawners
-        # In the future, maybe spiders will walk on web
-        # for x in xrange(3):
-        #    s = random.choice(pit_blocks)
-        #    pit_blocks.remove(s)
-        #    self.parent.setblock(s, materials.Spawner)
-        #    self.parent.addspawner(s, 'Spider')
-        # Spiders in teh walls!
-        count = 0
-        while count < 5:
-            p = self.loc + Vec(random.randint(0, 15), 3, random.randint(0, 32))
-            if p not in self.parent.blocks:
-                self.parent.setblock(p, materials.Spawner)
-                self.parent.setblock(p.up(1), materials.Air)
-                self.parent.setblock(p.up(2), materials.Air)
-                self.parent.setblock(p.up(3), materials.Air)
-                self.parent.addspawner(p, 'CaveSpider')
-                count += 1
+        # Spider spawners, Easy mode version is in the web
+        if (self._is_easymode):
+            for x in xrange(3):
+                s = random.choice(pit_blocks)
+                pit_blocks.remove(s)
+                self.parent.setblock(s, materials.Spawner)
+                self.parent.addspawner(s, 'Spider')
+        # Spiders in teh walls! (Normal mode)
+        else:
+            count = 0
+            while count < 5:
+                p = self.loc + Vec(random.randint(0, 15), 3, random.randint(0, 32))
+                if p not in self.parent.blocks:
+                    self.parent.setblock(p, materials.Spawner)
+                    self.parent.setblock(p.up(1), materials.Air)
+                    self.parent.setblock(p.up(2), materials.Air)
+                    self.parent.setblock(p.up(3), materials.Air)
+                    self.parent.addspawner(p, 'CaveSpider')
+                    count += 1
 
         # Portal
         drawExitPortal(self.loc + Vec(1, 0, 0), self.parent)
@@ -1394,6 +1396,17 @@ class SpiderLair(Basic):
                 webs[p] = True
         for p, q in webs.items():
             self.parent.setblock(p, materials.Cobweb)
+
+           
+class SpiderLairEasy(SpiderLair):
+    _name = 'spiderlaireasy'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1, 1, 2)
+    _max_size = Vec(1, 1, 2)
+    size = Vec(1, 1, 2)
+    _is_easymode = True
 
 
 class PitWithArchers(Basic2x2):

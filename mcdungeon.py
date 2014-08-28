@@ -1062,8 +1062,6 @@ if (args.command == 'list'):
 
 # GenPOI mode
 if (args.command == 'genpoi'):
-
-
     # List the known dungeons in OverViewer POI format, and exit
     quiet_mode = True
     if args.outputdir is None:
@@ -1712,4 +1710,4 @@ if (count == 0):
 if (args.command == 'addth'):
     print 'Placed', count, 'treasure hunts!'
 else:
-    print 'Placed', count, 'dungeons!'    
+    print 'Placed', count, 'dungeons!'
