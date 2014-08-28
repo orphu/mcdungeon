@@ -975,7 +975,7 @@ if (args.command == 'interactive'):
                     tHunts[i][0],
                     tHunts[i][1]
                 )
-	
+
         while (args.all is False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
@@ -1045,10 +1045,8 @@ if (args.command == 'delete'):
               ' when deleting dungeons or treasure hunts.'
         sys.exit(1)
     # Get a list of known dungeons and their size.
-    if dungeons == []:
-        dungeons, foo = loadCaches(world, oworld)
-    if tHunts == []:
-        foo, tHunts = loadCaches(world, oworld)
+    if dungeons == [] and tHunts == []:
+        dungeons, tHunts = loadCaches(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0 and len(tHunts) == 0:
         sys.exit()
@@ -1141,7 +1139,7 @@ if (args.command == 'regenerate'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
-        dungeons, foo = loadCaches(world, oworld)
+        dungeons, tHunts = loadCaches(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
@@ -1271,8 +1269,8 @@ if (args.command == 'add'):
 	# Override offset
 	if (args.offset is not None):
 		cfg.offset = '%d, %d, %d' % (args.offset[0],
-									 args.offset[1],
-									 args.offset[2])
+                                     args.offset[1],
+                                     args.offset[2])
 
 	if (
 		args.entrance is not None and
@@ -1285,10 +1283,9 @@ if (args.command == 'add'):
 	):
 		print 'Entrance offset values out of range.'
 		print 'These should be >= 0 and < the maximum width or length of' \
-			  ' the dungeon.'
+              ' the dungeon.'
 		sys.exit(1)
 
-		
 if (args.command == 'addth'):
     # Step count range for treasure hunts
     result = re.search('(\d+)-(\d+)', args.steps)
@@ -1328,7 +1325,7 @@ if (args.command == 'addth'):
     args.min_levels = args.max_levels = 1
     args.min_x = args.max_x = 1
     args.min_z = args.max_z = 1
-	
+
 # Everything below is add/regen mode
 
 
@@ -1559,7 +1556,7 @@ if (cfg.offset is None or cfg.offset is ''):
                 chunk_cache[key] = ['S', -1, 0]
                 chunk_stats[4][1] += 1
                 chunk_stats[8][1] -= 1
-					
+
     # Funky little chunk map
     if args.debug:
         for cz in xrange(chunk_min[1], chunk_max[1] + 1):
