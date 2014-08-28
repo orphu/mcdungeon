@@ -424,15 +424,21 @@ def loadWorld(world_name):
     return world, oworld
 
 
-def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
-    '''Scan a world for dungeons. Try to cache the results and only look at
-    chunks that have changed since the last run.'''
+def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
+    '''Scan a world for dungeons and treasure hunts. Try to cache
+    the results and only look at chunks that have changed since the
+    last run.'''
+
     global cache_path
     pm = pmeter.ProgressMeter()
 
-    # Try to load the cache
+    # Try to load the dungeon cache
     dungeonCacheOld, mtime = utils.loadDungeonCache(cache_path)
     dungeonCache = {}
+
+    # Try to load the treasure hunt cache
+    tHuntCacheOld, mtime = utils.loadTHuntCache(cache_path)
+    tHuntCache = {}
 
     # Scan with overviewer
     regions = oworld.get_regionset(None)
@@ -440,16 +446,16 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     cached = 0
     notcached = 0
 
-    if quiet_mode is False:
-        print 'Scanning world for existing dungeons:'
+    if genpoi is False:
+        print 'Scanning world for existing dungeons and treasure hunts:'
         print 'cache mtime: %d' % (mtime)
         pm.init(count, label='')
     for cx, cz, cmtime in regions.iterate_chunks():
         count -= 1
-        if quiet_mode is False:
+        if genpoi is False:
             pm.update_left(count)
         key = '%s,%s' % (cx * 16, cz * 16)
-        if (cmtime > mtime or key in dungeonCacheOld):
+        if (cmtime > mtime or key in dungeonCacheOld or key in tHuntCacheOld):
             notcached += 1
             for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
                 if (
@@ -465,19 +471,30 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                 ):
                     key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
                     dungeonCache[key] = tileEntity
+                if (
+                    tileEntity['id'] == 'Chest' and
+                    'CustomName' in tileEntity and
+                    tileEntity['CustomName'] == 'MCDungeon THunt Data Library'
+                ):
+                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    tHuntCache[key] = tileEntity
         else:
             cached += 1
             continue
-    if quiet_mode is False:
+    if genpoi is False:
         pm.set_complete()
         print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
                                              100 * cached / world.chunkCount)
 
+    # Save the caches
     utils.saveDungeonCache(cache_path, dungeonCache)
+    utils.saveTHuntCache(cache_path, tHuntCache)
+
+    output = ''
+    poiOutput = ''
 
     # Process the dungeons
     dungeons = []
-    output = ''
     output += "Known dungeons on this map:\n"
     output += '+-----------+----------------+---------+-------+----+'\
               '-------------------------+\n'
@@ -491,14 +508,6 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
     )
     output += '+-----------+----------------+---------+-------+----+'\
               '-------------------------+\n'
-
-    if ( genpoi is True ):
-        # POI format header
-        output = '#\n# Cut from here into your OverViewer config.py and customise\n#\n\n'
-        output += 'worlds[\'%s\'] = "%s\\%s"\n' % ( args.world, mclevel.saveFileDir, args.world )
-        output += 'outputdir = "%s"\n\n' % ( args.outputdir )
-        output += 'def dungeonFilter(poi):\n\tif poi[\'id\'] == \'MCDungeon\':\n\t\ttry:\n\t\t\treturn (poi[\'name\'], poi[\'description\'])\n\t\texcept KeyError:\n\t\t\treturn poi[\'name\'] + \'\\n\'\n\n'
-        output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[\n' % ( args.world )
 
     for tileEntity in dungeonCache.values():
         info = utils.decodeDungeonInfo(tileEntity)
@@ -529,7 +538,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                          info["position"].y,
                          info["position"].z,
                          version))
-        if  genpoi is True :
+        if  genpoi is True:
             # If we have a 'new' format, with a defined portal_exit,
             # then we use that.  Otherwise, identify the top of the
             # entrance stairway and use that instead.
@@ -543,7 +552,7 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
                 py = info["position"].y - info["portal_exit"].y # reversed!
                 pz = info["position"].z + info["portal_exit"].z
             # Output the POI format for OverViewer
-            output += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
+            poiOutput += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
                 px,py,pz,
                 info.get('full_name', 'Dungeon'),
                 info.get('full_name', 'Dungeon'),levels,xsize,zsize
@@ -560,72 +569,20 @@ def listDungeons(world, oworld, expand_fill_caves=False, genpoi=False):
 
     if genpoi is True:
         # End the POI format, and add the marker definition
-        output += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
+        poiOutput += '\t],\n\t\'markers\': [dict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True)]\n}\n'
     else:
         output += '+-----------+----------------+---------+-------+----+'\
             '-------------------------+\n'
 
-    if len(dungeons) > 0:
-        print output
-    else:
-        if genpoi is False:
-            print 'No dungeons found!'
-    return dungeons
-
-def listTHunts(world, oworld, genpoi=False):
-    '''Scan a world for treasure hunts. Try to cache the results and only look at
-    chunks that have changed since the last run.'''
-	# This would be more efficient if merged into the listDungeons function somehow
-    global cache_path
-    pm = pmeter.ProgressMeter()
-
-    # Try to load the cache
-    tHuntCacheOld, mtime = utils.loadTHuntCache(cache_path)
-    tHuntCache = {}
-
-    # Scan with overviewer
-    regions = oworld.get_regionset(None)
-    count = world.chunkCount
-    cached = 0
-    notcached = 0
-    if genpoi is False:
-        print 'Scanning world for existing treasure hunts:'
-        print 'cache mtime: %d' % (mtime)
-        pm.init(count, label='')
-    for cx, cz, cmtime in regions.iterate_chunks():
-        count -= 1
-        if genpoi is False:
-            pm.update_left(count)
-        key = '%s,%s' % (cx * 16, cz * 16)
-        if (cmtime > mtime or key in tHuntCacheOld):
-            notcached += 1
-            for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
-                if (
-                    tileEntity['id'] == 'Chest' and
-                    'CustomName' in tileEntity and
-                    tileEntity['CustomName'] == 'MCDungeon THunt Data Library'
-                ):
-                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
-                    tHuntCache[key] = tileEntity
-        else:
-            cached += 1
-            continue
-    if genpoi is False:
-        pm.set_complete()
-        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
-                                             100 * cached / world.chunkCount)
-
-    utils.saveTHuntCache(cache_path, tHuntCache)
-
     # Process the treasure hunts
     tHunts = []
-    output = ''
+    output += '\n'
     if genpoi is False:
         output += "Known treasure hunts on this map:\n"
         output += '+-----------+----------------+---------+-------+----+'\
                   '-------------------------+\n'
         output += '| %9s | %14s | %7s | %5s | %2s | %23s |\n' % (
-            'Pos',    
+            'Pos',
             'Date/Time',
             'Ver',
             'Range',
@@ -634,11 +591,11 @@ def listTHunts(world, oworld, genpoi=False):
         )
         output += '+-----------+----------------+---------+-------+----+'\
                   '-------------------------+\n'
-	
+
     for tileEntity in tHuntCache.values():
         info = utils.decodeTHuntInfo(tileEntity)
-        try: 
-		    (major, minor, patch) = info['version'].split('.')
+        try:
+            (major, minor, patch) = info['version'].split('.')
         except KeyError:
             continue
         version = float(major + '.' + minor)
@@ -653,7 +610,7 @@ def listTHunts(world, oworld, genpoi=False):
         steps = info['steps']
         offset = 0
 
-        tHunts.append(( 
+        tHunts.append((
                          info["position"].x,
                          info["position"].z,
                          minrange,
@@ -665,7 +622,7 @@ def listTHunts(world, oworld, genpoi=False):
                          info["position"].z,
                          version))
         if genpoi is True :
-            output += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s",\n\t\t\'description\':"%s\\n%d Steps, Range %d - %d"},\n' % (
+            poiOutput += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s",\n\t\t\'description\':"%s\\n%d Steps, Range %d - %d"},\n' % (
                 info["landmarks"][0].x+8,
                 info["landmarks"][0].y,
                 info["landmarks"][0].z+8,
@@ -682,35 +639,36 @@ def listTHunts(world, oworld, genpoi=False):
                     stepname = "Final location"
                 else:
                     stepname = "Waypoint %d" % (i-1)
-                output += '\t\t{\'id\':\'MCDungeonTHW\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s (%s)",\n\t\t\'description\':"%s\\n%s\\n(%d steps)"},\n' % (
+                poiOutput += '\t\t{\'id\':\'MCDungeonTHW\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s (%s)",\n\t\t\'description\':"%s\\n%s\\n(%d steps)"},\n' % (
                     l.x+8,
                     l.y,
                     l.z+8,
                     info.get('full_name', 'Treasure Hunt'), stepname,
                     info.get('full_name', 'Treasure Hunt'), stepname, steps-1
-                )			    
+                )
         else:
-			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
-				'%d %d' % (info["position"].x, info["position"].z),
-				time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
-				info['version'],
-				'%d-%d' % (minrange,maxrange),
-				steps,
-				info.get('full_name', 'Treasure')[:23]
-			)
-		
-		
+            output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
+                '%d %d' % (info["position"].x, info["position"].z),
+                time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
+                info['version'],
+                '%d-%d' % (minrange,maxrange),
+                steps,
+                info.get('full_name', 'Treasure')[:23]
+            )
+
     if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
             '-------------------------+\n'
-			
-    if len(tHunts) > 0:
+
+    if genpoi is True:
+        print poiOutput
+    elif len(tHunts) > 0 or len(dungeons) > 0:
         print output
     else:
-        if genpoi is False:
-            print 'No treasure hunts found!'
-    return tHunts
-	
+        print 'No dungeons or treasure hunts found!'
+
+    return dungeons, tHunts
+
 # Globals
 world = None
 oworld = None
@@ -952,7 +910,7 @@ if (args.command == 'interactive'):
         args.dungeons = []
         args.all = False
         world, oworld = loadWorld(args.world)
-        dlist = listDungeons(world, oworld)
+        dlist, tlist = loadCaches(world, oworld)
         if len(dlist) == 0:
             sys.exit()
         print 'Choose a dungeon to regenerate:'
@@ -999,12 +957,11 @@ if (args.command == 'interactive'):
             cfg.mapstore = args.world
 
         world, oworld = loadWorld(args.world)
-        dungeons = listDungeons(world, oworld)
-        tHunts = listTHunts(world, oworld)
+        dungeons, thunts = loadCaches(world, oworld)
 
         if len(dungeons) == 0 and len(tHunts) == 0:
             sys.exit()
-			
+
         print 'Choose object(s) to delete:\n----------------------------\n'
         print '\t[a] Delete ALL dungeons and hunts from this map.'
         if len(dungeons) > 0:
@@ -1056,8 +1013,7 @@ if world is None:
 # List mode
 if (args.command == 'list'):
     # List the known dungeons and exit
-    dungeons = listDungeons(world, oworld)
-    tHunts = listTHunts(world, oworld)
+    dungeons, tHunts = loadCaches(world, oworld)
     sys.exit()
 
 # GenPOI mode
@@ -1075,8 +1031,7 @@ if (args.command == 'genpoi'):
     output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
     print output
 
-    dungeons = listDungeons(world, oworld, genpoi=True)
-    tHunts = listTHunts(world, oworld, genpoi=True)
+    dungeons, tHunts = loadCaches(world, oworld, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
     output += '\t\tdict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True),\n'
     output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest_red.png", checked=True),\n'
@@ -1094,9 +1049,9 @@ if (args.command == 'delete'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
-        dungeons = listDungeons(world, oworld)
+        dungeons, foo = loadCaches(world, oworld)
     if tHunts == []:
-        tHunts = listTHunts(world, oworld)
+        foo, tHunts = loadCaches(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0 and len(tHunts) == 0:
         sys.exit()
@@ -1189,7 +1144,7 @@ if (args.command == 'regenerate'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
-        dungeons = listDungeons(world, oworld)
+        dungeons, foo = loadCaches(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
@@ -1570,8 +1525,10 @@ if (cfg.offset is None or cfg.offset is ''):
             good_chunks[(cx, cz)] = chunk_cache[key][2]
     pm.set_complete()
 
+    # Load caches
+    old_dungeons, old_thunts = loadCaches(world, oworld, expand_fill_caves=True)
+
     # Find old dungeons
-    old_dungeons = listDungeons(world, oworld, expand_fill_caves=True)
     for d in old_dungeons:
         if args.debug:
             print 'old dungeon:', d
@@ -1586,7 +1543,6 @@ if (cfg.offset is None or cfg.offset is ''):
                     chunk_stats[8][1] -= 1
 
     # Find old hunts
-    old_thunts = listTHunts(world, oworld)
     for t in old_thunts:
         if args.debug:
             print 'old treasure hunt:', t
