@@ -38,12 +38,12 @@ limited: (optional) When True, this trade will never refresh. Use for
         
 Input/Output item format:
 
-Item Name[/Item Name/...][,Item Count][,Enchant Levels]
+    Item Name[/Item Name/...][,Item Count][,Enchant Levels]
 
-e.g.
-One Emerald: Emerald
-Ten Emeralds: Emerald,10
-An Emerald or A Diamond: Emerald/Diamond
-An enchanted sword: Wooden Sword,1,10
+Examples:
+    Emerald            # One Emerald
+    Emerald,10         # Ten Emeralds
+    Emerald/Diamond    # An Emerald or A Diamond
+    Wooden Sword,1,10  # An enchanted sword
 
 You can use anything you would normally put in a loot table.
