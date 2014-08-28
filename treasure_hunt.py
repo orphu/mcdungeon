@@ -430,6 +430,8 @@ class TreasureHunt (Dungeon):
                 break
             if random.randint(1,100) > cfg.th_intermediate:
                 if random.randint(1,100) < cfg.th_bonus:
+                    if self.args.debug:
+                        print "Adding an intermediate treasure chest"
                     self.landmarks[tostep-1].addcluechest(tier=int(tostep/cfg.th_multiplier))
                 continue
 			# save book and restart 

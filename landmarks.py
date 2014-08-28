@@ -105,15 +105,15 @@ class Clearing(object):
             self.parent.setblock(p.up(3),materials.Air)
             self.parent.setblock(p.up(4),materials.Air)
             # Set the disc to the base material
-            self.parent.setblock(p,mat,lock=True)
+            self.parent.setblock(p,mat)
             # In case ground is sloping or has gaps, add underlying blocks
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
             self.parent.setblock(p.down(3),mat,soft=True)
             # Iterate up to remove any trees
             # This seems to not be working correctly?
-            i = 1
-            while chunk.Blocks[p.x & 15, p.z & 15, center.y - i] == materials.Wood.val:
+            i = 5
+            while chunk.Blocks[p.x & 0xf, p.z & 0xf, center.y - i] == materials.Wood.val:
                 # delete the tree
               	self.parent.setblock(p.up(i), materials.Air)
                 i = i + 1
@@ -255,7 +255,7 @@ class SmallCottage(Clearing):
 
     def addchest ( self, tier=0, name='', locked=None ):
         _chestpos = (
-            ('under the fireplace"',Vec(-2,1,0)),
+            ('under the fireplace',Vec(-2,1,0)),
             ('under the bed',Vec(2,1,1)),
             ('under the doorstep',Vec(1,1,-2)),
             ('in the rafters',Vec(2,-4,0))
@@ -472,9 +472,6 @@ class FairyRing(Clearing):
     def describe (self):
         return "a fairy ring"
 
-#class Graveyard(Clearing):
-#    _name = 'graveyard'
-
 class FlowerGarden(Clearing):
     _name = 'flowergarden'        
 
@@ -515,10 +512,88 @@ class FlowerGarden(Clearing):
                 
     def describe (self):
         return "a flower garden"
-        
-#class Well(Clearing):
-#    _name = 'well'		               
 
+class Well(Clearing):
+    _name = 'well'	
+    _description = "a well"    
+    # The well has a hidden secret room down under the water, using wallsigns 
+    # to hold the water back.  Chest may be in room, or in roof, or at
+    # bottom of well, or buried nearby.  Should we put something interesting
+    # into the room, like a horde of silverfish or a zombie, or a spawner?
+    def render (self):
+        center = self.pos + Vec(8,0,8)
+        size = 6
+        self.addclearing(center,size)
+		
+        # well - remember +ve Y is down
+        for i in xrange(-1,7):
+          for x in xrange(7,10):
+            for z in xrange(7,10):
+              self.parent.setblock(self.offset+Vec(x,i,z),self.stone, soft=False)
+        for i in xrange(0,6):
+          self.parent.setblock(self.offset+Vec(8,i,8),materials.StillWater, soft=False)
+        # mouth
+        self.parent.setblock(self.offset+Vec(8,-1,8),materials.Air)
+        # secret room
+        for p in iterate_hollow_cube(self.offset+Vec(4,5,6),self.offset+Vec(7,2,9)):
+          self.parent.setblock(p,self.stone)
+        for p in iterate_cube(self.offset+Vec(5,4,7),self.offset+Vec(6,3,8)):
+          self.parent.setblock(p,materials.Air)
+        #self.parent.setblock(self.offset + Vec(5,4,8), materials.Torch)
+                
+        # secret door
+        self.parent.setblock(self.offset+Vec(7,3,8),materials.WallSign,2)
+        self.parent.setblock(self.offset+Vec(7,4,8),materials.WallSign,2)
+        self.parent.addsign(self.offset+Vec(7,3,8), "", self.parent.owner, "- was here -", "Keep away!")
+        self.parent.addsign(self.offset+Vec(7,4,8), "", "Secret", "Treasure", "Room")
+        # roof
+        self.parent.setblock(self.offset+Vec(7,-2,8),materials.Fence)
+        self.parent.setblock(self.offset+Vec(9,-2,8),materials.Fence)
+        for x in xrange(7,10):
+            self.parent.setblock(self.offset+Vec(x,-3,7),materials.SpruceWoodStairs,2)
+            self.parent.setblock(self.offset+Vec(x,-3,9),materials.SpruceWoodStairs,3)
+            self.parent.setblock(self.offset+Vec(x,-4,8),materials.SpruceWoodSlab)
+        self.parent.setblock(self.offset+Vec(7,-3,8),materials.SpruceWoodPlanks)
+        self.parent.setblock(self.offset+Vec(9,-3,8),materials.SpruceWoodPlanks)
+        
+        _descs = ( 
+            'a well',
+            'a well',
+            'an old well',
+            'a deep well',
+            'a source of water',
+            'Jack and Jill\'s bane',
+        )
+        self._description = random.choice(_descs)
+    
+    def describe (self):
+        return self._description
+
+    def addchest ( self, tier=0, name='', locked=None ):
+        _chestpos = (
+            ('in the roof',Vec(0,-3,0)),
+            ('at the bottom of the well',Vec(0,6,0)),
+            ('buried to the east',Vec(2,1,0)),
+            ('down the well',Vec(-3,3,-1)),
+            ('in a hidden room down the well',Vec(-3,3,-1)),
+            ('in my secret room',Vec(-3,3,-1)),
+        )
+        c = random.choice(_chestpos)
+        self.chest = self.offset + c[1]
+        self.chestdesc = c[0]
+        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
+        self.cluechest = self.offset + Vec(6,-1,8)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
+        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+
+#class Graveyard(Clearing):
+#    _name = 'graveyard'
+#    We build several graves.  Use the 1.8 json-style sign labels to
+#    make a grave marker show the current player's name.
+                
 #class Forge(Clearing):
 #    _name = 'forge'
 
