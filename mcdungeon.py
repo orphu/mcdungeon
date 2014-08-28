@@ -957,7 +957,7 @@ if (args.command == 'interactive'):
             cfg.mapstore = args.world
 
         world, oworld = loadWorld(args.world)
-        dungeons, thunts = loadCaches(world, oworld)
+        dungeons, tHunts = loadCaches(world, oworld)
 
         if len(dungeons) == 0 and len(tHunts) == 0:
             sys.exit()
@@ -978,7 +978,7 @@ if (args.command == 'interactive'):
                     tHunts[i][0],
                     tHunts[i][1]
                 )
-	
+
         while (args.all is False and args.dungeons == []):
             d = raw_input('\nEnter choice, or q to quit: ')
             if d == 'a':
@@ -1049,9 +1049,7 @@ if (args.command == 'delete'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
-        dungeons, foo = loadCaches(world, oworld)
-    if tHunts == []:
-        foo, tHunts = loadCaches(world, oworld)
+        dungeons, tHunts = loadCaches(world, oworld)
     # No dungeons. Exit.
     if len(dungeons) == 0 and len(tHunts) == 0:
         sys.exit()
