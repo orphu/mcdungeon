@@ -56,6 +56,7 @@ class TreasureHunt (Dungeon):
         self.tile_ents = {}
         self.ents = []
         self.placed_items = []
+        self.entrance = None
         self.room_size = 16
         self.room_height = 6
         self.position = Vec(0, 0, 0)

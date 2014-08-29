@@ -1335,16 +1335,17 @@ if (args.number is not 1):
         print 'WARN: Offset option is ignored when generating multiple ' \
               ' dungeons.'
         cfg.offset = None
-    if (args.entrance is not None):
-        print 'WARN: Entrance option is ignored when generating multiple ' \
-              ' dungeons.'
-        args.entrance = None
-    if (args.html is not None):
-        print 'WARN: HTML option is ignored when generating multiple dungeons.'
-        args.html = None
     if (args.seed is not None):
         print 'WARN: Seed option is ignored when generating multiple dungeons.'
         args.seed = None
+    if args.command is not 'addth':
+        if (args.entrance is not None):
+            print 'WARN: Entrance option is ignored when generating multiple ' \
+                  ' dungeons.'
+            args.entrance = None
+        if (args.html is not None):
+            print 'WARN: HTML option is ignored when generating multiple dungeons.'
+            args.html = None
 
 
 # Load lewts
