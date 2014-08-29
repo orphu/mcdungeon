@@ -1714,7 +1714,7 @@ class SecretArmory(SecretRoom):
             note['tag']['title'] = nbt.TAG_String("A torn page")
             note['tag']['author'] = nbt.TAG_String("Unknown")
             note['tag']['pages'] = nbt.TAG_List()
-            note['tag']['pages'].append(nbt.TAG_String(words))
+            note['tag']['pages'].append(nbt.TAG_String('"%s"'%(words)))
             max_lev = (self.c1.y // dungeon.room_height) + 1
             dungeon.addplaceditem(note, max_lev=max_lev)
 
