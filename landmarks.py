@@ -88,7 +88,7 @@ class Clearing(object):
             print 'Cannot identify central material'
             mat = materials.Dirt
         # Now make sure we have something solid
-        if mat is None or mat is False: # or mat not in materials.heightmap_solids:
+        if mat is None or mat is False or not isinstance(mat, materials.Material):
             print 'Center material is %s' % mat
             mat = materials.Dirt
         if mat.val == materials.Air.val or mat.val == materials.StillWater.val:
@@ -109,7 +109,7 @@ class Clearing(object):
             self.parent.setblock(p.up(3),materials.Air)
             self.parent.setblock(p.up(4),materials.Air)
             # Set the disc to the base material
-            self.parent.setblock(p,mat,soft=False)
+            self.parent.setblock(p,mat)
             # In case ground is sloping or has gaps, add underlying blocks
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
@@ -267,12 +267,13 @@ class SmallCottage(Clearing):
         return "a small cottage"
 
     def addchest ( self, tier=0, name='', locked=None ):
-        _chestpos = (
+        _chestpos = [
             ('under the fireplace',Vec(6,1,8)),
             ('under the bed',Vec(10,1,9)),
             ('under the doorstep',Vec(9,1,6)),
-            ('in the rafters',Vec(10,-4,8))
-        )
+        ]
+        if self._ruined is False:
+            _chestpos.append( ['in the rafters',Vec(10,-4,8)] )
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
@@ -678,12 +679,13 @@ class Forge(Clearing):
         return "a blacksmith's forge"
 
     def addchest ( self, tier=0, name='', locked=None ):
-        _chestpos = (
+        _chestpos = [
             ('under the anvil',Vec(9,1,7)),
             ('under the crafting table',Vec(10,1,10)),
             ('under the forge',Vec(7,1,7)),
-            ('in the rafters',Vec(10,-4,9))
-        )
+        ]
+        if self._ruined is False:
+            _chestpos.append( ['in the rafters',Vec(10,-4,9)] )
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
@@ -692,7 +694,7 @@ class Forge(Clearing):
 
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(10,-1,7)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.setblock( self.cluechest, materials.Chest, 1, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
 class AbandonedForge(Forge):
@@ -742,7 +744,7 @@ class Graveyard(Clearing):
             slab  = self.stoneslab
             
         if self.biome is not None and ( self.biome == 2 or self.biome == 130 ):
-            dirt = materials.Sand
+            dirt = materials.RedSand
         else:
             dirt = materials.Gravel
             
@@ -800,10 +802,14 @@ class Graveyard(Clearing):
         center = self.pos + Vec(8,0,8)
         size = 14
         self.addclearing(center,size)
-        for x in xrange(4,12,4):
+        
+        for x in xrange(5,13,4):
             for z in xrange(4,14,2):
                 self.add_grave(Vec(x,0,z))
-    
+        for p in iterate_four_walls(self.offset + Vec(3,-1,3), self.offset + Vec(13,-1,14), 0):
+            self.parent.setblock(p, materials.Fence)
+        self.parent.setblock(self.offset+Vec(13,-1,9), materials.FenceGate,3)
+
     def describe (self):
         return "a graveyard"
 
@@ -817,7 +823,7 @@ class Graveyard(Clearing):
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
-        self.cluechest = self.offset + Vec(9,-1,13)
+        self.cluechest = self.offset + Vec(12,-1,8)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
         
