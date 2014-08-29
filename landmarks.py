@@ -80,10 +80,6 @@ class Clearing(object):
     def addclearing (self, center, diam):
         # flatten a disc of ground, erase any trees
         # centre is in world coordinates
-        p0 = Vec(center.x - diam/2 - self.parent.position.x,
-                 self.parent.position.y - center.y,
-                 center.z - diam/2 - self.parent.position.z ) 
-        p1 = p0.trans(diam+1, 0, diam+1)
         # identify the ground material at the centre
         try:
             chunk = self.parent.world.getChunk(center.x>>4, center.z>>4)
@@ -94,9 +90,17 @@ class Clearing(object):
         # Now make sure we have something solid
         if mat is None or mat is False: # or mat not in materials.heightmap_solids:
             print 'Center material is %s' % mat
-            mat = materials.meta_stonedungeon
-        if mat.val == materials.Air.val:
             mat = materials.Dirt
+        if mat.val == materials.Air.val or mat.val == materials.StillWater.val:
+            mat = materials.Dirt
+            self.offset.y -= 1
+            sel.pos.y += 1
+            center.y -= 1
+
+        p0 = Vec(center.x - diam/2 - self.parent.position.x,
+                 self.parent.position.y - center.y,
+                 center.z - diam/2 - self.parent.position.z ) 
+        p1 = p0.trans(diam+1, 0, diam+1)
         # Iterate around the entire disc
         for p in iterate_disc(p0,p1):
             # At least 4 clear blocks above
@@ -105,7 +109,7 @@ class Clearing(object):
             self.parent.setblock(p.up(3),materials.Air)
             self.parent.setblock(p.up(4),materials.Air)
             # Set the disc to the base material
-            self.parent.setblock(p,mat)
+            self.parent.setblock(p,mat,soft=False)
             # In case ground is sloping or has gaps, add underlying blocks
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
@@ -620,9 +624,9 @@ class Forge(Clearing):
         for p in iterate_plane(Vec(6,0,6), Vec(11,0,10)):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
         # forge
-        self.parent.setblock(self.offset+Vec(8,-1,7),self.stonesteps,0)
-        self.parent.setblock(self.offset+Vec(8,-1,8),self.stonesteps,2)
-        self.parent.setblock(self.offset+Vec(7,-1,8),self.stonesteps,2)
+        self.parent.setblock(self.offset+Vec(8,-1,7),self.stonesteps,1)
+        self.parent.setblock(self.offset+Vec(8,-1,8),self.stonesteps,3)
+        self.parent.setblock(self.offset+Vec(7,-1,8),self.stonesteps,3)
 		
         if self._ruined is False:
             # if not ruined, add table and roof
@@ -632,6 +636,9 @@ class Forge(Clearing):
                 self.parent.setblock(self.offset+Vec(6+x,-4,6),materials.SpruceWoodStairs,2)
                 for i in xrange(3):
                     self.parent.setblock(self.offset+Vec(6+x,-5,7+i),materials.SpruceWoodSlab,soft=True)
+            for i in xrange(3):
+                self.parent.setblock(self.offset+Vec(6,-4,7+i),materials.SpruceWoodPlanks,soft=True)
+                self.parent.setblock(self.offset+Vec(11,-4,7+i),materials.SpruceWoodPlanks,soft=True)
             # add table
             self.parent.setblock(self.offset+Vec(7,-1,10),materials.Fence)
             self.parent.setblock(self.offset+Vec(7,-2,10),materials.WoodenPressurePlate)
@@ -642,7 +649,7 @@ class Forge(Clearing):
                 # obsidian in forge
                 self.parent.setblock(self.offset+Vec(7,-1,7),materials.Obsidian)
                 # anvil
-                self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,1)
+                self.parent.setblock(self.offset+Vec(9,-1,7),materials.Anvil,5)
             else:
                 # if not abandoned, add torches inside
                 self.parent.setblock(self.offset + Vec(10,-3,10), materials.Torch, 2)
@@ -650,10 +657,10 @@ class Forge(Clearing):
                 # lava in forge
                 self.parent.setblock(self.offset+Vec(7,-1,7),materials.StillLava)
                 # anvil
-                self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,0)
+                self.parent.setblock(self.offset+Vec(9,-1,7),materials.Anvil,1)
                 # add villager
                 villager_name = self.parent.namegen.genname()
-                pos = self.offset + Vec(8,-1,8)
+                pos = self.offset + Vec(9,-1,9)
                 tags = get_entity_mob_tags('Villager',
                                    Pos=pos,
                                    Profession=3, # blacksmith always
@@ -665,7 +672,7 @@ class Forge(Clearing):
             # obsidian in forge
             self.parent.setblock(self.offset+Vec(7,-1,7),materials.Obsidian)
             # anvil
-            self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,2)
+            self.parent.setblock(self.offset+Vec(9,-1,7),materials.Anvil,9)
 
     def describe (self):
         return "a blacksmith's forge"
@@ -674,7 +681,8 @@ class Forge(Clearing):
         _chestpos = (
             ('under the anvil',Vec(9,1,7)),
             ('under the crafting table',Vec(10,1,10)),
-            ('under the forge',Vec(7,1,7))
+            ('under the forge',Vec(7,1,7)),
+            ('in the rafters',Vec(10,-4,9))
         )
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
@@ -709,17 +717,17 @@ class Graveyard(Clearing):
             return
         grave_name = self.parent.namegen.genname()
         if random.randint(0,100) < 10:
-            grave_name = "an unknown miner"
-        # Different materials
-        mtype = random.randint(0,4)
+            grave_name = "unknown miner"
+        # Different materials: red sandstone is 1.8 only
+        mtype = random.randint(1,4)
         if mtype==0:
-            stone = materials.ChiseledQuartz
-            steps = materials.QuartzStairs
-            slab  = materials.QuartzSlab  
-        elif mtype==1:
             stone = materials.RedSandstone
             steps = materials.RedSandstoneStairs
             slab  = materials.RedSandstoneSlab
+        elif mtype==1:
+            stone = materials.ChiseledQuartz
+            steps = materials.QuartzStairs
+            slab  = materials.QuartzSlab  
         elif mtype==2:
             stone = materials.Obsidian
             steps = self.stonesteps
@@ -732,7 +740,12 @@ class Graveyard(Clearing):
             stone = self.stone
             steps = self.stonesteps
             slab  = self.stoneslab
-    
+            
+        if self.biome is not None and ( self.biome == 2 or self.biome == 130 ):
+            dirt = materials.Sand
+        else:
+            dirt = materials.Gravel
+            
         # Different gravestone designs
         gtype = random.randint(0,4)
         if gtype==0:
@@ -742,7 +755,7 @@ class Graveyard(Clearing):
             self.parent.setblock(self.offset + pos + Vec(0,-2,1), stone)
         elif gtype==2:
             self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
-            self.parent.setblock(self.offset + pos + Vec(0,-2,1), materials.MossStoneWall)                  
+            self.parent.setblock(self.offset + pos + Vec(0,-2,1), materials.Fence)                  
         elif gtype==3:
             self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
             self.parent.setblock(self.offset + pos + Vec(0,-2,1), slab)
@@ -753,32 +766,42 @@ class Graveyard(Clearing):
         if random.randint(0,100) < 10:
             # open grave
             self.parent.setblock(self.offset + pos + Vec(1,0,1), materials.Air, soft=False)
-            self.parent.setblock(self.offset + pos + Vec(1,0,2), materials.Air, soft=False)
             self.parent.setblock(self.offset + pos + Vec(1,1,1), materials.Air, soft=False)
-            self.parent.setblock(self.offset + pos + Vec(1,1,2), materials.Air, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(2,0,1), materials.Air, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(2,1,1), materials.Air, soft=False)
         else:
+            # dirt
+            self.parent.setblock(self.offset + pos + Vec(1,0,1), dirt, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(2,0,1), dirt, soft=False)
             # coffin
             self.parent.setblock(self.offset + pos + Vec(1,1,1), materials.OakWoodPlanks, soft=False)
-            self.parent.setblock(self.offset + pos + Vec(1,1,2), materials.OakWoodPlanks, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(2,1,1), materials.OakWoodPlanks, soft=False)
+            # flower on grave
+            if random.randint(0,100) < 50:
+                _flowers = (
+                    (materials.Dandelion, 5),
+                    (materials.Poppy, 5),
+                    (materials.RedTulip, 2),
+                    (materials.OrangeTulip, 2),
+                    (materials.WhiteTulip, 2),
+                    (materials.PinkTulip, 2),
+                )            
+                flower = weighted_choice(_flowers)
+                self.parent.setblock(self.offset + pos + Vec(2,-1,1), flower)
 
-        # sometimes replace grave name with special json to give player's name (1.8 only)
-        if random.randint(0,100)<5:
-            grave_name = '{selector:\"@p\",color:gold}'
-        else:
-            self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
-            grave_name = '"%s"' % grave_name
-        
         # marker
-        self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 0)
-        self.parent.addsign(self.offset + pos + Vec(1,-1,1), '"Here lies"', grave_name, '"R.I.P."',"")
+        if random.randint(0,100)>5:
+            self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
+            self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 3)
+            self.parent.addsign(self.offset + pos + Vec(1,-1,1), 'Here lies', grave_name, 'R.I.P.','')
         
     def render (self):
         # add a graveyard
         center = self.pos + Vec(8,0,8)
         size = 14
         self.addclearing(center,size)
-        for x in xrange(4,13,3):
-            for z in xrange(4,13,3):
+        for x in xrange(4,12,4):
+            for z in xrange(4,14,2):
                 self.add_grave(Vec(x,0,z))
     
     def describe (self):
@@ -789,7 +812,7 @@ class Graveyard(Clearing):
         # position is y-reversed voxels relative to pos
         p = random.choice(self._graves)
         self.chest = self.offset + p[1]
-        self.chestdesc = "buried in the grave of %s" % ( p[0] )
+        self.chestdesc = "sleeping with the body of %s" % ( p[0] )
         self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
