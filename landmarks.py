@@ -264,10 +264,10 @@ class SmallCottage(Clearing):
 
     def addchest ( self, tier=0, name='', locked=None ):
         _chestpos = (
-            ('under the fireplace',Vec(-2,1,0)),
-            ('under the bed',Vec(2,1,1)),
-            ('under the doorstep',Vec(1,1,-2)),
-            ('in the rafters',Vec(2,-4,0))
+            ('under the fireplace',Vec(6,1,8)),
+            ('under the bed',Vec(10,1,9)),
+            ('under the doorstep',Vec(9,1,6)),
+            ('in the rafters',Vec(10,-4,8))
         )
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
@@ -279,7 +279,6 @@ class SmallCottage(Clearing):
         self.cluechest = self.offset + Vec(10,-1,9)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
-
 		
 class AbandonedCottage(SmallCottage):
     _name = 'abandonedcottage'
@@ -598,13 +597,208 @@ class Well(Clearing):
         self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
-#class Graveyard(Clearing):
-#    _name = 'graveyard'
-#    We build several graves.  Use the 1.8 json-style sign labels to
-#    make a grave marker show the current player's name.
-                
-#class Forge(Clearing):
-#    _name = 'forge'
+class Forge(Clearing):
+    # This is similar to the Cottage
+    _name = 'forge'
+    _ruined = False
+    _abandoned = False
+    
+    def render (self):
+        center = self.pos + Vec(8,0,8)
+        size = 12
+        self.addclearing(center,size)
+		
+        # create forge
+        # walls
+        for p in iterate_plane(Vec(6,-1,6), Vec(6,-3,10)):
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
+        for p in iterate_plane(Vec(11,-1,6), Vec(11,-3,10)):
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
+        for p in iterate_plane(Vec(7,-1,6), Vec(10,-3,6)):
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
+        # floor 
+        for p in iterate_plane(Vec(6,0,6), Vec(11,0,10)):
+            self.parent.setblock(self.offset + p, self.stone, soft=False)
+        # forge
+        self.parent.setblock(self.offset+Vec(8,-1,7),self.stonesteps,0)
+        self.parent.setblock(self.offset+Vec(8,-1,8),self.stonesteps,2)
+        self.parent.setblock(self.offset+Vec(7,-1,8),self.stonesteps,2)
+		
+        if self._ruined is False:
+            # if not ruined, add table and roof
+            self.parent.setblock(self.offset+Vec(10,-1,10),materials.CraftingTable)
+            for x in xrange(6):
+                self.parent.setblock(self.offset+Vec(6+x,-4,10),materials.SpruceWoodStairs,3)
+                self.parent.setblock(self.offset+Vec(6+x,-4,6),materials.SpruceWoodStairs,2)
+                for i in xrange(3):
+                    self.parent.setblock(self.offset+Vec(6+x,-5,7+i),materials.SpruceWoodSlab,soft=True)
+            # add table
+            self.parent.setblock(self.offset+Vec(7,-1,10),materials.Fence)
+            self.parent.setblock(self.offset+Vec(7,-2,10),materials.WoodenPressurePlate)
+            
+            if self._abandoned is True:
+                # if abandoned, add cobwebs (parent function) voxels relative
+                self.parent.cobwebs(self.offset + Vec(7,-1,7), self.offset + Vec(10,-4,10))
+                # obsidian in forge
+                self.parent.setblock(self.offset+Vec(7,-1,7),materials.Obsidian)
+                # anvil
+                self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,1)
+            else:
+                # if not abandoned, add torches inside
+                self.parent.setblock(self.offset + Vec(10,-3,10), materials.Torch, 2)
+                self.parent.setblock(self.offset + Vec(7,-3,10), materials.Torch, 1)
+                # lava in forge
+                self.parent.setblock(self.offset+Vec(7,-1,7),materials.StillLava)
+                # anvil
+                self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,0)
+                # add villager
+                villager_name = self.parent.namegen.genname()
+                pos = self.offset + Vec(8,-1,8)
+                tags = get_entity_mob_tags('Villager',
+                                   Pos=pos,
+                                   Profession=3, # blacksmith always
+                                   CustomName=villager_name)
+                self.parent.addentity(tags)
+                if self.parent.args.debug:
+                    print "Added blacksmith '%s'" % ( villager_name )
+        else:
+            # obsidian in forge
+            self.parent.setblock(self.offset+Vec(7,-1,7),materials.Obsidian)
+            # anvil
+            self.parent.setblock(self.offset+Vec(9 ,-1,7),materials.Anvil,2)
+
+    def describe (self):
+        return "a blacksmith's forge"
+
+    def addchest ( self, tier=0, name='', locked=None ):
+        _chestpos = (
+            ('under the anvil',Vec(9,1,7)),
+            ('under the crafting table',Vec(10,1,10)),
+            ('under the forge',Vec(7,1,7))
+        )
+        c = random.choice(_chestpos)
+        self.chest = self.offset + c[1]
+        self.chestdesc = c[0]
+        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
+        self.cluechest = self.offset + Vec(10,-1,7)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+
+class AbandonedForge(Forge):
+    _name = 'abandonedforge'
+    _ruined = False
+    _abandoned = True
+
+class RuinedForge(Forge):
+    _name = 'ruinedforge'
+    _ruined = True
+    _abandoned = True
+
+class Graveyard(Clearing):
+    _name = 'graveyard'
+    _graves = []
+    # We build several graves.  Use the 1.8 json-style sign labels to
+    # make a grave marker show the current player's name.
+    # Each grave fits in a 3x3 block, with the sign facing East
+    # Only add to the _graves array if we can hide a chest here
+    def add_grave( self, pos ):
+        if random.randint(0,100) < 10:
+            return
+        grave_name = self.parent.namegen.genname()
+        if random.randint(0,100) < 10:
+            grave_name = "an unknown miner"
+        # Different materials
+        mtype = random.randint(0,4)
+        if mtype==0:
+            stone = materials.ChiseledQuartz
+            steps = materials.QuartzStairs
+            slab  = materials.QuartzSlab  
+        elif mtype==1:
+            stone = materials.RedSandstone
+            steps = materials.RedSandstoneStairs
+            slab  = materials.RedSandstoneSlab
+        elif mtype==2:
+            stone = materials.Obsidian
+            steps = self.stonesteps
+            slab  = self.stoneslab
+        elif mtype==3:
+            stone = materials.OakWoodPlanks
+            steps = materials.OakWoodStairs
+            slab  = materials.OakWoodSlab
+        else:
+            stone = self.stone
+            steps = self.stonesteps
+            slab  = self.stoneslab
+    
+        # Different gravestone designs
+        gtype = random.randint(0,4)
+        if gtype==0:
+            self.parent.setblock(self.offset + pos + Vec(0,-1,1), steps, 0)
+        elif gtype==1:
+            self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
+            self.parent.setblock(self.offset + pos + Vec(0,-2,1), stone)
+        elif gtype==2:
+            self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
+            self.parent.setblock(self.offset + pos + Vec(0,-2,1), materials.MossStoneWall)                  
+        elif gtype==3:
+            self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
+            self.parent.setblock(self.offset + pos + Vec(0,-2,1), slab)
+        else:
+            self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
+    
+        # Grave itself
+        if random.randint(0,100) < 10:
+            # open grave
+            self.parent.setblock(self.offset + pos + Vec(1,0,1), materials.Air, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(1,0,2), materials.Air, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(1,1,1), materials.Air, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(1,1,2), materials.Air, soft=False)
+        else:
+            # coffin
+            self.parent.setblock(self.offset + pos + Vec(1,1,1), materials.OakWoodPlanks, soft=False)
+            self.parent.setblock(self.offset + pos + Vec(1,1,2), materials.OakWoodPlanks, soft=False)
+
+        # sometimes replace grave name with special json to give player's name (1.8 only)
+        if random.randint(0,100)<5:
+            grave_name = '{selector:\"@p\",color:gold}'
+        else:
+            self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
+            grave_name = '"%s"' % grave_name
+        
+        # marker
+        self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 0)
+        self.parent.addsign(self.offset + pos + Vec(1,-1,1), '"Here lies"', grave_name, '"R.I.P."',"")
+        
+    def render (self):
+        # add a graveyard
+        center = self.pos + Vec(8,0,8)
+        size = 14
+        self.addclearing(center,size)
+        for x in xrange(4,13,3):
+            for z in xrange(4,13,3):
+                self.add_grave(Vec(x,0,z))
+    
+    def describe (self):
+        return "a graveyard"
+
+    def addchest ( self, tier=0, name='', locked=None ):
+        # Add a chest to the map: this is called after rendering
+        # position is y-reversed voxels relative to pos
+        p = random.choice(self._graves)
+        self.chest = self.offset + p[1]
+        self.chestdesc = "buried in the grave of %s" % ( p[0] )
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+    
+    def addcluechest ( self, tier=0, name='', items=[], locked=None ):
+        self.cluechest = self.offset + Vec(9,-1,13)
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        
+# ----------------------------------------------------------------------------
 
 # Catalog the features we know about. 
 _landmarks = {}
@@ -620,7 +814,7 @@ def new (name, parent, pos, biome=None):
     if name in _landmarks.keys():
         return _landmarks[name](parent,pos,biome)
     return Clearing(parent,pos,biome)
-    
+
 def pickLandmark(thunt, pos,
              landmark_list=None,
              default='clearing'):
