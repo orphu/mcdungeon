@@ -779,20 +779,20 @@ class Graveyard(Clearing):
             # flower on grave
             if random.randint(0,100) < 50:
                 _flowers = (
-                    (materials.Dandelion, 5),
-                    (materials.Poppy, 5),
-                    (materials.RedTulip, 2),
-                    (materials.OrangeTulip, 2),
-                    (materials.WhiteTulip, 2),
-                    (materials.PinkTulip, 2),
-                )            
+                    (materials.PottedDandelion, 5),
+                    (materials.PottedPoppy, 5),
+                    (materials.PottedRedMushroom, 2),
+                    (materials.PottedDeadBush, 2),
+                    (materials.FlowerPot, 2),
+                    (materials.PottedCactus, 2),
+                )
                 flower = weighted_choice(_flowers)
                 self.parent.setblock(self.offset + pos + Vec(2,-1,1), flower)
 
         # marker
         if random.randint(0,100)>5:
             self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
-            self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 3)
+            self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 5) # face east
             self.parent.addsign(self.offset + pos + Vec(1,-1,1), 'Here lies', grave_name, 'R.I.P.','')
         
     def render (self):
