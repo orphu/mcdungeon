@@ -246,10 +246,19 @@ class SmallCottage(Clearing):
                 # if not abandoned, add torches inside
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(2,-3,0), materials.Torch, 2)
                 self.parent.setblock(self.offset + Vec(8,0,8) + Vec(-1,-3,0), materials.Torch, 1)
+                # add villager
+                shopkeeper_name = self.parent.namegen.genname()
+                pos = self.offset + Vec(8,-1,8)
+                tags = get_entity_mob_tags('Villager',
+                                   Pos=pos,
+                                   Profession=0, # farmer always
+                                   CustomName=shopkeeper_name)
+                self.parent.addentity(tags)
+                if self.parent.args.debug:
+                    print "Added farmer '%s'" % ( shopkeeper_name )
         # chimney
         self.parent.setblock(self.offset+Vec(6,-5,8),self.stone)
 
-    
     def describe (self):
         return "a small cottage"
 
