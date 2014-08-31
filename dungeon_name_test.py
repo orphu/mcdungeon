@@ -42,4 +42,8 @@ for x in xrange(50):
             owner=o,
             owners=os
         ),
+        ruins.MazeEntrance.nameDungeon().format(
+            owner=o,
+            owners=os
+        ),
     ])
