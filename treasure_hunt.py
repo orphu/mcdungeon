@@ -386,7 +386,7 @@ class TreasureHunt (Dungeon):
         pages = []
         pages.append( self.dungeon_name )
         # If necessary, we create a key to lock the chests with
-        if cfg.th_locked is True and cfg.compat_mode is False:
+        if cfg.th_locked is True:
             keyname = self.keyName()
             print "Creating key: %s" % ( keyname )
             chestkey = nbt.TAG_Compound()
@@ -442,7 +442,7 @@ class TreasureHunt (Dungeon):
                 print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
             pages.append( 'When ye reach this place, seek ye another clue %s.' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
-            if cfg.th_locked is True and cfg.compat_mode is False:
+            if cfg.th_locked is True:
                 pages.append( 'But take ye heed -- tis only %s as can open the chest.' % ( keyname ) )
             cluebook_tag = nbt.TAG_Compound()
             cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
@@ -459,7 +459,7 @@ class TreasureHunt (Dungeon):
             if fromstep == 1:
                 self.landmarks[fromstep-1].addcluechest(name=self.dungeon_name,tier=0)
                 self.landmarks[fromstep-1].addcluechestitem_tag(cluebook)
-                if cfg.th_locked is True and cfg.compat_mode is False:
+                if cfg.th_locked is True:
                     self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
             else:
                 self.landmarks[fromstep-1].addchestitem_tag(cluebook)
@@ -476,7 +476,7 @@ class TreasureHunt (Dungeon):
             print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
         pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s.' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )
-        if cfg.th_locked is True and cfg.compat_mode is False:
+        if cfg.th_locked is True:
             pages.append( 'Take heed!  For \'tis only %s that can open the chest that holds my treasure.' % ( keyname ) )
         cluebook_tag = nbt.TAG_Compound()
         cluebook_tag['title'] = nbt.TAG_String( self.dungeon_name )
@@ -493,7 +493,7 @@ class TreasureHunt (Dungeon):
         if fromstep == 1:
             self.landmarks[fromstep-1].addcluechest(name=self.dungeon_name,tier=0)
             self.landmarks[fromstep-1].addcluechestitem_tag(cluebook)
-            if cfg.th_locked is True and cfg.compat_mode is False:
+            if cfg.th_locked is True:
                 self.landmarks[fromstep-1].addcluechestitem_tag(chestkey)
         else:
             self.landmarks[fromstep-1].addchestitem_tag(cluebook)
