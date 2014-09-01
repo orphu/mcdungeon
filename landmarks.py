@@ -814,11 +814,15 @@ class Graveyard(Clearing):
         return "a graveyard"
 
     def addchest ( self, tier=0, name='', locked=None ):
-        # Add a chest to the map: this is called after rendering
         # position is y-reversed voxels relative to pos
-        p = random.choice(self._graves)
-        self.chest = self.offset + p[1]
-        self.chestdesc = "sleeping with the body of %s" % ( p[0] )
+        if self._graves == []:
+            # unlikely, but there may be no (named) graves
+            self.chest = self.offset + Vec(8,1,8)
+            self.chestdesc = "buried in the middle of the graveyard"
+        else:
+            p = random.choice(self._graves)
+            self.chest = self.offset + p[1]
+            self.chestdesc = "sleeping with the body of %s" % ( p[0] )
         self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
