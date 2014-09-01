@@ -721,11 +721,16 @@ class Graveyard(Clearing):
         if random.randint(0,100) < 10:
             grave_name = "unknown miner"
         # Different materials: red sandstone is 1.8 only
-        mtype = random.randint(1,4)
+        mtype = random.randint(0,4)
         if mtype==0:
-            stone = materials.RedSandstone
-            steps = materials.RedSandstoneStairs
-            slab  = materials.RedSandstoneSlab
+            if cfg.compat_mode == True:
+                stone = self.stone
+                steps = self.stonesteps
+                slab  = self.stoneslab
+            else:
+                stone = materials.RedSandstone
+                steps = materials.RedSandstoneStairs
+                slab  = materials.RedSandstoneSlab
         elif mtype==1:
             stone = materials.ChiseledQuartz
             steps = materials.QuartzStairs
@@ -744,7 +749,10 @@ class Graveyard(Clearing):
             slab  = self.stoneslab
             
         if self.biome is not None and ( self.biome == 2 or self.biome == 130 ):
-            dirt = materials.RedSand
+            if cfg.compat_mode == True:
+                dirt = materials.Sand
+            else:
+                dirt = materials.RedSand
         else:
             dirt = materials.Gravel
             
@@ -814,11 +822,15 @@ class Graveyard(Clearing):
         return "a graveyard"
 
     def addchest ( self, tier=0, name='', locked=None ):
-        # Add a chest to the map: this is called after rendering
         # position is y-reversed voxels relative to pos
-        p = random.choice(self._graves)
-        self.chest = self.offset + p[1]
-        self.chestdesc = "sleeping with the body of %s" % ( p[0] )
+        if self._graves == []:
+            # unlikely, but there may be no (named) graves
+            self.chest = self.offset + Vec(8,1,8)
+            self.chestdesc = "buried in the middle of the graveyard"
+        else:
+            p = random.choice(self._graves)
+            self.chest = self.offset + p[1]
+            self.chestdesc = "sleeping with the body of %s" % ( p[0] )
         self.parent.setblock( self.chest, materials.Chest, lock=True)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     

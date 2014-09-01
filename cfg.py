@@ -98,6 +98,8 @@ th_intermediate = 0
 th_spawners = 'False'
 master_landmark_mobs = []
 
+compat_mode = 'False'
+
 parser = ConfigParser.SafeConfigParser()
 
 
@@ -455,6 +457,8 @@ def Load(filename='default.cfg'):
     th_multiplier = int(get('treasure hunt', 'multiplier', th_multiplier))
     th_intermediate = int(get('treasure hunt', 'intermediate', th_intermediate))
     th_spawners = str2bool(get('treasure hunt', 'spawners', th_spawners))
+
+    compat_mode = str2bool(get('global','compat', compat_mode))
 	
     if (tower < 1.0):
         sys.exit('The tower height parameter is too small. This should be '
