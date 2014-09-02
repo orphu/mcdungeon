@@ -2332,15 +2332,15 @@ class WildGrowth(Farm):
         ((materials.PinkTulip, 7), 1),
         ((materials.OxeyeDaisy, 8), 4),
         ((materials.Dandelion, 0), 4),
-        ((materials.Lilac, 1, 10), 4),
-        ((materials.RoseBush, 4, 11), 4),
+        ((materials.Lilac, 1, 8), 4),
+        ((materials.RoseBush, 4, 8), 4),
         ((materials.Peony, 5, 8), 4),
         ((materials.Fern, 2), 40),
         ((materials.DeadBush, 0), 40),
         ((materials.TallGrass, 1), 40),
         ((materials.DoubleTallGrass, 3, 8), 40),
-        ((materials.DoubleFern, 2, 11), 40)
-        # (materials.Sunflower, 0, 10), #Doesn't look right underground
+        ((materials.DoubleFern, 2, 8), 40)
+        # (materials.Sunflower, 0, 8), #Doesn't look right underground
     ]
 
     def plant(self, locs):
@@ -2391,14 +2391,14 @@ class WildGarden(WildGrowth):
         ((materials.PinkTulip, 7), 1),
         ((materials.OxeyeDaisy, 8), 4),
         ((materials.Dandelion, 0), 4),
-        ((materials.Lilac, 1, 10), 4),
-        ((materials.RoseBush, 4, 11), 4),
+        ((materials.Lilac, 1, 8), 4),
+        ((materials.RoseBush, 4, 8), 4),
         ((materials.Peony, 5, 8), 4),
         ((materials.Fern, 2), 2),
         ((materials.TallGrass, 1), 2),
         ((materials.DoubleTallGrass, 3, 8), 2),
-        ((materials.DoubleFern, 2, 11), 2)
-        # (materials.Sunflower, 0, 10), #Doesn't look right underground
+        ((materials.DoubleFern, 2, 8), 2)
+        # (materials.Sunflower, 0, 8), #Doesn't look right underground
     ]
 
 
