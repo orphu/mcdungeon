@@ -283,13 +283,15 @@ class TreasureHunt (Dungeon):
                         #print '  check - x,z = y %d,%d = %d'%(x,z,y)
                         while y>-64 and chunk.Blocks[x,z,y] not in heightmap_solids:
                             mat = chunk.Blocks[x,z,y]
-                            if mat == materials.Lava.val or mat == materials.Water.val:
+                            if mat in (materials.Lava.val,
+                                       materials.Water.val,
+                                       materials.StillWater.val):
                                 hasliquid = True
                             y = y - 1
                         #print '  check - x,z = y %d,%d = %d'%(x,z,y)
                         miny = min(miny,y)
                         maxy = max(maxy,y)
-                        
+
                 # avoid anywhere not flat enough
                 if (maxy - miny) > 4:
                     if self.args.debug:
