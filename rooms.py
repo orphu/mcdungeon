@@ -2669,7 +2669,7 @@ class Diamond(Blank):
         func = iterate_points_inside_flat_poly
         p = self.loc
         # Air space
-        for y in xrange(height):
+        for y in xrange(self.loc.y, self.loc.y+height):
             for x in func(*self.poly):
                 q = p + x
                 self.parent.setblock(Vec(q.x, y, q.z), materials.Air)
@@ -2680,7 +2680,7 @@ class Diamond(Blank):
         for x in func(*self.poly):
             self.parent.setblock(p+x, materials._ceiling)
         # Walls
-        for y in xrange(height):
+        for y in xrange(self.loc.y, self.loc.y+height):
             for x in iterate_flat_poly(*self.poly):
                 q = p + x
                 self.parent.setblock(Vec(q.x, y, q.z), materials._wall)
