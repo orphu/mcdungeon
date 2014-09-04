@@ -486,7 +486,7 @@ class FairyRing(Clearing):
         return "a fairy ring"
 
 class FlowerGarden(Clearing):
-    _name = 'flowergarden'        
+    _name = 'flowergarden'
 
     # Render relative to TreasureHunt position in y-reversed coords
     def render (self):
@@ -494,7 +494,7 @@ class FlowerGarden(Clearing):
         size = random.randint(10,14)
         # Now need to flatten the circle in case it is on a slope
         self.addclearing(center,size)
-                
+
         # Create the flower garden
         p0 = Vec(center.x - size/2 + 1 - self.parent.position.x,
                  self.parent.position.y - center.y,
@@ -521,8 +521,8 @@ class FlowerGarden(Clearing):
             flower = weighted_choice(_flowers)
             self.parent.setblock(p.up(1), flower, 0)
             if ( flower.val == 175 or flower.val == 'minecraft:double_plant' ):
-                self.parent.setblock(p.up(2), flower, flower.data + 8)
-                
+                self.parent.setblock(p.up(2), flower, 8)
+
     def describe (self):
         return "a flower garden"
 
