@@ -1397,7 +1397,7 @@ class SpiderLair(Basic):
         for p, q in webs.items():
             self.parent.setblock(p, materials.Cobweb)
 
-           
+
 class SpiderLairEasy(SpiderLair):
     _name = 'spiderlaireasy'
     _is_entrance = False
@@ -2623,6 +2623,76 @@ class NaturalCavernLarge(SandstoneCavernLarge):
     _subfloor = materials._natural
     _floortype = 'blank'
     _small_cavern = 'naturalcavern'
+
+
+class Diamond(Blank):
+    _name = 'diamond'
+    _is_entrance = True
+    _is_stairwell = True
+
+    def setData(self):
+       # Shape of the room walls. We'll use polygon to draw.
+        self.poly = (
+            Vec(6, 0, 0),
+            Vec(9, 0 ,0),
+            Vec(15, 0, 6),
+            Vec(15, 0, 9),
+            Vec(9, 0, 15),
+            Vec(6, 0 ,15),
+            Vec(0, 0, 9),
+            Vec(0, 0, 6),
+        )
+        # Halls can poke into the room a bit.
+        self.hallLength = [4, 4, 4, 4]
+        # But halls are very narrow.
+        self.hallSize = [
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6]]
+
+        h = self.parent.room_height - 2
+        self.canvas = (
+            Vec(6, h, 4),
+            Vec(9, h ,4),
+            Vec(11, h, 6),
+            Vec(11, h, 9),
+            Vec(9, h, 11),
+            Vec(6, h ,11),
+            Vec(4, h, 9),
+            Vec(4, h, 6),
+        )
+
+    def render(self):
+        height = self.size.y * self.parent.room_height - 2
+        func = iterate_points_inside_flat_poly
+        p = self.loc
+        # Air space
+        for y in xrange(height):
+            for x in func(*self.poly):
+                q = p + x
+                self.parent.setblock(Vec(q.x, y, q.z), materials.Air)
+        # Floor
+        for x in func(*self.poly):
+            self.parent.setblock(p+x+Vec(0,height,0), materials._floor)
+        # Ceiling
+        for x in func(*self.poly):
+            self.parent.setblock(p+x, materials._ceiling)
+        # Walls
+        for y in xrange(height):
+            for x in iterate_flat_poly(*self.poly):
+                q = p + x
+                self.parent.setblock(Vec(q.x, y, q.z), materials._wall)
+        # Subfloor
+        sf1 = self.loc.trans(0,
+                             self.size.y * self.parent.room_height - 1,
+                             0)
+        sf2 = sf1.trans(self.size.x * self.parent.room_size - 1,
+                        0,
+                        self.size.z * self.parent.room_size - 1)
+        for x in iterate_plane(sf1, sf2):
+            self.parent.setblock(x, materials._subfloor)
+
 
 
 class Circular(Basic):
