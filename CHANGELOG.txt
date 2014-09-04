@@ -2,7 +2,7 @@ v0.14.1 -
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
 
-   * New room: Diamond (orphu)
+   * New rooms: Diamond, Alcove (orphu)
 
 v0.14.0 - 09/03/2014
 

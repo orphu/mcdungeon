@@ -2649,7 +2649,8 @@ class Diamond(Blank):
             [6, self.parent.room_size - 6],
             [6, self.parent.room_size - 6],
             [6, self.parent.room_size - 6],
-            [6, self.parent.room_size - 6]]
+            [6, self.parent.room_size - 6]
+        ]
 
         h = self.parent.room_height - 2
         self.canvas = (
@@ -2693,6 +2694,74 @@ class Diamond(Blank):
         for x in iterate_plane(sf1, sf2):
             self.parent.setblock(x, materials._subfloor)
 
+
+class Alcove(Diamond):
+    _name = 'alcove'
+    _is_entrance = True
+    _is_stairwell = True
+
+    def setData(self):
+        self.poly = (
+            Vec(6, 0, 0),
+            Vec(9, 0 ,0),
+            Vec(15, 0, 6),
+            Vec(15, 0, 15),
+            Vec(0, 0, 15),
+            Vec(0, 0 ,6)
+        )
+        self.hallLength = [4, 1, 1, 1]
+        self.hallSize = [
+            [6, 9],
+            [6, 15],
+            [0, 15],
+            [6, 15]
+        ]
+        h = self.parent.room_height - 2
+        self.canvas = (
+            Vec(6, h, 4),
+            Vec(9, h ,4),
+            Vec(13, h, 6),
+            Vec(13, h, 13),
+            Vec(2, h, 13),
+            Vec(2, h, 6)
+        )
+
+        # Rotate randomly. Coords have to stay clockwise oriented
+        # for the polygon functions to work.
+        r = random.randint(0,3)
+        if r == 1:
+            # Rotate 180
+            self.poly = [Vec(15-p.x, p.y, 15-p.z) for p in self.poly]
+            self.canvas = [Vec(15-p.x, p.y, 15-p.z) for p in self.canvas]
+            self.hallLength = [1, 1, 4, 1]
+            self.hallSize = [
+                [0, 15],
+                [0, 9],
+                [6, 9],
+                [0, 9]
+            ]
+        if r == 2:
+            # Rotate 90 CCW
+            self.poly = [Vec(p.z, p.y, 15-p.x) for p in self.poly]
+            self.canvas = [Vec(p.z, p.y, 15-p.x) for p in self.canvas]
+            self.hallLength = [1, 1, 1, 4]
+            self.hallSize = [
+                [6, 15],
+                [0, 15],
+                [6, 15],
+                [6, 9]
+            ]
+        if r == 3:
+            # Rotate 90 CW
+            self.poly = [Vec(15-p.z, p.y, p.x) for p in self.poly]
+            self.canvas = [Vec(15-p.z, p.y, p.x) for p in self.canvas]
+            self.hallLength = [1, 4, 1, 1]
+            self.hallSize = [
+                [0, 9],
+                [6, 9],
+                [0, 9],
+                [0, 15]
+            ]
 
 
 class Circular(Basic):
