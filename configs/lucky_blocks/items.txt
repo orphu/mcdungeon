@@ -1,0 +1,8 @@
+# Items in this file are loaded in addition to those in the normal items.txt
+# This file is ideal for adding mod items for loot.
+# 
+# Format is:
+# ID,Item Name,Data Value,Maximum Stack Size
+
+# The Lucky Block
+850,Lucky Block,0,64
