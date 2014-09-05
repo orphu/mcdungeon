@@ -18,7 +18,7 @@ import cPickle
 import shutil
 import hashlib
 
-from numpy import array, uint8, zeros, fromstring
+from numpy import uint8, zeros
 
 from pymclevel import nbt
 from utils import Vec
