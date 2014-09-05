@@ -74,15 +74,13 @@ class new:
         bookfile.close()
         # Create NBT tag
         item['tag'] = nbt.TAG_Compound()
+        # Prevent unusual characters from being used with filter
         item['tag']['author'] = nbt.TAG_String(
             filter(
                 lambda x: x in self.valid_characters,
                 bookdata.pop(0)))
-        # Prevent unusual characters from being used
-        item['tag']['title'] = nbt.TAG_String(
-            filter(
-                lambda x: x in self.valid_characters,
-                bookdata.pop(0)))
+        title = filter(lambda x: x in self.valid_characters,bookdata.pop(0))
+        item['tag']['title'] = nbt.TAG_String(title[:32])
         item['tag']["pages"] = nbt.TAG_List()
         # Slice the pages at 50 and the page text at 256 to match minecraft
         # limits
