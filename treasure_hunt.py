@@ -71,14 +71,11 @@ class TreasureHunt (Dungeon):
         # the treasure hunt name is stored in dungeon_name and is built here
         # because we don't have a ruins[] section
         _thnames = (
-            ('{owners} lost booty',10),
-            ('{owners} treasure',10),
-            ('{owners} secret loot', 10),
-            ('Lost treasure of {owner}',10),
-            ('Hidden gold of {owner}',10),
-            ('{owners} hidden gold', 10),
-            ('The secret hoard of {owner}',10),
-            ('Buried treasure of {owner} the Pirate',10),
+            ('{owners} booty',20),
+            ('{owners} treasure',20),
+            ('{owners} loot', 20),
+            ('{owners} chest', 20),
+            ('{owners} locker', 20),
             ('{owners} college fund',1)
         )
         # Pick a starting size.
@@ -139,10 +136,11 @@ class TreasureHunt (Dungeon):
             self.dungeon_name = self.dinfo['dungeon_name'].format(
                 owner=self.owner,
                 owners=owners)
+            self.dungeon_name = self.dungeon_name[:32]
             self.dinfo['full_name'] = self.dungeon_name
             print "Treasure hunt name:", self.dungeon_name
             self.renderlandmarks()
-            
+
             self.placechests()
             if cfg.th_spawners is True:
                 self.placespawners()
@@ -160,7 +158,7 @@ class TreasureHunt (Dungeon):
             # all previous landmarks
             #self.thunt_cache[key] = self.tile_ents[Vec(0, 0, 0)]
             self.thunt_cache[key] = True
-			
+
             # copy results to the world
             self.applychanges()
 
@@ -225,7 +223,7 @@ class TreasureHunt (Dungeon):
                     d = min(d, (dpos - Vec(key[0],0,key[1])).mag2d())
             if d >= self.min_distance:
                 positions[key] = 1
-			
+
         if (cfg.maximize_distance and len(self.thunt_cache) > 0):
             if self.args.debug:
                 print 'Marking distances...'
@@ -334,7 +332,7 @@ class TreasureHunt (Dungeon):
         for s in xrange( self.steps ):
             self.pm.update_left(count)
             if pos is None:
-			    pos = Vec(self.position.x, self.position.y, self.position.z)
+                pos = Vec(self.position.x, self.position.y, self.position.z)
             else:
                 pos = self.findlandmarklocation(previous=pos)
             if pos is not None:
@@ -344,7 +342,7 @@ class TreasureHunt (Dungeon):
                 except:
                     self.steps -= count
                     break
-                y = chunk.HeightMap[8,8] - 1					
+                y = chunk.HeightMap[8,8] - 1
                 while (y > -64 and
                        chunk.Blocks[8, 8, y] not in heightmap_solids):
                    y = y - 1
@@ -357,7 +355,7 @@ class TreasureHunt (Dungeon):
                 self.steps -= count
                 break
             count -= 1
-			
+
         self.pm.set_complete()
         print 'Placed %d landmarks.' % ( self.steps )
         if self.args.debug:
@@ -417,7 +415,7 @@ class TreasureHunt (Dungeon):
             elif self.landmarks[tostep-2].pos.z > self.landmarks[tostep-1].pos.z:
                 direction = 'North'
             else:
-                direction = ''			
+                direction = ''
             if self.landmarks[tostep-2].pos.x < self.landmarks[tostep-1].pos.x:
                 direction = '%sEast' % ( direction )
             elif self.landmarks[tostep-2].pos.x > self.landmarks[tostep-1].pos.x:
@@ -553,7 +551,7 @@ class TreasureHunt (Dungeon):
             # Finally give the tag to the entity
             self.tile_ents[loc] = root_tag
         self.pm.set_complete()
-		
+
     def renderlandmarks(self):
         '''Call render() on all landmarks to populate the block buffer'''
         count = len(self.landmarks)
