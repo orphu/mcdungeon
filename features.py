@@ -661,7 +661,19 @@ class SecretRoom(Blank):
         self.parent._pistontrap = False
 
     def renderSecretPost(self):
-        pass
+        # Hide the room from maps.
+        self.hideRoom()
+
+    def hideRoom(self):
+        '''Hide all the blocks in this chunk so that they don't show up on
+        maps'''
+        d = self.parent.parent
+        for p in iterate_cube(self.parent.loc,
+                              self.parent.loc + Vec(d.room_size - 1,
+                                                    d.room_height - 1,
+                                                    d.room_size - 1)):
+            if p in d.blocks:
+                d.blocks[p].hide=True
 
     def render(self):
         sb = self.parent.parent.setblock
@@ -796,35 +808,35 @@ class SecretRoom(Blank):
              [8, 8, 8, 8, 8],
              [8, 8, 8, 8, 8]],
             [[2, 4, 4, 4, 4],
-                [1, 1, 1, 12, 4],
-                [2, 4, 4, 4, 4],
-                [2, 1, 1, 1, 4],
-                [2, 1, 1, 1, 4],
-                [2, 1, 1, 1, 4]],
+             [1, 1, 1, 12, 4],
+             [2, 4, 4, 4, 4],
+             [2, 1, 1, 1, 4],
+             [2, 1, 1, 1, 4],
+             [2, 1, 1, 1, 4]],
             [[2, 4, 4, 4, 4],
-                [1, 7, 1, 1, 13],
-                [2, 4, 6, 1, 4],
-                [2, 11, 9, 9, 4],
-                [2, 5, 10, 10, 4],
-                [2, 5, 5, 5, 4]],
+             [1, 7, 1, 1, 13],
+             [2, 4, 6, 1, 4],
+             [2, 11, 9, 9, 4],
+             [2, 5, 10, 10, 4],
+             [2, 5, 5, 5, 4]],
             [[2, 4, 4, 4, 4],
-                [1, 1, 1, 1, 13],
-                [2, 4, 6, 1, 4],
-                [2, 3, 9, 9, 4],
-                [2, 3, 3, 3, 4],
-                [2, 3, 3, 3, 4]],
+             [1, 1, 1, 1, 13],
+             [2, 4, 6, 1, 4],
+             [2, 3, 9, 9, 4],
+             [2, 3, 3, 3, 4],
+             [2, 3, 3, 3, 4]],
             [[14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14]],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14]],
             [[15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15]],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15]],
         ]
         bdata = 3
 
@@ -888,18 +900,24 @@ class SecretRoom(Blank):
             for w in xrange(6):
                 for l in xrange(5):
                     p = spos + dl * l + dw * w + Vec(0, 1, 0) * y
-                    sb(p, mats[template[y][w][l]][0],
-                       mats[template[y][w][l]][1])
+                    if (l < 4):
+                        h = True
+                    else:
+                        h = False
+                    sb(p,
+                       mats[template[y][w][l]][0],
+                       mats[template[y][w][l]][1],
+                       hide=h)
 
         # The button.
         p = spos + dl * 3 + dw * 5 + Vec(0, 1, 0) * 2
         blocks = self.parent.parent.blocks
         while blocks[p + dl].material != materials.Air:
-            sb(p.up(1), materials.Air)
-            sb(p, materials.RedstoneWire)
-            sb(p.down(1), materials.Stone)
+            sb(p.up(1), materials.Air, hide=True)
+            sb(p, materials.RedstoneWire, hide=True)
+            sb(p.down(1), materials.Stone, hide=True)
             p = p + dl
-        sb(p + dl, materials.StoneButton, bdata)
+        sb(p + dl, materials.StoneButton, bdata, hide=True)
 
         # Extend the hallway into the room.
         o = spos + dw
@@ -1027,6 +1045,8 @@ class SecretStudy(SecretRoom):
 
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
 
+        # Hide the room from maps.
+        self.hideRoom()
 
 class SecretAlchemyLab(SecretRoom):
     _name = 'secretalchemylab'
@@ -1130,6 +1150,8 @@ class SecretAlchemyLab(SecretRoom):
 
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
 
+        # Hide the room from maps.
+        self.hideRoom()
 
 class SecretSepulchure(SecretRoom):
     _name = 'secretsepulchure'
@@ -1314,8 +1336,10 @@ class SecretSepulchure(SecretRoom):
 
         # Cobwebs
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
-        
-        
+
+        # Hide the room from maps.
+        self.hideRoom()
+
 class SecretShop(SecretRoom):
     _name = 'secretshop'
 
@@ -1385,7 +1409,7 @@ class SecretShop(SecretRoom):
             pillers = materials.PillarQuartzBlock
             floor = materials.PolishedDiorite
             banner_cols = [15,0]
-       
+
         # Floor
         for q in iterate_cube(self.c1, self.c3):
             sb(q, floor)
@@ -1426,7 +1450,7 @@ class SecretShop(SecretRoom):
         dungeon.addtileentity(get_tile_entity_tags(
                                     eid='EnderChest',
                                     Pos=p))
-                                    
+
         # Free sample!
         p = bl.up(3)+(rt*7)
         dungeon.addentity(
@@ -1436,7 +1460,7 @@ class SecretShop(SecretRoom):
                                   ItemTags=dungeon.inventory.buildFrameItemTag(s.free_sample.lower())
                                   )
         )
-        
+
         # Workshop blocks
         sb(bl.up(1)+(rt*1)+(fw*1), materials.Furnace, orient['U'])
         sb(bl.up(1)+(rt*1)+(fw*2), materials.CraftingTable)
@@ -1510,7 +1534,10 @@ class SecretShop(SecretRoom):
                 rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2Loot)
             tags['Offers']['Recipes'].append(rec)
         dungeon.addentity(tags)
-        return
+
+        # Hide the room from maps.
+        self.hideRoom()
+
 
 class SecretArmory(SecretRoom):
     _name = 'secretarmory'
@@ -1790,6 +1817,9 @@ class SecretArmory(SecretRoom):
                                                              xplevel)
         dungeon.addentity(tags)
 
+        # Hide the room from maps.
+        self.hideRoom()
+
 
 class SecretEnchantingLibrary(SecretRoom):
     _name = 'secretenchantinglibrary'
@@ -1948,6 +1978,9 @@ class SecretEnchantingLibrary(SecretRoom):
                                    CanPickUpLoot=1
                                    )
         dungeon.addentity(tags)
+
+        # Hide the room from maps.
+        self.hideRoom()
 
 
 class Forge(Blank):
