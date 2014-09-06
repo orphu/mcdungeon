@@ -2406,6 +2406,31 @@ class WildGrowth(Farm):
             if random.randint(1, 100) <= 20:
                 self.parent.parent.vines(p, grow=True)
 
+        # Add a rabbit. Possibly killer.
+        if random.randint(1,100) < 75:
+            dungeon = self.parent.parent
+            pos = self.parent.loc + Vec(8,3,8)
+            # 50% chance of a killer rabbit.
+            rtype = weighted_choice((
+                (0,10),
+                (1,10),
+                (2,10),
+                (3,10),
+                (4,10),
+                (5,10),
+                (99,60),
+            ))
+            # Add the rabbit entity to the room.
+            dungeon.addentity(get_entity_mob_tags('Rabbit',
+                                         Pos=pos,
+                                         RabbitType=rtype,
+                                         PersistenceRequired=1))
+            # If it's a killer rabbit, add a holy hand grenade to the surface
+            # chest.
+            if rtype == 99:
+                tag = dungeon.inventory.buildFrameItemTag('magic_holy hand grenade of antioch')
+                dungeon.addplaceditem(tag, max_lev=0)
+
 
 class WildGarden(WildGrowth):
     _name = 'wildgarden'
