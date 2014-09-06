@@ -65,12 +65,14 @@ class Blank(object):
                                 if random.randint(1, 100) <= 90:
                                     self.parent.setblock(
                                         q,
-                                        materials.RedstoneWire
+                                        materials.RedstoneWire,
+                                        hide=True
                                     )
                                 else:
                                     self.parent.setblock(
                                         q,
-                                        materials.TNT
+                                        materials.TNT,
+                                        hide=True
                                     )
                                 continue
                             elif (
@@ -81,7 +83,8 @@ class Blank(object):
                             self.parent.setblock(
                                 q,
                                 mat[tmpl[d][l][w]][0],
-                                mat[tmpl[d][l][w]][1]
+                                mat[tmpl[d][l][w]][1],
+                                hide=True
                             )
                             if tmpl[d][l][w] in cmds:
                                 self.parent.addtileentity(

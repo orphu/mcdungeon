@@ -4,6 +4,11 @@ v0.14.1 -
 
    * New rooms: Diamond, Alcove (orphu)
 
+   * Traps are now hidden on maps. (orphu)
+
+   * Fixed bad book titles causing "Invalid book tag" errors.
+     (JiFish and orphu)
+
 v0.14.0 - 09/03/2014
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
