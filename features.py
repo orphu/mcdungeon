@@ -1424,13 +1424,11 @@ class SecretShop(SecretRoom):
             for i in range(1,4):
                 sb(p.up(i), pillers)
 
-        # Banners
+        # Shop's Banners
         banner_pos = [[bl.up(3)+(rt*6)+(fw*5),orient['U']],
                       [bl.up(3)+(rt*6)+(fw*1),orient['U']],
-                      [bl.up(3)+(rt*8)+(fw*1),orient['D']],
                       [bl.up(3)+(rt*5)+(fw*6),orient['R']],
-                      [bl.up(3)+(rt*1)+(fw*6),orient['R']],
-                      [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
+                      [bl.up(3)+(rt*1)+(fw*6),orient['R']]]
         for b in banner_pos:
             sb(b[0], materials.WallBanner,b[1])
             dungeon.addtileentity(get_tile_entity_tags(
@@ -1438,6 +1436,12 @@ class SecretShop(SecretRoom):
                                     Pos=b[0],
                                     Base=banner_cols[0],
                                     Patterns=[[banner_cols[1],'ss']]))
+        # Dungeon's Banners
+        banner_pos = [[bl.up(3)+(rt*8)+(fw*1),orient['D']],
+                      [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
+        for b in banner_pos:
+            sb(b[0], materials.WallBanner,b[1])
+            dungeon.adddungeonbanner(b[0])
 
         # Desks
         for q in iterate_cube(bl.up(1)+rt+(fw*6), bl.up(1)+rt+(fw*8)):

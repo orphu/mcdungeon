@@ -17,6 +17,7 @@ import features
 import ruins
 import pmeter
 import namegenerator
+import flaggenerator
 import inventory
 from utils import *
 from disjoint_set import DisjointSet
@@ -268,6 +269,9 @@ class Dungeon (object):
             print 'Theme:', self.namegen.theme
             self.owner = self.namegen.genroyalname()
             print 'Owner:', self.owner
+            
+            # And generate a unique flag
+            self.flagdesign = flaggenerator.generateflag()
 
             print "Generating rooms..."
             self.genrooms()
@@ -1007,6 +1011,10 @@ class Dungeon (object):
             inv_tag.append(item_tag)
             slot += 1
         self.tile_ents[loc] = root_tag
+        
+    def adddungeonbanner(self, loc):
+        root_tag = get_tile_entity_tags(eid="Banner",Pos=loc,**self.flagdesign)
+        self.addtileentity(root_tag)
 
     def addentity(self, root_tag):
         self.ents.append(root_tag)
@@ -2389,4 +2397,4 @@ class Dungeon (object):
         name = weighted_choice(_knames).format(A=A,C=C,CC=CC,M=_magic,
             owner=self.owner,owners=owners)
         return name
-	
+
