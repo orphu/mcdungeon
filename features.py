@@ -1491,9 +1491,9 @@ class SecretShop(SecretRoom):
         for p in lamppos:
             sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneLampOn)
 
-        signtext = s.name.replace("{{name's}}", shopkeeper_name+name_post)
-        signtext = signtext.replace("{{name}}", shopkeeper_name)
-        signtext = signtext.split(' ')
+        shopname = s.name.replace("{{name's}}", shopkeeper_name+name_post)
+        shopname = shopname.replace("{{name}}", shopkeeper_name)
+        signtext = shopname.split(' ')
         if (len(signtext) == 0):
             signtext = ['','','Shop','']
         elif (len(signtext) == 1):
@@ -1538,6 +1538,34 @@ class SecretShop(SecretRoom):
                 rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2Loot)
             tags['Offers']['Recipes'].append(rec)
         dungeon.addentity(tags)
+        
+        # Flyer
+        max_lev = (self.c1.y // dungeon.room_height) + 1
+        headline = random.choice([
+            "Grand Opening",
+            "Sale! Sale! Sale!",
+            "Our prices are crazy!",
+            "Don't miss out...",
+            "Fantastic deals today!",
+            "The world famous...",
+            "Always Open!",
+            "Goods bought and sold.",
+        ])
+        page =  '{text:"'+headline+'",bold:true,extra:[{text:"\n\n'+shopname
+        page += '\n\nFind me on the '+converttoordinal(max_lev)
+        page += ' level!\n\n'+s.promotext+'",bold:false}]}'
+        note = nbt.TAG_Compound()
+        note['id'] = nbt.TAG_Short(items.byName("written book").value)
+        note['Damage'] = nbt.TAG_Short(0)
+        note['Count'] = nbt.TAG_Byte(1)
+        note['tag'] = nbt.TAG_Compound()
+        note['tag']['title'] = nbt.TAG_String("Shop Flyer")
+        note['tag']['author'] = nbt.TAG_String("Unknown")
+        note['tag']['pages'] = nbt.TAG_List()
+        note['tag']['pages'].append(nbt.TAG_String(page))
+        # 1-3 flyers
+        for _ in range(0,random.randint(1,3)):
+            dungeon.addplaceditem(note, max_lev=max_lev)
 
         # Hide the room from maps.
         self.hideRoom()
