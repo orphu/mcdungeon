@@ -103,6 +103,10 @@ parser_inter.add_argument('--mapstore',
                           dest='mapstore',
                           metavar='PATH',
                           help='Provide an alternate world to store maps.')
+parser_inter.add_argument('--outputdir',
+                        dest='outputdir',
+                        metavar='PATH',
+                        help='Give the location for the OverViewer output path.')
 
 # AddTH subcommand parser
 parser_addth = subparsers.add_parser('addth', help='Add new treasure hunts.')
@@ -552,10 +556,12 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
                 py = info["position"].y - info["portal_exit"].y # reversed!
                 pz = info["position"].z + info["portal_exit"].z
             # Output the POI format for OverViewer
+            fn = info.get('full_name', 'Dungeon')
+            fn = fn.replace("'","\\'")
             poiOutput += '\t\t{\'id\':\'MCDungeon\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':\'%s\',\n\t\t\'description\':\'%s\\n%d Levels, Size %dx%d\'},\n' % (
                 px,py,pz,
-                info.get('full_name', 'Dungeon'),
-                info.get('full_name', 'Dungeon'),levels,xsize,zsize
+                fn,
+                fn,levels,xsize,zsize
             )
         else:
 			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
@@ -619,12 +625,14 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
                          info["position"].z,
                          version))
         if genpoi is True :
+            fn = info.get('full_name', 'Treasure Hunt')
+            fn = fn.replace("'","\\'")
             poiOutput += '\t\t{\'id\':\'MCDungeonTH\',\n\t\t\'x\':%d,\n\t\t\'y\':%d,\n\t\t\'z\':%d,\n\t\t\'name\':"%s",\n\t\t\'description\':"%s\\n%d Steps, Range %d - %d"},\n' % (
                 info["landmarks"][0].x+8,
                 info["landmarks"][0].y,
                 info["landmarks"][0].z+8,
-                info.get('full_name', 'Treasure Hunt'),
-                info.get('full_name', 'Treasure Hunt'), steps-1, minrange, maxrange
+                fn,
+                fn, steps-1, minrange, maxrange
             )
             # Here, we should also iterate through the waypoints
             i = 0
@@ -640,8 +648,8 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
                     l.x+8,
                     l.y,
                     l.z+8,
-                    info.get('full_name', 'Treasure Hunt'), stepname,
-                    info.get('full_name', 'Treasure Hunt'), stepname, steps-1
+                    fn, stepname,
+                    fn, stepname, steps-1
                 )
         else:
             output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
