@@ -10,10 +10,12 @@ import loottable
 _shops = []
 
 class ShopInfo(object):
-    def __init__(self, name, profession = 0, trades = [], free_sample = 'air'):
+    def __init__(self, name, profession = 0, trades = [], free_sample = 'air',
+                 promotext = ''):
         self.name = str(name)
         self.profession = int(profession)
         self.free_sample = free_sample
+        self.promotext = promotext
         self.trades = []
         for t in trades:
             self.AddTrade(t)
@@ -115,7 +117,8 @@ def LoadShop(filename):
     name = parser.get('shop', 'name')
     profession = parser.get('shop', 'profession_id')
     free_sample = parser.get('shop', 'free_sample')
-    shop = ShopInfo(name,profession,free_sample=free_sample)
+    promotext = parser.get('shop', 'promo_text')
+    shop = ShopInfo(name,profession,free_sample=free_sample,promotext=promotext)
     maxtrade = 1
     while (parser.has_section('trade%d' % maxtrade)):
         chance = parser.get('trade%d' % maxtrade, 'chance')

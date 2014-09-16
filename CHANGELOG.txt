@@ -2,7 +2,16 @@ v0.14.1 -
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
 
-   * ??
+   * New rooms: Diamond, Alcove. (orphu)
+
+   * Brother Maynard left something to help with the killer rabbits. (orphu)
+
+   * Traps are now hidden on maps. (orphu)
+
+   * Fixed bad book titles causing "Invalid book tag" errors.
+     (JiFish and orphu)
+
+   * Hall traps and secret rooms no longer show up on maps. (orphu)
 
 v0.14.0 - 09/03/2014
 

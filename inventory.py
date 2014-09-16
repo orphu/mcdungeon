@@ -7,7 +7,7 @@ import cfg
 import mapstore
 import loottable
 import items
-from utils import topheavy_random
+from utils import topheavy_random, converttoordinal
 from pymclevel import nbt
 
 class new:
@@ -28,19 +28,6 @@ class new:
                 if (str(file.lower()).endswith(".txt") and
                         file.lower() != "readme.txt"):
                     self.booklist.append(file)
-
-        # Book 'editions'
-        self.ed_dict = [
-            '1st',
-            '2nd',
-            '3rd',
-            '4th',
-            '5th',
-            '6th',
-            '7th',
-            '8th',
-            '9th',
-            '10th']
             
         self.valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
 
@@ -74,15 +61,13 @@ class new:
         bookfile.close()
         # Create NBT tag
         item['tag'] = nbt.TAG_Compound()
+        # Prevent unusual characters from being used with filter
         item['tag']['author'] = nbt.TAG_String(
             filter(
                 lambda x: x in self.valid_characters,
                 bookdata.pop(0)))
-        # Prevent unusual characters from being used
-        item['tag']['title'] = nbt.TAG_String(
-            filter(
-                lambda x: x in self.valid_characters,
-                bookdata.pop(0)))
+        title = filter(lambda x: x in self.valid_characters,bookdata.pop(0))
+        item['tag']['title'] = nbt.TAG_String(title[:32])
         item['tag']["pages"] = nbt.TAG_List()
         # Slice the pages at 50 and the page text at 256 to match minecraft
         # limits
@@ -98,7 +83,7 @@ class new:
         item['tag']['display']['Lore'] = nbt.TAG_List()
         item['tag']['display']['Lore'].append(
             nbt.TAG_String(
-                self.ed_dict[ed] +
+                converttoordinal(ed+1) +
                 ' Edition'))
         if (ed == 0):
             item['tag']['generation'] = nbt.TAG_Int(0)

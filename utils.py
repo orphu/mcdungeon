@@ -283,6 +283,46 @@ def iterate_four_walls(corner1, corner3, height):
         yield b
 
 
+def iterate_flat_poly(*poly_points):
+    min_x = floor(min([p.x for p in poly_points]))
+    max_x = ceil(max([p.x for p in poly_points]))
+    min_z = floor(min([p.z for p in poly_points]))
+    max_z = ceil(max([p.z for p in poly_points]))
+    min_y = floor(min([p.y for p in poly_points]))
+    num_points = len(poly_points)
+
+    def point_inside(p):
+        if isinstance(p, Vec2f):
+            p = Vec(p.x, 0, p.z)
+        for i in xrange(num_points):
+            a = poly_points[i]
+            b = poly_points[(i + 1) % num_points]
+
+            if isinstance(a, Vec2f):
+                a = Vec(a.x, 0, a.z)
+            if isinstance(b, Vec2f):
+                b = Vec(b.x, 0, b.z)
+
+            b_to_a = Vec2f.fromVec(b - a)
+            p_to_a = Vec2f.fromVec(p - a)
+
+            det = b_to_a.det(p_to_a)
+            if det < 0:
+                return False
+        return True
+
+    for x in xrange(min_x, max_x + 1):
+        for z in xrange(min_z, max_z + 1):
+            p = Vec(x, min_y, z)
+            if (point_inside(p) and
+                (not point_inside(p.n(1)) or
+                 not point_inside(p.s(1)) or
+                 not point_inside(p.e(1)) or
+                 not point_inside(p.w(1)))
+               ):
+                yield p
+
+
 def iterate_points_inside_flat_poly(*poly_points):
     min_x = floor(min([p.x for p in poly_points]))
     max_x = ceil(max([p.x for p in poly_points]))
@@ -1550,6 +1590,37 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
         root_tag['Motive'] = nbt.TAG_String(Motive)
 
     return root_tag
+    
+
+# Convert number to ordinal (1st, 2nd etc.)
+# source: http://stackoverflow.com/questions/9647202/ordinal-numbers-replacement
+def converttoordinal(numb):
+    if numb < 20: #determining suffix for < 20
+        if numb == 1: 
+            suffix = 'st'
+        elif numb == 2:
+            suffix = 'nd'
+        elif numb == 3:
+            suffix = 'rd'
+        else:
+            suffix = 'th'  
+    else:   #determining suffix for > 20
+        tens = str(numb)
+        tens = tens[-2]
+        unit = str(numb)
+        unit = unit[-1]
+        if tens == "1":
+           suffix = "th"
+        else:
+            if unit == "1": 
+                suffix = 'st'
+            elif unit == "2":
+                suffix = 'nd'
+            elif unit == "3":
+                suffix = 'rd'
+            else:
+                suffix = 'th'
+    return str(numb)+ suffix
 
 
 def DebugBreakpoint(banner="Debugger started (CTRL-D to quit)"):

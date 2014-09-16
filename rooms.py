@@ -1397,7 +1397,7 @@ class SpiderLair(Basic):
         for p, q in webs.items():
             self.parent.setblock(p, materials.Cobweb)
 
-           
+
 class SpiderLairEasy(SpiderLair):
     _name = 'spiderlaireasy'
     _is_entrance = False
@@ -2623,6 +2623,145 @@ class NaturalCavernLarge(SandstoneCavernLarge):
     _subfloor = materials._natural
     _floortype = 'blank'
     _small_cavern = 'naturalcavern'
+
+
+class Diamond(Blank):
+    _name = 'diamond'
+    _is_entrance = True
+    _is_stairwell = True
+
+    def setData(self):
+       # Shape of the room walls. We'll use polygon to draw.
+        self.poly = (
+            Vec(6, 0, 0),
+            Vec(9, 0 ,0),
+            Vec(15, 0, 6),
+            Vec(15, 0, 9),
+            Vec(9, 0, 15),
+            Vec(6, 0 ,15),
+            Vec(0, 0, 9),
+            Vec(0, 0, 6),
+        )
+        # Halls can poke into the room a bit.
+        self.hallLength = [4, 4, 4, 4]
+        # But halls are very narrow.
+        self.hallSize = [
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6],
+            [6, self.parent.room_size - 6]
+        ]
+
+        h = self.parent.room_height - 2
+        self.canvas = (
+            Vec(6, h, 4),
+            Vec(9, h ,4),
+            Vec(11, h, 6),
+            Vec(11, h, 9),
+            Vec(9, h, 11),
+            Vec(6, h ,11),
+            Vec(4, h, 9),
+            Vec(4, h, 6),
+        )
+
+    def render(self):
+        height = self.size.y * self.parent.room_height - 2
+        func = iterate_points_inside_flat_poly
+        p = self.loc
+        # Air space
+        for y in xrange(self.loc.y, self.loc.y+height):
+            for x in func(*self.poly):
+                q = p + x
+                self.parent.setblock(Vec(q.x, y, q.z), materials.Air)
+        # Floor
+        for x in func(*self.poly):
+            self.parent.setblock(p+x+Vec(0,height,0), materials._floor)
+        # Ceiling
+        for x in func(*self.poly):
+            self.parent.setblock(p+x, materials._ceiling)
+        # Walls
+        for y in xrange(self.loc.y, self.loc.y+height):
+            for x in iterate_flat_poly(*self.poly):
+                q = p + x
+                self.parent.setblock(Vec(q.x, y, q.z), materials._wall)
+        # Subfloor
+        sf1 = self.loc.trans(0,
+                             self.size.y * self.parent.room_height - 1,
+                             0)
+        sf2 = sf1.trans(self.size.x * self.parent.room_size - 1,
+                        0,
+                        self.size.z * self.parent.room_size - 1)
+        for x in iterate_plane(sf1, sf2):
+            self.parent.setblock(x, materials._subfloor)
+
+
+class Alcove(Diamond):
+    _name = 'alcove'
+    _is_entrance = True
+    _is_stairwell = True
+
+    def setData(self):
+        self.poly = (
+            Vec(6, 0, 0),
+            Vec(9, 0 ,0),
+            Vec(15, 0, 6),
+            Vec(15, 0, 15),
+            Vec(0, 0, 15),
+            Vec(0, 0 ,6)
+        )
+        self.hallLength = [4, 1, 1, 1]
+        self.hallSize = [
+            [6, 9],
+            [6, 15],
+            [0, 15],
+            [6, 15]
+        ]
+        h = self.parent.room_height - 2
+        self.canvas = (
+            Vec(6, h, 4),
+            Vec(9, h ,4),
+            Vec(13, h, 6),
+            Vec(13, h, 13),
+            Vec(2, h, 13),
+            Vec(2, h, 6)
+        )
+
+        # Rotate randomly. Coords have to stay clockwise oriented
+        # for the polygon functions to work.
+        r = random.randint(0,3)
+        if r == 1:
+            # Rotate 180
+            self.poly = [Vec(15-p.x, p.y, 15-p.z) for p in self.poly]
+            self.canvas = [Vec(15-p.x, p.y, 15-p.z) for p in self.canvas]
+            self.hallLength = [1, 1, 4, 1]
+            self.hallSize = [
+                [0, 15],
+                [0, 9],
+                [6, 9],
+                [0, 9]
+            ]
+        if r == 2:
+            # Rotate 90 CCW
+            self.poly = [Vec(p.z, p.y, 15-p.x) for p in self.poly]
+            self.canvas = [Vec(p.z, p.y, 15-p.x) for p in self.canvas]
+            self.hallLength = [1, 1, 1, 4]
+            self.hallSize = [
+                [6, 15],
+                [0, 15],
+                [6, 15],
+                [6, 9]
+            ]
+        if r == 3:
+            # Rotate 90 CW
+            self.poly = [Vec(15-p.z, p.y, p.x) for p in self.poly]
+            self.canvas = [Vec(15-p.z, p.y, p.x) for p in self.canvas]
+            self.hallLength = [1, 4, 1, 1]
+            self.hallSize = [
+                [0, 9],
+                [6, 9],
+                [0, 9],
+                [0, 15]
+            ]
 
 
 class Circular(Basic):

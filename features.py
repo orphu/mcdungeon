@@ -661,7 +661,19 @@ class SecretRoom(Blank):
         self.parent._pistontrap = False
 
     def renderSecretPost(self):
-        pass
+        # Hide the room from maps.
+        self.hideRoom()
+
+    def hideRoom(self):
+        '''Hide all the blocks in this chunk so that they don't show up on
+        maps'''
+        d = self.parent.parent
+        for p in iterate_cube(self.parent.loc,
+                              self.parent.loc + Vec(d.room_size - 1,
+                                                    d.room_height - 1,
+                                                    d.room_size - 1)):
+            if p in d.blocks:
+                d.blocks[p].hide=True
 
     def render(self):
         sb = self.parent.parent.setblock
@@ -796,35 +808,35 @@ class SecretRoom(Blank):
              [8, 8, 8, 8, 8],
              [8, 8, 8, 8, 8]],
             [[2, 4, 4, 4, 4],
-                [1, 1, 1, 12, 4],
-                [2, 4, 4, 4, 4],
-                [2, 1, 1, 1, 4],
-                [2, 1, 1, 1, 4],
-                [2, 1, 1, 1, 4]],
+             [1, 1, 1, 12, 4],
+             [2, 4, 4, 4, 4],
+             [2, 1, 1, 1, 4],
+             [2, 1, 1, 1, 4],
+             [2, 1, 1, 1, 4]],
             [[2, 4, 4, 4, 4],
-                [1, 7, 1, 1, 13],
-                [2, 4, 6, 1, 4],
-                [2, 11, 9, 9, 4],
-                [2, 5, 10, 10, 4],
-                [2, 5, 5, 5, 4]],
+             [1, 7, 1, 1, 13],
+             [2, 4, 6, 1, 4],
+             [2, 11, 9, 9, 4],
+             [2, 5, 10, 10, 4],
+             [2, 5, 5, 5, 4]],
             [[2, 4, 4, 4, 4],
-                [1, 1, 1, 1, 13],
-                [2, 4, 6, 1, 4],
-                [2, 3, 9, 9, 4],
-                [2, 3, 3, 3, 4],
-                [2, 3, 3, 3, 4]],
+             [1, 1, 1, 1, 13],
+             [2, 4, 6, 1, 4],
+             [2, 3, 9, 9, 4],
+             [2, 3, 3, 3, 4],
+             [2, 3, 3, 3, 4]],
             [[14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14],
-                [14, 14, 14, 14, 14]],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14],
+             [14, 14, 14, 14, 14]],
             [[15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15],
-                [15, 15, 15, 15, 15]],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15],
+             [15, 15, 15, 15, 15]],
         ]
         bdata = 3
 
@@ -888,18 +900,24 @@ class SecretRoom(Blank):
             for w in xrange(6):
                 for l in xrange(5):
                     p = spos + dl * l + dw * w + Vec(0, 1, 0) * y
-                    sb(p, mats[template[y][w][l]][0],
-                       mats[template[y][w][l]][1])
+                    if (l < 4):
+                        h = True
+                    else:
+                        h = False
+                    sb(p,
+                       mats[template[y][w][l]][0],
+                       mats[template[y][w][l]][1],
+                       hide=h)
 
         # The button.
         p = spos + dl * 3 + dw * 5 + Vec(0, 1, 0) * 2
         blocks = self.parent.parent.blocks
         while blocks[p + dl].material != materials.Air:
-            sb(p.up(1), materials.Air)
-            sb(p, materials.RedstoneWire)
-            sb(p.down(1), materials.Stone)
+            sb(p.up(1), materials.Air, hide=True)
+            sb(p, materials.RedstoneWire, hide=True)
+            sb(p.down(1), materials.Stone, hide=True)
             p = p + dl
-        sb(p + dl, materials.StoneButton, bdata)
+        sb(p + dl, materials.StoneButton, bdata, hide=True)
 
         # Extend the hallway into the room.
         o = spos + dw
@@ -1027,6 +1045,8 @@ class SecretStudy(SecretRoom):
 
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
 
+        # Hide the room from maps.
+        self.hideRoom()
 
 class SecretAlchemyLab(SecretRoom):
     _name = 'secretalchemylab'
@@ -1130,6 +1150,8 @@ class SecretAlchemyLab(SecretRoom):
 
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
 
+        # Hide the room from maps.
+        self.hideRoom()
 
 class SecretSepulchure(SecretRoom):
     _name = 'secretsepulchure'
@@ -1314,8 +1336,10 @@ class SecretSepulchure(SecretRoom):
 
         # Cobwebs
         self.parent.parent.cobwebs(self.c1.up(4), self.c3)
-        
-        
+
+        # Hide the room from maps.
+        self.hideRoom()
+
 class SecretShop(SecretRoom):
     _name = 'secretshop'
 
@@ -1385,7 +1409,7 @@ class SecretShop(SecretRoom):
             pillers = materials.PillarQuartzBlock
             floor = materials.PolishedDiorite
             banner_cols = [15,0]
-       
+
         # Floor
         for q in iterate_cube(self.c1, self.c3):
             sb(q, floor)
@@ -1400,13 +1424,11 @@ class SecretShop(SecretRoom):
             for i in range(1,4):
                 sb(p.up(i), pillers)
 
-        # Banners
+        # Shop's Banners
         banner_pos = [[bl.up(3)+(rt*6)+(fw*5),orient['U']],
                       [bl.up(3)+(rt*6)+(fw*1),orient['U']],
-                      [bl.up(3)+(rt*8)+(fw*1),orient['D']],
                       [bl.up(3)+(rt*5)+(fw*6),orient['R']],
-                      [bl.up(3)+(rt*1)+(fw*6),orient['R']],
-                      [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
+                      [bl.up(3)+(rt*1)+(fw*6),orient['R']]]
         for b in banner_pos:
             sb(b[0], materials.WallBanner,b[1])
             dungeon.addtileentity(get_tile_entity_tags(
@@ -1414,6 +1436,12 @@ class SecretShop(SecretRoom):
                                     Pos=b[0],
                                     Base=banner_cols[0],
                                     Patterns=[[banner_cols[1],'ss']]))
+        # Dungeon's Banners
+        banner_pos = [[bl.up(3)+(rt*8)+(fw*1),orient['D']],
+                      [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
+        for b in banner_pos:
+            sb(b[0], materials.WallBanner,b[1])
+            dungeon.adddungeonbanner(b[0])
 
         # Desks
         for q in iterate_cube(bl.up(1)+rt+(fw*6), bl.up(1)+rt+(fw*8)):
@@ -1426,7 +1454,7 @@ class SecretShop(SecretRoom):
         dungeon.addtileentity(get_tile_entity_tags(
                                     eid='EnderChest',
                                     Pos=p))
-                                    
+
         # Free sample!
         p = bl.up(3)+(rt*7)
         dungeon.addentity(
@@ -1436,7 +1464,7 @@ class SecretShop(SecretRoom):
                                   ItemTags=dungeon.inventory.buildFrameItemTag(s.free_sample.lower())
                                   )
         )
-        
+
         # Workshop blocks
         sb(bl.up(1)+(rt*1)+(fw*1), materials.Furnace, orient['U'])
         sb(bl.up(1)+(rt*1)+(fw*2), materials.CraftingTable)
@@ -1463,9 +1491,9 @@ class SecretShop(SecretRoom):
         for p in lamppos:
             sb(bl.up(4)+(rt*p[0])+(fw*p[1]), materials.RedstoneLampOn)
 
-        signtext = s.name.replace("{{name's}}", shopkeeper_name+name_post)
-        signtext = signtext.replace("{{name}}", shopkeeper_name)
-        signtext = signtext.split(' ')
+        shopname = s.name.replace("{{name's}}", shopkeeper_name+name_post)
+        shopname = shopname.replace("{{name}}", shopkeeper_name)
+        signtext = shopname.split(' ')
         if (len(signtext) == 0):
             signtext = ['','','Shop','']
         elif (len(signtext) == 1):
@@ -1510,7 +1538,38 @@ class SecretShop(SecretRoom):
                 rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2Loot)
             tags['Offers']['Recipes'].append(rec)
         dungeon.addentity(tags)
-        return
+        
+        # Flyer
+        max_lev = (self.c1.y // dungeon.room_height) + 1
+        headline = random.choice([
+            "Grand Opening",
+            "Sale! Sale! Sale!",
+            "Our prices are crazy!",
+            "Don't miss out...",
+            "Fantastic deals today!",
+            "The world famous...",
+            "Always Open!",
+            "Goods bought and sold.",
+        ])
+        page =  '{text:"'+headline+'",bold:true,extra:[{text:"\n\n'+shopname
+        page += '\n\nFind me on the '+converttoordinal(max_lev)
+        page += ' level!\n\n'+s.promotext+'",bold:false}]}'
+        note = nbt.TAG_Compound()
+        note['id'] = nbt.TAG_Short(items.byName("written book").value)
+        note['Damage'] = nbt.TAG_Short(0)
+        note['Count'] = nbt.TAG_Byte(1)
+        note['tag'] = nbt.TAG_Compound()
+        note['tag']['title'] = nbt.TAG_String("Shop Flyer")
+        note['tag']['author'] = nbt.TAG_String("Unknown")
+        note['tag']['pages'] = nbt.TAG_List()
+        note['tag']['pages'].append(nbt.TAG_String(page))
+        # 1-3 flyers
+        for _ in range(0,random.randint(1,3)):
+            dungeon.addplaceditem(note, max_lev=max_lev)
+
+        # Hide the room from maps.
+        self.hideRoom()
+
 
 class SecretArmory(SecretRoom):
     _name = 'secretarmory'
@@ -1790,6 +1849,9 @@ class SecretArmory(SecretRoom):
                                                              xplevel)
         dungeon.addentity(tags)
 
+        # Hide the room from maps.
+        self.hideRoom()
+
 
 class SecretEnchantingLibrary(SecretRoom):
     _name = 'secretenchantinglibrary'
@@ -1948,6 +2010,9 @@ class SecretEnchantingLibrary(SecretRoom):
                                    CanPickUpLoot=1
                                    )
         dungeon.addentity(tags)
+
+        # Hide the room from maps.
+        self.hideRoom()
 
 
 class Forge(Blank):
@@ -2372,6 +2437,31 @@ class WildGrowth(Farm):
                               c3):
             if random.randint(1, 100) <= 20:
                 self.parent.parent.vines(p, grow=True)
+
+        # Add a rabbit. Possibly killer.
+        if random.randint(1,100) < 75:
+            dungeon = self.parent.parent
+            pos = self.parent.loc + Vec(8,3,8)
+            # 50% chance of a killer rabbit.
+            rtype = weighted_choice((
+                (0,10),
+                (1,10),
+                (2,10),
+                (3,10),
+                (4,10),
+                (5,10),
+                (99,60),
+            ))
+            # Add the rabbit entity to the room.
+            dungeon.addentity(get_entity_mob_tags('Rabbit',
+                                         Pos=pos,
+                                         RabbitType=rtype,
+                                         PersistenceRequired=1))
+            # If it's a killer rabbit, add a holy hand grenade to the surface
+            # chest.
+            if rtype == 99:
+                tag = dungeon.inventory.buildFrameItemTag('magic_holy hand grenade of antioch')
+                dungeon.addplaceditem(tag, max_lev=0)
 
 
 class WildGarden(WildGrowth):
