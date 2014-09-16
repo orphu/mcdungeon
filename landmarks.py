@@ -77,7 +77,7 @@ class Clearing(object):
         return self.chestdesc
 
     # center is in world voxels 
-    def addclearing (self, center, diam):
+    def addclearing (self, center, diam, clear_surface=True):
         # flatten a disc of ground, erase any trees
         # centre is in world coordinates
         # identify the ground material at the centre
@@ -103,24 +103,17 @@ class Clearing(object):
         p1 = p0.trans(diam+1, 0, diam+1)
         # Iterate around the entire disc
         for p in iterate_disc(p0,p1):
-            # At least 4 clear blocks above
-            self.parent.setblock(p.up(1),materials.Air)
-            self.parent.setblock(p.up(2),materials.Air)
-            self.parent.setblock(p.up(3),materials.Air)
-            self.parent.setblock(p.up(4),materials.Air)
+            if clear_surface:
+                # At least 10 clear blocks above
+                # this should delete any trees; there should be nothing above anyway
+                for i in xrange(10):
+                    self.parent.setblock(p.up(i),materials.Air)
             # Set the disc to the base material
             self.parent.setblock(p,mat)
             # In case ground is sloping or has gaps, add underlying blocks
             self.parent.setblock(p.down(1),mat,soft=True)
             self.parent.setblock(p.down(2),mat,soft=True)
             self.parent.setblock(p.down(3),mat,soft=True)
-            # Iterate up to remove any trees
-            # This seems to not be working correctly?
-            i = 5
-            while chunk.Blocks[p.x & 0xf, p.z & 0xf, center.y - i] == materials.Wood.val:
-                # delete the tree
-              	self.parent.setblock(p.up(i), materials.Air)
-                i = i + 1
 
     def addcluechest (self, tier=0, name='', items=[], locked=None):
         # Add a chest to the map: this is called after rendering
@@ -218,6 +211,7 @@ class SmallCottage(Clearing):
         self.parent.setblock(self.offset+Vec(9,-2,10),materials.Air)
         # window
         self.parent.setblock(self.offset+Vec(7,-2,10),materials.Air)
+        self.parent.setblock(self.offset+Vec(9,-2,6),materials.Air)
         # fireplace
         self.parent.setblock(self.offset+Vec(6,-1,8),materials.Air)
         self.parent.setblock(self.offset+Vec(5,-1,8),self.stone)
@@ -231,6 +225,7 @@ class SmallCottage(Clearing):
             # if not ruined, add roof, door and window
             self.parent.setblock(self.offset+Vec(10,-1,9),materials.CraftingTable)
             self.parent.setblock(self.offset+Vec(7,-2,10),materials.GlassPane)
+            self.parent.setblock(self.offset+Vec(9,-2,6),materials.GlassPane)
             self.parent.setblock(self.offset+Vec(9,-1,10),materials.WoodenDoor,3)
             self.parent.setblock(self.offset+Vec(9,-2,10),materials.WoodenDoor,11)
             for x in xrange(6):
@@ -238,7 +233,7 @@ class SmallCottage(Clearing):
                 self.parent.setblock(self.offset+Vec(6+x,-4,9),materials.SpruceWoodStairs,3)
                 self.parent.setblock(self.offset+Vec(6+x,-3,6),materials.SpruceWoodStairs,2)
                 self.parent.setblock(self.offset+Vec(6+x,-4,7),materials.SpruceWoodStairs,2)
-                self.parent.setblock(self.offset+Vec(6+x,-5,8),materials.SpruceWoodSlab,soft=True)
+                self.parent.setblock(self.offset+Vec(6+x,-5,8),materials.SpruceWoodSlab,soft=False)
             # add table
             self.parent.setblock(self.offset+Vec(8,-1,8),materials.Fence)
             self.parent.setblock(self.offset+Vec(8,-2,8),materials.WoodenPressurePlate)
@@ -552,7 +547,7 @@ class Well(Clearing):
           self.parent.setblock(p,self.stone)
         for p in iterate_cube(self.offset+Vec(5,4,7),self.offset+Vec(6,3,8)):
           self.parent.setblock(p,materials.Air)
-        #self.parent.setblock(self.offset + Vec(5,4,8), materials.Torch)
+        self.parent.setblock(self.offset + Vec(5,4,8), materials.Torch)
                 
         # secret door
         self.parent.setblock(self.offset+Vec(7,3,8),materials.WallSign,2)
@@ -592,7 +587,7 @@ class Well(Clearing):
             ('in my secret room',Vec(-3,3,-1)),
         )
         c = random.choice(_chestpos)
-        self.chest = self.offset + c[1]
+        self.chest = self.offset + c[1] + Vec(8,0,8)
         self.chestdesc = c[0]
         self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
@@ -639,22 +634,22 @@ class Forge(Clearing):
                 self.parent.setblock(self.offset+Vec(6+x,-4,10),materials.SpruceWoodStairs,3)
                 self.parent.setblock(self.offset+Vec(6+x,-4,6),materials.SpruceWoodStairs,2)
                 for i in xrange(3):
-                    self.parent.setblock(self.offset+Vec(6+x,-5,7+i),materials.SpruceWoodSlab,soft=True)
+                    self.parent.setblock(self.offset+Vec(6+x,-5,7+i),materials.SpruceWoodSlab,soft=False)
             for i in xrange(3):
-                self.parent.setblock(self.offset+Vec(6,-4,7+i),materials.SpruceWoodPlanks,soft=True)
-                self.parent.setblock(self.offset+Vec(11,-4,7+i),materials.SpruceWoodPlanks,soft=True)
+                self.parent.setblock(self.offset+Vec(6,-4,7+i),materials.SpruceWoodPlanks,soft=False)
+                self.parent.setblock(self.offset+Vec(11,-4,7+i),materials.SpruceWoodPlanks,soft=False)
             # add table
             self.parent.setblock(self.offset+Vec(7,-1,10),materials.Fence)
             self.parent.setblock(self.offset+Vec(7,-2,10),materials.WoodenPressurePlate)
             # add door
-            self.parent.setblock(self.offset+Vec(11,-1,8),materials.WoodenDoor,1)
-            self.parent.setblock(self.offset+Vec(11,-2,8),materials.WoodenDoor,9)
+            self.parent.setblock(self.offset+Vec(11,-1,8),materials.WoodenDoor,2)
+            self.parent.setblock(self.offset+Vec(11,-2,8),materials.WoodenDoor,8)
             # Add fence
             self.parent.setblock(self.offset+Vec(6,-1,11),materials.Fence)
             self.parent.setblock(self.offset+Vec(11,-1,11),materials.Fence)
-            for i in xrange(6,11):
+            for i in xrange(6,12):
                 self.parent.setblock(self.offset+Vec(i,-1,12),materials.Fence)
-            self.parent.setblock(self.offset+Vec(9,-1,12),materials.FenceGate,3)
+            self.parent.setblock(self.offset+Vec(9,-1,12),materials.FenceGate,0)
 
             if self._abandoned is True:
                 # if abandoned, add cobwebs (parent function) voxels relative
