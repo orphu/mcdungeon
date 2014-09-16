@@ -621,6 +621,9 @@ class Forge(Clearing):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
         for p in iterate_plane(Vec(7,-1,6), Vec(10,-3,6)):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
+        # doorway
+        self.parent.setblock(self.offset+Vec(11,-1,8),materials.Air)
+        self.parent.setblock(self.offset+Vec(11,-2,8),materials.Air)
         # floor 
         for p in iterate_plane(Vec(6,0,6), Vec(11,0,10)):
             self.parent.setblock(self.offset + p, self.stone, soft=False)
@@ -643,7 +646,16 @@ class Forge(Clearing):
             # add table
             self.parent.setblock(self.offset+Vec(7,-1,10),materials.Fence)
             self.parent.setblock(self.offset+Vec(7,-2,10),materials.WoodenPressurePlate)
-            
+            # add door
+            self.parent.setblock(self.offset+Vec(11,-1,8),materials.WoodenDoor,1)
+            self.parent.setblock(self.offset+Vec(11,-2,8),materials.WoodenDoor,9)
+            # Add fence
+            self.parent.setblock(self.offset+Vec(6,-1,11),materials.Fence)
+            self.parent.setblock(self.offset+Vec(11,-1,11),materials.Fence)
+            for i in xrange(6,11):
+                self.parent.setblock(self.offset+Vec(i,-1,12),materials.Fence)
+            self.parent.setblock(self.offset+Vec(9,-1,12),materials.FenceGate,3)
+
             if self._abandoned is True:
                 # if abandoned, add cobwebs (parent function) voxels relative
                 self.parent.cobwebs(self.offset + Vec(7,-1,7), self.offset + Vec(10,-4,10))
