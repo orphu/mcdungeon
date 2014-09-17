@@ -722,11 +722,17 @@ class Graveyard(Clearing):
     # Each grave fits in a 3x3 block, with the sign facing East
     # Only add to the _graves array if we can hide a chest here
     def add_grave( self, pos ):
+        # 10% chance of a vacant plot
         if random.randint(0,100) < 10:
             return
-        grave_name = self.parent.namegen.genname()
-        if random.randint(0,100) < 10:
-            grave_name = "unknown miner"
+        # Randomise name of grave
+        _grave_name = [
+            (self.parent.namegen.genname(), 100), 
+            ("unknown miner", 5),  
+            ("Steve", 1),  
+            ("Herobrine", 1),  
+        ]
+        grave_name = weighted_choice(_grave_name)
         # Different materials: red sandstone is 1.8 only
         mtype = random.randint(1,4)
         if mtype==0:
@@ -749,12 +755,13 @@ class Graveyard(Clearing):
             stone = self.stone
             steps = self.stonesteps
             slab  = self.stoneslab
-            
+
+        # What material do we fill the grave with?
         if self.biome is not None and ( self.biome == 2 or self.biome == 130 ):
             dirt = materials.RedSand
         else:
             dirt = materials.Gravel
-            
+
         # Different gravestone designs
         gtype = random.randint(0,4)
         if gtype==0:
@@ -772,7 +779,7 @@ class Graveyard(Clearing):
             self.parent.setblock(self.offset + pos + Vec(0,-1,1), stone)
     
         # Grave itself
-        if random.randint(0,100) < 10:
+        if random.randint(0,100) < 5:
             # open grave
             self.parent.setblock(self.offset + pos + Vec(1,0,1), materials.Air, soft=False)
             self.parent.setblock(self.offset + pos + Vec(1,1,1), materials.Air, soft=False)
@@ -787,18 +794,18 @@ class Graveyard(Clearing):
             self.parent.setblock(self.offset + pos + Vec(2,1,1), materials.OakWoodPlanks, soft=False)
             # flower on grave
             if random.randint(0,100) < 50:
-                _flowers = (
-                    (materials.PottedDandelion, 5),
-                    (materials.PottedPoppy, 5),
-                    (materials.PottedRedMushroom, 2),
+                _flowers = [
+                    (materials.PottedDandelion, 10),
+                    (materials.PottedPoppy, 10),
+                    (materials.PottedRedMushroom, 1),
                     (materials.PottedDeadBush, 2),
                     (materials.FlowerPot, 2),
                     (materials.PottedCactus, 2),
-                )
+                ]
                 flower = weighted_choice(_flowers)
                 self.parent.setblock(self.offset + pos + Vec(2,-1,1), flower)
 
-        # marker
+        # marker: same graves are unmarked
         if random.randint(0,100)>5:
             self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
             self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 5) # face east
