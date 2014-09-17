@@ -5,4 +5,7 @@
 # ID,Item Name,Data Value,Maximum Stack Size
 
 # The Lucky Block
+# Under minecraft 1.6 is ID 850
+# Under minecraft 1.7 is ID 165, or possibly higher if you have other mods loaded
+# Forge is not yet available for minecraft 1.8
 850,Lucky Block,0,64
