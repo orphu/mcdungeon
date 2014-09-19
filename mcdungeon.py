@@ -564,14 +564,14 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
                 fn,levels,xsize,zsize
             )
         else:
-			output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
+            output += '| %9s | %14s | %7s | %5s | %2d | %23s |\n' % (
 				'%d %d' % (info["position"].x, info["position"].z),
 				time.strftime('%x %H:%M', time.localtime(info['timestamp'])),
 				info['version'],
 				'%dx%d' % (xsize, zsize),
 				levels,
 				info.get('full_name', 'Dungeon')[:23]
-			)
+            )
 
     if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
