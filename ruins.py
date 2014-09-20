@@ -773,9 +773,9 @@ class StepPyramid(Blank):
         self.parent.parent.setblock(p, materials.Chest)
         self.parent.parent.addchest(p, 0)
         # Portal exit point
-        self.parent.parent.dinfo['portal_exit'] = p + Vec(p.w(1).x,
-                                                          c1.y + 29,
-                                                          p.s(1).z)
+        self.parent.parent.dinfo['portal_exit'] = Vec(p.x + 1,
+                                                      p.y,
+                                                      p.z)
 
 
 class RoundTowerEntrance(Blank):
