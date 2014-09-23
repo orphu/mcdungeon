@@ -905,13 +905,13 @@ class BigTree(Clearing):
                 self.parent.setblock(self.offset+Vec(8+x,0,8+z), materials.Dirt, lock=True)
                 self.parent.setblock(self.offset+Vec(8+x,-1,8+z), materials.Air)
         
-        # Set the counter to 248 (b11111000) so it grows very soon
+        # Set the counter to 8 (b1000) so it grows very soon
         # This is not very well documented: the 0x8 bit and higher are apparently
         # where the Counter is held, and when this gets 'large enough' and the other
         # conditions are met, (space above and to the side, light level) the tree will grow.
         for x in xrange(0,2):
             for z in xrange(0,2):
-                self.parent.setblock(self.offset+Vec(8+x,-1,8+z), materials.Sapling, tree_dv + 248, lock=True, soft=False)
+                self.parent.setblock(self.offset+Vec(8+x,-1,8+z), materials.Sapling, tree_dv + 8, lock=True, soft=False)
 
         # Need to clear a 4x4 space, 16 spaces above the ground.
         for i in xrange(2,17):
