@@ -41,3 +41,12 @@ WitherSkeleton: Wither Skeletons
 Zombie_Fast: Zombie with speed potion effect.
 Zombie_Strong: Zombie with strength potion effect.
 Zombie_Villager: Zombie villiager (like in a siege.)
+Silverfish_Swarm: A swarm of 5 silverfish
+Skeleton_Pumpkin: A tough skeleton with a pumpkin on his head so that he 
+                  can be in the sun
+Zombie_Pumpkin: A strengthened zombie wearing a pumpkin on his head so that he
+                can be in the sun
+Zombie_Sword_Helmet: A zombie with a sword and helmet
+Herobrine: You really don't want to meet this guy.
+
+
