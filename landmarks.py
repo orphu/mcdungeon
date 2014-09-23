@@ -127,6 +127,13 @@ class Clearing(object):
         if self.cluechest is None:
             self.addcluechest
         self.parent.addchestitem_tag( self.cluechest, item_tag )
+        
+    def spawnerloc ( self ):
+        # return offset where spawner should be placed: up is -ve y
+        # Note that spawners can only spawn at their own level or 1 above/below
+        # in a radius of 4.  Thus, you cannot bury them.
+        return Vec(7,-1,7)
+
 
 # An empty, flat circular area, with a circle of skulls on sticks
 # chest can be under the centre of the circle
@@ -264,8 +271,8 @@ class SmallCottage(Clearing):
     def addchest ( self, tier=0, name='', locked=None ):
         _chestpos = [
             ('under the fireplace',Vec(6,1,8)),
-            ('under the bed',Vec(10,1,9)),
-            ('under the doorstep',Vec(9,1,6)),
+            ('under the bed',Vec(10,1,7)),
+            ('under the doorstep',Vec(9,1,11)),
         ]
         if self._ruined is False:
             _chestpos.append( ['in the rafters',Vec(10,-4,8)] )
@@ -279,15 +286,24 @@ class SmallCottage(Clearing):
         self.cluechest = self.offset + Vec(10,-1,9)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+     
+    def spawnerloc ( self ):
+        return Vec( 9, -1, 5 )
 		
 class AbandonedCottage(SmallCottage):
     _name = 'abandonedcottage'
     _abandoned = True
 
+    def spawnerloc ( self ):
+        return Vec( 7, -1, 9 )
+
 class RuinedCottage(SmallCottage):
     _name = 'ruinedcottage'
     _abandoned = True
     _ruined = True
+
+    def spawnerloc ( self ):
+        return Vec( 7, -1, 9 )
 
 class SignPost(Clearing):
     _name = 'signpost'
@@ -385,6 +401,10 @@ class Monolith(Clearing):
         self.cluechest = self.offset + Vec(8,-1,6)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        
+    def spawnerloc ( self ):
+        return Vec( 8, -1, 6 )
+
 
 class Memorial(Clearing):
     _name = 'memorial'
@@ -448,6 +468,9 @@ class Memorial(Clearing):
         self.cluechest = self.offset + Vec(8,-1,7)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+
+    def spawnerloc ( self ):
+        return Vec( 7, -1, 7 )
 
 # An empty, flat circular area, with a circle of mushrooms
 # chest can be under the centre of the circle
@@ -597,6 +620,10 @@ class Well(Clearing):
         self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
+    def spawnerloc ( self ):
+        return Vec( 6, -1, 6 )
+
+        
 class Forge(Clearing):
     # This is similar to the Cottage
     _name = 'forge'
@@ -704,15 +731,24 @@ class Forge(Clearing):
         self.parent.setblock( self.cluechest, materials.Chest, 1, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
+    def spawnerloc ( self ):
+        return Vec( 9, -1, 5 )
+
 class AbandonedForge(Forge):
     _name = 'abandonedforge'
     _ruined = False
     _abandoned = True
 
+    def spawnerloc ( self ):
+        return Vec( 7, -1, 9 )
+
 class RuinedForge(Forge):
     _name = 'ruinedforge'
     _ruined = True
     _abandoned = True
+
+    def spawnerloc ( self ):
+        return Vec( 7, -1, 9 )
 
 class Graveyard(Clearing):
     _name = 'graveyard'
@@ -844,6 +880,68 @@ class Graveyard(Clearing):
         self.cluechest = self.offset + Vec(12,-1,8)
         self.parent.setblock( self.cluechest, materials.Chest, lock=True)
         self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+
+    def spawnerloc ( self ):
+        return Vec( 8, -1, 8 )
+        
+class BigTree(Clearing):
+    _name = 'bigtree'
+    _treetype = ""
+    
+    # Render relative to TreasureHunt position in y-reversed coords
+    def render (self):
+        # We set 4 spaces of earth in the middle.  Clear the sky above,
+        # and plant 4 saplings there to grow.
+        # Only DarkOak, JungleTree and Spruce can make a big tree this way
+        tree_dv = 5
+        self._treetype = "dark oak "
+        # Should select a different tree if necessary to make it NOT
+        # match the biome.  Spruce is DV=1
+        #tree_dv = 1
+        #self._treetype = "spruce "
+
+        for x in xrange(-1,3):
+            for z in xrange(-1,3):
+                self.parent.setblock(self.offset+Vec(8+x,0,8+z), materials.Dirt, lock=True)
+                self.parent.setblock(self.offset+Vec(8+x,-1,8+z), materials.Air)
+        
+        # Set the counter to 248 (b11111000) so it grows very soon
+        # This is not very well documented: the 0x8 bit and higher are apparently
+        # where the Counter is held, and when this gets 'large enough' and the other
+        # conditions are met, (space above and to the side, light level) the tree will grow.
+        for x in xrange(0,2):
+            for z in xrange(0,2):
+                self.parent.setblock(self.offset+Vec(8+x,-1,8+z), materials.Sapling, tree_dv + 248, lock=True, soft=False)
+
+        # Need to clear a 4x4 space, 16 spaces above the ground.
+        for i in xrange(2,17):
+            for x in xrange(-1,3):
+                for z in xrange(-1,3):
+                    self.parent.setblock(self.offset+Vec(8+x,-i,8+z), materials.Air)
+
+    def addchest (self, tier=0, name='', locked=None):
+        # Add a chest to the map: this is called after rendering
+        # only one possible location (at varying depth) in this feature
+        # position is y-reversed voxels relative to pos
+        self.chest = Vec(random.randint(7,10),random.randint(1,3),random.randint(7,10)) + self.offset
+        self.chestdesc = "in the roots"
+        self.parent.setblock( self.chest, materials.Chest, lock=True)
+        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+
+    def addcluechest (self, tier=0, name='', items=[], locked=None):
+        # Add a chest to the map: this is called after rendering
+        # only one possible location in this feature
+        # position is y-reversed voxels relative to pos
+        # Not too close to the tree or it will not grow
+        self.cluechest = Vec( 6, -1 , 7 ) + self.offset
+        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+                
+    def describe (self):
+        return "a large "+self._treetype+"tree"
+
+    def spawnerloc ( self ):
+        return Vec( 6, -1, 9 )
         
 # ----------------------------------------------------------------------------
 

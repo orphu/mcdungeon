@@ -507,7 +507,10 @@ class TreasureHunt (Dungeon):
         for lm in self.landmarks:
             count -= 1
             self.pm.update_left(count)
-            loc = lm.offset + Vec(9,1,9)
+            loc = lm.spawnerloc()
+            if loc is None:
+                continue
+            loc = lm.offset + loc
             self.setblock(loc, materials.Spawner)
             entity = weighted_choice(cfg.master_landmark_mobs)
             root_tag = self.getspawnertags(entity)
