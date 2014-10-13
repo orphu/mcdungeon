@@ -2497,9 +2497,8 @@ class Chapel(Blank):
 
     decos = ((materials.Cauldron, 2),
              (materials.BlockOfRedstone, 0),
-             (materials.Torch, 0),
-             (materials.Chest, 5),
-             (materials.CraftingTable, 0))
+             (materials.Banner, 4),
+             (materials.Chest, 5))
 
     def render(self):
         if (self.parent.canvasWidth() < 8 or self.parent.canvasLength() < 8):
@@ -2606,6 +2605,9 @@ class Chapel(Blank):
             sb(p,
                mats[template[z]][0],
                mats[template[z]][1])
+            # Special case for banners
+            if (mats[template[z]][0] == materials.Banner):
+                self.parent.parent.adddungeonbanner(p)      
 
 
 class ConstructionArea(Blank):
