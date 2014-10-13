@@ -897,8 +897,10 @@ class BigTree(Clearing):
         self._treetype = "dark oak "
         # Should select a different tree if necessary to make it NOT
         # match the biome.  Spruce is DV=1
-        #tree_dv = 1
-        #self._treetype = "spruce "
+        if ( self.biome in [3,4,6,21,29,157,131,132,149,151] ):
+            # in jungle, or oak forest
+            tree_dv = 1
+            self._treetype = "spruce "
 
         for x in xrange(-1,3):
             for z in xrange(-1,3):
