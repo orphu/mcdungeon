@@ -429,16 +429,19 @@ class TreasureHunt (Dungeon):
             pages.append( p )
             if tostep == self.steps:
                 break
+            thistier = int(tostep*loottable._maxtier/self.steps)
+            if self.args.debug:
+                print "Tier: %d * %d / %d = %d" % ( loottable._maxtier, tostep, self.steps, thistier )
             if random.randint(1,100) > cfg.th_intermediate:
                 if random.randint(1,100) < cfg.th_bonus:
                     if self.args.debug:
-                        print "Adding an intermediate treasure chest"
-                    self.landmarks[tostep-1].addcluechest(tier=int(tostep/cfg.th_multiplier))
+                        print "Adding a bonus treasure chest at step %d, tier %d" % ( tostep, thistier)
+                    self.landmarks[tostep-1].addcluechest(tier=thistier)
                 continue
 			# save book and restart 
-            self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
+            self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=thistier,locked=keyname)
             if self.args.debug:
-                print 'Placed an intermediate chest at step %d!' % ( tostep )
+                print 'Placed an intermediate clue chest at step %d, tier %d' % ( tostep, thistier )
                 print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
             pages.append( 'When ye reach this place, seek ye another clue %s.' 
                 % ( self.landmarks[tostep-1].chestlocdesc() ) )
@@ -470,9 +473,9 @@ class TreasureHunt (Dungeon):
             pages.append( self.dungeon_name )
 
         # write treasure
-        self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=int(tostep/cfg.th_multiplier),locked=keyname)
+        self.landmarks[tostep-1].addchest(name=self.dungeon_name,tier=loottable._maxtier,locked=keyname)
         if self.args.debug:
-            print 'Placed a treasure chest at step %d, tier %d!' % ( tostep, int(tostep/cfg.th_multiplier) )
+            print 'Placed a treasure chest at step %d, tier %d!' % ( tostep, loottable._maxtier )
             print 'Location: %s' % ( self.landmarks[tostep-1].chestlocdesc() )
         pages.append( 'Now that ye have reached thy destination, ye may find the treasure %s.' 
             % ( self.landmarks[tostep-1].chestlocdesc() ) )

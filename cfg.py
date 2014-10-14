@@ -93,7 +93,6 @@ dir_extra_items = ''
 
 th_locked = 'False'
 th_bonus = 0
-th_multiplier = 1
 th_intermediate = 0
 th_spawners = 'False'
 master_landmark_mobs = []
@@ -189,7 +188,7 @@ def Load(filename='default.cfg'):
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
         river_biomes, ocean_biomes, master_hall_traps, \
         master_landmarks, default_landmarks, master_landmark_mobs, \
-        th_locked, th_bonus, th_multiplier, th_intermediate, th_spawners
+        th_locked, th_bonus, th_intermediate, th_spawners
 
     temp = os.path.join(sys.path[0], 'configs', filename)
     try:
@@ -452,7 +451,6 @@ def Load(filename='default.cfg'):
 
     th_locked = str2bool(get('treasure hunt', 'locked', th_locked))
     th_bonus = int(get('treasure hunt', 'bonus', th_bonus))
-    th_multiplier = int(get('treasure hunt', 'multiplier', th_multiplier))
     th_intermediate = int(get('treasure hunt', 'intermediate', th_intermediate))
     th_spawners = str2bool(get('treasure hunt', 'spawners', th_spawners))
 	
