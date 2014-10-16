@@ -1404,8 +1404,8 @@ if (cfg.offset is None or cfg.offset is ''):
             utils.saveChunkCache(cache_path, chunk_cache)
 
         if args.spawn is not None:
-            sx = args.spawn[0]
-            sz = args.spawn[1]
+            sx = args.spawn[0] >> 4
+            sz = args.spawn[1] >> 4
         else:
             sx = world.playerSpawnPosition()[0] >> 4
             sz = world.playerSpawnPosition()[2] >> 4
