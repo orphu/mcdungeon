@@ -1560,7 +1560,7 @@ class SecretShop(SecretRoom):
         note['Count'] = nbt.TAG_Byte(1)
         note['tag'] = nbt.TAG_Compound()
         note['tag']['title'] = nbt.TAG_String("Shop Flyer")
-        note['tag']['author'] = nbt.TAG_String("Unknown")
+        note['tag']['author'] = nbt.TAG_String(shopkeeper_name)
         note['tag']['pages'] = nbt.TAG_List()
         note['tag']['pages'].append(nbt.TAG_String(page))
         # 1-3 flyers
