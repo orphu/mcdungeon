@@ -68,7 +68,7 @@ def generateflag():
     patterns = ['hh','hhb','vh','vhr','ts','bs','ls','rs','ld','rud','lud',
                 'rd','cr','dls','drs','sc','cs','ms','tl','bl','tr','br',
                 'tt','bt','mr','mc','bts','tts','ss','bo','cbo','flo',
-                'cre','sku','moj','bri'] # 'gra','gru' (removed)
+                'cre','sku','moj'] # 'bri','gra','gru' (removed)
                 
     # Prevent this item, or clashing items from being selected    
     def removeclash(item,list,clashlist):
@@ -89,14 +89,10 @@ def generateflag():
     # Select first pattern and colour
     patt1 = random.choice(patterns)
     col1 = random.choice(colors)
-    # Prevent this color or pattern from clashing with the last layer
     removeclash(patt1,patterns,pattern_clash)
     removeclash(col1,colors,clash)
-    
-    # Special case, remove bricks pattern. (Looks bad as the last layer)
-    patterns.remove('bri')
 
-    # Select last pattern and colour
+      # Select first pattern and colour
     patt2 = random.choice(patterns)
     col2 = random.choice(colors)
     
