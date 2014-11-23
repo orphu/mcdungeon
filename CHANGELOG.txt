@@ -1,4 +1,4 @@
-v0.14.1 - 
+v0.14.1 - 11/23/2014
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
   
