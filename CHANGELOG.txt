@@ -1,4 +1,8 @@
-v0.14.1 - 
+v0.14.2 - 
+
+  !! NOTE: This version requires Minecraft 1.8.0 release or higher!
+  
+v0.14.1 - 11/23/2014
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
   
@@ -23,7 +27,7 @@ v0.14.1 -
    
    * Shops now advertise with 1-3 flyers each. (JiFish)
    
-   * A unqiue flag design is generated for each dungeon. (JiFish)
+   * A unique flag design is generated for each dungeon. (JiFish)
 
 v0.14.0 - 09/03/2014
 
