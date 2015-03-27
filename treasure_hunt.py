@@ -56,6 +56,7 @@ class TreasureHunt (Dungeon):
         self.tile_ents = {}
         self.ents = []
         self.placed_items = []
+        self.entrance = None
         self.room_size = 16
         self.room_height = 6
         self.position = Vec(0, 0, 0)
@@ -509,7 +510,10 @@ class TreasureHunt (Dungeon):
         for lm in self.landmarks:
             count -= 1
             self.pm.update_left(count)
-            loc = lm.offset + Vec(9,1,9)
+            loc = lm.spawnerloc()
+            if loc is None:
+                continue
+            loc = lm.offset + loc
             self.setblock(loc, materials.Spawner)
             entity = weighted_choice(cfg.master_landmark_mobs)
             root_tag = self.getspawnertags(entity)

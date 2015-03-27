@@ -1,0 +1,14 @@
+# Items in this file are loaded in addition to those in the normal items.txt
+# This file is ideal for adding mod items for loot.
+# 
+# Format is:
+# ID,Item Name,Data Value,Maximum Stack Size
+
+# The Lucky Block
+# This is 850 in older versions, but in MC1.7 it dynamically changes
+# depending on what modules are currently loaded.  If you have no other
+# block-creating modules, it will likely be 165
+# You can use this definition rather than the customised items/lucky_block.nbt
+# file ( file_lucky_block ) if you want, but you will then get the 
+# default possible outcomes list.
+165,Lucky Block,0,64
