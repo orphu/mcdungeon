@@ -24,7 +24,7 @@
 # desired tag. Passing no options will build the current master HEAD rev,
 # which should be the current release version.
 
-FILES="README.txt LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs books shops spawners items paintings names overviewer_icons"
+FILES="README.md LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs books shops spawners items paintings names overviewer_icons"
 
 function error {
 	echo -e "\nFATAL: $1"
@@ -136,7 +136,7 @@ case $PLATFORM in
 esac
 
 # Move a few things out of the bin directory
-for F in README.txt CHANGELOG.txt LICENSE.txt; do
+for F in README.md CHANGELOG.txt LICENSE.txt; do
 	mv -v $NAME/bin/$F $NAME/$F
 done
 
