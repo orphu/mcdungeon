@@ -86,8 +86,8 @@ Documentation: http://mcdungeon-docs.bubblemod.org
 
 ##PYTHON REQUIREMENTS##
 
-   *Python 2.7
-   *Numpy
+   * Python 2.7
+   * Numpy
 
 ##PYTHON EXAMPLES##
 
