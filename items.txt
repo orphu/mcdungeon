@@ -239,7 +239,7 @@
 2256,Music Disc 13,0,1
 2257,Music Disc cat,0,1
 2258,Music Disc blocks,0,1
-2259,Music Disc chrip,0,1
+2259,Music Disc chirp,0,1
 2260,Music Disc far,0,1
 2261,Music Disc mall,0,1
 2262,Music Disc mellohi,0,1
