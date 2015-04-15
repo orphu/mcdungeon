@@ -6,6 +6,10 @@ v0.14.2 -
 
    * Fixes for treasure hunt feature (sshipway)
 
+   * Fixes a common crash with secret rooms (KeyError in features.py) (orphu)
+
+   * Fixes secret rooms showing through to the level below on maps. (orphu)
+
    * New MHF_heads as loot (JiFish)
 
    * New spellbook and magic items (sshipway)

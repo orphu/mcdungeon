@@ -230,6 +230,8 @@ class new:
                         colors[x + z * 128] = 10
                     elif blocks[block].hide is True:
                         colors[x + z * 128] = 0
+                    elif blocks[block].blank is True:
+                        colors[x + z * 128] = 0
                     elif mat == materials.Air:
                         colors[x + z * 128] = 10
                     elif mat == materials.Spawner:

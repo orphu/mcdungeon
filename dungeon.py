@@ -32,11 +32,13 @@ class Block(object):
         self.loc = loc
         self.material = None
         self.data = 0
-        # Hidden blocks are not drawn on maps
+        # Blank blocks are just drawn blank on the map
+        self.blank = False
+        # Hidden blocks are "see-though" on the map
         self.hide = False
         # Locked blocks cannot be overwritten later
         self.lock = False
-        # Soft blocks are only rendered in the world block is air
+        # Soft blocks are only rendered if the world block is air
         self.soft = False
 
 
@@ -433,7 +435,8 @@ class Dungeon (object):
             data=0,
             hide=False,
             lock=False,
-            soft=False):
+            soft=False,
+            blank=False):
         # If material is None, remove this block
         if material is None:
             if loc in self.blocks:
@@ -473,6 +476,9 @@ class Dungeon (object):
 
         # Soft blocks are only drawn when the world block is air
         self.blocks[loc].soft = soft
+
+        # Blank blocks alway show as an empty cell.
+        self.blocks[loc].blank = blank
 
     def delblock(self, loc):
         if loc in self.blocks:
@@ -1968,8 +1974,11 @@ class Dungeon (object):
                             dat2 = self.blocks[Vec(x, y + 1, z)].data
                             dat = ((dat & 1) << 3) + dat2
 
-                        f.write('<td><img src=d/%d-%d.png>' %
-                                (mat.val, dat))
+                        if self.blocks[Vec(x, y, z)].blank:
+                            f.write('<td><img src=d/0.png>')
+                        else:
+                            f.write('<td><img src=d/%d-%d.png>' %
+                                    (mat.val, dat))
                     else:
                         f.write('<td><img src=d/0.png>')
             f.write('</table>')

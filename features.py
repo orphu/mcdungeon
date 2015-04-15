@@ -673,7 +673,7 @@ class SecretRoom(Blank):
                                                     d.room_height - 1,
                                                     d.room_size - 1)):
             if p in d.blocks:
-                d.blocks[p].hide=True
+                d.blocks[p].blank=True
 
     def render(self):
         sb = self.parent.parent.setblock
@@ -900,14 +900,11 @@ class SecretRoom(Blank):
             for w in xrange(6):
                 for l in xrange(5):
                     p = spos + dl * l + dw * w + Vec(0, 1, 0) * y
-                    if (l < 4):
-                        h = True
-                    else:
-                        h = False
                     sb(p,
                        mats[template[y][w][l]][0],
                        mats[template[y][w][l]][1],
-                       hide=h)
+                       blank=(l != 4)
+                      )
 
         # The button.
         p = spos + dl * 3 + dw * 5 + Vec(0, 1, 0) * 2
@@ -915,9 +912,9 @@ class SecretRoom(Blank):
         while (p + dl) not in blocks or blocks[p + dl].material != materials.Air:
             sb(p.up(1), materials.Air, hide=True)
             sb(p, materials.RedstoneWire, hide=True)
-            sb(p.down(1), materials.Stone, hide=True)
+            sb(p.down(1), materials.Stone, blank=True)
             p = p + dl
-        sb(p + dl, materials.StoneButton, bdata, hide=True)
+        sb(p + dl, materials.StoneButton, bdata)
 
         # Extend the hallway into the room.
         o = spos + dw
