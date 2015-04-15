@@ -1,6 +1,16 @@
 v0.14.2 - 
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
+
+   * Typo fixes for Music disc chirp. (denemanow)
+
+   * Fixes for treasure hunt feature (sshipway)
+
+   * New MHF_heads as loot (JiFish)
+
+   * New spellbook and magic items (sshipway)
+
+   * Added missing door images to html maps. (JiFish)
   
 v0.14.1 - 11/23/2014
 

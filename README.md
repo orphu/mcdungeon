@@ -167,4 +167,4 @@ BeeTLe BeTHLeHeM, codewarrior, Link1999, SoNick, Commander Keen,
 Yelik, NoiGren, whoiscraig, ChocolateySyrup, Sevminer, AnderZ EL,
 SuddenLee, Silre, NuclearDemon, bking1138, BarthVader,  koredozo,
 janxious, compgurusteve, Meindratheal, ChosenLama, JiFish, djchrisblue,
-sshipway.
+sshipway, denemanow.
