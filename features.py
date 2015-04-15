@@ -912,7 +912,7 @@ class SecretRoom(Blank):
         # The button.
         p = spos + dl * 3 + dw * 5 + Vec(0, 1, 0) * 2
         blocks = self.parent.parent.blocks
-        while blocks[p + dl].material != materials.Air:
+        while (p + dl) not in blocks or blocks[p + dl].material != materials.Air:
             sb(p.up(1), materials.Air, hide=True)
             sb(p, materials.RedstoneWire, hide=True)
             sb(p.down(1), materials.Stone, hide=True)
