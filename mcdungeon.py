@@ -56,10 +56,11 @@ parser_inter.add_argument('-t',
                           terminal')
 parser_inter.add_argument('--html',
                           dest='html',
-                          metavar='BASENAME',
-                          help='Output html versions of the dungeon. This \
-                          produces one file per level of the form \
-                          BASENAME-(level number).html')
+                          metavar='HTMLPATH',
+                          help='Output html versions of the dungeon to the \
+                          specified path. You can optionally include the keyword \
+                          __DUNGEON__ which will be replaced with the dungeon \
+                          name.')
 parser_inter.add_argument('--debug',
                           action='store_true',
                           dest='debug',
@@ -209,10 +210,11 @@ parser_add.add_argument('-t',
                         terminal')
 parser_add.add_argument('--html',
                         dest='html',
-                        metavar='BASENAME',
-                        help='Output html versions of the dungeon. This \
-                        produces one file per level of the form \
-                        BASENAME-(level number).html')
+                        metavar='HTMLPATH',
+                        help='Output html versions of the dungeon to the \
+                        specified path. You can optionally include the keyword \
+                        __DUNGEON__ which will be replaced with the dungeon \
+                        name.')
 parser_add.add_argument('--debug',
                         action='store_true',
                         dest='debug',
@@ -336,10 +338,11 @@ parser_regen.add_argument('--debug',
                           help='Provide additional debug info')
 parser_regen.add_argument('--html',
                           dest='html',
-                          metavar='BASENAME',
-                          help='Output html versions of the dungeon. This \
-                          produces one file per level of the form \
-                          BASENAME-(level number).html')
+                          metavar='HTMLPATH',
+                          help='Output html versions of the dungeon to the \
+                          specified path. You can optionally include the keyword \
+                          __DUNGEON__ which will be replaced with the dungeon \
+                          name.')
 parser_regen.add_argument('--force',
                           action='store_true',
                           dest='force',

@@ -1897,7 +1897,9 @@ class Dungeon (object):
     def outputhtml(self):
         '''Print all levels of the dungeon block buffer to html.
         We "look-through" any air blocks to blocks underneath'''
-        basename = self.args.html
+        dungeon_name = self.dungeon_name.replace(' ', '_')
+        dungeon_name  = re.sub(r'[^a-zA-Z0-9_]', "", dungeon_name)
+        basename = self.args.html.replace('__DUNGEON__', dungeon_name)
         force = self.args.force
         # First search for existing files
         if (force == False):
@@ -1936,8 +1938,8 @@ class Dungeon (object):
                 selected = ''
                 if (floor == menufloor):
                     selected = ' selected="selected"'
-                form += '<option value="%s"%s>Level %d</option>' % (
-                    tail, selected, menufloor + 1)
+                form += '<option value="%s"%s>%s - Level %d</option>' % (
+                    tail, selected, self.dungeon_name, menufloor + 1)
             form += '</select></form><br>'
             # Write the floor file.
             filename = basename + '-' + str(floor + 1) + '.html'
