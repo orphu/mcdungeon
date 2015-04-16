@@ -2130,7 +2130,7 @@ class Dungeon (object):
             if randint(1, 100) > cfg.maps:
                 next
             m = self.mapstore.generate_map(self, level)
-            self.addplaceditem(m, max_lev=level - 1)
+            self.addplaceditem(m, max_lev=level)
 
     def addplaceditem(self, item_tags, min_lev=-100, max_lev=100):
         self.placed_items.append({

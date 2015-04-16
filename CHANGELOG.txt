@@ -19,6 +19,8 @@ v0.14.2 -
    * Added missing door images to html maps. (JiFish)
 
    * Adds __DUNGEON__ keyword  for html map file names (orphu)
+
+   * Dungeon maps can now appear on the same level they represent. (orphu)
   
 v0.14.1 - 11/23/2014
 
