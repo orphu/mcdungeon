@@ -1,5 +1,9 @@
 v0.14.3 - 
 
+  !! NOTE: This version requires Minecraft 1.8.0 release or higher!
+
+  * Moved example configs to example_configs folder. (JiFish)
+
 v0.14.2 - 04/15/2015
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
