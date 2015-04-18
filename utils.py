@@ -632,7 +632,7 @@ def loadDungeonCache(cache_path):
     # Try some basic versioning.
     if not os.path.exists(os.path.join(cache_path,
                                        'dungeon_scan_version_' + cache_version)):
-        print 'Dungeon cache missing, or is an old verision. Resetting...'
+        print 'Dungeon cache missing, or is an old version. Resetting...'
         return dungeonCache, mtime
 
     # Try to load the cache
@@ -666,7 +666,7 @@ def loadTHuntCache(cache_path):
     # Try some basic versioning.
     if not os.path.exists(os.path.join(cache_path,
                                        'thunt_scan_version_' + cache_version)):
-        print 'Treasure Hunt cache missing, or is an old verision. Resetting...'
+        print 'Treasure Hunt cache missing, or is an old version. Resetting...'
         return tHuntCache, mtime
 
     # Try to load the cache
@@ -776,7 +776,7 @@ def loadChunkCache(cache_path):
     # Try some basic versioning.
     if not os.path.exists(os.path.join(cache_path,
                                        'chunk_scan_version_' + cache_version)):
-        print 'Chunk cache missing, or is an old verision. Resetting...'
+        print 'Chunk cache missing, or is an old version. Resetting...'
         return chunkCache, chunkMTime
 
     if os.path.exists(os.path.join(cache_path, 'chunk_scan_cache')):
