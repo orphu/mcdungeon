@@ -108,6 +108,12 @@ parser_inter.add_argument('--outputdir',
                         dest='outputdir',
                         metavar='PATH',
                         help='Give the location for the OverViewer output path.')
+parser_inter.add_argument('--regionfile',
+                        dest='regionfile',
+                        metavar='PATH',
+                        help='Give the location for the regions.yml output path.\
+                        This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
+                        Make sure you take a backup of this file first!')
 
 # AddTH subcommand parser
 parser_addth = subparsers.add_parser('addth', help='Add new treasure hunts.')
@@ -964,8 +970,7 @@ if (args.command == 'interactive'):
     elif command == 'p':
         args.command = 'genpoi'
     elif command == 'w':
-        args.command = 'genregions'
-        args.regionfile = 'regions.yml'
+        args.command = 'genreg'
     elif command == 'd':
         args.command = 'delete'
         args.dungeons = []
@@ -1069,18 +1074,19 @@ if (args.command == 'genpoi'):
 
 # Genregions mode
 if (args.command == 'genreg'):
-    print 'Generating WorldGuard regions file...\n'
     
     import yaml
     # load in the existing YAML, if any
-    if( args.regionfile is False ):
+    if( args.regionfile is None ):
         args.regionfile = 'regions.yml'
-       
+
+    print 'Generating WorldGuard regions file in %s\n' % (args.regionfile)
+        
     try:
-        stream = file( args.regionfile , 'r')
+        stream = open( args.regionfile , 'r')
         regions = yaml.load( stream )
     except:
-        print 'Unable to read any existing Region file.\n'
+        print 'Unable to read any existing Region file.'
         regions = {}
         
     if 'regions' not in regions:
@@ -1127,7 +1133,7 @@ if (args.command == 'genreg'):
     # Write new YAML to file
     print 'Writing YAML...'
     try:
-        stream = file( args.regionfile, 'w' )
+        stream = open( args.regionfile, 'w' )
         yaml.dump( regions, stream )
     except:
         e = sys.exc_info()[0]
