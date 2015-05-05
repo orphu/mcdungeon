@@ -1091,11 +1091,13 @@ if (args.command == 'genreg'):
         
     if 'regions' not in regions:
         # Create an empty default region file
-        regions['regions'] = {}
-        regions['regions']['__default__'] = {}
-        regions['regions']['__default__']['flags'] = {}
-        regions['regions']['__default__']['owners'] = {}
-        regions['regions']['__default__']['members'] = {}
+        regions['regions'] = {
+            '__global__': {
+                'flags': {},
+                'owners': {},
+                'members': {}
+            }
+        }
         
     # load in the list of existing dungeons
     print 'Loading in list of dungeons...'
@@ -1106,27 +1108,30 @@ if (args.command == 'genreg'):
     dnames = {}
     for d in dungeons:
         info = d[4]
-        name = 'MCD_' + re.sub('\W','',re.sub(' ','_',info.get('full_name', 'Dungeon')))
+        name = 'mcd_' + re.sub('\W','',re.sub(' ','_',info.get('full_name', 'Dungeon'))).lower()
         dnames[name] = True
         if not name in regions['regions']:
             print 'Adding new region: %s' % (name)
-            regions['regions'][name] = {}
-            regions['regions'][name]['priority'] = 0
-            regions['regions'][name]['type'] = 'cuboid'
-            regions['regions'][name]['flags'] = {}
-            regions['regions'][name]['owners'] = {}
-            regions['regions'][name]['members'] = {}
-            regions['regions'][name]['min'] = {}
-            regions['regions'][name]['min']['x'] = info['position'].x + 0.0
-            regions['regions'][name]['min']['y'] = 0.0
-            regions['regions'][name]['min']['z'] = info['position'].z + 0.0
-            regions['regions'][name]['max'] = {}
-            regions['regions'][name]['max']['x'] = info['position'].x + info['xsize'] * 16.0
-            regions['regions'][name]['max']['y'] = 255.0
-            regions['regions'][name]['max']['z'] = info['position'].z + info['zsize'] * 16.0
+            regions['regions'][name] = {
+                'priority': 4,
+                'type': 'cuboid',
+                'flags': {},
+                'owners': {},
+                'members': {},
+                'min': {
+                    'x': (info['position'].x + 0.0),
+                    'y': 0.0,
+                    'z': (info['position'].z + 0.0)
+                },
+                'max': {
+                    'x': (info['position'].x + info['xsize'] * 16.0),
+                    'y': 255.0,
+                    'z': (info['position'].z + info['zsize'] * 16.0)
+                }
+            }
     
     for r in list(regions['regions'].keys()):
-        if re.match('^MCD_',r) != None and not r in dnames:
+        if re.match('^mcd_',r) != None and not r in dnames:
             print 'Deleting old region: %s' % (r)
             del regions['regions'][r]
     
