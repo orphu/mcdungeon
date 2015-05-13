@@ -6,7 +6,7 @@ import argparse
 import logging
 import re
 import time
-
+import copy
 import numpy
 
 # Silence some logging from pymclevel
@@ -1096,6 +1096,12 @@ if (args.command == 'genreg'):
                 'flags': {},
                 'owners': {},
                 'members': {}
+            },
+            '__mcd_default__': {
+                'priority': 4,
+                'flags': {},
+                'owners': {},
+                'members': {}
             }
         }
         
@@ -1112,23 +1118,26 @@ if (args.command == 'genreg'):
         dnames[name] = True
         if not name in regions['regions']:
             print 'Adding new region: %s' % (name)
-            regions['regions'][name] = {
-                'priority': 4,
-                'type': 'cuboid',
-                'flags': {},
-                'owners': {},
-                'members': {},
-                'min': {
+            if '__mcd_default__' in regions['regions']:
+                regions['regions'][name] = copy.deepcopy(regions['regions']['__mcd_default__'])
+            else:
+                regions['regions'][name] = {
+                    'priority': 4,
+                    'flags': {},
+                    'owners': {},
+                    'members': {},
+                }
+            regions['regions'][name]['type'] = 'cuboid'
+            regions['regions'][name]['min'] = {
                     'x': (info['position'].x + 0.0),
                     'y': 0.0,
                     'z': (info['position'].z + 0.0)
-                },
-                'max': {
+                }
+            regions['regions'][name]['max'] = {
                     'x': (info['position'].x + info['xsize'] * 16.0),
                     'y': 255.0,
                     'z': (info['position'].z + info['zsize'] * 16.0)
                 }
-            }
     
     for r in list(regions['regions'].keys()):
         if re.match('^mcd_',r) != None and not r in dnames:
@@ -1139,6 +1148,10 @@ if (args.command == 'genreg'):
     print 'Writing YAML...'
     try:
         stream = open( args.regionfile, 'w' )
+        stream.write("# Created by MCDungeon\n")
+        stream.write("# Be VERY CAREFUL if updating this file by hand!  Always keep backups!\n")
+        stream.write("# Use /rg reload [-w world] in Bukkit to reload data if server is up\n")
+        stream.write("# MCDungeon defaults are kept in the global region __mcd_default__\n#\n")
         yaml.dump( regions, stream )
     except:
         e = sys.exc_info()[0]
