@@ -6,7 +6,7 @@ import argparse
 import logging
 import re
 import time
-
+import copy
 import numpy
 
 # Silence some logging from pymclevel
@@ -108,6 +108,12 @@ parser_inter.add_argument('--outputdir',
                         dest='outputdir',
                         metavar='PATH',
                         help='Give the location for the OverViewer output path.')
+parser_inter.add_argument('--regionfile',
+                        dest='regionfile',
+                        metavar='PATH',
+                        help='Give the location for the regions.yml output path.\
+                        This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
+                        Make sure you take a backup of this file first!')
 
 # AddTH subcommand parser
 parser_addth = subparsers.add_parser('addth', help='Add new treasure hunts.')
@@ -284,6 +290,20 @@ parser_genpoi.add_argument('--outputdir',
                         metavar='PATH',
                         help='Give the location for the OverViewer output path.')
 
+# GenRegions subcommand parser
+parser_genreg = subparsers.add_parser('genregions',
+                        help='Create WorldGuard regions.yml definitions for known dungeons in a map.')
+parser_genreg.set_defaults(command='genreg')
+parser_genreg.add_argument('world',
+                        metavar='SAVEDIR',
+                        help='Target world (path to world directory)')
+parser_genreg.add_argument('--regionfile',
+                        dest='regionfile',
+                        metavar='PATH',
+                        help='Give the location for the regions.yml output path.\
+                        This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
+                        Make sure you take a backup of this file first!')
+                        
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
                                    help='Delete dungeons from a map.')
@@ -732,6 +752,8 @@ if (args.command == 'interactive'):
     print '\t[r] Regenerate a dungeon or treasure hunt in this map.'
     print '\t[p] Generate OverViewer POI file for dungeons and treasure hunts'
     print '\t    already in this map.'
+    print '\t[w] Generate a WorldGuard regions file for dungeons already in'
+    print '\t    this map.'
     command = raw_input('\nEnter choice or q to quit: ')
 
     if command == 'a':
@@ -947,6 +969,8 @@ if (args.command == 'interactive'):
         args.command = 'list'
     elif command == 'p':
         args.command = 'genpoi'
+    elif command == 'w':
+        args.command = 'genreg'
     elif command == 'd':
         args.command = 'delete'
         args.dungeons = []
@@ -1048,6 +1072,93 @@ if (args.command == 'genpoi'):
     print output
     sys.exit()
 
+# Genregions mode
+if (args.command == 'genreg'):
+    
+    import yaml
+    # load in the existing YAML, if any
+    if( args.regionfile is None ):
+        args.regionfile = 'regions.yml'
+
+    print 'Generating WorldGuard regions file in %s\n' % (args.regionfile)
+        
+    try:
+        stream = open( args.regionfile , 'r')
+        regions = yaml.load( stream )
+    except:
+        print 'Unable to read any existing Region file.'
+        regions = {}
+        
+    if 'regions' not in regions:
+        # Create an empty default region file
+        regions['regions'] = {
+            '__global__': {
+                'flags': {},
+                'owners': {},
+                'members': {}
+            },
+            '__mcd_default__': {
+                'priority': 4,
+                'flags': {},
+                'owners': {},
+                'members': {}
+            }
+        }
+        
+    # load in the list of existing dungeons
+    print 'Loading in list of dungeons...'
+    dungeons, tHunts = loadCaches(world, oworld, genpoi=False)
+    
+    # Build/update YAML
+    print 'Generating YAML...'
+    dnames = {}
+    for d in dungeons:
+        info = d[4]
+        name = 'mcd_' + re.sub('\W','',re.sub(' ','_',info.get('full_name', 'Dungeon'))).lower()
+        dnames[name] = True
+        if not name in regions['regions']:
+            print 'Adding new region: %s' % (name)
+            if '__mcd_default__' in regions['regions']:
+                regions['regions'][name] = copy.deepcopy(regions['regions']['__mcd_default__'])
+            else:
+                regions['regions'][name] = {
+                    'priority': 4,
+                    'flags': {},
+                    'owners': {},
+                    'members': {},
+                }
+            regions['regions'][name]['type'] = 'cuboid'
+            regions['regions'][name]['min'] = {
+                    'x': (info['position'].x + 0.0),
+                    'y': 0.0,
+                    'z': (info['position'].z + 0.0)
+                }
+            regions['regions'][name]['max'] = {
+                    'x': (info['position'].x + info['xsize'] * 16.0),
+                    'y': 255.0,
+                    'z': (info['position'].z + info['zsize'] * 16.0)
+                }
+    
+    for r in list(regions['regions'].keys()):
+        if re.match('^mcd_',r) != None and not r in dnames:
+            print 'Deleting old region: %s' % (r)
+            del regions['regions'][r]
+    
+    # Write new YAML to file
+    print 'Writing YAML...'
+    try:
+        stream = open( args.regionfile, 'w' )
+        stream.write("# Created by MCDungeon\n")
+        stream.write("# Be VERY CAREFUL if updating this file by hand!  Always keep backups!\n")
+        stream.write("# Use /rg reload [-w world] in Bukkit to reload data if server is up\n")
+        stream.write("# MCDungeon defaults are kept in the global region __mcd_default__\n#\n")
+        yaml.dump( regions, stream )
+    except:
+        e = sys.exc_info()[0]
+        print 'Unable to write to file "%s": %s' % ( args.regionfile, e )
+        
+    sys.exit()
+    
 # Delete mode
 if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
