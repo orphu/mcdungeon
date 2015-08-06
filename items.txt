@@ -233,6 +233,11 @@
 429,Jungle Door,0,64
 430,Acacia Door,0,64
 431,Dark Oak Door,0,64
+432,Chorus Fruit,0,64
+433,Popped Chorus Fruit,0,64
+434,Beetroot,0,64
+435,Beetroot Seeds,64
+436,Beetroot Soup,0,1
 
 # Disks
 #
