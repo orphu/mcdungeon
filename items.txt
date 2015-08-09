@@ -203,6 +203,7 @@
 397,Zombie Head,2,64
 397,Head,3,1
 397,Creeper Head,4,64
+397,Dragon Head,5,64
 398,Carrot on a Stick,0,1
 399,Nether Star,0,64
 400,Pumpkin Pie,0,64
