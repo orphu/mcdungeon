@@ -30,7 +30,7 @@ Packaged Items:
   famous) minecrafters.
 - Items starting with "firework_" are various pre-created fireworks,
   some using rare crafting materials.
-- Items starting "spellbook_" are spellbooks, which only work in Minecraft 1.8
-  and later.  These are somewhat overpowered, so think before adding them.
+- Items starting "spellbook_" are spellbooks. These are somewhat overpowered,
+  so think before adding them.
 
 Hopefully more to come!
