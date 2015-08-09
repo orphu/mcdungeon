@@ -163,6 +163,7 @@ def LoadMagicItems(filename='magic_items.txt'):
             data = _items[item].data
             flag = _items[item].flag
             flagparam = _items[item].flagparam
+            p_effect = _items[item].p_effect
 
             _items[name] = ItemInfo(
                 name,
@@ -172,7 +173,9 @@ def LoadMagicItems(filename='magic_items.txt'):
                 ench=ench,
                 customname=customname,
                 flag=flag,
-                flagparam=flagparam, lore=lore
+                flagparam=flagparam,
+                p_effect=p_effect,
+                lore=lore
             )
             # print _items[name]
             items += 1
@@ -210,22 +213,40 @@ def LoadPotions(filename='potions.txt'):
                 continue
             if line[0] == "#":
                 continue
-
-            # Fill in optional flag param
-            if line.count(':') == 1:
-                line = line + ':'
-            name, stuff, flag = line.split(':')
-
-            data, p_effect = stuff.split(',', 1)
+            
+            s = line.split(',')
+            name = s.pop(0)
             # Append section sign and r to name to reset style
-            customname = u"\u00A7r".encode('utf8')+name
+            resetprefix = u"\u00A7r".encode('utf8')
+            customname = name
             name = (name.lower())
+            # Look for optional flag
+            flag = ''
+            if s[-1] in ('HIDE_EFFECTS','HIDE_PARTICLES','HIDE_ALL'):
+                flag = s.pop()
+            # Join the rest back in to the effect list
+            p_effect = ','.join(s)
+            
+            # Create the basic potion
             value = _items['water bottle'].value
-
-            _items[name] = ItemInfo(name, value, data=data, maxstack=1,
-                                    p_effect=p_effect, customname=customname,
-                                    flag=flag)
-            # print _items[name]
+            _items[name] = ItemInfo(name, value, data=0, maxstack=1,
+                                    p_effect=p_effect, flag=flag,
+                                    customname=resetprefix+customname)
+                                    
+            # Create the arrow version of the potion
+            value = _items['tipped arrow'].value
+            _items[name+' arrow'] = ItemInfo(name+' arrow', value, data=0, maxstack=1,
+                                    p_effect=p_effect, flag=flag,
+                                    customname=resetprefix+customname+' Arrow')
+                                    
+            # Create the splash version of the potion
+            # Temporary, while bug MC-83471 is unfixed, do not create the splash
+            # potion when using custompotioneffects
+            if (p_effect.replace(',','').replace('-','').isdigit() == False):
+                value = _items['splash water bottle'].value
+                _items['splash '+name] = ItemInfo('splash '+name, value, data=0, maxstack=1,
+                                        p_effect=p_effect, flag=flag,
+                                        customname=resetprefix+'Splash '+customname)
             items += 1
         except Exception as e:
             print "Error reading line:", e

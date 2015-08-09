@@ -186,18 +186,25 @@ class new:
                 item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
-            item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
-            elist = item_tag['tag']['CustomPotionEffects']
-            for e in i.p_effect.split(','):
-                id, amp, dur = e.split('-')
-                e_tag = nbt.TAG_Compound()
-                e_tag['Id'] = nbt.TAG_Byte(id)
-                e_tag['Amplifier'] = nbt.TAG_Byte(amp)
-                e_tag['Duration'] = nbt.TAG_Int(dur)
-                # Flags for hiding potion particles
-                if i.flag == 'HIDE_PARTICLES' or i.flag == 'HIDE_ALL':
-                    e_tag['ShowParticles'] = nbt.TAG_Byte(0)
-                elist.append(e_tag)
+                
+            # Is this a 'basic' potion i.e. no custom effects list
+            if (i.p_effect.replace(',','').replace('-','').isdigit()):
+                item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()
+                elist = item_tag['tag']['CustomPotionEffects']
+                for e in i.p_effect.split(','):
+                    id, amp, dur = e.split('-')
+                    e_tag = nbt.TAG_Compound()
+                    e_tag['Id'] = nbt.TAG_Byte(id)
+                    e_tag['Amplifier'] = nbt.TAG_Byte(amp)
+                    e_tag['Duration'] = nbt.TAG_Int(dur)
+                    # Flags for hiding potion particles
+                    if i.flag == 'HIDE_PARTICLES' or i.flag == 'HIDE_ALL':
+                        e_tag['ShowParticles'] = nbt.TAG_Byte(0)
+                    elist.append(e_tag)
+            else:
+                item_tag['tag']['Potion'] = nbt.TAG_String(i.p_effect)
+                # For basic potions there is no need for a custom name
+                i.customname = ''
         # Flag for hiding additional text
         if i.flag == 'HIDE_EFFECTS' or i.flag == 'HIDE_ALL':
             try:

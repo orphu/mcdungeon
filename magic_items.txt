@@ -118,4 +118,4 @@ Book of Fish Stories Vol 2:Enchanted Book,62-3
 Book of Fish Stories Vol 3:Enchanted Book,8-3
 
 # The Holy Handgrenade of Antioch
-Holy Hand Grenade of Antioch:Extended Splash Potion of Harming II,17-5:...And Saint Attila raised the hand grenade up on:high, saying, "O LORD, bless this Thy hand:grenade that with it Thou mayest blow Thine:enemies to tiny bits, in Thy mercy."
+Holy Hand Grenade of Antioch:Splash Potion of Harming II,17-5:...And Saint Attila raised the hand grenade up on:high, saying, "O LORD, bless this Thy hand:grenade that with it Thou mayest blow Thine:enemies to tiny bits, in Thy mercy."

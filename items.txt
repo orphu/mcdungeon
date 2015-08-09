@@ -166,6 +166,7 @@
 383,Spawn Cow,92,64
 383,Spawn Creeper,50,64
 383,Spawn Enderman,58,64
+383,Spawn Endermite,67,64
 383,Spawn Guardian,68,64
 383,Spawn Ghast,56,64
 383,Spawn Horse,100,64
@@ -177,6 +178,7 @@
 383,Spawn Rabbit,101,64
 383,Spawn Skeleton,51,64
 383,Spawn Sheep,91,64
+383,Spawn Shulker,69,64
 383,Spawn Silverfish,60,64
 383,Spawn Slime,55,64
 383,Spawn Spider,52,64
@@ -236,8 +238,11 @@
 432,Chorus Fruit,0,64
 433,Popped Chorus Fruit,0,64
 434,Beetroot,0,64
-435,Beetroot Seeds,64
+435,Beetroot Seeds,0,64
 436,Beetroot Soup,0,1
+438,Splash Water Bottle,0,1
+439,Spectral Arrow,0,64
+440,Tipped Arrow,0,64
 
 # Disks
 #
@@ -269,95 +274,3 @@
 358,Custom Painting,0,1,PAINT
 387,Written Book,0,1,WRITTEN
 403,Enchanted Book,0,1,ENCH_BOOK
-
-# Potions
-# #################
-#
-# Positive potions
-373,Potion of Regeneration,8193,1
-373,Splash Potion of Regeneration,16385,1
-373,Potion of Regeneration II,8225,1
-373,Splash Potion of Regeneration II,16417,1
-373,Potion of Swiftness,8194,1
-373,Splash Potion of Swiftness,16386,1
-373,Potion of Swiftness II,8226,1
-373,Splash Potion of Swiftness II,16418,1
-373,Potion of Fire Resistance,8195,1
-373,Splash Potion of Fire Resistance,16387,1
-373,Potion of Healing,8197,1
-373,Splash Potion of Healing,16389,1
-373,Potion of Healing II,8229,1
-373,Splash Potion of Healing II,16421,1
-373,Potion of Strength,8201,1
-373,Splash Potion of Strength,16393,1
-373,Potion of Strength II,8233,1
-373,Splash Potion of Strength II,16425,1
-373,Potion of Night Vision,8198,1
-373,Splash Potion of Night Vision,32694,1
-373,Potion of Invisibility,8206,1
-373,Splash Potion of Invisibility,32702,1
-373,Potion of Leaping,8203,1
-373,Splash Potion of Leaping,16395,1
-373,Potion of Leaping II,8235,1
-373,Splash Potion of Leaping II,16427,1
-# Negative Potions
-373,Potion of Poison,8196,1
-373,Splash Potion of Poison,16388,1
-373,Potion of Poison II,8228,1
-373,Splash Potion of Poison II,16420,1
-373,Potion of Weakness,8200,1
-373,Splash Potion of Weakness,16392,1
-373,Potion of Weakness II,8264,1
-373,Splash Potion of Weakness II,16456,1
-373,Potion of Slowness,8202,1
-373,Splash Potion of Slowness,16394,1
-373,Potion of Slowness II,8266,1
-373,Splash Potion of Slowness II,16458,1
-373,Potion of Harming,8204,1
-373,Splash Potion of Harming,16396,1
-373,Potion of Harming II,8236,1
-373,Splash Potion of Harming II,16428,1
-373,Potion of Water Breathing,8205,1
-373,Splash Potion of Water Breathing,16397,1
-# Extended Positive Potions
-373,Extended Potion of Regeneration,8257,1
-373,Extended Splash Potion of Regeneration,16449,1
-373,Extended Potion of Regeneration II,8289,1
-373,Extended Splash Potion of Regeneration II,16481,1
-373,Extended Potion of Swiftness,8260,1
-373,Extended Splash Potion of Swiftness,16450,1
-373,Extended Potion of Swiftness II,8290,1
-373,Extended Splash Potion of Swiftness II,16482,1
-373,Extended Potion of Fire Resistance,8259,1
-373,Extended Splash Potion of Fire Resistance,16451,1
-373,Extended Potion of Healing,8261,1
-373,Extended Splash Potion of Healing,16453,1
-373,Extended Potion of Healing II,8296,1
-373,Extended Splash Potion of Healing II,16485,1
-373,Extended Potion of Strength,8265,1
-373,Extended Splash Potion of Strength,16457,1
-373,Extended Potion of Strength II,8297,1
-373,Extended Splash Potion of Strength II,16489,1
-373,Extended Potion of Night Vision,8262,1
-373,Extended Splash Potion of Night Vision,32758,1
-373,Extended Potion of Invisibility,8270,1
-373,Extended Splash Potion of Invisibility,32766,1
-373,Extended Potion of Water Breathing,8269,1
-373,Extended Splash Potion of Water Breathing,16461,1
-# Extended Negative Potions
-373,Extended Potion of Poison,8260,1
-373,Extended Splash Potion of Poison,16452,1
-373,Extended Potion of Poison II,8292,1
-373,Extended Splash Potion of Poison II,16484,1
-373,Extended Potion of Weakness,8264,1
-373,Extended Splash Potion of Weakness,16456,1
-373,Extended Potion of Weakness II,8328,1
-373,Extended Splash Potion of Weakness II,16520,1
-373,Extended Potion of Slowness,8266,1
-373,Extended Splash Potion of Slowness,16458,1
-373,Extended Potion of Slowness II,8330,1
-373,Extended Splash Potion of Slowness II,16522,1
-373,Extended Potion of Harming,8268,1
-373,Extended Splash Potion of Harming,16460,1
-373,Extended Potion of Harming II,8300,1
-373,Extended Splash Potion of Harming II,16492,1
