@@ -1,5 +1,6 @@
 import random
 import math
+import sys
 
 import cfg
 import items
@@ -283,6 +284,10 @@ def Load():
 
             ilist = []
             for i in line[0].split(','):
+                thisitem = items.byName(i.strip())
+                if thisitem is None:
+                    print 'ERROR: Tried to reference loot that does not exist.'
+                    sys.exit()
                 ilist.append(items.byName(i.strip()))
             thistable[num] = dict([
                 ('item', ilist),
