@@ -24,7 +24,7 @@
 # in-game, HIDE_PARTICLES to hide the player particles after drinking, or
 # HIDE_ALL to hide both. HIDE_PARTICLES does not work with 'basic' potions.
 #
-# For each entry in this file, THREE items will be created can be be
+# For each entry in this file, THREE items will be created than can be
 # refenced in loot tables. 1) The potion itself, 2) The splash version of
 # the potion, prefixed by 'splash' and 3) The tipped arrow version, with
 # the suffix 'arrow'. For example, "Potion of XXX" would produce:
