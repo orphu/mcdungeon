@@ -24,16 +24,17 @@
 # in-game, HIDE_PARTICLES to hide the player particles after drinking, or
 # HIDE_ALL to hide both. HIDE_PARTICLES does not work with 'basic' potions.
 #
-# For each entry in this file, THREE items will be created than can be
+# For each entry in this file, FOUR items will be created than can be
 # refenced in loot tables. 1) The potion itself, 2) The splash version of
 # the potion, prefixed by 'splash' and 3) The tipped arrow version, with
-# the suffix 'arrow'. For example, "Potion of XXX" would produce:
-#  - Potion of XXX
+# the suffix 'arrow'. 4) The lingering version, prefixed by 'lingering'
+# For example, "Potion of XXX" would also produce:
 #  - Splash Potion of XXX
 #  - Potion of XXX arrow
+#  - Lingering Potion of XXX
 #
-# NOTE: Splash versions of NON-'basic' potions are currently disabled due
-# to minecraft bug MC-83471
+# NOTE: Splash and Lingering versions of NON-'basic' potions are currently
+# disabled due to minecraft bug MC-83471
 #
 # Examples:
 Potion of Wonder,8-0-1200,12-1-2400,3-2-600,HIDE_EFFECTS
