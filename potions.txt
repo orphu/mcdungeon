@@ -72,37 +72,37 @@ Bottle of Mulled Wine,9-0-300,2-0-300,21-0-1200,3-0-1200,HIDE_ALL
 Bottle of Absinthe,8-4-1,9-0-300,15-0-300,2-1-300,5-2-500,HIDE_ALL
 
 # Basic Potions
-Mundane Potion,Minecraft:mundane
-Thick Potion,Minecraft:thick
-Awkward Potion,Minecraft:awkward
-Potion of Night Vision,Minecraft:night_vision
-Extended Potion of Night Vision,Minecraft:long_night_vision
-Potion of Invisibility,Minecraft:invisibility
-Extended Potion of Invisibility,Minecraft:long_invisibility
-Potion of Leaping,Minecraft:leaping
-Potion of Leaping II,Minecraft:strong_leaping
-Extended Potion of Leaping,Minecraft:long_leaping
-Potion of Fire Resistance,Minecraft:fire_resistance
-Extended Potion of Fire Resistance,Minecraft:long_fire_resistance
-Potion of Swiftness,Minecraft:swiftness
-Potion of Swiftness II,Minecraft:strong_swiftness
-Extended Potion of Swiftness,Minecraft:long_swiftness
-Potion of Slowness,Minecraft:slowness
-Extended Potion of Slowness,Minecraft:long_slowness
-Potion of Water Breathing,Minecraft:water_breathing
-Extended Potion of Water Breathing,Minecraft:long_water_breathing
-Potion of Healing,Minecraft:healing
-Potion of Healing II,Minecraft:strong_healing
-Potion of Harming,Minecraft:harming
-Potion of Harming II,Minecraft:strong_harming
-Potion of Poison,Minecraft:poison
-Potion of Poison II,Minecraft:strong_poison
-Extended Potion of Poison,Minecraft:long_poison
-Potion of Regeneration,Minecraft:regeneration
-Potion of Regeneration II,Minecraft:strong_regeneration
-Extended Potion of Regeneration,Minecraft:long_regeneration
-Potion of Strength,Minecraft:strength
-Potion of Strength II,Minecraft:strong_strength
-Extended Potion of Strength,Minecraft:long_strength
-Potion of Weakness,Minecraft:weakness
-Extended Potion of Weakness,Minecraft:long_weakness
+Mundane Potion,minecraft:mundane
+Thick Potion,minecraft:thick
+Awkward Potion,minecraft:awkward
+Potion of Night Vision,minecraft:night_vision
+Extended Potion of Night Vision,minecraft:long_night_vision
+Potion of Invisibility,minecraft:invisibility
+Extended Potion of Invisibility,minecraft:long_invisibility
+Potion of Leaping,minecraft:leaping
+Potion of Leaping II,minecraft:strong_leaping
+Extended Potion of Leaping,minecraft:long_leaping
+Potion of Fire Resistance,minecraft:fire_resistance
+Extended Potion of Fire Resistance,minecraft:long_fire_resistance
+Potion of Swiftness,minecraft:swiftness
+Potion of Swiftness II,minecraft:strong_swiftness
+Extended Potion of Swiftness,minecraft:long_swiftness
+Potion of Slowness,minecraft:slowness
+Extended Potion of Slowness,minecraft:long_slowness
+Potion of Water Breathing,minecraft:water_breathing
+Extended Potion of Water Breathing,minecraft:long_water_breathing
+Potion of Healing,minecraft:healing
+Potion of Healing II,minecraft:strong_healing
+Potion of Harming,minecraft:harming
+Potion of Harming II,minecraft:strong_harming
+Potion of Poison,minecraft:poison
+Potion of Poison II,minecraft:strong_poison
+Extended Potion of Poison,minecraft:long_poison
+Potion of Regeneration,minecraft:regeneration
+Potion of Regeneration II,minecraft:strong_regeneration
+Extended Potion of Regeneration,minecraft:long_regeneration
+Potion of Strength,minecraft:strength
+Potion of Strength II,minecraft:strong_strength
+Extended Potion of Strength,minecraft:long_strength
+Potion of Weakness,minecraft:weakness
+Extended Potion of Weakness,minecraft:long_weakness
