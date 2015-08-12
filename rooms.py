@@ -790,7 +790,7 @@ class CellBlock(Basic2x2):
                             str(self.combo),
                             '--==+==--')
         note = nbt.TAG_Compound()
-        note['id'] = nbt.TAG_Short(items.byName("written book").value)
+        note['id'] = nbt.TAG_String(items.byName("written book").id)
         note['Damage'] = nbt.TAG_Short(0)
         note['Count'] = nbt.TAG_Byte(1)
         note['tag'] = nbt.TAG_Compound()

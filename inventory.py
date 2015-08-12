@@ -164,7 +164,7 @@ class new:
         # Otherwise, we will build the compound
         item_tag = nbt.TAG_Compound()
         # Standard stuff
-        item_tag['id'] = nbt.TAG_Short(i.id)
+        item_tag['id'] = nbt.TAG_String(i.id)
         item_tag['Damage'] = nbt.TAG_Short(i.damage)
         # Enchantments
         if len(i.enchantments) > 0:

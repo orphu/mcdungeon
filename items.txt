@@ -1,277 +1,280 @@
-# Items file. See the bottom for potions.
+# Items file. See potions.txt for potions.
 # 
-# ID,Item Name,Data Value,Maximum Stack Size,Special Flag (optional)
+# Item Name,ID,Data Value,Maximum Stack Size,Special Flag (optional)
 # 
 # Do not remove items from this list unless you really know what you are doing.
 
 # Items
 #
-256,Iron Shovel,0,1
-257,Iron Pickaxe,0,1
-258,Iron Axe,0,1
-259,Flint and Steel,0,1
-260,Apple,0,64
-261,Bow,0,1
-262,Arrow,0,64
-263,Coal,0,64
-263,Charcoal,1,64
-264,Diamond,0,64
-265,Iron Ingot,0,64
-266,Gold Ingot,0,64
-267,Iron Sword,0,1
-268,Wooden Sword,0,1
-269,Wooden Shovel,0,1
-270,Wooden Pickaxe,0,1
-271,Wooden Axe,0,1
-272,Stone Sword,0,1
-273,Stone Shovel,0,1
-274,Stone Pickaxe,0,1
-275,Stone Axe,0,1
-276,Diamond Sword,0,1
-277,Diamond Shovel,0,1
-278,Diamond Pickaxe,0,1
-279,Diamond Axe,0,1
-280,Stick,0,64
-281,Bowl,0,64
-282,Mushroom Stew,0,1
-283,Gold Sword,0,1
-284,Gold Shovel,0,1
-285,Gold Pickaxe,0,1
-286,Gold Axe,0,1
-287,String,0,64
-288,Feather,0,64
-289,Gunpowder,0,64
-290,Wooden Hoe,0,1
-291,Stone Hoe,0,1
-292,Iron Hoe,0,1
-293,Diamond Hoe,0,1
-294,Gold Hoe,0,1
-295,Seeds,0,64
-296,Wheat,0,64
-297,Bread,0,64
-298,Leather Helmet,0,1
-299,Leather Chestplate,0,1
-300,Leather Leggings,0,1
-301,Leather Boots,0,1
-302,Chainmail Helmet,0,1
-303,Chainmail Chestplate,0,1
-304,Chainmail Leggings,0,1
-305,Chainmail Boots,0,1
-306,Iron Helmet,0,1
-307,Iron Chestplate,0,1
-308,Iron Leggings,0,1
-309,Iron Boots,0,1
-310,Diamond Helmet,0,1
-311,Diamond Chestplate,0,1
-312,Diamond Leggings,0,1
-313,Diamond Boots,0,1
-314,Gold Helmet,0,1
-315,Gold Chestplate,0,1
-316,Gold Leggings,0,1
-317,Gold Boots,0,1
-318,Flint,0,64
-319,Raw Porkchop,0,64
-320,Cooked Porkchop,0,64
-321,Painting,0,64
-322,Golden Apple,0,64
-322,Enchanted Golden Apple,1,64
-323,Sign,0,16
-324,Wooden Door,0,64
-325,Bucket,0,16
-326,Water Bucket,0,1
-327,Lava Bucket,0,1
-328,Minecart,0,1
-329,Saddle,0,1
-330,Iron Door,0,64
-331,Redstone Dust,0,64
-332,Snowball,0,16
-333,Boat,0,1
-334,Leather,0,64
-335,Milk Bucket,0,1
-336,Clay Brick,0,64
-337,Clay Balls,0,64
-338,Sugar Cane,0,64
-339,Paper,0,64
-340,Book,0,64
-341,SlimeBall,0,64
-342,Storage Minecart,0,1
-343,Powered Minecart,0,1
-344,Egg,0,16
-345,Compass,0,1
-346,Fishing Rod,0,1
-347,Clock,0,1
-348,Glowstone Dust,0,64
-349,Raw Fish,0,64
-349,Raw Salmon,1,64
-349,Clownfish,2,64
-349,Pufferfish,3,64
-350,Cooked Fish,0,64
-350,Cooked Salmon,1,64
-351,Ink Sac,0,64
-351,Rose Red,1,64
-351,Cactus Green,2,64
-351,Cocoa Beans,3,64
-351,Lapis Lazuli,4,64
-351,Purple Dye,5,64
-351,Cyan Dye,6,64
-351,Light Gray Dye,7,64
-351,Gray Dye,8,64
-351,Pink Dye,9,64
-351,Lime Dye,10,64
-351,Dandelion Yellow,11,64
-351,Light Blue Dye,12,64
-351,Magenta Dye,13,64
-351,Orange Dye,14,64
-351,Bone Meal,15,64
-352,Bone,0,64
-353,Sugar,0,64
-354,Cake,0,1
-355,Bed,0,1
-356,Redstone Repeater,0,64
-357,Cookie,0,64
-358,Map,0,0
-358,Map0,0,0
-358,Map1,1,0
-358,Map2,2,0
-358,Map3,3,0
-358,Map4,4,0
-359,Shears,0,0
-360,Melon (Slice),0,64
-361,Pumpkin Seeds,0,64
-362,Melon Seeds,0,64
-363,Raw Beef,0,64
-364,Steak,0,64
-365,Raw Chicken,0,64
-366,Cooked Chicken,0,64
-367,Rotten Flesh,0,64
-368,Ender Pearl,0,64
-369,Blaze Rod,0,64
-370,Ghast Tear,0,64
-371,Gold Nugget,0,64
-372,Nether Wart,0,64
-373,Water Bottle,0,1
-374,Glass Bottle,0,64
-375,Spider Eye,0,64
-376,Fermented Spider Eye,0,64
-377,Blaze Powder,0,64
-378,Magma Cream,0,64
-379,Brewing Stand,0,64
-380,Cauldron,0,64
-381,Eye of Ender,0,64
-382,Glistering Melon,0,64
-383,Spawn Bat,65,64
-383,Spawn Blaze,61,64
-383,Spawn Cave Spider,59,64
-383,Spawn Chicken,93,64
-383,Spawn Cow,92,64
-383,Spawn Creeper,50,64
-383,Spawn Enderman,58,64
-383,Spawn Endermite,67,64
-383,Spawn Guardian,68,64
-383,Spawn Ghast,56,64
-383,Spawn Horse,100,64
-383,Spawn Magma Cube,62,64
-383,Spawn Mooshroom,96,64
-383,Spawn Ocelot,98,64
-383,Spawn Pig Zombie,57,64
-383,Spawn Pig,90,64
-383,Spawn Rabbit,101,64
-383,Spawn Skeleton,51,64
-383,Spawn Sheep,91,64
-383,Spawn Shulker,69,64
-383,Spawn Silverfish,60,64
-383,Spawn Slime,55,64
-383,Spawn Spider,52,64
-383,Spawn Squid,94,64
-383,Spawn Villager,120,64
-383,Spawn Witch,66,64
-383,Spawn Wolf,95,64
-383,Spawn Zombie,54,64
-384,Bottle o' Enchanting,0,64
-385,Fire Charge,0,64
-386,Book and Quill,0,1
-388,Emerald,0,64
-389,Item Frame,0,64
-390,Flower Pot,0,64
-391,Carrot,0,64
-392,Potato,0,64
-393,Baked Potato,0,64
-394,Poisonous Potato,0,64
-396,Golden Carrot,0,64
-397,Skeleton Skull,0,64
-397,Wither Skeleton Skull,1,64
-397,Zombie Head,2,64
-397,Head,3,1
-397,Creeper Head,4,64
-397,Dragon Head,5,64
-398,Carrot on a Stick,0,1
-399,Nether Star,0,64
-400,Pumpkin Pie,0,64
-401,Firework Rocket,0,64
-402,Firework Star,0,64
-404,Redstone Comparator,0,64
-405,Nether Brick,0,64
-406,Nether Quartz,0,64
-407,Minecart with TNT,0,1
-408,Minecart with Hopper,0,1
-409,Prismarine Shard,0,64
-410,Prismarine Crystals,0,64
-411,Raw Rabbit,0,64
-412,Cooked Rabbit,0,64
-413,Rabbit Stew,0,1
-414,Rabbit's Foot,0,64
-415,Rabbit Hide,0,64
-416,Armor Stand,0,16
-417,Iron Horse Armor,0,1
-418,Gold Horse Armor,0,1
-419,Diamond Horse Armor,0,1
-420,Lead,0,64
-421,Name Tag,0,64
-422,Minecart with Command Block,0,64
-423,Raw Mutton,0,64
-424,Cooked Mutton,0,64
-425,Banner,0,16
-427,Spruce Door,0,64
-428,Birch Door,0,64
-429,Jungle Door,0,64
-430,Acacia Door,0,64
-431,Dark Oak Door,0,64
-432,Chorus Fruit,0,64
-433,Popped Chorus Fruit,0,64
-434,Beetroot,0,64
-435,Beetroot Seeds,0,64
-436,Beetroot Soup,0,1
-438,Splash Water Bottle,0,1
-439,Spectral Arrow,0,64
-440,Tipped Arrow,0,64
+Iron Shovel,minecraft:iron_shovel,0,1
+Iron Pickaxe,minecraft:iron_pickaxe,0,1
+Iron Axe,minecraft:iron_axe,0,1
+Flint and Steel,minecraft:flint_and_steel,0,1
+Apple,minecraft:apple,0,64
+Bow,minecraft:bow,0,1
+Arrow,minecraft:arrow,0,64
+Coal,minecraft:coal,0,64
+Charcoal,minecraft:coal,1,64
+Diamond,minecraft:diamond,0,64
+Iron Ingot,minecraft:iron_ingot,0,64
+Gold Ingot,minecraft:gold_ingot,0,64
+Iron Sword,minecraft:iron_sword,0,1
+Wooden Sword,minecraft:wooden_sword,0,1
+Wooden Shovel,minecraft:wooden_shovel,0,1
+Wooden Pickaxe,minecraft:wooden_pickaxe,0,1
+Wooden Axe,minecraft:wooden_axe,0,1
+Stone Sword,minecraft:stone_sword,0,1
+Stone Shovel,minecraft:stone_shovel,0,1
+Stone Pickaxe,minecraft:stone_pickaxe,0,1
+Stone Axe,minecraft:stone_axe,0,1
+Diamond Sword,minecraft:diamond_sword,0,1
+Diamond Shovel,minecraft:diamond_shovel,0,1
+Diamond Pickaxe,minecraft:diamond_pickaxe,0,1
+Diamond Axe,minecraft:diamond_axe,0,1
+Stick,minecraft:stick,0,64
+Bowl,minecraft:bowl,0,64
+Mushroom Stew,minecraft:mushroom_stew,0,1
+Gold Sword,minecraft:golden_sword,0,1
+Gold Shovel,minecraft:golden_shovel,0,1
+Gold Pickaxe,minecraft:golden_pickaxe,0,1
+Gold Axe,minecraft:golden_axe,0,1
+String,minecraft:string,0,64
+Feather,minecraft:feather,0,64
+Gunpowder,minecraft:gunpowder,0,64
+Wooden Hoe,minecraft:wooden_hoe,0,1
+Stone Hoe,minecraft:stone_hoe,0,1
+Iron Hoe,minecraft:iron_hoe,0,1
+Diamond Hoe,minecraft:diamond_hoe,0,1
+Gold Hoe,minecraft:golden_hoe,0,1
+Seeds,minecraft:wheat_seeds,0,64
+Wheat,minecraft:wheat,0,64
+Bread,minecraft:bread,0,64
+Leather Helmet,minecraft:leather_helmet,0,1
+Leather Chestplate,minecraft:leather_chestplate,0,1
+Leather Leggings,minecraft:leather_leggings,0,1
+Leather Boots,minecraft:leather_boots,0,1
+Chainmail Helmet,minecraft:chainmail_helmet,0,1
+Chainmail Chestplate,minecraft:chainmail_chestplate,0,1
+Chainmail Leggings,minecraft:chainmail_leggings,0,1
+Chainmail Boots,minecraft:chainmail_boots,0,1
+Iron Helmet,minecraft:iron_helmet,0,1
+Iron Chestplate,minecraft:iron_chestplate,0,1
+Iron Leggings,minecraft:iron_leggings,0,1
+Iron Boots,minecraft:iron_boots,0,1
+Diamond Helmet,minecraft:diamond_helmet,0,1
+Diamond Chestplate,minecraft:diamond_chestplate,0,1
+Diamond Leggings,minecraft:diamond_leggings,0,1
+Diamond Boots,minecraft:diamond_boots,0,1
+Gold Helmet,minecraft:golden_helmet,0,1
+Gold Chestplate,minecraft:golden_chestplate,0,1
+Gold Leggings,minecraft:golden_leggings,0,1
+Gold Boots,minecraft:golden_boots,0,1
+Flint,minecraft:flint,0,64
+Raw Porkchop,minecraft:porkchop,0,64
+Cooked Porkchop,minecraft:cooked_porkchop,0,64
+Painting,minecraft:painting,0,64
+Golden Apple,minecraft:golden_apple,0,64
+Enchanted Golden Apple,minecraft:golden_apple,1,64
+Sign,minecraft:sign,0,16
+Wooden Door,minecraft:wooden_door,0,64
+Bucket,minecraft:bucket,0,16
+Water Bucket,minecraft:water_bucket,0,1
+Lava Bucket,minecraft:lava_bucket,0,1
+Minecart,minecraft:minecart,0,1
+Saddle,minecraft:saddle,0,1
+Iron Door,minecraft:iron_door,0,64
+Redstone Dust,minecraft:redstone,0,64
+Snowball,minecraft:snowball,0,16
+Boat,minecraft:boat,0,1
+Leather,minecraft:leather,0,64
+Milk Bucket,minecraft:milk_bucket,0,1
+Clay Brick,minecraft:brick,0,64
+Clay Balls,minecraft:clay_ball,0,64
+Sugar Cane,minecraft:reeds,0,64
+Paper,minecraft:paper,0,64
+Book,minecraft:paper,0,64
+Slime Ball,minecraft:slime_ball,0,64
+Storage Minecart,minecraft:chest_minecart,0,1
+Powered Minecart,minecraft:furnace_minecart,0,1
+Egg,minecraft:egg,0,16
+Compass,minecraft:compass,0,1
+Fishing Rod,minecraft:fishing_rod,0,1
+Clock,minecraft:clock,0,1
+Glowstone Dust,minecraft:glowstone_dust,0,64
+Raw Fish,minecraft:fish,0,64
+Raw Salmon,minecraft:fish,1,64
+Clownfish,minecraft:fish,2,64
+Pufferfish,minecraft:fish,3,64
+Cooked Fish,minecraft:cooked_fish,0,64
+Cooked Salmon,minecraft:cooked_fish,1,64
+Ink Sac,minecraft:dye,0,64
+Rose Red,minecraft:dye,1,64
+Cactus Green,minecraft:dye,2,64
+Cocoa Beans,minecraft:dye,3,64
+Lapis Lazuli,minecraft:dye,4,64
+Purple Dye,minecraft:dye,5,64
+Cyan Dye,minecraft:dye,6,64
+Light Gray Dye,minecraft:dye,7,64
+Gray Dye,minecraft:dye,8,64
+Pink Dye,minecraft:dye,9,64
+Lime Dye,minecraft:dye,10,64
+Dandelion Yellow,minecraft:dye,11,64
+Light Blue Dye,minecraft:dye,12,64
+Magenta Dye,minecraft:dye,13,64
+Orange Dye,minecraft:dye,14,64
+Bone Meal,minecraft:dye,15,64
+Bone,minecraft:bone,0,64
+Sugar,minecraft:sugar,0,64
+Cake,minecraft:cake,0,1
+Bed,minecraft:bed,0,1
+Redstone Repeater,minecraft:repeater,0,64
+Cookie,minecraft:cookie,0,64
+Map,minecraft:filled_map,0,0
+Map0,minecraft:filled_map,0,0
+Map1,minecraft:filled_map,1,0
+Map2,minecraft:filled_map,2,0
+Map3,minecraft:filled_map,3,0
+Map4,minecraft:filled_map,4,0
+Shears,minecraft:shears,0,0
+Melon (Slice),minecraft:melon,0,64
+Pumpkin Seeds,minecraft:pumpkin_seeds,0,64
+Melon Seeds,minecraft:melon_seeds,0,64
+Raw Beef,minecraft:beef,0,64
+Steak,minecraft:cooked_beef,0,64
+Raw Chicken,minecraft:chicken,0,64
+Cooked Chicken,minecraft:cooked_chicken,0,64
+Rotten Flesh,minecraft:rotten_flesh,0,64
+Ender Pearl,minecraft:ender_pearl,0,64
+Blaze Rod,minecraft:blaze_rod,0,64
+Ghast Tear,minecraft:ghast_tear,0,64
+Gold Nugget,minecraft:gold_nugget,0,64
+Nether Wart,minecraft:nether_wart,0,64
+Water Bottle,minecraft:potion,0,1
+Glass Bottle,minecraft:glass_bottle,0,64
+Spider Eye,minecraft:spider_eye,0,64
+Fermented Spider Eye,minecraft:fermented_spider_eye,0,64
+Blaze Powder,minecraft:blaze_powder,0,64
+Magma Cream,minecraft:magma_cream,0,64
+Brewing Stand,minecraft:brewing_stand,0,64
+Cauldron,minecraft:cauldron,0,64
+Eye of Ender,minecraft:ender_eye,0,64
+Glistering Melon,minecraft:speckled_melon,0,64
+Spawn Bat,minecraft:spawn_egg,65,64
+Spawn Blaze,minecraft:spawn_egg,61,64
+Spawn Cave Spider,minecraft:spawn_egg,59,64
+Spawn Chicken,minecraft:spawn_egg,93,64
+Spawn Cow,minecraft:spawn_egg,92,64
+Spawn Creeper,minecraft:spawn_egg,50,64
+Spawn Enderman,minecraft:spawn_egg,58,64
+Spawn Endermite,minecraft:spawn_egg,67,64
+Spawn Guardian,minecraft:spawn_egg,68,64
+Spawn Ghast,minecraft:spawn_egg,56,64
+Spawn Horse,minecraft:spawn_egg,100,64
+Spawn Magma Cube,minecraft:spawn_egg,62,64
+Spawn Mooshroom,minecraft:spawn_egg,96,64
+Spawn Ocelot,minecraft:spawn_egg,98,64
+Spawn Pig Zombie,minecraft:spawn_egg,57,64
+Spawn Pig,minecraft:spawn_egg,90,64
+Spawn Rabbit,minecraft:spawn_egg,101,64
+Spawn Skeleton,minecraft:spawn_egg,51,64
+Spawn Sheep,minecraft:spawn_egg,91,64
+Spawn Shulker,minecraft:spawn_egg,69,64
+Spawn Silverfish,minecraft:spawn_egg,60,64
+Spawn Slime,minecraft:spawn_egg,55,64
+Spawn Spider,minecraft:spawn_egg,52,64
+Spawn Squid,minecraft:spawn_egg,94,64
+Spawn Villager,minecraft:spawn_egg,120,64
+Spawn Witch,minecraft:spawn_egg,66,64
+Spawn Wolf,minecraft:spawn_egg,95,64
+Spawn Zombie,minecraft:spawn_egg,54,64
+Bottle o' Enchanting,minecraft:experience_bottle,0,64
+Fire Charge,minecraft:fire_charge,0,64
+Book and Quill,minecraft:writable_book,0,1
+Emerald,minecraft:emerald,0,64
+Item Frame,minecraft:item_frame,0,64
+Flower Pot,minecraft:flower_pot,0,64
+Carrot,minecraft:carrot,0,64
+Potato,minecraft:potato,0,64
+Baked Potato,minecraft:baked_potato,0,64
+Poisonous Potato,minecraft:poisonous_potato,0,64
+Empty Map,minecraft:map,0,64
+Golden Carrot,minecraft:golden_carrot,0,64
+Skeleton Skull,minecraft:skull,0,64
+Wither Skeleton Skull,minecraft:skull,1,64
+Zombie Head,minecraft:skull,2,64
+Head,minecraft:skull,3,1
+Creeper Head,minecraft:skull,4,64
+Dragon Head,minecraft:skull,5,64
+Carrot on a Stick,minecraft:carrot_on_a_stick,0,1
+Nether Star,minecraft:nether_star,0,64
+Pumpkin Pie,minecraft:pumpkin_pie,0,64
+Firework Rocket,minecraft:fireworks,0,64
+Firework Star,minecraft:firework_charge,0,64
+Redstone Comparator,minecraft:comparator,0,64
+Nether Brick,minecraft:netherbrick,0,64
+Nether Quartz,minecraft:quartz,0,64
+Minecart with TNT,minecraft:tnt_minecart,0,1
+Minecart with Hopper,minecraft:hopper_minecart,0,1
+Prismarine Shard,minecraft:prismarine_shard,0,64
+Prismarine Crystals,minecraft:prismarine_crystals,0,64
+Raw Rabbit,minecraft:rabbit,0,64
+Cooked Rabbit,minecraft:cooked_rabbit,0,64
+Rabbit Stew,minecraft:rabbit_stew,0,1
+Rabbit's Foot,minecraft:rabbit_foot,0,64
+Rabbit Hide,minecraft:rabbit_hide,0,64
+Armor Stand,minecraft:armor_stand,0,16
+Iron Horse Armor,minecraft:iron_horse_armor,0,1
+Gold Horse Armor,minecraft:golden_horse_armor,0,1
+Diamond Horse Armor,minecraft:diamond_horse_armor,0,1
+Lead,minecraft:lead,0,64
+Name Tag,minecraft:name_tag,0,64
+Minecart with Command Block,minecraft:command_block_minecart,0,64
+Raw Mutton,minecraft:mutton,0,64
+Cooked Mutton,minecraft:cooked_mutton,0,64
+Banner,minecraft:banner,0,16
+Spruce Door,minecraft:spruce_door,0,64
+Birch Door,minecraft:birch_door,0,64
+Jungle Door,minecraft:jungle_door,0,64
+Acacia Door,minecraft:acacia_door,0,64
+Dark Oak Door,minecraft:dark_oak_door,0,64
+Chorus Fruit,minecraft:chorus_fruit,0,64
+Popped Chorus Fruit,minecraft:chorus_fruit_popped,0,64
+Beetroot,minecraft:beetroot,0,64
+Beetroot Seeds,minecraft:beetroot_seeds,0,64
+Beetroot Soup,minecraft:beetroot_soup,0,1
+Splash Water Bottle,minecraft:splash_potion,0,1
+Spectral Arrow,minecraft:spectral_arrow,0,64
+Tipped Arrow,minecraft:tipped_arrow,0,64
+Dragon's Breath,minecraft:dragon_breath,0,64
+Lingering Water Bottle,minecraft:lingering_potion,0,1
 
 # Disks
 #
-2256,Music Disc 13,0,1
-2257,Music Disc cat,0,1
-2258,Music Disc blocks,0,1
-2259,Music Disc chirp,0,1
-2260,Music Disc far,0,1
-2261,Music Disc mall,0,1
-2262,Music Disc mellohi,0,1
-2263,Music Disc stal,0,1
-2264,Music Disc strad,0,1
-2265,Music Disc ward,0,1
-2266,Music Disc 11,0,1
-2267,Music Disc wait,0,1
+Music Disc 13,minecraft:record_13,0,1
+Music Disc cat,minecraft:record_cat,0,1
+Music Disc blocks,minecraft:record_blocks,0,1
+Music Disc chirp,minecraft:record_chirp,0,1
+Music Disc far,minecraft:record_far,0,1
+Music Disc mall,minecraft:record_mall,0,1
+Music Disc mellohi,minecraft:record_mellohi,0,1
+Music Disc stal,minecraft:record_stal,0,1
+Music Disc strad,minecraft:record_strad,0,1
+Music Disc ward,minecraft:record_ward,0,1
+Music Disc 11,minecraft:record_11,0,1
+Music Disc wait,minecraft:record_wait,0,1
 
 # Materials that have different datavalue when in an inventory
-54,Chest Item,0,64
-130,Ender Chest Item,0,64
-146,Trapped Chest Item,0,64
+Chest Item,minecraft:chest,0,64
+Ender Chest Item,minecraft:ender_chest,0,64
+Trapped Chest Item,minecraft:trapped_chest,0,64
 
 # Items with special flags.
 # Do not modify unless you really know what you are doing.
-298,Random Leather Helmet,0,1,DYED
-299,Random Leather Chestplate,0,1,DYED
-300,Random Leather Leggings,0,1,DYED
-301,Random Leather Boots,0,1,DYED
-357,Fortune Cookie,0,1,FORTUNE
-358,Custom Painting,0,1,PAINT
-387,Written Book,0,1,WRITTEN
-403,Enchanted Book,0,1,ENCH_BOOK
+Random Leather Helmet,minecraft:leather_helmet,0,1,DYED
+Random Leather Chestplate,minecraft:leather_chestplate,0,1,DYED
+Random Leather Leggings,minecraft:leather_leggings,0,1,DYED
+Random Leather Boots,minecraft:leather_boots,0,1,DYED
+Fortune Cookie,minecraft:cookie,0,1,FORTUNE
+Custom Painting,minecraft:filled_map,0,1,PAINT
+Written Book,minecraft:written_book,0,1,WRITTEN
+Enchanted Book,minecraft:enchanted_book,0,1,ENCH_BOOK

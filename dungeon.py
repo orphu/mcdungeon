@@ -1011,7 +1011,7 @@ class Dungeon (object):
             else:
                 item_tag['Count'] = nbt.TAG_Byte(count)
             count -= 64
-            item_tag['id'] = nbt.TAG_Short(loottable.items.byName(name).value)
+            item_tag['id'] = nbt.TAG_String(loottable.items.byName(name).id)
             item_tag['Damage'] = nbt.TAG_Short(
                 loottable.items.byName(name).data)
             inv_tag.append(item_tag)

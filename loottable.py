@@ -349,7 +349,7 @@ def rollLoot(tier, level):
                         enchantments = list(enchant(item.name, ench_level))
                     thisloot = Loot(slot,
                                     thisamount,
-                                    item.value,
+                                    item.id,
                                     item.data,
                                     enchantments,
                                     item.p_effect,

@@ -56,6 +56,7 @@ class Material(object):
     val = 0
     data = 0
     stack = 0
+    id = ''
     heightmap = False
     attach_vines = True
     c = ''
@@ -66,6 +67,7 @@ class Material(object):
                  val=0,
                  data=0,
                  stack=64,
+                 id='minecraft:air',
                  heightmap=False,
                  attach_vines=True,
                  c=' ',
@@ -74,6 +76,7 @@ class Material(object):
         self.val = val
         self.data = data
         self.stack = stack
+        self.id = id
         self.heightmap = heightmap
         self.attach_vines = attach_vines
         self.c = c
@@ -95,6 +98,7 @@ class Material(object):
                '\nblock id: ' + str(self.val) + \
                '\ndata value: ' + str(self.data) + \
                '\nstack size: ' + str(self.stack) + \
+               '\nstring id: ' + str(self.id) + \
                '\nmap character: ' + str(self.c) + \
                '\nused in heightmap: ' + str(self.heightmap) + \
                '\ncan attach to vines: ' + str(self.attach_vines)
@@ -150,6 +154,7 @@ for material in parser.sections():
             val=int(parser.get(material, 'blockid')),
             data=int(parser.get(material, 'datavalue')),
             stack=int(parser.get(material, 'maxstack')),
+            id=parser.get(material, 'id'),
             heightmap=(parser.get(material, 'heightmap').lower() == 'true'),
             attach_vines=(parser.get(material,
                                      'attach_vines').lower() == 'true'),

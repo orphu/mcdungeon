@@ -1451,7 +1451,7 @@ def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
         root_tag['PickupDelay'] = nbt.TAG_Short(PickupDelay)
         if ItemInfo is not None:
             root_tag['Item'] = nbt.TAG_Compound()
-            root_tag['Item']['id'] = nbt.TAG_Short(ItemInfo.value)
+            root_tag['Item']['id'] = nbt.TAG_String(ItemInfo.id)
             root_tag['Item']['Damage'] = nbt.TAG_Short(Damage)
             root_tag['Item']['Count'] = nbt.TAG_Byte(Count)
         if Owner is not None:

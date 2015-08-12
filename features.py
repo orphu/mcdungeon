@@ -1552,7 +1552,7 @@ class SecretShop(SecretRoom):
         page += '\n\nFind me on the '+converttoordinal(max_lev)
         page += ' level!\n\n'+s.promotext+'",bold:false}]}'
         note = nbt.TAG_Compound()
-        note['id'] = nbt.TAG_Short(items.byName("written book").value)
+        note['id'] = nbt.TAG_String(items.byName("written book").id)
         note['Damage'] = nbt.TAG_Short(0)
         note['Count'] = nbt.TAG_Byte(1)
         note['tag'] = nbt.TAG_Compound()
@@ -1763,7 +1763,7 @@ class SecretArmory(SecretRoom):
             ])
             words = words.format(name=name, item=item.split()[-1])
             note = nbt.TAG_Compound()
-            note['id'] = nbt.TAG_Short(items.byName("written book").value)
+            note['id'] = nbt.TAG_String(items.byName("written book").id)
             note['Damage'] = nbt.TAG_Short(0)
             note['Count'] = nbt.TAG_Byte(1)
             note['tag'] = nbt.TAG_Compound()
@@ -1780,28 +1780,28 @@ class SecretArmory(SecretRoom):
                 if 'helmet' in helmet:
                     break
             helmet_tags = nbt.TAG_Compound()
-            helmet_tags['id'] = nbt.TAG_Short(items.byName(helmet).value)
+            helmet_tags['id'] = nbt.TAG_String(items.byName(helmet).id)
             # chest
             while True:
                 chest = weighted_choice(gear)
                 if 'chestplate' in chest:
                     break
             chest_tags = nbt.TAG_Compound()
-            chest_tags['id'] = nbt.TAG_Short(items.byName(chest).value)
+            chest_tags['id'] = nbt.TAG_String(items.byName(chest).id)
             # leggings
             while True:
                 leggings = weighted_choice(gear)
                 if 'leggings' in leggings:
                     break
             leggings_tags = nbt.TAG_Compound()
-            leggings_tags['id'] = nbt.TAG_Short(items.byName(leggings).value)
+            leggings_tags['id'] = nbt.TAG_String(items.byName(leggings).id)
             # boots
             while True:
                 boots = weighted_choice(gear)
                 if 'boots' in boots:
                     break
             boots_tags = nbt.TAG_Compound()
-            boots_tags['id'] = nbt.TAG_Short(items.byName(boots).value)
+            boots_tags['id'] = nbt.TAG_String(items.byName(boots).id)
 
             tags = get_entity_mob_tags("Skeleton",
                                        Pos=self.c1 + pos,
