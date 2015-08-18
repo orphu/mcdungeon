@@ -24,10 +24,10 @@
 # in-game, HIDE_PARTICLES to hide the player particles after drinking, or
 # HIDE_ALL to hide both. HIDE_PARTICLES does not work with 'basic' potions.
 #
-# For each entry in this file, FOUR items will be created than can be
-# refenced in loot tables. 1) The potion itself, 2) The splash version of
-# the potion, prefixed by 'splash' and 3) The tipped arrow version, with
-# the suffix 'arrow'. 4) The lingering version, prefixed by 'lingering'
+# For each entry in this file, FOUR items will be created that can be
+# referenced in loot tables. 1) The potion itself, 2) The splash version of
+# the potion, prefixed by 'splash', 3) The tipped arrow version, with the
+# suffix 'arrow' and 4) The lingering version, prefixed by 'lingering'.
 # For example, "Potion of XXX" would also produce:
 #  - Splash Potion of XXX
 #  - Potion of XXX arrow
@@ -69,7 +69,7 @@ Potion of Levitation II,25-1-50
 # Booze
 Bottle of Ale,9-0-600,HIDE_PARTICLES
 Bottle of Mulled Wine,9-0-300,2-0-300,21-0-1200,3-0-1200,HIDE_ALL
-Bottle of Absinthe,8-4-1,9-0-300,15-0-300,2-1-300,5-2-500,HIDE_ALL
+Bottle of Absinthe,9-0-300,15-0-300,2-1-300,5-2-500,HIDE_ALL
 
 # Basic Potions
 Mundane Potion,minecraft:mundane
