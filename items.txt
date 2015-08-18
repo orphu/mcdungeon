@@ -247,6 +247,7 @@ Spectral Arrow,minecraft:spectral_arrow,0,64
 Tipped Arrow,minecraft:tipped_arrow,0,64
 Dragon's Breath,minecraft:dragon_breath,0,64
 Lingering Water Bottle,minecraft:lingering_potion,0,1
+Shield,minecraft:shield,0,1
 
 # Disks
 #
@@ -264,17 +265,33 @@ Music Disc 11,minecraft:record_11,0,1
 Music Disc wait,minecraft:record_wait,0,1
 
 # Materials that have different datavalue when in an inventory
+#
 Chest Item,minecraft:chest,0,64
 Ender Chest Item,minecraft:ender_chest,0,64
 Trapped Chest Item,minecraft:trapped_chest,0,64
 
-# Items with special flags.
+# Items with special flags, these can be used to generate some neat loot.
 # Do not modify unless you really know what you are doing.
+#########################################################################
+
+# Various leather armours dyed a random colour
 Random Leather Helmet,minecraft:leather_helmet,0,1,DYED
 Random Leather Chestplate,minecraft:leather_chestplate,0,1,DYED
 Random Leather Leggings,minecraft:leather_leggings,0,1,DYED
 Random Leather Boots,minecraft:leather_boots,0,1,DYED
+
+# A cookie with random fortune text. (See fortunes.txt)
 Fortune Cookie,minecraft:cookie,0,1,FORTUNE
+
+# A map with a random image. (See README.txt in paintings)
 Custom Painting,minecraft:filled_map,0,1,PAINT
+
+# A book with random text. (See README.txt in books)
 Written Book,minecraft:written_book,0,1,WRITTEN
+
+# A book that can be given an enchatment level, like tools and armour
 Enchanted Book,minecraft:enchanted_book,0,1,ENCH_BOOK
+
+# A banner and shield with this dungeon's random flag design.
+Dungeon Banner,minecraft:banner,0,16,DUNGEON_FLAG
+Dungeon Shield,minecraft:shield,0,11,DUNGEON_FLAG

@@ -1649,8 +1649,7 @@ class SecretArmory(SecretRoom):
             ("diamond boots", 1),
             ("diamond horse armor", 1),
             ("bow", 16),
-            ("stone sword", 16),
-            ("stone axe", 16),
+            ("dungeon shield", 16),
             ("iron sword", 8),
             ("iron axe", 8),
             ("gold sword", 4),
@@ -1698,6 +1697,8 @@ class SecretArmory(SecretRoom):
                 item_name = random.choice(('name tag', 'tag', 'dog tags'))
             elif "horse armor" in item:
                 item_name = random.choice(('horse armor', 'barding'))
+            elif "shield" in item:
+                item_name = random.choice(('shield', 'buckler'))
             else:
                 item_name = item.split()[-1]
 

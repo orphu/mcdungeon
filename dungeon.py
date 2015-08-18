@@ -274,6 +274,7 @@ class Dungeon (object):
             
             # And generate a unique flag
             self.flagdesign = flaggenerator.generateflag()
+            self.inventory.SetDungeonFlag(self.flagdesign)
 
             print "Generating rooms..."
             self.genrooms()

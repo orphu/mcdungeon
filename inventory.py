@@ -14,6 +14,7 @@ class new:
 
     def __init__(self, mapstore):
         self.mapstore = mapstore
+        self.flag = {'Base':0}
 
         # Make a list of all the txt files in the books directory
         if os.path.isdir(os.path.join(sys.path[0], cfg.dir_books)):
@@ -262,10 +263,24 @@ class new:
             else:
                 item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
         # special cases for written books and paintings
-        if (i.flag == 'WRITTEN'):
+        elif (i.flag == 'WRITTEN'):
             item_tag = self.loadrandbooktext()
-        if (i.flag == 'PAINT'):
+        elif (i.flag == 'PAINT'):
             item_tag = self.loadrandpainting()
+        # Tags for this dungeon's flag
+        elif (i.flag == 'DUNGEON_FLAG'):
+            try:
+                item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['BlockEntityTag'] = nbt.TAG_Compound()
+            item_tag['tag']['BlockEntityTag']['Base'] = nbt.TAG_Int(self.flag['Base'])
+            item_tag['tag']['BlockEntityTag']['Patterns'] = nbt.TAG_List()
+            for p in self.flag['Patterns']:
+                q = nbt.TAG_Compound()
+                q['Color'] = nbt.TAG_Int(p[0])
+                q['Pattern'] = nbt.TAG_String(p[1])
+                item_tag['tag']['BlockEntityTag']['Patterns'].append(q)
         # Set the slot and count
         if i.slot != None:
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
@@ -283,3 +298,6 @@ class new:
         out = out.replace('\\s',u"\u00A7".encode('utf8'))
         out = out.replace('<[BACKSLASH]>','\\')
         return out
+        
+    def SetDungeonFlag(self, flag):
+        self.flag = flag
