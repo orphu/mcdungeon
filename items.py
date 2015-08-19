@@ -225,19 +225,16 @@ def LoadPotions(filename='potions.txt'):
                                     p_effect=p_effect, flag=flag,
                                     customname=resetprefix+customname+' Arrow')
 
-            # Temporary, while bug MC-83471 is unfixed, do not create the splash
-            # or lingering potion when using custompotioneffects
-            if (p_effect.replace(',','').replace('-','').isdigit() == False):
-                # Create the splash version of the potion
-                id = _items['splash water bottle'].id
-                _items['splash '+name] = ItemInfo('splash '+name, id, data=0, maxstack=1,
-                                        p_effect=p_effect, flag=flag,
-                                        customname=resetprefix+'Splash '+customname)
-                # Create the lingering version of the potion
-                id = _items['lingering water bottle'].id
-                _items['lingering '+name] = ItemInfo('lingering '+name, id, data=0, maxstack=1,
-                                        p_effect=p_effect, flag=flag,
-                                        customname=resetprefix+'Lingering '+customname)
+            # Create the splash version of the potion
+            id = _items['splash water bottle'].id
+            _items['splash '+name] = ItemInfo('splash '+name, id, data=0, maxstack=1,
+                                    p_effect=p_effect, flag=flag,
+                                    customname=resetprefix+'Splash '+customname)
+            # Create the lingering version of the potion
+            id = _items['lingering water bottle'].id
+            _items['lingering '+name] = ItemInfo('lingering '+name, id, data=0, maxstack=1,
+                                    p_effect=p_effect, flag=flag,
+                                    customname=resetprefix+'Lingering '+customname)
             items += 1
         except Exception as e:
             print "Error reading line:", e

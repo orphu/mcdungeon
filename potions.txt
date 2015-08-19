@@ -33,9 +33,6 @@
 #  - Potion of XXX arrow
 #  - Lingering Potion of XXX
 #
-# NOTE: Splash and Lingering versions of NON-'basic' potions are currently
-# disabled due to minecraft bug MC-83471
-#
 # Examples:
 Potion of Wonder,8-0-1200,12-1-2400,3-2-600,HIDE_EFFECTS
 Potion of Raw Chaos,8206,7-22-1
