@@ -162,7 +162,8 @@ _ench_items_table_book = {
     SILK_TOUCH: ['book', 'tool', 'axe', 'shears'],
     UNBREAKING: ['book', 'helmet', 'chestplate', 'leggings', 'boots',
                  'sword', 'tool', 'axe', 'bow', 'hoe', 'fishing rod',
-                 'shears', 'flint and steel', 'carrot on a stick'],
+                 'shears', 'flint and steel', 'carrot on a stick',
+                 'shield', 'elytra'],
     FORTUNE: ['book', 'tool', 'axe'],
     POWER: ['book', 'bow'],
     PUNCH: ['book', 'bow'],
@@ -411,6 +412,10 @@ def enchant(item, level, debug=False):
         type = 'armor'
     elif (item == 'enchanted book'):
         type = 'book'
+    elif ('shield' in item):
+        type = 'shield'
+    elif (item == 'elytra'):
+        type = 'elytra'
 
     enchantability = 1.0
     material = ''

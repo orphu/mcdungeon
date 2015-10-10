@@ -85,7 +85,12 @@ Saddle,minecraft:saddle,0,1
 Iron Door,minecraft:iron_door,0,64
 Redstone Dust,minecraft:redstone,0,64
 Snowball,minecraft:snowball,0,16
-Boat,minecraft:boat,0,1
+Oak Boat,minecraft:boat,0,1
+Acacia Boat,minecraft:acacia_boat,0,1
+Spruce Boat,minecraft:spruce_boat,0,1
+Birch Boat,minecraft:birch_boat,0,1
+Jungle Boat,minecraft:jungle_boat,0,1
+Dark Oak Boat,minecraft:dark_oak_boat,0,1
 Leather,minecraft:leather,0,64
 Milk Bucket,minecraft:milk_bucket,0,1
 Clay Brick,minecraft:brick,0,64
@@ -248,6 +253,7 @@ Tipped Arrow,minecraft:tipped_arrow,0,64
 Dragon's Breath,minecraft:dragon_breath,0,64
 Lingering Water Bottle,minecraft:lingering_potion,0,1
 Shield,minecraft:shield,0,1
+Elytra,minecraft:elytra,0,1
 
 # Disks
 #
