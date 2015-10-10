@@ -847,10 +847,13 @@ class Dungeon (object):
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        root_tag['Text1'] = nbt.TAG_String(text1)
-        root_tag['Text2'] = nbt.TAG_String(text2)
-        root_tag['Text3'] = nbt.TAG_String(text3)
-        root_tag['Text4'] = nbt.TAG_String(text4)
+        
+        def JSONformat(text):
+            return '{text:"'+text.replace('"','\"')+'"}'
+        root_tag['Text1'] = nbt.TAG_String(JSONformat(text1))
+        root_tag['Text2'] = nbt.TAG_String(JSONformat(text2))
+        root_tag['Text3'] = nbt.TAG_String(JSONformat(text3))
+        root_tag['Text4'] = nbt.TAG_String(JSONformat(text4))
         self.tile_ents[loc] = root_tag
 
     def addspawner(self, loc, entity='', tier=-1):
