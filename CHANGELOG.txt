@@ -1,12 +1,21 @@
-v0.14.3 - 
+v0.15.0 - 
 
-  !! NOTE: This version requires Minecraft 1.8.0 release or higher!
+  !! NOTE: This version requires Minecraft 1.9.0 release or higher!
 
   * Moved example configs to example_configs folder. (JiFish)
 
   * Added Jack O'Lanterns to default structures list. (JiFish)
 
   * Corrected Depth Strider enchantment data. (JiFish)
+  
+  * Added 1.9 items and blocks (JiFish)
+  
+  * Added special shield loot item with dungeon's banner. (JiFish)
+  
+  * Updated potions for 1.9, including allowing lingering potions and
+    tipped arrows in loot tables. (JiFish)
+    
+  * Items are now created with string IDs. (JiFish)
 
 v0.14.2 - 04/15/2015
 
