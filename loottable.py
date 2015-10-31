@@ -17,6 +17,7 @@ RESPIRATION = 5
 AQUA_AFFINITY = 6
 THORNS = 7
 DEPTH_STRIDER = 8
+FROST_WALKER = 9
 
 # Weapon enchantments
 SHARPNESS = 16
@@ -41,6 +42,9 @@ INFINITY = 51
 # Fishing Rod Enchantments
 LUCK_OF_THE_SEA = 61
 LURE = 62
+
+# Treasure Enchantments
+MENDING = 70
 
 # Enchantment names
 _ench_name = {
@@ -68,7 +72,9 @@ _ench_name = {
     FLAME: 'Flame',
     INFINITY: 'Infinity',
     LUCK_OF_THE_SEA: 'Luck of the Sea',
-    LURE: 'Lure'
+    LURE: 'Lure',
+    FROST_WALKER: 'Frost Walker',
+    MENDING: 'Mending'
 }
 
 # Level names
@@ -106,7 +112,9 @@ _ench_prob = {
     FLAME: 2,
     INFINITY: 1,
     LUCK_OF_THE_SEA: 5,
-    LURE: 5
+    LURE: 5,
+    FROST_WALKER: 2,
+    MENDING: 2
 }
 
 # Enchantment level table
@@ -136,7 +144,9 @@ _ench_level = {
     FLAME: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)],
     INFINITY: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)],
     LUCK_OF_THE_SEA: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
-    LURE: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)]
+    LURE: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
+    FROST_WALKER: [(10, 25), (20, 35), (0, 0), (0, 0), (0, 0)],
+    MENDING: [(25, 75), (0, 0), (0, 0), (0, 0), (0, 0)]
 }
 
 # Enchantment valid items tables
@@ -170,7 +180,12 @@ _ench_items_table_book = {
     FLAME: ['book', 'bow'],
     INFINITY: ['book', 'bow'],
     LUCK_OF_THE_SEA: ['book', 'fishing rod'],
-    LURE: ['book', 'fishing rod']
+    LURE: ['book', 'fishing rod'],
+    FROST_WALKER: ['book', 'boots'],
+    MENDING: ['book', 'helmet', 'chestplate', 'leggings', 'boots',
+                 'sword', 'tool', 'axe', 'bow', 'hoe', 'fishing rod',
+                 'shears', 'flint and steel', 'carrot on a stick',
+                 'elytra']
 }
 
 # Table: Only enchants that can be achieved with an enchanting table.
@@ -200,7 +215,9 @@ _ench_items_table = {
     FLAME: ['book', 'bow'],
     INFINITY: ['book', 'bow'],
     LUCK_OF_THE_SEA: ['book', 'fishing rod'],
-    LURE: ['book', 'fishing rod']
+    LURE: ['book', 'fishing rod'],
+    FROST_WALKER: ['book'],
+    MENDING: ['book']
 }
 
 # Extended: As normal, but all weapon enchants can appear on axes,
@@ -539,6 +556,12 @@ def enchant(item, level, debug=False):
 
         if ench in [SHARPNESS, SMITE, BANE_OF_ARTHROPODS]:
             for x in [SHARPNESS, SMITE, BANE_OF_ARTHROPODS]:
+                if (x, _ench_prob[x]) in prob:
+                    prob.remove((x, _ench_prob[x]))
+        
+        # Frost Walking conflicts with Depth strider
+        if ench in [FROST_WALKER, DEPTH_STRIDER]:
+            for x in [FROST_WALKER, DEPTH_STRIDER]:
                 if (x, _ench_prob[x]) in prob:
                     prob.remove((x, _ench_prob[x]))
         # Abort if we ran out of enchantments
