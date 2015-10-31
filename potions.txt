@@ -49,6 +49,7 @@ Potion of Absorption,22-0-900
 Potion of Satiation,23-0-40
 Potion of Glowing,24-0-1800
 Potion of Levitation,25-0-100
+Potion of Bad Luck,27-0-6000
 
 # Level II versions
 Potion of Haste II,3-1-1800
@@ -103,3 +104,4 @@ Potion of Strength II,minecraft:strong_strength
 Extended Potion of Strength,minecraft:long_strength
 Potion of Weakness,minecraft:weakness
 Extended Potion of Weakness,minecraft:long_weakness
+Potion of Luck,minecraft:luck
