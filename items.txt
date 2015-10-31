@@ -254,6 +254,7 @@ Dragon's Breath,minecraft:dragon_breath,0,64
 Lingering Water Bottle,minecraft:lingering_potion,0,1
 Shield,minecraft:shield,0,1
 Elytra,minecraft:elytra,0,1
+End Crystal,minecraft:end_crystal,0,64
 
 # Disks
 #
