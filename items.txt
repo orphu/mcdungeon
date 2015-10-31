@@ -301,4 +301,4 @@ Enchanted Book,minecraft:enchanted_book,0,1,ENCH_BOOK
 
 # A banner and shield with this dungeon's random flag design.
 Dungeon Banner,minecraft:banner,0,16,DUNGEON_FLAG
-Dungeon Shield,minecraft:shield,0,11,DUNGEON_FLAG
+Dungeon Shield,minecraft:shield,0,1,DUNGEON_FLAG
