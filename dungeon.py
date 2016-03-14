@@ -824,20 +824,23 @@ class Dungeon (object):
             return root_tag
         else:
             root_tag = nbt.TAG_Compound()
+            root_tag['SpawnData'] = nbt.TAG_Compound()
+
+        SpawnData = root_tag['SpawnData']
 
         # Cases where the entity id doesn't match the config
         entity = entity.capitalize()
         if (entity == 'Pigzombie'):
-            root_tag['EntityId'] = nbt.TAG_String('PigZombie')
+            SpawnData['id'] = nbt.TAG_String('PigZombie')
         elif (entity == 'Cavespider'):
-            root_tag['EntityId'] = nbt.TAG_String('CaveSpider')
+            SpawnData['id'] = nbt.TAG_String('CaveSpider')
         elif (entity == 'Lavaslime'):
-            root_tag['EntityId'] = nbt.TAG_String('LavaSlime')
+            SpawnData['id'] = nbt.TAG_String('LavaSlime')
         elif (entity == 'Witherboss'):
-            root_tag['EntityId'] = nbt.TAG_String('WitherBoss')
-        # For everything else the input is the EntityId
+            SpawnData['id'] = nbt.TAG_String('WitherBoss')
+        # For everything else the input is the SpawnData id
         else:
-            root_tag['EntityId'] = nbt.TAG_String(entity)
+            SpawnData['id'] = nbt.TAG_String(entity)
 
         return root_tag
 
@@ -847,7 +850,7 @@ class Dungeon (object):
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
-        
+
         def JSONformat(text):
             return '{text:"'+text.replace('"','\"')+'"}'
         root_tag['Text1'] = nbt.TAG_String(JSONformat(text1))
