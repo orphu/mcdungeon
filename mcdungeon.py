@@ -303,7 +303,7 @@ parser_genreg.add_argument('--regionfile',
                         help='Give the location for the regions.yml output path.\
                         This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
                         Make sure you take a backup of this file first!')
-                        
+
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
                                    help='Delete dungeons from a map.')
@@ -594,7 +594,7 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
 				'%dx%d' % (xsize, zsize),
 				levels,
 				info.get('full_name', 'Dungeon')[:23]
-            )
+
 
     if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
@@ -1074,21 +1074,21 @@ if (args.command == 'genpoi'):
 
 # Genregions mode
 if (args.command == 'genreg'):
-    
+
     import yaml
     # load in the existing YAML, if any
     if( args.regionfile is None ):
         args.regionfile = 'regions.yml'
 
     print 'Generating WorldGuard regions file in %s\n' % (args.regionfile)
-        
+
     try:
         stream = open( args.regionfile , 'r')
         regions = yaml.load( stream )
     except:
         print 'Unable to read any existing Region file.'
         regions = {}
-        
+
     if 'regions' not in regions:
         # Create an empty default region file
         regions['regions'] = {
@@ -1104,11 +1104,11 @@ if (args.command == 'genreg'):
                 'members': {}
             }
         }
-        
+
     # load in the list of existing dungeons
     print 'Loading in list of dungeons...'
     dungeons, tHunts = loadCaches(world, oworld, genpoi=False)
-    
+
     # Build/update YAML
     print 'Generating YAML...'
     dnames = {}
@@ -1138,12 +1138,12 @@ if (args.command == 'genreg'):
                     'y': 255.0,
                     'z': (info['position'].z + info['zsize'] * 16.0)
                 }
-    
+
     for r in list(regions['regions'].keys()):
         if re.match('^mcd_',r) != None and not r in dnames:
             print 'Deleting old region: %s' % (r)
             del regions['regions'][r]
-    
+
     # Write new YAML to file
     print 'Writing YAML...'
     try:
@@ -1156,9 +1156,9 @@ if (args.command == 'genreg'):
     except:
         e = sys.exc_info()[0]
         print 'Unable to write to file "%s": %s' % ( args.regionfile, e )
-        
+
     sys.exit()
-    
+
 # Delete mode
 if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
