@@ -1139,7 +1139,7 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
                          Dimension=0, Invulnerable=0, PortalCooldown=0,
                          UUIDMost=None, UUIDLeast = None,
                          CustomName='', CustomNameVisible=0, Silent=0,
-                         Riding=None):
+                         Passengers=[], Glowing=1, Tags=[]):
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
     # Convert Vec types into a tuple so we can use either
     if isinstance(Pos, Vec):
@@ -1181,10 +1181,17 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
     root_tag['CustomName'] = nbt.TAG_String(CustomName)
     root_tag['CustomNameVisible'] = nbt.TAG_Byte(CustomNameVisible)
     root_tag['Silent'] = nbt.TAG_Byte(Silent)
-    # Riding should be supplied as a TAG_Compound of another entity.
-    # If it was supplied, we use it directly here.
-    if Riding is not None:
-        root_tag['Riding'] = Riding
+    # Passengers is a list of TAG_Compounds of other entities.
+    if len(Passengers) > 0:
+        root_tag['Passengers'] = nbt.TAG_List()
+        for passenger in Passengers:
+            root_tag['Passengers'].append(passenger)
+    root_tag['Glowing'] = nbt.TAG_Byte(Glowing)
+    # Tags is a list of strings.
+    if len(Tags) > 0:
+        root_tag['Tags'] = nbt.TAG_List()
+        for tag in Tags:
+            root_tag['Tags'].append(nbt.TAG_String(tag))
     return root_tag
 
 
@@ -1590,7 +1597,7 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
         root_tag['Motive'] = nbt.TAG_String(Motive)
 
     return root_tag
-    
+
 
 # Convert number to ordinal (1st, 2nd etc.)
 # source: http://stackoverflow.com/questions/9647202/ordinal-numbers-replacement
