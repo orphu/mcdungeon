@@ -594,7 +594,7 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
 				'%dx%d' % (xsize, zsize),
 				levels,
 				info.get('full_name', 'Dungeon')[:23]
-
+            )
 
     if genpoi is False:
         output += '+-----------+----------------+---------+-------+----+'\
