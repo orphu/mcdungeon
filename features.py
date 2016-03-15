@@ -1811,16 +1811,21 @@ class SecretArmory(SecretRoom):
                                        PersistenceRequired=1,
                                        CustomName=name
                                        )
-            tags['Equipment'][1] = boots_tags
-            tags['Equipment'][2] = leggings_tags
-            tags['Equipment'][3] = chest_tags
-            tags['Equipment'][4] = helmet_tags
+            # Debug!
+            tags['Glowing'].value = 1
+            print "\n\n ***** DEATH KNIGHT! ***** \n\n"
+            tags['ArmorItems'][0] = boots_tags
+            tags['ArmorItems'][1] = leggings_tags
+            tags['ArmorItems'][2] = chest_tags
+            tags['ArmorItems'][3] = helmet_tags
 
-            tags['DropChances'][0].value = 1.0
-            tags['DropChances'][1].value = 0.0
-            tags['DropChances'][2].value = 0.0
-            tags['DropChances'][3].value = 0.0
-            tags['DropChances'][4].value = 0.0
+            tags['HandDropChances'][0].value = 1.0
+            tags['HandDropChances'][1].value = 1.0
+
+            tags['ArmorDropChances'][0].value = 0.0
+            tags['ArmorDropChances'][1].value = 0.0
+            tags['ArmorDropChances'][2].value = 0.0
+            tags['ArmorDropChances'][3].value = 0.0
             dungeon.addentity(tags)
         else:
             pos = Vec(5, -2, 5)

@@ -833,7 +833,8 @@ def saveChunkCache(cache_path, chunkCache):
         print e
         sys.exit('Failed to write dungeon_scan_version.'
                  'Check permissions and try again.')
-				 
+
+
 def encodeTHuntInfo(thunt, version):
     '''Takes a dungeon object and Returns an NBT structure for a
     chest+book encoding a lot of things to remember about this
@@ -1139,7 +1140,7 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
                          Dimension=0, Invulnerable=0, PortalCooldown=0,
                          UUIDMost=None, UUIDLeast = None,
                          CustomName='', CustomNameVisible=0, Silent=0,
-                         Passengers=[], Glowing=1, Tags=[]):
+                         Passengers=[], Glowing=0, Tags=[]):
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
     # Convert Vec types into a tuple so we can use either
     if isinstance(Pos, Vec):
@@ -1211,16 +1212,18 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
                         Career=None, CareerLevel=1, Willing=0,
                         PlayerCreated=0, IsVillager=0, IsBaby=0,
                         ConversionTime=-1, CanBreakDoors=0, Anger=0,
-                        Leashed=0, Leash=None, **kwargs):
+                        Leashed=0, Leash=None, LeftHanded=0, **kwargs):
     '''Returns an nbt.TAG_Compound for a specific mob id'''
 
     # Be nice, and figure out the health of common entities for us.
     if Health is None:
-        if eid == 'Chicken':
+        if eid in (
+            'Chicken',
+            'SnowMan',
+        ):
             Health = 4
         elif eid in (
             'Bat',
-            'SnowMan'
         ):
             Health = 6
         elif eid in (
@@ -1282,24 +1285,30 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             Health = 1
 
     root_tag = get_entity_base_tags(eid, **kwargs)
-    root_tag['Health'] = nbt.TAG_Short(Health)
+    root_tag['Health'] = nbt.TAG_Float(Health)
     root_tag['AttackTime'] = nbt.TAG_Short(AttackTime)
     root_tag['HurtTime'] = nbt.TAG_Short(HurtTime)
     root_tag['DeathTime'] = nbt.TAG_Short(DeathTime)
 
-    root_tag['Equipment'] = nbt.TAG_List()
-    root_tag['Equipment'].append(nbt.TAG_Compound())
-    root_tag['Equipment'].append(nbt.TAG_Compound())
-    root_tag['Equipment'].append(nbt.TAG_Compound())
-    root_tag['Equipment'].append(nbt.TAG_Compound())
-    root_tag['Equipment'].append(nbt.TAG_Compound())
+    root_tag['HandItems'] = nbt.TAG_List()
+    root_tag['HandItems'].append(nbt.TAG_Compound())
+    root_tag['HandItems'].append(nbt.TAG_Compound())
 
-    root_tag['DropChances'] = nbt.TAG_List()
-    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
-    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
-    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
-    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
-    root_tag['DropChances'].append(nbt.TAG_Float(0.05))
+    root_tag['ArmorItems'] = nbt.TAG_List()
+    root_tag['ArmorItems'].append(nbt.TAG_Compound())
+    root_tag['ArmorItems'].append(nbt.TAG_Compound())
+    root_tag['ArmorItems'].append(nbt.TAG_Compound())
+    root_tag['ArmorItems'].append(nbt.TAG_Compound())
+
+    root_tag['HandDropChances'] = nbt.TAG_List()
+    root_tag['HandDropChances'].append(nbt.TAG_Float(0.085))
+    root_tag['HandDropChances'].append(nbt.TAG_Float(0.085))
+
+    root_tag['ArmorDropChances'] = nbt.TAG_List()
+    root_tag['ArmorDropChances'].append(nbt.TAG_Float(0.085))
+    root_tag['ArmorDropChances'].append(nbt.TAG_Float(0.085))
+    root_tag['ArmorDropChances'].append(nbt.TAG_Float(0.085))
+    root_tag['ArmorDropChances'].append(nbt.TAG_Float(0.085))
 
     root_tag['CanPickUpLoot'] = nbt.TAG_Byte(CanPickUpLoot)
     root_tag['NoAI'] = nbt.TAG_Byte(NoAI)
@@ -1320,6 +1329,8 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
             root_tag['Leash']['X'] = Leash[0]
             root_tag['Leash']['Y'] = Leash[1]
             root_tag['Leash']['Z'] = Leash[2]
+
+    root_tag['LeftHanded'] = nbt.TAG_Byte(LeftHanded)
 
     # Breeders
     if eid in ('Chicken', 'Cow', 'MushroomCow', 'Ozelot', 'Pig', 'Sheep',
@@ -1488,21 +1499,23 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
 
     if eid is 'ArmorStand':
         root_tag['DisabledSlots'] = nbt.TAG_Int(DisabledSlots)
-        root_tag['Equipment'] = nbt.TAG_List()
-        root_tag['Equipment'].append(nbt.TAG_Compound())
-        root_tag['Equipment'].append(nbt.TAG_Compound())
-        root_tag['Equipment'].append(nbt.TAG_Compound())
-        root_tag['Equipment'].append(nbt.TAG_Compound())
-        root_tag['Equipment'].append(nbt.TAG_Compound())
+        root_tag['HandItems'] = nbt.TAG_List()
+        root_tag['HandItems'].append(nbt.TAG_Compound())
+        root_tag['HandItems'].append(nbt.TAG_Compound())
+        root_tag['ArmorItems'] = nbt.TAG_List()
+        root_tag['ArmorItems'].append(nbt.TAG_Compound())
+        root_tag['ArmorItems'].append(nbt.TAG_Compound())
+        root_tag['ArmorItems'].append(nbt.TAG_Compound())
+        root_tag['ArmorItems'].append(nbt.TAG_Compound())
         root_tag['Invisible'] = nbt.TAG_Byte(Invisible)
         root_tag['NoBasePlate'] = nbt.TAG_Byte(NoBasePlate)
         root_tag['NoGravity'] = nbt.TAG_Byte(NoGravity)
         root_tag['ShowArms'] = nbt.TAG_Byte(ShowArms)
         root_tag['Small'] = nbt.TAG_Byte(Small)
         if Health is not None:
-            root_tag['Health'] = nbt.TAG_Short(Health)
+            root_tag['Health'] = nbt.TAG_Float(Health)
         else:
-            root_tag['Health'] = nbt.TAG_Short(20)
+            root_tag['Health'] = nbt.TAG_Float(20)
         if Pose is not None:
             root_tag['Pose'] = Pose
 
