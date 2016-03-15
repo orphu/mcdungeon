@@ -544,15 +544,16 @@ def dumpEnts(world, EntId="ItemFrame"):
             continue
         for Entity in chunk.Entities:
             if (Entity["id"].value == EntId):
+                print "==========================================="
                 print "---", Entity["id"].value
-                for name, tag in Entity.items():
-                    print '   ', name, tag.value
-        for tileEntity in chunk.TileEntities:
-            if (tileEntity["id"].value == EntId):
+                print Entity
+        for Entity in chunk.TileEntities:
+            if (Entity["id"].value == EntId):
+                print "==========================================="
                 print "---", Entity["id"].value
+                print Entity
                 pos = Vec(0, 0, 0)
-                for name, tag in tileEntity.items():
-                    print '   ', name, tag.value
+                for name, tag in Entity.items():
                     if (name == 'x'):
                         pos.x = tag.value & 0xf
                     if (name == 'y'):
