@@ -1811,9 +1811,6 @@ class SecretArmory(SecretRoom):
                                        PersistenceRequired=1,
                                        CustomName=name
                                        )
-            # Debug!
-            tags['Glowing'].value = 1
-            print "\n\n ***** DEATH KNIGHT! ***** \n\n"
             tags['ArmorItems'][0] = boots_tags
             tags['ArmorItems'][1] = leggings_tags
             tags['ArmorItems'][2] = chest_tags
