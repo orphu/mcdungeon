@@ -852,7 +852,7 @@ class Dungeon (object):
         root_tag['z'] = nbt.TAG_Int(loc.z)
 
         def JSONformat(text):
-            return '{text:"'+text.replace('"','\"')+'"}'
+            return '{"text":"'+text.replace('"','\"')+'"}'
         root_tag['Text1'] = nbt.TAG_String(JSONformat(text1))
         root_tag['Text2'] = nbt.TAG_String(JSONformat(text2))
         root_tag['Text3'] = nbt.TAG_String(JSONformat(text3))
