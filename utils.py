@@ -1212,7 +1212,8 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
                         Career=None, CareerLevel=1, Willing=0,
                         PlayerCreated=0, IsVillager=0, IsBaby=0,
                         ConversionTime=-1, CanBreakDoors=0, Anger=0,
-                        Leashed=0, Leash=None, LeftHanded=0, **kwargs):
+                        Leashed=0, Leash=None, LeftHanded=0,
+                        VillagerProfession=None, **kwargs):
     '''Returns an nbt.TAG_Compound for a specific mob id'''
 
     # Be nice, and figure out the health of common entities for us.
@@ -1440,6 +1441,10 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
 
     if eid == 'Zombie':
         root_tag['IsVillager'] = nbt.TAG_Byte(IsVillager)
+        if IsVillager:
+            if VillagerProfession is None:
+                Career = random.randint(0,4)
+            root_tag['VillagerProfession'] = nbt.TAG_Int(VillagerProfession)
         root_tag['IsBaby'] = nbt.TAG_Byte(IsBaby)
         root_tag['ConversionTime'] = nbt.TAG_Int(ConversionTime)
         root_tag['CanBreakDoors'] = nbt.TAG_Byte(CanBreakDoors)
