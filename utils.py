@@ -1213,7 +1213,8 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
                         PlayerCreated=0, IsVillager=0, IsBaby=0,
                         ConversionTime=-1, CanBreakDoors=0, Anger=0,
                         Leashed=0, Leash=None, LeftHanded=0,
-                        VillagerProfession=None, **kwargs):
+                        VillagerProfession=None, SkeletonTrap=0,
+                        SkeletonTrapTime=0, **kwargs):
     '''Returns an nbt.TAG_Compound for a specific mob id'''
 
     # Be nice, and figure out the health of common entities for us.
@@ -1335,12 +1336,12 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
 
     # Breeders
     if eid in ('Chicken', 'Cow', 'MushroomCow', 'Ozelot', 'Pig', 'Sheep',
-               'Villager', 'Wolf', 'Horse'):
+               'Villager', 'Wolf', 'EntityHorse'):
         root_tag['InLove'] = nbt.TAG_Int(InLove)
         root_tag['Age'] = nbt.TAG_Int(Age)
 
     # Can be tamed
-    if eid in ('Ozelot', 'Wolf', 'Horse'):
+    if eid in ('Ozelot', 'Wolf', 'EntityHorse'):
         root_tag['Owner'] = nbt.TAG_String(Owner)
         root_tag['Sitting'] = nbt.TAG_Byte(Sitting)
 
@@ -1362,7 +1363,7 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
     if eid == 'Endermite':
         root_tag['Lifetime'] = nbt.TAG_Int(Lifetime)
 
-    if eid == 'Horse':
+    if eid == 'EntityHorse':
         root_tag['Bred'] = nbt.TAG_Byte(Bred)
         if (Type == 1 or Type == 2):
             root_tag['ChestedHorse'] = nbt.TAG_Byte(ChestedHorse)
@@ -1381,6 +1382,8 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
         root_tag['ArmorItem'] = nbt.TAG_Compound()
         root_tag['SaddleItem'] = nbt.TAG_Compound()
         root_tag['Saddle'] = nbt.TAG_Byte(Saddle)
+        root_tag['SkeletonTrap'] = nbt.TAG_Byte(SkeletonTrap)
+        root_tag['SkeletonTrapTime'] = nbt.TAG_Int(SkeletonTrapTime)
 
     if eid == 'Ghast':
         root_tag['ExplosionPower'] = nbt.TAG_Int(ExplosionPower)
