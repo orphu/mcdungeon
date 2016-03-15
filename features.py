@@ -1535,7 +1535,7 @@ class SecretShop(SecretRoom):
                 rec['buyB'] = dungeon.inventory.buildItemTag(trade.input2Loot)
             tags['Offers']['Recipes'].append(rec)
         dungeon.addentity(tags)
-        
+
         # Flyer
         max_lev = (self.c1.y // dungeon.room_height) + 1
         headline = random.choice([

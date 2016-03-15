@@ -1420,16 +1420,18 @@ def get_entity_mob_tags(eid='Chicken', Health=None, AttackTime=0,
     if eid == 'Villager':
         root_tag['Riches'] = nbt.TAG_Int(Riches)
         if Profession is None:
-            Profession = random.randint(0,5)
+            Profession = random.randint(0,4)
         root_tag['Profession'] = nbt.TAG_Int(Profession)
         if Career is None:
             if Profession == 0:
-                Career = random.randint(0,3)
-            elif Profession in (3, 4):
-                Career = random.randint(0,1)
+                Career = random.randint(1,4)
+            elif Profession == 3:
+                Career = random.randint(1,3)
+            elif Profession == 4:
+                Career = random.randint(1,2)
             else:
-                Career = 0
-        root_tag['Career'] = nbt.TAG_Int(Profession)
+                Career = 1
+        root_tag['Career'] = nbt.TAG_Int(Career)
         root_tag['CareerLevel'] = nbt.TAG_Int(CareerLevel)
         root_tag['Willing'] = nbt.TAG_Byte(Willing)
 
