@@ -536,15 +536,21 @@ def drange(start, stop, step):
         r += step
 
 
-def dumpEnts(world):
+def dumpEnts(world, EntId="ItemFrame"):
     for i, cPos in enumerate(world.allChunks):
         try:
             chunk = world.getChunk(*cPos)
         except mclevel.ChunkMalformed:
             continue
+        for Entity in chunk.Entities:
+            if (Entity["id"].value == EntId):
+                print "---", Entity["id"].value
+                for name, tag in Entity.items():
+                    print '   ', name, tag.value
         for tileEntity in chunk.TileEntities:
-            pos = Vec(0, 0, 0)
-            if (tileEntity["id"].value == "Trap"):
+            if (tileEntity["id"].value == EntId):
+                print "---", Entity["id"].value
+                pos = Vec(0, 0, 0)
                 for name, tag in tileEntity.items():
                     print '   ', name, tag.value
                     if (name == 'x'):
@@ -847,10 +853,10 @@ def encodeTHuntInfo(thunt, version):
     items['landmarks'] = []
     items['min_distance'] = thunt.min_distance
     items['max_distance'] = thunt.max_distance
-	
+
     for l in thunt.landmarks:
         items['landmarks'].append( l.pos )
-	
+
     # Create the base tags
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String('Chest')
@@ -1136,7 +1142,7 @@ def get_tile_entity_tags(
 
 def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
                          Motion=Vec(0, 0, 0), Rotation=Vec(0, 0, 0),
-                         FallDistance=0.0, Fire=-1, Air=300, OnGround=0,
+                         FallDistance=0.0, Fire=0, Air=300, OnGround=0,
                          Dimension=0, Invulnerable=0, PortalCooldown=0,
                          UUIDMost=None, UUIDLeast = None,
                          CustomName='', CustomNameVisible=0, Silent=0,
@@ -1179,15 +1185,18 @@ def get_entity_base_tags(eid='Chicken', Pos=Vec(0, 0, 0),
             UUIDLeast = -0x10000000000000000 + UUIDLeast
     root_tag['UUIDMost'] = nbt.TAG_Long(UUIDMost)
     root_tag['UUIDLeast'] = nbt.TAG_Long(UUIDLeast)
-    root_tag['CustomName'] = nbt.TAG_String(CustomName)
-    root_tag['CustomNameVisible'] = nbt.TAG_Byte(CustomNameVisible)
-    root_tag['Silent'] = nbt.TAG_Byte(Silent)
+    if CustomName is not None:
+        root_tag['CustomName'] = nbt.TAG_String(CustomName)
+        root_tag['CustomNameVisible'] = nbt.TAG_Byte(CustomNameVisible)
+    if Silent:
+        root_tag['Silent'] = nbt.TAG_Byte(Silent)
     # Passengers is a list of TAG_Compounds of other entities.
     if len(Passengers) > 0:
         root_tag['Passengers'] = nbt.TAG_List()
         for passenger in Passengers:
             root_tag['Passengers'].append(passenger)
-    root_tag['Glowing'] = nbt.TAG_Byte(Glowing)
+    if Glowing:
+        root_tag['Glowing'] = nbt.TAG_Byte(Glowing)
     # Tags is a list of strings.
     if len(Tags) > 0:
         root_tag['Tags'] = nbt.TAG_List()
@@ -1490,7 +1499,7 @@ def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
     return root_tag
 
 
-def get_entity_other_tags(eid='EnderCrystal', Direction='S',
+def get_entity_other_tags(eid='EnderCrystal', Facing='S',
                           ItemTags=None, ItemDropChance=1.0,
                           ItemRotation=0, Motive='Kebab', Pos=Vec(0, 0,
                           0), Damage=0, DisabledSlots=0, Invisible=0,
@@ -1530,25 +1539,21 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
             root_tag['Pose'] = Pose
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
-    # painting/ItemFrame is attached to, and Pos is the actual position in the
+    # painting/ItemFrame is contained within, and Pos is the actual position in the
     # world. So we need to move Pos slightly according to size of the
     # Painting/ItemFrame and direction it is facing or Minecraft will complain
     # and try to move the entity itself. The entity must be centered on the
     # tile it is attached to on the appropriate face. Paintings and frames
-    # are 1-4 blocks tall and wide, and 0.0625 blocks thick.
+    # are 1-4 blocks tall and wide, and 0.03125 blocks thick.
     if eid in ('ItemFrame', 'Painting'):
-        # Copy the Pos location to Tile entries.
-        root_tag['TileX'] = nbt.TAG_Int(Pos[0])
-        root_tag['TileY'] = nbt.TAG_Int(Pos[1])
-        root_tag['TileZ'] = nbt.TAG_Int(Pos[2])
         # Set direction. For convenience we provide letters.
         dirs = {'N': 2,
                 'S': 0,
                 'E': 3,
                 'W': 1}
-        if Direction in dirs:
-            Direction = dirs[Direction]
-        root_tag['Direction'] = nbt.TAG_Byte(Direction)
+        if Facing in dirs:
+            Facing = dirs[Facing]
+        root_tag['Facing'] = nbt.TAG_Byte(Facing)
 
         # Now, shift Pos appropriately. First we need the size of the entity.
         # Default is 1x1, and ItemFrames are 1x1.
@@ -1587,26 +1592,31 @@ def get_entity_other_tags(eid='EnderCrystal', Direction='S',
             width = 1
             height = 1
 
-        # North face
-        if Direction == 2:
+        # North facing
+        if Facing == 2:
             root_tag['Pos'][0].value += float(width) / 2.0
             root_tag['Pos'][1].value -= float(height) / 2.0
-            root_tag['Pos'][2].value -= 0.0625
-        # South face
-        elif Direction == 0:
+            root_tag['Pos'][2].value -= 0.03125
+        # South facing
+        elif Facing == 0:
             root_tag['Pos'][0].value += float(width) / 2.0
             root_tag['Pos'][1].value -= float(height) / 2.0
-            root_tag['Pos'][2].value += 1.0625
-        # East face
-        elif Direction == 3:
-            root_tag['Pos'][0].value += 1.0625
+            root_tag['Pos'][2].value += 1.03125
+        # East facing
+        elif Facing == 3:
+            root_tag['Pos'][0].value += 1.03125
             root_tag['Pos'][1].value -= float(height) / 2.0
-            root_tag['Pos'][2].value += 1 + float(width) / 2.0
-        # West face
-        elif Direction == 1:
-            root_tag['Pos'][0].value -= float(width) / 2.0
+            root_tag['Pos'][2].value += float(width) / 2.0
+        # West facing
+        elif Facing == 1:
+            root_tag['Pos'][0].value -= 0.03125
             root_tag['Pos'][1].value -= float(height) / 2.0
-            root_tag['Pos'][2].value -= 0.0625
+            root_tag['Pos'][2].value += float(width) / 2.0
+
+        # Copy the Pos location to Tile entries.
+        root_tag['TileX'] = nbt.TAG_Int(int(root_tag['Pos'][0].value))
+        root_tag['TileY'] = nbt.TAG_Int(int(root_tag['Pos'][1].value + 0.5))
+        root_tag['TileZ'] = nbt.TAG_Int(int(root_tag['Pos'][2].value))
 
     # Attach an item to the frame (if any)
     if eid == 'ItemFrame':

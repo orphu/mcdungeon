@@ -435,7 +435,7 @@ class Memorial(Clearing):
         self.description = 'a memorial to %s' % ( picof )
         framed_painting = get_entity_other_tags("ItemFrame",
                                          Pos=self.offset + Vec(8,-3,8),
-                                         Direction=0,
+                                         Facing=0,
                                          ItemRotation=0,
                                          ItemTags=painting)
         framed_painting['Motive'] = painting['tag']['display']['Name']

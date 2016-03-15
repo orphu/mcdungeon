@@ -1708,7 +1708,7 @@ class RuinedFane(Blank):
         self.parent.parent.addentity(
             get_entity_other_tags('Painting',
                                   Pos=loc.n(3).up(3),
-                                  Direction='S',
+                                  Facing='S',
                                   Motive='Wither')
         )
 

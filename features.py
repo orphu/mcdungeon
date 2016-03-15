@@ -970,7 +970,7 @@ class SecretStudy(SecretRoom):
         self.parent.parent.addentity(
             get_entity_other_tags("ItemFrame",
                                   Pos=self.c1 + Vec(2, -3, 1),
-                                  Direction="S",
+                                  Facing="S",
                                   ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot)
                                   )
         )
@@ -1323,7 +1323,7 @@ class SecretSepulchure(SecretRoom):
             tags = get_entity_other_tags("ItemFrame",
                                          ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot),
                                          Pos=q,
-                                         Direction=d)
+                                         Facing=d)
             dungeon.addentity(tags)
 
         # Vines
@@ -1457,7 +1457,7 @@ class SecretShop(SecretRoom):
         dungeon.addentity(
             get_entity_other_tags("ItemFrame",
                                   Pos=p,
-                                  Direction=frame_or,
+                                  Facing=frame_or,
                                   ItemTags=dungeon.inventory.buildFrameItemTag(s.free_sample.lower())
                                   )
         )
@@ -1732,7 +1732,7 @@ class SecretArmory(SecretRoom):
             # Build the frame tags
             tags = get_entity_other_tags("ItemFrame",
                                          Pos=self.c1 + p[2],
-                                         Direction=p[3],
+                                         Facing=p[3],
                                          ItemRotation=ItemRotation,
                                          ItemTags=self.parent.parent.inventory.buildFrameItemTag(item,customname=displayname))
             # Place the item frame.
