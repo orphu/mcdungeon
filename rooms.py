@@ -797,8 +797,8 @@ class CellBlock(Basic2x2):
         note['tag']['title'] = nbt.TAG_String("Cell Combination")
         note['tag']['author'] = nbt.TAG_String("Unknown")
         note['tag']['pages'] = nbt.TAG_List()
-        words = "Level: " + \
-            str(self.pos.y + 1) + "\n\n" + ctext1 + "\n" + ctext2
+        words = '{text:"Level: ' + \
+            str(self.pos.y + 1) + "\n\n" + ctext1 + "\n" + ctext2 + '"}'
         note['tag']['pages'].append(nbt.TAG_String(words))
         max_lev = (self.c1.y // self.parent.room_height)
         self.parent.addplaceditem(note, max_lev=max_lev)
