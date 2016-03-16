@@ -5,19 +5,23 @@ v0.15.0 -
   !! NOTE: Due to changes in 1.9, old projectile trap configs may
            not work. Check default.cfg for details.
 
-  * Moved example configs to example_configs folder. (JiFish)
+  * 1.9 Support! (various)
+
+  * Added 1.9 items, blocks and enchants. (JiFish)
+  
+  * Added genregions command for Worldguard. (sshipway)
 
   * Added Jack O'Lanterns to default structures list. (JiFish)
 
-  * Corrected Depth Strider enchantment data. (JiFish)
-  
-  * Added 1.9 items and blocks (JiFish)
-  
   * Added special shield loot item with dungeon's banner. (JiFish)
   
   * Updated potions for 1.9, including allowing lingering potions and
     tipped arrows in loot tables. (JiFish)
     
+  * Moved example configs to example_configs folder. (JiFish)
+
+  * Corrected Depth Strider enchantment data. (JiFish)
+  
   * Items are now created with string IDs. (JiFish)
 
 v0.14.2 - 04/15/2015
