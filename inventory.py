@@ -29,7 +29,7 @@ class new:
                 if (str(file.lower()).endswith(".txt") and
                         file.lower() != "readme.txt"):
                     self.booklist.append(file)
-            
+
         self.valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
 
         # Make a list of all paintings
@@ -51,10 +51,10 @@ class new:
 
     def loadrandbooktext(self):
         item = nbt.TAG_Compound()
-        item['id'] = nbt.TAG_Short(387)
+        item['id'] = nbt.TAG_String('minecraft:written_book')
         # No books? Give a book and quill instead
         if len(self.booklist) == 0:
-            item['id'] = nbt.TAG_Short(386)
+            item['id'] = nbt.TAG_String('minecraft:writable_book')
             return item
         # Open the book's text file
         bookfile = open(os.path.join(self.book_path, random.choice(self.booklist)))
@@ -100,7 +100,7 @@ class new:
         # No paintings? Give a blank map (ID: 395)
         if len(self.paintlist) == 0:
             item = nbt.TAG_Compound()
-            item['id'] = nbt.TAG_Short(395)
+            item['id'] = nbt.TAG_String('minecraft:map')
             return item
 
         return self.mapstore.add_painting(random.choice(self.paintlist))
@@ -187,7 +187,7 @@ class new:
                 item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
-                
+
             # Is this a 'basic' potion i.e. no custom effects list
             if (i.p_effect.replace(',','').replace('-','').isdigit()):
                 item_tag['tag']['CustomPotionEffects'] = nbt.TAG_List()

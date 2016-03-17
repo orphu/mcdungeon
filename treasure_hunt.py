@@ -455,7 +455,7 @@ class TreasureHunt (Dungeon):
                 cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
             cluebook = nbt.TAG_Compound()
             cluebook['Count'] = nbt.TAG_Byte(1)
-            cluebook['id'] = nbt.TAG_Short(387) # change to String minecraft:written_book
+            cluebook['id'] = nbt.TAG_String('minecraft:written_book')
             cluebook['Damage'] = nbt.TAG_Short(0)
             cluebook['tag'] = cluebook_tag
             # write clue for this stage
@@ -489,7 +489,7 @@ class TreasureHunt (Dungeon):
             cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
         cluebook = nbt.TAG_Compound()
         cluebook['Count'] = nbt.TAG_Byte(1)
-        cluebook['id'] = nbt.TAG_Short(387)
+        cluebook['id'] = nbt.TAG_String('minecraft:written_book')
         cluebook['Damage'] = nbt.TAG_Short(0)
         cluebook['tag'] = cluebook_tag
         # write clue for this stage

@@ -23,6 +23,7 @@ from numpy import uint8, zeros
 from pymclevel import nbt
 from utils import Vec
 import materials
+import items
 
 
 class new:
@@ -133,7 +134,7 @@ class new:
 
         # Create map item tag
         item = nbt.TAG_Compound()
-        item['id'] = nbt.TAG_Short(358)
+        item['id'] = nbt.TAG_String(items.byName('map').id)
         item['Damage'] = nbt.TAG_Short(mapid)
         item['Count'] = nbt.TAG_Byte(1)
 
@@ -314,7 +315,7 @@ class new:
 
         # Return a map item
         item = nbt.TAG_Compound()
-        item['id'] = nbt.TAG_Short(358)
+        item['id'] = nbt.TAG_String(items.byName('map').id)
         item['Damage'] = nbt.TAG_Short(mapid)
         item['Count'] = nbt.TAG_Byte(1)
         item['tag'] = nbt.TAG_Compound()

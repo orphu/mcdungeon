@@ -881,7 +881,7 @@ def encodeTHuntInfo(thunt, version):
             inv_tag.append(item_tag)
             item_tag['Slot'] = nbt.TAG_Byte(slot)
             item_tag['Count'] = nbt.TAG_Byte(1)
-            item_tag['id'] = nbt.TAG_Short(387)
+            item_tag['id'] = nbt.TAG_String('minecraft:written_book')
             item_tag['Damage'] = nbt.TAG_Short(0)
             tag_tag = nbt.TAG_Compound()
             item_tag['tag'] = tag_tag
@@ -940,7 +940,7 @@ def encodeDungeonInfo(dungeon, version):
             inv_tag.append(item_tag)
             item_tag['Slot'] = nbt.TAG_Byte(slot)
             item_tag['Count'] = nbt.TAG_Byte(1)
-            item_tag['id'] = nbt.TAG_Short(387)
+            item_tag['id'] = nbt.TAG_String('minecraft:written_book')
             item_tag['Damage'] = nbt.TAG_Short(0)
             tag_tag = nbt.TAG_Compound()
             item_tag['tag'] = tag_tag
