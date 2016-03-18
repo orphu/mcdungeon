@@ -1255,7 +1255,7 @@ if (args.command == 'delete'):
 # Regenerate mode
 if (args.command == 'regenerate'):
     # Check to make sure the user specified what they want to do.
-    if args.dungeons == [] and args.all is False:
+    if args.dungeons == None and args.all is False:
         print 'You must specify either --all or at least one -d option when ' \
               'regnerating dungeons.'
         sys.exit(1)
