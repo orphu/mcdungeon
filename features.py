@@ -2607,7 +2607,10 @@ class Chapel(Blank):
                mats[template[z]][1])
             # Special case for banners
             if (mats[template[z]][0] == materials.Banner):
-                self.parent.parent.adddungeonbanner(p)      
+                self.parent.parent.adddungeonbanner(p)
+            # Special case for chests
+            elif (mats[template[z]][0] == materials.Chest):
+                self.parent.parent.addchest(p, loot=None)
 
 
 class ConstructionArea(Blank):

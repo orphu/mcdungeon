@@ -949,7 +949,7 @@ class Dungeon (object):
                 tierf = loottable._maxtier - 1
             tier = max(1, int(tierf))
         elif tier > loottable._maxtier:
-            tier = loottable._maxtier         
+            tier = loottable._maxtier
         if self.args.debug:
             print 'Adding chest: level',level+1,'tier',tier
         root_tag = nbt.TAG_Compound()
@@ -963,7 +963,9 @@ class Dungeon (object):
             root_tag['Lock'] = nbt.TAG_String(lock)
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
-        if len(loot) == 0:
+        if loot is None:
+            loot = []
+        elif len(loot) == 0:
             loot = list(loottable.rollLoot(tier, level + 1))
         for i in loot:
             item_tag = self.inventory.buildItemTag(i)
