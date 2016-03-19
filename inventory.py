@@ -281,6 +281,14 @@ class new:
                 q['Color'] = nbt.TAG_Int(p[0])
                 q['Pattern'] = nbt.TAG_String(p[1])
                 item_tag['tag']['BlockEntityTag']['Patterns'].append(q)
+        elif (i.flag.startswith('ENTITYTAG:')):
+            try:
+                item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['EntityTag'] = nbt.TAG_Compound()
+            item_tag['tag']['EntityTag']['id'] = nbt.TAG_String(i.flag.split(':')[1])
+
         # Set the slot and count
         if i.slot != None:
             item_tag['Slot'] = nbt.TAG_Byte(i.slot)
@@ -298,6 +306,6 @@ class new:
         out = out.replace('\\s',u"\u00A7".encode('utf8'))
         out = out.replace('<[BACKSLASH]>','\\')
         return out
-        
+
     def SetDungeonFlag(self, flag):
         self.flag = flag
