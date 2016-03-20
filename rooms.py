@@ -990,16 +990,59 @@ class ThroneRoom(Basic):
         ])
 
         # Decoration colors
-        # inner color, trim color
+        # color 1 (inner),
+        # color 2 (outer),
+        # rug color 1 (inner),
+        # rug color 2 (outer),
         dmat = random.choice([
-            [materials.RedWool, materials.YellowWool],
-            [materials.RedWool, materials.LightGrayWool],
-            [materials.BlueWool, materials.YellowWool],
-            [materials.DarkGreenWool, materials.YellowWool],
-            [materials.DarkGreenWool, materials.BlackWool],
-            [materials.PurpleWool, materials.YellowWool],
-            [materials.CyanWool, materials.YellowWool],
-            [materials.LightBlueWool, materials.LightGrayWool]
+            [
+                materials.RedWool,
+                materials.YellowWool,
+                materials.RedCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.RedWool,
+                materials.LightGrayWool,
+                materials.RedCarpet,
+                materials.LightGrayCarpet,
+            ],
+            [
+                materials.BlueWool,
+                materials.YellowWool,
+                materials.BlueCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.DarkGreenWool,
+                materials.YellowWool,
+                materials.DarkGreenCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.DarkGreenWool,
+                materials.BlackWool,
+                materials.DarkGreenCarpet,
+                materials.BlackCarpet,
+            ],
+            [
+                materials.PurpleWool,
+                materials.YellowWool,
+                materials.PurpleCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.CyanWool,
+                materials.YellowWool,
+                materials.CyanCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.LightBlueWool,
+                materials.LightGrayWool,
+                materials.LightBlueCarpet,
+                materials.LightGrayCarpet,
+            ]
         ])
 
         # Basic room
@@ -1052,13 +1095,13 @@ class ThroneRoom(Basic):
             ssb(Vec(4, 10, 5 + j), cmat[1])
 
         # Rug
-        for p in iterate_cube(Vec(6, 11, 9), Vec(6, 11, 25)):
-            ssb(p, dmat[1])
-        for p in iterate_cube(Vec(7, 11, 9), Vec(7, 11, 25)):
-            ssb(p, dmat[0])
+        for p in iterate_cube(Vec(6, 10, 9), Vec(6, 10, 25)):
+            ssb(p, dmat[2])
+        for p in iterate_cube(Vec(7, 10, 9), Vec(7, 10, 25)):
+            ssb(p, dmat[3])
         for x in xrange(20):
-            p = Vec(random.randint(6, 9), 11, random.randint(9, 25))
-            sb(o + p, materials._floor)
+            p = Vec(random.randint(6, 9), 10, random.randint(9, 25))
+            sb(o + p, materials.Air)
 
         # Throne
         # Stairs
