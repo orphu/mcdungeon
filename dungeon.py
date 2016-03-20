@@ -107,6 +107,7 @@ class Dungeon (object):
         self.stairwells = []
         self.room_size = 16
         self.room_height = 6
+        self.doormaterial = materials.WoodenDoor
         self.position = Vec(0, 0, 0)
         self.args = args
         self.dinfo = {}
@@ -271,10 +272,22 @@ class Dungeon (object):
             print 'Theme:', self.namegen.theme
             self.owner = self.namegen.genroyalname()
             print 'Owner:', self.owner
-            
+
             # And generate a unique flag
             self.flagdesign = flaggenerator.generateflag()
             self.inventory.SetDungeonFlag(self.flagdesign)
+
+            # Pick a common door material for the dungeon
+            self.doormaterial = choice(
+                [
+                    materials.WoodenDoor,
+                    materials.SpruceDoor,
+                    materials.BirchDoor,
+                    materials.JungleDoor,
+                    materials.DarkOakDoor,
+                    materials.AcaciaDoor,
+                ]
+            )
 
             print "Generating rooms..."
             self.genrooms()
@@ -1026,7 +1039,7 @@ class Dungeon (object):
             inv_tag.append(item_tag)
             slot += 1
         self.tile_ents[loc] = root_tag
-        
+
     def adddungeonbanner(self, loc):
         root_tag = get_tile_entity_tags(eid="Banner",Pos=loc,**self.flagdesign)
         self.addtileentity(root_tag)

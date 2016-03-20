@@ -15,6 +15,8 @@ v0.15.0 -
 
   * Added special shield loot item with dungeon's banner. (JiFish)
   
+  * Door materials are now chosen per dungeon. (orphu)
+
   * Updated potions for 1.9, including allowing lingering potions and
     tipped arrows in loot tables. (JiFish)
     

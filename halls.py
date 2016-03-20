@@ -136,12 +136,9 @@ def drawHall(hall):
                 abort = True
         # Create the door
         if (abort == False):
-            # All doors are wood. Give this door a direction.
+            # Give this door a direction.
             hall.parent.parent.doors[door] = doors.Door()
-            hall.parent.parent.doors[door].material = choice(
-                            [materials.WoodenDoor, materials.SpruceDoor,
-                             materials.BirchDoor, materials.JungleDoor,
-                             materials.DarkOakDoor, materials.AcaciaDoor])
+            hall.parent.parent.doors[door].material = hall.parent.parent.doormaterial
             hall.parent.parent.doors[door].direction = hall.direction
             # place the actual door positions
             for x in xrange(hall.size - 2):
