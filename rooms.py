@@ -979,11 +979,14 @@ class ThroneRoom(Basic):
             [materials.ChiseledRedSandstone, materials.RedSandstoneSlab],
             [materials.meta_mossycobble, materials.CobblestoneSlab],
             [materials.NetherBrick, materials.NetherBrickSlab],
-            [materials.NetherBrick, materials.QuartzSlab],
             [materials.Prismarine, materials.CobblestoneSlab],
             [materials.PrismarineBricks, materials.CobblestoneSlab],
             [materials.DarkPrismarine, materials.CobblestoneSlab],
-            [materials.Stone, materials.StoneSlab]
+            [materials.Stone, materials.StoneSlab],
+            [materials.PurpurPillar, materials.PurpurSlab],
+            [materials.PurpurBlock, materials.PurpurSlab],
+            [materials.ChiseledQuartz, materials.QuartzSlab],
+            [materials.PillarQuartzBlock, materials.QuartzSlab],
         ])
 
         # Decoration colors
