@@ -11,4 +11,4 @@
 # You can use this definition rather than the customised items/lucky_block.nbt
 # file ( file_lucky_block ) if you want, but you will then get the 
 # default possible outcomes list.
-165,Lucky Block,0,64
+lucky:lucky_block,Lucky Block,0,64

@@ -14,6 +14,8 @@ will need to modify the ID setting in items.txt, materials.cfg, and the items/*.
 
 Under Minecraft 1.8, the ID is lucky:lucky_block
 
+Under Minecraft 1.9, Forge is not yet available, but it is anticipated that Lucky Blocks will be named as under 1.8.
+
 Lucky blocks are configured in the .minecraft/config/lucky/LuckyBlockProperties.txt file;
 you may well want to disable various potential effects that do not work well underground.
 
