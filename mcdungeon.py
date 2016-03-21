@@ -1162,7 +1162,7 @@ if (args.command == 'genreg'):
 # Delete mode
 if (args.command == 'delete'):
     # Check to make sure the user specified what they want to do.
-    if args.dungeons == [] and args.all is False:
+    if args.dungeons == None and args.all is False:
         print 'You must specify either --all or at least one -d option' \
               ' when deleting dungeons or treasure hunts.'
         sys.exit(1)
