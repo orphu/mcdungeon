@@ -2188,7 +2188,7 @@ class CircleOfSkulls(Blank):
 
             elif(random.randint(0, 100) < 33):
                 self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.setblock(p.up(1), materials.Torch)
+                self.parent.parent.setblock(p.up(1), materials.Torch, 5)
 
 
 class Cell(Blank):

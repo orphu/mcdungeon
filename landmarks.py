@@ -150,7 +150,7 @@ class CircleOfSkulls(Clearing):
         # to be the same, and the same ground type
         # center is ground level.
         self.addclearing(center,size)
-                
+
         # Create the circle of skulls
         p0 = Vec(center.x - size/2 + 1 - self.parent.position.x,
                  self.parent.position.y - center.y,
@@ -179,8 +179,8 @@ class CircleOfSkulls(Clearing):
                 root_tag['Rot'] = nbt.TAG_Byte(random.randint(0,15))
                 self.parent.tile_ents[p.up(2)] = root_tag
             elif( random.randint(0,100) < 10 ):
-                self.parent.setblock(p.up(1), materials.Torch)
-                
+                self.parent.setblock(p.up(1), materials.Torch, 5)
+
     def describe (self):
         return "a circle of skulls"
 
