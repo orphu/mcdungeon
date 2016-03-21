@@ -914,6 +914,7 @@ class SecretRoom(Blank):
             sb(p, materials.RedstoneWire, hide=True)
             sb(p.down(1), materials.Stone, blank=True)
             p = p + dl
+        sb(p, materials._wall, bdata)
         sb(p + dl, materials.StoneButton, bdata)
 
         # Extend the hallway into the room.
