@@ -49,7 +49,11 @@ class new:
                     self.mapcache = cPickle.load(FILE)
             except Exception as e:
                 print e
-                sys.exit('Failed to read the mcdungeon maps cache file.')
+                print "Failed to read the mcdungeon maps cache file."
+                print "The file tracking MCDungeon map usage may be corrupt."
+                print "You can try deleting or moving this file to recover:"
+                print os.path.join(self.mapstore, 'mcdungeon_maps')
+                sys.exit()
         else:
             print 'Mapstore cache not found. Creating new one...'
             self.mapcache = {'used': {}, 'available': set([])}
