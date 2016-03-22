@@ -318,7 +318,10 @@ class SignPost(Clearing):
         except:
             print 'Cannot identify central material'
         self.parent.setblock(self.offset + Vec(8, -1, 8), materials.SignPost, random.randint(0,7))
-        self.parent.addsign(self.offset + Vec(8,-1,8), "", self.parent.owner, "- was here -", "Keep away!")
+        self.parent.addsign(self.offset + Vec(8,-1,8), "", 
+            self.parent.owner, 
+            '- was here -', 
+            'Keep away!')
 		
     def describe (self):
         return "a signpost"
@@ -434,17 +437,20 @@ class Memorial(Clearing):
         picof = painting['tag']['display']['Name'].value
         self.description = 'a memorial to %s' % ( picof )
         framed_painting = get_entity_other_tags("ItemFrame",
-                                         Pos=self.offset + Vec(8,-3,8),
-                                         Facing=0,
+                                         Pos=self.offset + Vec(8.0,-3,8), # block frame is IN
+                                         Facing="S", # 0=south
                                          ItemRotation=0,
                                          ItemTags=painting)
-        framed_painting['Motive'] = painting['tag']['display']['Name']
         framed_painting['Invulnerable'] = nbt.TAG_Byte(1)
         # Place the item frame.
         self.parent.addentity(framed_painting)
 
-        self.parent.setblock(self.offset + Vec(8, -2, 9), materials.WallSign, 0)
-        self.parent.addsign(self.offset + Vec(8,-2,9), "In memory of", picof, "",self.parent.owner)
+        self.parent.setblock(self.offset + Vec(8,-2,9), materials.WallSign, 3) # 3=south
+        self.parent.addsign(self.offset + Vec(8,-2,9), 
+            'In memory of', 
+            picof, 
+            '',
+            self.parent.owner)
 
     def describe (self):
         return self.description
@@ -570,13 +576,19 @@ class Well(Clearing):
           self.parent.setblock(p,self.stone)
         for p in iterate_cube(self.offset+Vec(5,4,7),self.offset+Vec(6,3,8)):
           self.parent.setblock(p,materials.Air)
-        self.parent.setblock(self.offset + Vec(5,4,8), materials.Torch)
+        self.parent.setblock(self.offset + Vec(5,4,8), materials.Torch,5)
                 
         # secret door
         self.parent.setblock(self.offset+Vec(7,3,8),materials.WallSign,2)
         self.parent.setblock(self.offset+Vec(7,4,8),materials.WallSign,2)
-        self.parent.addsign(self.offset+Vec(7,3,8), "", self.parent.owner, "- was here -", "Keep away!")
-        self.parent.addsign(self.offset+Vec(7,4,8), "", "Secret", "Treasure", "Room")
+        self.parent.addsign(self.offset+Vec(7,3,8), "", 
+            self.parent.owner, 
+            "- was here -", 
+            "Keep away!")
+        self.parent.addsign(self.offset+Vec(7,4,8), "", 
+            "Secret", 
+            "Treasure", 
+            "Room")
         # roof
         self.parent.setblock(self.offset+Vec(7,-2,8),materials.Fence)
         self.parent.setblock(self.offset+Vec(9,-2,8),materials.Fence)
@@ -845,7 +857,11 @@ class Graveyard(Clearing):
         if random.randint(0,100)>5:
             self._graves.append( [ grave_name, pos + Vec(0,1,1) ] )
             self.parent.setblock(self.offset + pos + Vec(1,-1,1), materials.WallSign, 5) # face east
-            self.parent.addsign(self.offset + pos + Vec(1,-1,1), 'Here lies', grave_name, 'R.I.P.','')
+            self.parent.addsign(self.offset + pos + Vec(1,-1,1), 
+			    'Here lies', 
+			    grave_name, 
+			    "R.I.P.",
+			    '')
         
     def render (self):
         # add a graveyard
