@@ -53,7 +53,7 @@ class new:
                 print "The file tracking MCDungeon map usage may be corrupt."
                 print "You can try deleting or moving this file to recover:"
                 print os.path.join(self.mapstore, 'mcdungeon_maps')
-                sys.exit()
+                sys.exit(1)
         else:
             print 'Mapstore cache not found. Creating new one...'
             self.mapcache = {'used': {}, 'available': set([])}
