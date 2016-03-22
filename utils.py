@@ -13,7 +13,7 @@ import numpy
 from materials import heightmap_solids
 from pymclevel import mclevel, nbt
 
-cache_version = '6'
+cache_version = '7'
 
 
 def floor(n):
