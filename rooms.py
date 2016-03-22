@@ -524,7 +524,7 @@ class GreatHallNS(Basic):
                     for q in iterate_cube(p + Vec(-1, 0, -1), p + Vec(1, 0, 1)):
                         self.parent.setblock(q, mat)
                     if (random.randint(1, 100) <= 33):
-                        self.parent.setblock(p, materials.Torch)
+                        self.parent.setblock(p, materials.Torch, 5)
                     self.parent.setblock(p.down(1), materials.Fence)
         # Type B - Hanging pendant
         else:
@@ -873,7 +873,7 @@ class CellBlock(Basic2x2):
         for p in [self.c1 + Vec(11, -2, 11), self.c2 + Vec(-11, -2, 11),
                   self.c3 + Vec(-11, -2, -11), self.c4 + Vec(11, -2, -11)]:
             self.parent.setblock(p, materials.Fence)
-            self.parent.setblock(p.up(1), materials.Torch)
+            self.parent.setblock(p.up(1), materials.Torch, 5)
         # Zelda tune
         # 13,12,9,3,2,10,14,18
         self.parent.setblock(self.c1 + Vec(5, 1, 19),
@@ -2312,7 +2312,7 @@ class Crypt(Basic):
         sb(o + Vec(3, 3, 29), materials.StoneButton, 1)
         sb(o + Vec(12, 3, 29), materials.StoneButton, 2)
         # Torches
-        ssb(Vec(1, 5, 30), materials.Torch)
+        ssb(Vec(1, 5, 30), materials.Torch, 5)
 
         # Portal
         drawExitPortal(o + Vec(6, 7, 1), self.parent)

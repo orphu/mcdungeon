@@ -123,7 +123,7 @@ class TripleStairs(Blank):
 
         # add a random deco object at the top
         decos = ((materials.Cauldron, 2),
-                 (materials.Torch, 0),
+                 (materials.Torch, 5),
                  (materials.FlowerPot, 10),
                  (materials.StoneDoubleSlab, 0),
                  (materials.Air, 0))
@@ -645,7 +645,7 @@ class Dais(Blank):
                       Vec(p0.x + 1, p0.y - 1, p1.z - 1), Vec(p1.x - 1, p0.y - 1, p0.z + 1)):
                 self.parent.parent.setblock(p, materials.Fence)
                 self.parent.parent.setblock(p.up(1), materials.Fence)
-                self.parent.parent.setblock(p.up(2), materials.Torch)
+                self.parent.parent.setblock(p.up(2), materials.Torch, 5)
         for p in pfunc(p0, p1):
             self.parent.parent.setblock(p.up(1), platform)
         for p in sfunc(p0, p1, 0):
@@ -782,33 +782,33 @@ class SecretRoom(Blank):
             print
 
         mats = [
-            [materials.Air, 0],          # 0 (ignore these)
-            [materials.Air, 0],          # 1
-            [materials._wall, 0],        # 2
-            [materials.Stone, 0],        # 3
-            [materials._wall, 0],        # 4
-            [materials.RedstoneWire, 0],  # 5
-            [materials.StickyPiston, 3],  # 6 - toggle piston
-            [materials.RedstoneTorchOn, 2],  # 7
-            [materials._ceiling, 0],    # 8
-            [materials.StickyPiston, 4],  # 9 - pusher piston
+            [materials.Air, 0],                  # 0 (ignore these)
+            [materials.Air, 0],                  # 1
+            [materials._wall, 0],                # 2
+            [materials.Stone, 0],                # 3
+            [materials._wall, 0],                # 4
+            [materials.RedstoneWire, 0],         # 5
+            [materials.StickyPiston, 3],         # 6 - toggle piston
+            [materials.RedstoneTorchOn, 2],      # 7
+            [materials._ceiling, 0],             # 8
+            [materials.StickyPiston, 4],         # 9 - pusher piston
             [materials.RedstoneRepeaterOff, 3],  # 10 - piston repeater
             [materials.RedstoneRepeaterOff, 7],  # 11 - toggle repeater
-            [materials.Torch, 0],       # 12
-            [materials._secret_door, 0],  # 13
-            [materials._floor, 0],      # 14
-            [materials._subfloor, 0]    # 15
+            [materials.Glowstone, 0],            # 12
+            [materials._secret_door, 0],         # 13
+            [materials._floor, 0],               # 14
+            [materials._subfloor, 0]             # 15
         ]
 
         template = [
             [[8, 8, 8, 8, 8],
-             [8, 8, 8, 8, 8],
+             [8, 8, 8, 12, 8],
              [8, 8, 8, 8, 8],
              [8, 8, 8, 8, 8],
              [8, 8, 8, 8, 8],
              [8, 8, 8, 8, 8]],
             [[2, 4, 4, 4, 4],
-             [1, 1, 1, 12, 4],
+             [1, 1, 1, 1, 4],
              [2, 4, 4, 4, 4],
              [2, 1, 1, 1, 4],
              [2, 1, 1, 1, 4],
@@ -1013,7 +1013,7 @@ class SecretStudy(SecretRoom):
             sb(self.c1.trans(4, -2, 4),
                materials.FlowerPot, random.randrange(1, 12))
         else:
-            sb(self.c1.trans(4, -2, 4), materials.Torch)
+            sb(self.c1.trans(4, -2, 4), materials.Torch, 5)
 
         # A chest in a study should have writing supplies :)
         # item, probability, max stack amount
@@ -1092,7 +1092,7 @@ class SecretAlchemyLab(SecretRoom):
         self.parent.parent.blocks[self.c1 + Vec(5, -1, 3)].data = 2
         self.parent.parent.blocks[self.c1 + Vec(5, -1, 4)].data = 0
         self.parent.parent.blocks[self.c1 + Vec(5, -1, 5)].data = 3
-        sb(self.c1.trans(4, -2, 5), materials.Torch)
+        sb(self.c1.trans(4, -2, 5), materials.Torch, 5)
 
         # Wither skulls are rare
         SkullType = weighted_choice(((0, 30), (1, 1)))
