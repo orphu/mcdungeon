@@ -333,6 +333,7 @@ class Portcullis(Blank):
             'C4': [materials.CommandBlock, 0],
             'C5': [materials.CommandBlock, 0],
             'C6': [materials.CommandBlock, 0],
+            'WA': [materials._wall, 0],
         }
 
         # Random gate material.
@@ -345,8 +346,8 @@ class Portcullis(Blank):
         mat['oo'][0] = gate[0]
 
         cmds = {
-            'C1': '/playsound tile.piston.in @p',
-            'C2': '/playsound tile.piston.out @p',
+            'C1': '/playsound minecraft:block.piston.contract blocks @p',
+            'C2': '/playsound minecraft:block.piston.extend blocks @p',
             'C3': '/fill ~-2 ~2 ~2 ~-2 ~2 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
             'C4': '/fill ~-2 ~0 ~2 ~-2 ~0 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
             'C5': '/fill ~-2 ~1 ~-2 ~-2 ~1 ~-{} minecraft:air 0 replace'.format(self.size - 1),
@@ -358,9 +359,9 @@ class Portcullis(Blank):
             ['XX', '^^', 'RW', 'XX', 'XX', 'XX', 'RW', '^^', 'XX'],
             ['C1', 'C3', 'C2', 'XX', 'XX', 'XX', 'C2', 'C5', 'C1'],
         ], [
-            ['XX', 'XX', 'XX', ']]', 'XX', '[[', 'XX', 'XX', 'XX'],
+            ['XX', 'XX', 'WA', ']]', 'XX', '[[', 'WA', 'XX', 'XX'],
             ['XX', 'XX', 'XX', 'oo', 'oo', 'oo', 'XX', 'XX', 'XX'],
-            ['XX', 'XX', 'XX', ']]', 'XX', '[[', 'XX', 'XX', 'XX'],
+            ['XX', 'XX', 'WA', ']]', 'XX', '[[', 'WA', 'XX', 'XX'],
             ['XX', 'C4', 'XX', 'XX', 'XX', 'XX', 'XX', 'C5', 'XX'],
         ], [
             ['XX', 'XX', 'XX', 'XX', 'XX', 'XX', 'XX', 'XX', 'XX'],
