@@ -5,12 +5,14 @@
 #
 # Tested configurations:
 #
-# Pyinstaller 2.1 stable - fc75057047
+# Pyinstaller 3.1.1 stable
 #
-# Windows 7 / Python 2.7.5 64 bit
-# Windows 7 / Python 2.7.5 32 bit
-# Linux / Python 2.7.5 64 bit (Ubuntu)
-# OS X 10.8 / Python 2.7.2 64 bit 
+# Windows 10 / Python 2.7.11 / numpy-1.10.4 (pip)
+# OS X 10.11.3 (El Capitan) / Python 2.7.11 (pyenv) / numpy-1.10.4 (pip) *
+#
+# * See this note for numpy and pyenv 20150310 on OS X:
+#
+# https://github.com/yyuu/pyenv/issues/518#issuecomment-199827456
 #
 # Requirements:
 # 	Python 2.7.x
@@ -24,7 +26,7 @@
 # desired tag. Passing no options will build the current master HEAD rev,
 # which should be the current release version.
 
-FILES="README.md LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs example_configs books shops spawners items paintings names overviewer_icons"
+FILES="README.md LICENSE.txt CHANGELOG.txt fortunes.txt materials.cfg items.txt magic_items.txt dye_colors.txt potions.txt configs example_configs books shops spawners items paintings names overviewer_icons d"
 
 function error {
 	echo -e "\nFATAL: $1"
@@ -104,7 +106,7 @@ if [ -d $NAME ]; then
 fi
 
 # Make a spec file.
-python utils/makespec.py -F -c $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
+python makespec.py -F -c $OPTS mcdungeon/mcdungeon.py || error 'Makespec step failed.' $?
 
 # Add additional data files.
 sed -i -e '/^pyz/ i\
@@ -117,11 +119,11 @@ a.datas += [ \
 ' mcdungeon/mcdungeon.spec
 
 # Build it!
-python utils/build.py mcdungeon/mcdungeon.spec || error 'Pyinstaller build failed.' $?
+python pyinstaller.py mcdungeon/mcdungeon.spec || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
 mkdir -p $NAME/bin
-for SUBDIR in d $FILES; do
+for SUBDIR in $FILES; do
 	echo "Copying $SUBDIR..."
 	cp -r mcdungeon/$SUBDIR $NAME/bin/
 done
