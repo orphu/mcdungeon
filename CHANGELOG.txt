@@ -1,11 +1,11 @@
-v0.15.0 - 
+v0.15.0 - 03/28/2016
 
   !! NOTE: This version requires Minecraft 1.9.0 release or higher!
 
   !! NOTE: Due to changes in 1.9, old projectile trap configs may
            not work. Check default.cfg for details.
 
-  * 1.9 Support! (various)
+  * 1.9 Support! Lots of fixes for 1.9. (various)
 
   * Added 1.9 items, blocks and enchants. (JiFish)
   
