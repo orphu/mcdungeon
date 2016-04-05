@@ -221,7 +221,7 @@ def LoadPotions(filename='potions.txt'):
                                     
             # Create the arrow version of the potion
             id = _items['tipped arrow'].id
-            _items[name+' arrow'] = ItemInfo(name+' arrow', id, data=0, maxstack=1,
+            _items[name+' arrow'] = ItemInfo(name+' arrow', id, data=0, maxstack=64,
                                     p_effect=p_effect, flag=flag,
                                     customname=resetprefix+customname+' Arrow')
 
@@ -230,6 +230,7 @@ def LoadPotions(filename='potions.txt'):
             _items['splash '+name] = ItemInfo('splash '+name, id, data=0, maxstack=1,
                                     p_effect=p_effect, flag=flag,
                                     customname=resetprefix+'Splash '+customname)
+
             # Create the lingering version of the potion
             id = _items['lingering water bottle'].id
             _items['lingering '+name] = ItemInfo('lingering '+name, id, data=0, maxstack=1,
