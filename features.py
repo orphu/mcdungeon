@@ -1626,41 +1626,42 @@ class SecretArmory(SecretRoom):
 
         # Now, add a random item to each frame.
         gear = (
-            ("random leather helmet", 16),
-            ("random leather chestplate", 16),
-            ("random leather leggings", 16),
-            ("random leather boots", 16),
-            ("chainmail helmet", 8),
-            ("chainmail chestplate", 8),
-            ("chainmail leggings", 8),
-            ("chainmail boots", 8),
-            ("iron helmet", 4),
-            ("iron chestplate", 4),
-            ("iron leggings", 4),
-            ("iron boots", 4),
-            ("iron horse armor", 4),
-            ("gold helmet", 2),
-            ("gold chestplate", 2),
-            ("gold leggings", 2),
-            ("gold boots", 2),
-            ("gold horse armor", 2),
-            ("diamond helmet", 1),
-            ("diamond chestplate", 1),
-            ("diamond leggings", 1),
-            ("diamond boots", 1),
-            ("diamond horse armor", 1),
-            ("bow", 16),
-            ("dungeon shield", 16),
-            ("iron sword", 8),
-            ("iron axe", 8),
-            ("gold sword", 4),
-            ("gold axe", 4),
-            ("diamond sword", 2),
-            ("diamond axe", 2),
-            ("fishing rod", 8),
-            ("carrot on a stick", 8),
-            ("shears", 8),
-            ("name tag", 8)
+            ("random leather helmet", 32),
+            ("random leather chestplate", 32),
+            ("random leather leggings", 32),
+            ("random leather boots", 32),
+            ("chainmail helmet", 16),
+            ("chainmail chestplate", 16),
+            ("chainmail leggings", 16),
+            ("chainmail boots", 16),
+            ("iron helmet", 8),
+            ("iron chestplate", 8),
+            ("iron leggings", 8),
+            ("iron boots", 8),
+            ("iron horse armor", 8),
+            ("gold helmet", 4),
+            ("gold chestplate", 4),
+            ("gold leggings", 4),
+            ("gold boots", 4),
+            ("gold horse armor", 4),
+            ("diamond helmet", 2),
+            ("diamond chestplate", 2),
+            ("diamond leggings", 2),
+            ("diamond boots", 2),
+            ("diamond horse armor", 2),
+            ("bow", 32),
+            ("dungeon shield", 32),
+            ("iron sword", 16),
+            ("iron axe", 16),
+            ("gold sword", 8),
+            ("gold axe", 8),
+            ("diamond sword", 4),
+            ("diamond axe", 4),
+            ("fishing rod", 16),
+            ("carrot on a stick", 16),
+            ("shears", 16),
+            ("name tag", 16),
+            ("elytra", 1)
         )
 
         for p in alcoves:
@@ -1700,6 +1701,8 @@ class SecretArmory(SecretRoom):
                 item_name = random.choice(('horse armor', 'barding'))
             elif "shield" in item:
                 item_name = random.choice(('shield', 'buckler'))
+            elif "elytra" in item:
+                item_name = random.choice(('elytra', 'wings', 'glider'))
             else:
                 item_name = item.split()[-1]
 
