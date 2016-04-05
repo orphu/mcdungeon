@@ -1,6 +1,12 @@
+v0.15.1 -
+
+  !! NOTE: This version requires Minecraft 1.9.2 release or higher!
+
+  * Add books for the new 1.9 enchantments. (JiFish)
+
 v0.15.0 - 03/28/2016
 
-  !! NOTE: This version requires Minecraft 1.9.0 release or higher!
+  !! NOTE: This version requires Minecraft 1.9.2 release or higher!
 
   !! NOTE: Due to changes in 1.9, old projectile trap configs may
            not work. Check default.cfg for details.
