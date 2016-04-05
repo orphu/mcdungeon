@@ -62,10 +62,11 @@ Axe of Perun:Iron Axe,16-4:An axe formerly wielded:by the Slavic god of:thunder 
 
 # Legendary Armours
 # The Hephaestus collection
-Talaria:White Leather Boots,2-5:Crafted by the God Hephaestus:Winged sandals
+Talaria:White Leather Boots,2-5:Crafted by the God Hephaestus:Winged sandals crafted for Hermes
 Aegis Breastplate:Gold Chestplate,0-5:Crafted by the God Hephaestus:A hundred tassels of pure:gold hang fluttering from it.
 Eros' Bow:Bow,49-2,51-1:Crafted by the God Hephaestus:Be careful not to prick yourself:with the bow of the god Eros.
-Achilles' Leggings:Diamond Leggings,0-4:Crafted by the God Hephaestus:Not quite as nice as Achilles':shield, but still pretty nice.
+Achilles' Shield:Shield,70-1,34-2:Crafted by the God Hephaestus:Used by Achilles in his fight:with Hector
+Forgotten Leggings:Diamond Leggings,0-4:Crafted by the God Hephaestus:Not quite as nice as Achilles':shield, but still pretty nice.
 # Hazmat Suit
 Hazmat Helmet:White Leather Helmet,1-4,34-3:An item from another world.
 Hazmat Suit:White Leather Chestplate,1-4,34-3:An item from another world.:\sePart of a complete suit.
@@ -113,9 +114,11 @@ Book of The Tower:Enchanted Book,48-5:\s2- XVI -
 Book of Judgement:Enchanted Book,49-2:\s2- XX -
 Book of The Magician:Enchanted Book,50-1:\s2- I -
 Book of The World:Enchanted Book,51-1:\s2- XXI -
+Book of Eternity:Enchanted Book,70-1:\s2- 00 -
 Book of Fish Stories Vol 1:Enchanted Book,61-3
 Book of Fish Stories Vol 2:Enchanted Book,62-3
 Book of Fish Stories Vol 3:Enchanted Book,8-3
+Book of Fish Stories Vol 4:Enchanted Book,9-2
 
 # The Holy Handgrenade of Antioch
 Holy Hand Grenade of Antioch:Splash Potion of Harming II,17-5:...And Saint Attila raised the hand grenade up on:high, saying, "O LORD, bless this Thy hand:grenade that with it Thou mayest blow Thine:enemies to tiny bits, in Thy mercy."
