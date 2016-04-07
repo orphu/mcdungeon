@@ -13,7 +13,6 @@ import numpy
 logging.basicConfig(level=logging.CRITICAL)
 
 from pymclevel import mclevel
-from overviewer_core import world as ov_world
 import pmeter
 
 # Version info
@@ -416,7 +415,6 @@ def loadWorld(world_name):
         if quiet_mode is False:
             print "Trying to open:", world_name
         world = mclevel.fromFile(world_name)
-        oworld = ov_world.World(world_name)
     except:
         saveFileDir = mclevel.saveFileDir
         world_name = os.path.join(saveFileDir, world_name)
@@ -424,7 +422,6 @@ def loadWorld(world_name):
             print "Trying to open:", world_name
         try:
             world = mclevel.fromFile(world_name)
-            oworld = ov_world.World(world_name)
         except:
             print "Failed to open world:", world_name
             sys.exit(1)
@@ -448,10 +445,10 @@ def loadWorld(world_name):
             print "Cannot find world data directory!"
             sys.exit(1)
 
-    return world, oworld
+    return world
 
 
-def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
+def loadCaches(world, expand_fill_caves=False, genpoi=False):
     '''Scan a world for dungeons and treasure hunts. Try to cache
     the results and only look at chunks that have changed since the
     last run.'''
@@ -467,8 +464,6 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
     tHuntCacheOld, mtime = utils.loadTHuntCache(cache_path)
     tHuntCache = {}
 
-    # Scan with overviewer
-    regions = oworld.get_regionset(None)
     count = world.chunkCount
     cached = 0
     notcached = 0
@@ -477,33 +472,43 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
         print 'Scanning world for existing dungeons and treasure hunts:'
         print 'cache mtime: %d' % (mtime)
         pm.init(count, label='')
-    for cx, cz, cmtime in regions.iterate_chunks():
+    for cx, cz, in world.allChunks:
+        cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
         count -= 1
         if genpoi is False:
             pm.update_left(count)
         key = '%s,%s' % (cx * 16, cz * 16)
         if (cmtime > mtime or key in dungeonCacheOld or key in tHuntCacheOld):
             notcached += 1
-            for tileEntity in regions.get_chunk(cx, cz)["TileEntities"]:
+            for tileEntity in world.getChunk(cx, cz).TileEntities:
                 if (
-                    tileEntity['id'] == 'Sign' and
-                    tileEntity['Text1'].startswith('[MCD]')
+                    tileEntity['id'].value == 'Sign' and
+                    '[MCD]' in tileEntity['Text1'].value
                 ):
-                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
                     dungeonCache[key] = tileEntity
                 if (
-                    tileEntity['id'] == 'Chest' and
+                    tileEntity['id'].value == 'Chest' and
                     'CustomName' in tileEntity and
-                    tileEntity['CustomName'] == 'MCDungeon Data Library'
+                    tileEntity['CustomName'].value == 'MCDungeon Data Library'
                 ):
-                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
                     dungeonCache[key] = tileEntity
                 if (
-                    tileEntity['id'] == 'Chest' and
+                    tileEntity['id'].value == 'Chest' and
                     'CustomName' in tileEntity and
-                    tileEntity['CustomName'] == 'MCDungeon THunt Data Library'
+                    tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
                 ):
-                    key = '%s,%s' % (tileEntity["x"], tileEntity["z"])
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
                     tHuntCache[key] = tileEntity
         else:
             cached += 1
@@ -699,7 +704,6 @@ def loadCaches(world, oworld, expand_fill_caves=False, genpoi=False):
 
 # Globals
 world = None
-oworld = None
 cache_path = None
 dungeons = []
 tHunts = []
@@ -939,8 +943,8 @@ if (args.command == 'interactive'):
 
         args.dungeons = []
         args.all = False
-        world, oworld = loadWorld(args.world)
-        dlist, tlist = loadCaches(world, oworld)
+        world = loadWorld(args.world)
+        dlist, tlist = loadCaches(world)
         if len(dlist) == 0:
             sys.exit()
         print 'Choose a dungeon to regenerate:'
@@ -988,8 +992,8 @@ if (args.command == 'interactive'):
         if (cfg.mapstore == ''):
             cfg.mapstore = args.world
 
-        world, oworld = loadWorld(args.world)
-        dungeons, tHunts = loadCaches(world, oworld)
+        world = loadWorld(args.world)
+        dungeons, tHunts = loadCaches(world)
 
         if len(dungeons) == 0 and len(tHunts) == 0:
             sys.exit()
@@ -1040,12 +1044,12 @@ if (cfg.mapstore == ''):
 
 # Load the world if we havent already
 if world is None:
-    world, oworld = loadWorld(args.world)
+    world = loadWorld(args.world)
 
 # List mode
 if (args.command == 'list'):
     # List the known dungeons and exit
-    dungeons, tHunts = loadCaches(world, oworld)
+    dungeons, tHunts = loadCaches(world)
     sys.exit()
 
 # GenPOI mode
@@ -1063,7 +1067,7 @@ if (args.command == 'genpoi'):
     output += 'renders["mcdungeon"] = {\n\t\'world\': \'%s\',\n\t\'title\': \'MCDungeon\',\n\t\'rendermode\': \'smooth_lighting\',\n\t\'manualpois\':[' % ( args.world )
     print output
 
-    dungeons, tHunts = loadCaches(world, oworld, genpoi=True)
+    dungeons, tHunts = loadCaches(world, genpoi=True)
     output = '\t],\n\t\'markers\': [\n'
     output += '\t\tdict(name="Dungeons", filterFunction=dungeonFilter, icon="icons/marker_tower_red.png", checked=True),\n'
     output += '\t\tdict(name="TreasureHunts", filterFunction=tHuntFilter, icon="icons/marker_chest_red.png", checked=True),\n'
@@ -1107,7 +1111,7 @@ if (args.command == 'genreg'):
 
     # load in the list of existing dungeons
     print 'Loading in list of dungeons...'
-    dungeons, tHunts = loadCaches(world, oworld, genpoi=False)
+    dungeons, tHunts = loadCaches(world, genpoi=False)
 
     # Build/update YAML
     print 'Generating YAML...'
@@ -1168,7 +1172,7 @@ if (args.command == 'delete'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == [] and tHunts == []:
-        dungeons, tHunts = loadCaches(world, oworld)
+        dungeons, tHunts = loadCaches(world)
     # No dungeons. Exit.
     if len(dungeons) == 0 and len(tHunts) == 0:
         sys.exit()
@@ -1261,7 +1265,7 @@ if (args.command == 'regenerate'):
         sys.exit(1)
     # Get a list of known dungeons and their size.
     if dungeons == []:
-        dungeons, tHunts = loadCaches(world, oworld)
+        dungeons, tHunts = loadCaches(world)
     # No dungeons. Exit.
     if len(dungeons) == 0:
         sys.exit()
@@ -1314,7 +1318,6 @@ if (args.command == 'regenerate'):
         print 'Regenerating dungeon at', cfg.offset, '...'
         dungeon = Dungeon(args,
                           world,
-                          oworld,
                           chunk_cache,
                           dungeon_cache,
                           good_chunks,
@@ -1515,10 +1518,9 @@ if (cfg.offset is None or cfg.offset is ''):
     pm = pmeter.ProgressMeter()
     pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
-    regions = oworld.get_regionset(None)
     chunk_min = None
     chunk_max = None
-    for cx, cz, mtime in regions.iterate_chunks():
+    for cx, cz in world.allChunks:
         cc += 1
         pm.update(cc)
         # Flush the cache periodically.
@@ -1551,7 +1553,7 @@ if (cfg.offset is None or cfg.offset is ''):
         # Check mtime on the chunk to avoid loading the whole thing
         key = '%s,%s' % (cx, cz)
         if (
-            regions.get_chunk_mtime(cx, cz) < chunk_mtime and
+            world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz) < chunk_mtime and
             key in chunk_cache
         ):
             cached += 1
@@ -1559,10 +1561,10 @@ if (cfg.offset is None or cfg.offset is ''):
             notcached += 1
             chunk_cache[key] = [None, -1, 0]
             # Load the chunk
-            chunk = regions.get_chunk(cx, cz)
+            chunk = world.getChunk(cx, cz)
             while chunk_cache[key][0] is None:
                 # Biomes
-                biomes = chunk['Biomes'].flatten()
+                biomes = chunk.Biomes.flatten()
                 # Exclude chunks that are 20% river.
                 river = -1
                 for river_biome in cfg.river_biomes:
@@ -1577,38 +1579,28 @@ if (cfg.offset is None or cfg.offset is ''):
                 if chunk_cache[key][1] in cfg.ocean_biomes:
                     chunk_cache[key][0] = 'O'
                     continue
-                # Now the heavy stuff
-                # We need to be able to reference the sections in order.
-                # for strutures and depths
-                b = {}
-                for section in sorted(chunk['Sections'],
-                                      key=lambda section: section['Y']):
-                    b[int(section['Y'])] = section['Blocks']
+
                 # Structures
                 if (len(cfg.structure_values) > 0):
                     mats = cfg.structure_values
                     t = False
                     i = 0
-                    y = 0
-                    while (t is False and y < world.Height // 16):
-                        if (y not in b or i >= len(mats)):
-                            y += 1
-                            i = 0
-                        else:
-                            x = (b[y][:] == mats[i])
-                            t = x.any()
-                            i += 1
+                    while (t is False and i < len(mats)):
+                        x = (chunk.Blocks[:] == mats[i])
+                        t = x.any()
+                        i += 1
                     if t:
                         chunk_cache[key][0] = 'S'
                         continue
+
                 # Depths
                 min_depth = world.Height
                 max_depth = 0
                 for x in xrange(16):
                     for z in xrange(16):
-                        y = chunk['HeightMap'][z + x * 16] - 1
-                        while (y > 0 and y // 16 in b and
-                               b[y // 16][y % 16, z, x] not in
+                        y = chunk.HeightMap[x, z] - 1
+                        while (y > 0 and
+                               chunk.Blocks[x, z, y] not in
                                materials.heightmap_solids):
                             y = y - 1
                         min_depth = min(y, min_depth)
@@ -1642,7 +1634,7 @@ if (cfg.offset is None or cfg.offset is ''):
     pm.set_complete()
 
     # Load caches
-    old_dungeons, old_thunts = loadCaches(world, oworld, expand_fill_caves=True)
+    old_dungeons, old_thunts = loadCaches(world, expand_fill_caves=True)
 
     # Find old dungeons
     for d in old_dungeons:
@@ -1739,7 +1731,6 @@ while (
                                                                   args.number)
         thunt = TreasureHunt(args,
                       world,
-                      oworld,
                       chunk_cache,
                       thunt_cache,
                       good_chunks,
@@ -1754,7 +1745,6 @@ while (
                                                                   args.number)
         dungeon = Dungeon(args,
                       world,
-                      oworld,
                       chunk_cache,
                       dungeon_cache,
                       good_chunks,

@@ -16,8 +16,6 @@ import inventory
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
-from overviewer_core import cache
-from overviewer_core import world as ov_world
 
 from dungeon import Dungeon, RelightHandler, Block
 
@@ -35,16 +33,12 @@ class TreasureHunt (Dungeon):
     def __init__(self,
                  args,
                  world,
-                 oworld,
                  chunk_cache,
                  thunt_cache,
                  good_chunks,
                  mapstore):
-        self.caches = []
-        self.caches.append(cache.LRUCache(size=100))
 
         self.world = world
-        self.oworld = oworld
         self.chunk_cache = chunk_cache
         self.thunt_cache = thunt_cache
         self.good_chunks = good_chunks

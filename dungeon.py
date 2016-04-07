@@ -22,8 +22,6 @@ import inventory
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
-from overviewer_core import cache
-from overviewer_core import world as ov_world
 
 
 class Block(object):
@@ -76,16 +74,12 @@ class Dungeon (object):
     def __init__(self,
                  args,
                  world,
-                 oworld,
                  chunk_cache,
                  dungeon_cache,
                  good_chunks,
                  mapstore):
-        self.caches = []
-        self.caches.append(cache.LRUCache(size=100))
 
         self.world = world
-        self.oworld = oworld
         self.chunk_cache = chunk_cache
         self.dungeon_cache = dungeon_cache
         self.good_chunks = good_chunks
@@ -637,10 +631,9 @@ class Dungeon (object):
 
         # Calaculate the biome
         biomes = {}
-        rset = self.oworld.get_regionset(None)
         for chunk in d_chunks:
-            cdata = rset.get_chunk(chunk[0], chunk[1])
-            key = numpy.argmax(numpy.bincount((cdata['Biomes'].flatten())))
+            cdata = self.world.getChunk(chunk[0], chunk[1])
+            key = numpy.argmax(numpy.bincount((cdata.Biomes.flatten())))
             if key in biomes:
                 biomes[key] += 1
             else:
@@ -767,8 +760,6 @@ class Dungeon (object):
 
     def processBiomes(self):
         '''Add vines and snow according to biomes.'''
-        rset = self.oworld.get_regionset(None)
-        r = ov_world.CachedRegionSet(rset, self.caches)
         wp = Vec(self.position.x, 0, self.position.z)
         count = self.xsize * 16 * self.zsize * 16
         self.pm.init(count, label='Processing biomes:')
@@ -778,8 +769,8 @@ class Dungeon (object):
             count -= 1
             cx = (p.x + wp.x) // 16
             cz = (p.z + wp.z) // 16
-            chunk = r.get_chunk(cx, cz)
-            biome = chunk['Biomes'][p.x % 16][p.z % 16]
+            chunk = self.world.getChunk(cx, cz)
+            biome = chunk.Biomes[p.x % 16][p.z % 16]
             # Vines
             if biome in (6,     # Swampland
                          134,   # Swampland M

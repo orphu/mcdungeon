@@ -14,13 +14,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -------
 
-An NBT library and Anvil format reader are taken from Minecraft Overviewer, which
-is distributed under the GPL v3. 
-
-https://raw.github.com/overviewer/Minecraft-Overviewer/master/COPYING.txt
-
--------
-
 pymclvel is Copyright (c) 2010 David Rio Vierra. License follows:
 
 Permission to use, copy, modify, and/or distribute this software for any

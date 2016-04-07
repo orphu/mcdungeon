@@ -967,43 +967,47 @@ def decodeDungeonInfo(lib):
     items = {}
 
     # Position is always the x,y,z of the entity
-    items['position'] = Vec(int(lib['x']), int(lib['y']), int(lib['z']))
+    items['position'] = Vec(
+        int(lib['x'].value),
+        int(lib['y'].value),
+        int(lib['z'].value)
+    )
 
     # Look for legacy sign-based entity.
-    if lib['id'] == "Sign":
+    if lib['id'].value == "Sign":
 
-        m = re.search('E:(\d+),(\d+)', lib["Text4"])
+        m = re.search('E:(\d+),(\d+)', lib["Text4"].value)
         items['entrance_pos'] = Vec(int(m.group(1)), 0, int(m.group(2)))
-        m = re.search('T:(..)', lib["Text4"])
+        m = re.search('T:(..)', lib["Text4"].value)
         items['entrance_height'] = int(m.group(1), 16)
-        items['version'] = lib["Text1"][5:]
+        items['version'] = lib["Text1"].value[5:]
         (items['xsize'],
          items['zsize'],
-         items['levels']) = [int(x) for x in lib["Text3"].split(',')]
-        items['timestamp'] = int(lib["Text2"])
-        m = re.search('H:(.)', lib["Text4"])
+         items['levels']) = [int(x) for x in lib["Text3"].value.split(',')]
+        items['timestamp'] = int(lib.value["Text2"])
+        m = re.search('H:(.)', lib.value["Text4"])
         items['fill_caves'] = int(m.group(1))
         return items
 
     # Check the chest name
     if (
         'CustomName' not in lib or
-        lib['CustomName'] != 'MCDungeon Data Library'
+        lib['CustomName'].value != 'MCDungeon Data Library'
     ):
         sys.exit('Invalid data library NBT.')
 
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and book['id'] != 'minecraft:written_book') or
-            book['tag']['title'].startswith('MCDungeon Data Volume') is False
+            (book['id'].value != 387 and book['id'].value != 'minecraft:written_book') or
+            book['tag']['title'].value.startswith('MCDungeon Data Volume') is False
         ):
             print 'Non-book or odd book found in chest!', items['position'], 'id:', book['id']
-            if 'tag' in book and 'title' in book['tag']:
-                print '\t', book['tag']['title']
+            if 'tag' in book and 'title' in book['tag'].value:
+                print '\t', book['tag']['title'].value
             continue
         for page in book['tag']['pages']:
-            items.update(cPickle.loads(str(page)))
+            items.update(cPickle.loads(str(page.value)))
     return items
 
 def decodeTHuntInfo(lib):
@@ -1012,19 +1016,23 @@ def decodeTHuntInfo(lib):
     items = {}
 
     # Position is always the x,y,z of the entity
-    items['position'] = Vec(int(lib['x']), int(lib['y']), int(lib['z']))
+    items['position'] = Vec(
+        int(lib['x'].value),
+        int(lib['y'].value),
+        int(lib['z'].value)
+    )
 
     # Check the chest name
     if (
         'CustomName' not in lib or
-        lib['CustomName'] != 'MCDungeon THunt Data Library'
+        lib['CustomName'].value != 'MCDungeon THunt Data Library'
     ):
         sys.exit('Invalid data library NBT.')
 
     # iterate through the objects in the chest
     for book in lib['Items']:
         if (
-            (book['id'] != 387 and book['id'] != 'minecraft:written_book')
+            (book['id'].value != 387 and book['id'].value != 'minecraft:written_book')
         ):
             #print 'Non-book found in cache chest: %s' % ( book['id'] )
             continue
@@ -1034,12 +1042,12 @@ def decodeTHuntInfo(lib):
             print 'Strange book with no title found in cache chest' 
             continue
         if (
-            book['tag']['title'].startswith('MCDungeon Data Volume') is False
+            book['tag']['title'].value.startswith('MCDungeon Data Volume') is False
         ):
-            print 'Strange book found in cache chest: %s' % ( book['tag']['title'] )
+            print 'Strange book found in cache chest: %s' % (book['tag']['title'].value)
             continue
         for page in book['tag']['pages']:
-            items.update(cPickle.loads(str(page)))
+            items.update(cPickle.loads(str(page.value)))
     return items
 
 # Some entity helpers

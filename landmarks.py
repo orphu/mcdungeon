@@ -988,9 +988,8 @@ def pickLandmark(thunt, pos,
     if (landmark_list is None):
         # Identify biome of this chunk
         # print 'identify biome for %d, %d' % ( thunt.position.x + pos.x, thunt.position.z + pos.z )
-        rset = thunt.oworld.get_regionset(None)
-        cdata = rset.get_chunk(pos.x >> 4, pos.z >> 4)
-        biome = numpy.argmax(numpy.bincount((cdata['Biomes'].flatten())))
+        cdata = thunt.world.getChunk(pos.x >> 4, pos.z >> 4)
+        biome = numpy.argmax(numpy.bincount((cdata.Biomes.flatten())))
         # do we have a special landmark list for this biome, or take default list?
         try:
             landmark_list = weighted_shuffle(cfg.master_landmarks[biome])
