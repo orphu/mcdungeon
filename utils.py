@@ -7,6 +7,7 @@ import re
 import sys
 import time
 import uuid
+import yaml
 
 import numpy
 
@@ -758,6 +759,21 @@ def saveDungeonCache(cache_path, dungeonCache):
         sys.exit('Failed to write dungeon_scan_version.'
                  'Check permissions and try again.')
 
+    try:
+        FILE = open(
+            os.path.join(
+                cache_path,
+                'dungeon_scan_cache.yaml'
+            ),
+            'wb')
+        decodedCache = [decodeDungeonInfo(d) for d in dungeonCache.values()]
+        print >> FILE, yaml.dump(decodedCache, default_flow_style=False)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write dungeon_scan_version.yaml. '
+                 'Check permissions and try again.')
+
 
 def saveTHuntCache(cache_path, tHuntCache):
     ''' save the treasure hunt cache given a path and array'''
@@ -794,6 +810,26 @@ def saveTHuntCache(cache_path, tHuntCache):
     except Exception as e:
         print e
         sys.exit('Failed to write thunt_scan_version.'
+                 'Check permissions and try again.')
+    try:
+        FILE = open(
+            os.path.join(
+                cache_path,
+                'thunt_scan_cache.yaml'
+            ),
+            'wb')
+
+        decodedCache = [decodeTHuntInfo(h) for h in tHuntCache.values()]
+
+        # HACK for getting pyyaml to understand a list of Vecs
+        for d in decodedCache:
+            d['landmarks'] = str(d['landmarks'])
+
+        print >> FILE, yaml.dump(decodedCache, default_flow_style=False)
+        FILE.close()
+    except Exception as e:
+        print e
+        sys.exit('Failed to write thunt_scan_cache.yaml. '
                  'Check permissions and try again.')
 
 
