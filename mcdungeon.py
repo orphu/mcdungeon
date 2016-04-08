@@ -1585,7 +1585,7 @@ if (cfg.offset is None or cfg.offset is ''):
                     mats = cfg.structure_values
                     t = False
                     i = 0
-                    while (t is False and i < len(mats)):
+                    while (t == False and i < len(mats)):
                         x = (chunk.Blocks[:] == mats[i])
                         t = x.any()
                         i += 1
