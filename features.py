@@ -115,12 +115,6 @@ class TripleStairs(Blank):
         start = self.parent.loc.trans(5, self.parent.parent.room_height - 2, 5)
         start = start.trans(0, -6, 0)
 
-        # handrail
-        for x in iterate_four_walls(start.trans(-1, -1, -1), start.trans(6, -1, 6), 0):
-            sb(x, materials.IronBars, 0)
-        sb(start.trans(2, -1, -1), materials.Air, 0)
-        sb(start.trans(3, -1, -1), materials.Air, 0)
-
         # add a random deco object at the top
         decos = ((materials.Cauldron, 2),
                  (materials.Torch, 5),
