@@ -336,8 +336,7 @@ class Dungeon (object):
                 self.position.x,
                 self.position.z,
             )
-            #self.dungeon_cache[key] = self.tile_ents[Vec(0,0,0)]
-            self.dungeon_cache[key] = 1
+            self.dungeon_cache[key] = encodeDungeonInfo(self, version)
 
             # Generate maps
             if (self.args.write and cfg.maps > 0):

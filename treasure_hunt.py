@@ -151,8 +151,7 @@ class TreasureHunt (Dungeon):
             )
             # we need the info if making multiple hunts, to avoid
             # all previous landmarks
-            #self.thunt_cache[key] = self.tile_ents[Vec(0, 0, 0)]
-            self.thunt_cache[key] = True
+            self.thunt_cache[key] = encodeTHuntInfo(self, version)
 
             # copy results to the world
             self.applychanges()

@@ -771,7 +771,7 @@ def saveDungeonCache(cache_path, dungeonCache):
         FILE.close()
     except Exception as e:
         print e
-        sys.exit('Failed to write dungeon_scan_version.yaml. '
+        sys.exit('Failed to write dungeon_scan_cache.yaml. '
                  'Check permissions and try again.')
 
 
@@ -908,6 +908,7 @@ def encodeDungeonInfo(dungeon, version):
     dungeon.'''
     # Some old things need to be added.
     items = dungeon.dinfo
+    items['position'] = dungeon.position
     items['entrance_pos'] = dungeon.entrance_pos
     items['entrance_height'] = int(dungeon.entrance.height)
     items['version'] = version
@@ -967,6 +968,7 @@ def encodeTHuntInfo(thunt, version):
     dungeon.'''
     # Some old things need to be added.
     items = thunt.dinfo
+    items['position'] = thunt.position
     items['version'] = version
     items['steps'] = thunt.steps
     items['timestamp'] = int(time.time())
