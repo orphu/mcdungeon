@@ -721,9 +721,9 @@ if (args.command == 'interactive'):
     print 'Starting interactive mode!'
 
     # Pick a map
-    saveFileDir = mclevel.saveFileDir
     if args.dir is not None:
-        saveFileDir = args.dir
+        mclevel.saveFileDir = args.dir
+    saveFileDir = mclevel.saveFileDir
     print '\nYour save directory is:\n', saveFileDir
     if (os.path.isdir(saveFileDir) is False):
         sys.exit('\nI cannot find your save directory! Aborting!')
