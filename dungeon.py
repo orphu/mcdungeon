@@ -1035,6 +1035,10 @@ class Dungeon (object):
     def adddungeonbanner(self, loc):
         root_tag = get_tile_entity_tags(eid="Banner",Pos=loc,**self.flagdesign)
         self.addtileentity(root_tag)
+        
+    def addendgateway(self, loc, exitloc):
+        root_tag = get_tile_entity_tags(eid="EndGateway",Pos=loc,ExitPos=exitloc,ExactTeleport=1)
+        self.addtileentity(root_tag)
 
     def addentity(self, root_tag):
         self.ents.append(root_tag)
