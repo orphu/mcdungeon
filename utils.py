@@ -1140,7 +1140,8 @@ def get_tile_entity_tags(
                          CookTimeTotal=0, TransferCooldown=0,
                          note=0, Record=0, RecordItem=None, Text1='',
                          Text2='', Text3='', Text4='', SkullType=0,
-                         ExtraType='', Rot=0):
+                         ExtraType='', Rot=0, ExactTeleport=0,
+                         ExitPos=Vec(0,0,0)):
     '''Returns an nbt.TAG_Compound containing tags for tile
     entities'''
 
@@ -1225,6 +1226,15 @@ def get_tile_entity_tags(
         root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
         root_tag['ExtraType'] = nbt.TAG_String(ExtraType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
+        
+    if eid is 'EndGateway':
+        root_tag['Age'] = nbt.TAG_Long(201);
+        root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
+        exit_tag = nbt.TAG_Compound()
+        root_tag['X'] = nbt.TAG_Int(ExitPos.x)
+        root_tag['Y'] = nbt.TAG_Int(ExitPos.y)
+        root_tag['Z'] = nbt.TAG_Int(ExitPos.z)
+        root_tag['ExitPortal'] = exit_tag
 
     return root_tag
 

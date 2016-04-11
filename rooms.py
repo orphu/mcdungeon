@@ -3432,11 +3432,15 @@ def drawExitPortal(pos, dungeon, NS=False):
         y = Vec(0, 1, 0)
         z = Vec(1, 0, 0)
         sign_dat = 5
+        button_dat = 1
+        portal_pos = '~ ~1 ~-1 ~ ~3 ~-2'
     else:
         x = Vec(1, 0, 0)
         y = Vec(0, 1, 0)
         z = Vec(0, 0, 1)
         sign_dat = 3
+        button_dat = 3
+        portal_pos = '~-1 ~1 ~ ~-2 ~3 ~'
     # Portal
     sb = dungeon.setblock
     # Bedrock portal frame.
@@ -3445,36 +3449,35 @@ def drawExitPortal(pos, dungeon, NS=False):
     # Air.
     for p in iterate_cube(pos + x + y, pos + x * 2 + y * 3):
         sb(p, materials.Air)
-    # Buttons
-    for p in iterate_cube(pos + x + y * 3, pos + x * 2 + y * 3):
-        sb(p, materials.StonePressurePlate)
+    # Button
+    sb(pos + x * 3 + y * 3 + z, materials.WoodenButton, button_dat)
     # Command blocks
     world_exit = Vec(
         dungeon.dinfo['portal_exit'].x + dungeon.position.x,
         dungeon.position.y - dungeon.dinfo['portal_exit'].y,
         dungeon.dinfo['portal_exit'].z + dungeon.position.z
     )
-    for p in [pos + y * 4, pos + x * 3 + y * 4]:
-        sb(p, materials.CommandBlock)
-        root_tag = nbt.TAG_Compound()
-        root_tag['id'] = nbt.TAG_String('Control')
-        root_tag['x'] = nbt.TAG_Int(p.x)
-        root_tag['y'] = nbt.TAG_Int(p.y)
-        root_tag['z'] = nbt.TAG_Int(p.z)
-        root_tag['SuccessCount'] = nbt.TAG_Int(0)
-        root_tag['Command'] = nbt.TAG_String(
-            '/tp @p[rm=1,r=2,c=1] %d %d %d' %
-            (world_exit.x, world_exit.y, world_exit.z))
+    p = pos + x * 3 + y * 4
+    sb(p, materials.CommandBlock)
+    root_tag = nbt.TAG_Compound()
+    root_tag['id'] = nbt.TAG_String('Control')
+    root_tag['x'] = nbt.TAG_Int(p.x)
+    root_tag['y'] = nbt.TAG_Int(p.y)
+    root_tag['z'] = nbt.TAG_Int(p.z)
+    root_tag['SuccessCount'] = nbt.TAG_Int(0)
+    root_tag['Command'] = nbt.TAG_String(
+        '/fill '+portal_pos+' minecraft:end_gateway 0 replace {Age:201,ExactTeleport:1,ExitPortal:{X:%d,Y:%d,Z:%d}}' %
+        (world_exit.x, world_exit.y, world_exit.z))
 
-        dungeon.tile_ents[p] = root_tag
+    dungeon.tile_ents[p] = root_tag
 
     # Sign.
     sb(pos + x * 3 + y * 2 + z, materials.WallSign, sign_dat)
     dungeon.addsign(pos + x * 3 + y * 2 + z,
-                    'Portal',
-                    'to the',
-                    'Surface',
-                    '')
+                    'Portal to',
+                    'the Surface',
+                    '',
+                    'Press Button')
 
 # Catalog the rooms we know about.
 _rooms = {}
