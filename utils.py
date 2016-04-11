@@ -1,5 +1,6 @@
 import code
 import cPickle
+import json
 import math
 import os
 import random
@@ -954,7 +955,7 @@ def encodeDungeonInfo(dungeon, version):
             page = 0
         slot += 1
         tag_tag['pages'].append(
-            nbt.TAG_String(cPickle.dumps({key: items[key]}))
+            nbt.TAG_String(encodeJSONtext(cPickle.dumps({key: items[key]})))
         )
         page += 1
         if page >= 50:
@@ -1015,12 +1016,26 @@ def encodeTHuntInfo(thunt, version):
             page = 0
         slot += 1
         tag_tag['pages'].append(
-            nbt.TAG_String(cPickle.dumps({key: items[key]}))
+            nbt.TAG_String(encodeJSONtext(cPickle.dumps({key: items[key]})))
         )
         page += 1
         if page >= 50:
             newslot = True
     return root_tag
+
+
+def encodeJSONtext(string):
+    s = {
+        "text": string
+    }
+    return json.dumps(s)
+
+
+def decodeJSONtext(string):
+    try:
+        return json.loads(string)['text']
+    except ValueError:
+        return string
 
 
 def decodeDungeonInfo(lib):
@@ -1069,7 +1084,7 @@ def decodeDungeonInfo(lib):
                 print '\t', book['tag']['title'].value
             continue
         for page in book['tag']['pages']:
-            items.update(cPickle.loads(str(page.value)))
+            items.update(cPickle.loads(str(decodeJSONtext(page.value))))
     return items
 
 
@@ -1109,7 +1124,7 @@ def decodeTHuntInfo(lib):
             print 'Strange book found in cache chest: %s' % (book['tag']['title'].value)
             continue
         for page in book['tag']['pages']:
-            items.update(cPickle.loads(str(page.value)))
+            items.update(cPickle.loads(str(decodeJSONtext(page.value))))
     return items
 
 

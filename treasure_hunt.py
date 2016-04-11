@@ -445,7 +445,7 @@ class TreasureHunt (Dungeon):
             cluebook_tag['author'] = nbt.TAG_String(self.owner)
             cluebook_tag['pages'] = nbt.TAG_List()
             for p in pages:
-                cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
+                cluebook_tag['pages'].append( nbt.TAG_String(encodeJSONtext(p)) )
             cluebook = nbt.TAG_Compound()
             cluebook['Count'] = nbt.TAG_Byte(1)
             cluebook['id'] = nbt.TAG_String('minecraft:written_book')
@@ -479,7 +479,7 @@ class TreasureHunt (Dungeon):
         cluebook_tag['author'] = nbt.TAG_String(self.owner)
         cluebook_tag['pages'] = nbt.TAG_List()
         for p in pages:
-            cluebook_tag['pages'].append( nbt.TAG_String('"%s"' % (p)) )
+            cluebook_tag['pages'].append( nbt.TAG_String(encodeJSONtext(p)) )
         cluebook = nbt.TAG_Compound()
         cluebook['Count'] = nbt.TAG_Byte(1)
         cluebook['id'] = nbt.TAG_String('minecraft:written_book')

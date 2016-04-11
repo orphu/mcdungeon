@@ -1543,7 +1543,7 @@ class SecretShop(SecretRoom):
             "Always Open!",
             "Goods bought and sold.",
         ])
-        page =  '{text:"'+headline+'",bold:true,extra:[{text:"\n\n'+shopname
+        page =  '{"text":"'+headline+'",bold:true,extra:[{"text":"\n\n'+shopname
         page += '\n\nFind me on the '+converttoordinal(max_lev)
         page += ' level!\n\n'+s.promotext+'",bold:false}]}'
         note = nbt.TAG_Compound()
@@ -1769,7 +1769,7 @@ class SecretArmory(SecretRoom):
             note['tag']['title'] = nbt.TAG_String("A torn page")
             note['tag']['author'] = nbt.TAG_String("Unknown")
             note['tag']['pages'] = nbt.TAG_List()
-            note['tag']['pages'].append(nbt.TAG_String('"%s"'%(words)))
+            note['tag']['pages'].append(nbt.TAG_String(encodeJSONtext(words)))
             max_lev = (self.c1.y // dungeon.room_height) + 1
             dungeon.addplaceditem(note, max_lev=max_lev)
 
