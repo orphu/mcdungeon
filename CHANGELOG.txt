@@ -2,7 +2,28 @@ v0.15.1 -
 
   !! NOTE: This version requires Minecraft 1.9.2 release or higher!
 
-  * Add books for the new 1.9 enchantments. (JiFish)
+  * Fixed several issues with maps and dungeons generated prior to
+    Minecraft 1.9. (orphu)
+
+  * Fixed tipped arrow stacking. (JiFish)
+
+  * Possible fix for dungeon maps and multiple worlds when using --dir.
+    (JiFish)
+
+  * Exit portals now use 1.9 gateways. (JiFish)
+
+  * Removed dependency on legacy Overviewer code (orphu)
+
+  * Removed handrail from TripleStairs (orphu)
+
+  * Projectile potion traps are now lingering. (JiFish)
+
+  * Added books for the new 1.9 enchantments. (JiFish)
+
+  * Added more 1.9 loot (JiFish)
+
+  * Added YAML exports of dungeon and thunt info. Look in the
+    mcdungeon_cache directory. (orphu)
 
 v0.15.0 - 03/28/2016
 
