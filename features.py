@@ -1543,9 +1543,19 @@ class SecretShop(SecretRoom):
             "Always Open!",
             "Goods bought and sold.",
         ])
-        page =  '{"text":"'+headline+'",bold:true,extra:[{"text":"\n\n'+shopname
-        page += '\n\nFind me on the '+converttoordinal(max_lev)
-        page += ' level!\n\n'+s.promotext+'",bold:false}]}'
+        page = encodeJSONtext(
+            {
+                "text": headline,
+                "bold": True,
+                "extra": [
+                    {
+                        "text": "\n\n" + shopname + "\n\nFind me on the " +
+                        converttoordinal(max_lev) + " level!\n\n" + s.promotext,
+                        "bold": False
+                    }
+                ]
+            }
+        )
         note = nbt.TAG_Compound()
         note['id'] = nbt.TAG_String(items.byName("written book").id)
         note['Damage'] = nbt.TAG_Short(0)

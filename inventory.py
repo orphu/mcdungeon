@@ -7,7 +7,7 @@ import cfg
 import mapstore
 import loottable
 import items
-from utils import topheavy_random, converttoordinal
+from utils import topheavy_random, converttoordinal, encodeJSONtext
 from pymclevel import nbt
 
 class new:
@@ -74,10 +74,7 @@ class new:
         # limits
         for p in bookdata[:50]:
             page = filter(lambda x: x in self.valid_characters, p)
-            page = self.ConvertEscapeChars(page)
-            # Escape quote charcaters
-            page = page.replace('"','\\"')
-            item['tag']["pages"].append(nbt.TAG_String('"%s"'%(page[:256])))
+            item['tag']["pages"].append(nbt.TAG_String(encodeJSONtext(page[:256])))
         # Give the book an edition
         ed = topheavy_random(0, 9)
         item['tag']['display'] = nbt.TAG_Compound()

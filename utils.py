@@ -1025,10 +1025,11 @@ def encodeTHuntInfo(thunt, version):
 
 
 def encodeJSONtext(string):
-    s = {
-        "text": string
-    }
-    return json.dumps(s)
+    if isinstance(string, str):
+        string = {
+            "text": string
+        }
+    return json.dumps(string)
 
 
 def decodeJSONtext(string):
