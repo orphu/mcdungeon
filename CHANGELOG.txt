@@ -18,6 +18,9 @@ v0.15.1 -
 
   * Projectile potion traps are now lingering. (JiFish)
 
+  * Lava floors are more likely to be traversable without needed to
+    build. (orphu)
+
   * Added books for the new 1.9 enchantments. (JiFish)
 
   * Added more 1.9 loot (JiFish)

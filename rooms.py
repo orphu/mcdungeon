@@ -2940,6 +2940,66 @@ class Pit(Blank):
             for x in self.floor_func(self.c1.trans(0, 1, 0),
                                      self.c3.trans(0, 1, 0)):
                 self.parent.setblock(x, materials.Lava)
+
+            # For lava floors, make little ledges at entrances to help ensure
+            # these can be traversed without building. 
+            b = set()
+            y = self.canvasHeight() + 1
+            for h in xrange(4):
+                if (self.halls[h].size > 0):
+                    for x in xrange(1, self.halls[h].size - 1):
+                        if h == 0:
+                            b.add (
+                                Vec(
+                                    self.halls[h].offset + x,
+                                    y,
+                                    self.hallLength[h]
+                                )
+                            )
+                        elif h == 1:
+                            b.add (
+                                Vec(
+                                    (self.parent.room_size - self.hallLength[h] - 1),
+                                    y,
+                                    self.halls[h].offset + x
+                                )
+                            )
+                        elif h == 2:
+                            b.add (
+                                Vec(
+                                    self.halls[h].offset + x,
+                                    y,
+                                    (self.parent.room_size - self.hallLength[h] - 1)
+                                )
+                            )
+                        elif h == 3:
+                            b.add (
+                                Vec(
+                                    self.hallLength[h],
+                                    y,
+                                    self.halls[h].offset + x
+                                )
+                            )
+            for x in b:
+                x += self.loc
+                self.parent.setblock(x.up(1), materials.CobblestoneSlab)
+                if (self.parent.getblock(x.trans(1, 0, 0)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(1, 0, 0),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(-1, 0, 0)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(-1, 0, 0),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(0, 0, 1)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(0, 0, 1),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(0, 0, -1)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(0, 0, -1),
+                                         materials.meta_mossycobble)
+
             r = random.randint(1, 1000)
             for x in self.floor_func(self.c1.trans(0, 1, 0),
                                      self.c3.trans(0, 1, 0)):
@@ -2964,6 +3024,7 @@ class Pit(Blank):
                                              materials.meta_mossycobble)
                 if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
+
         # Ceiling
         for x in self.ceil_func(self.c1.up(4), self.c3.up(4)):
             self.parent.setblock(x, materials._ceiling)
@@ -3186,6 +3247,66 @@ class PitBottom(Blank):
             for x in self.floor_func(self.c1.trans(0, 1, 0),
                                      self.c3.trans(0, 1, 0)):
                 self.parent.setblock(x, materials.Lava)
+
+            # For lava floors, make little ledges at entrances to help ensure
+            # these can be traversed without building. 
+            b = set()
+            y = self.canvasHeight() + 1
+            for h in xrange(4):
+                if (self.halls[h].size > 0):
+                    for x in xrange(1, self.halls[h].size - 1):
+                        if h == 0:
+                            b.add (
+                                Vec(
+                                    self.halls[h].offset + x,
+                                    y,
+                                    self.hallLength[h]
+                                )
+                            )
+                        elif h == 1:
+                            b.add (
+                                Vec(
+                                    (self.parent.room_size - self.hallLength[h] - 1),
+                                    y,
+                                    self.halls[h].offset + x
+                                )
+                            )
+                        elif h == 2:
+                            b.add (
+                                Vec(
+                                    self.halls[h].offset + x,
+                                    y,
+                                    (self.parent.room_size - self.hallLength[h] - 1)
+                                )
+                            )
+                        elif h == 3:
+                            b.add (
+                                Vec(
+                                    self.hallLength[h],
+                                    y,
+                                    self.halls[h].offset + x
+                                )
+                            )
+            for x in b:
+                x += self.loc
+                self.parent.setblock(x.up(1), materials.CobblestoneSlab)
+                if (self.parent.getblock(x.trans(1, 0, 0)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(1, 0, 0),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(-1, 0, 0)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(-1, 0, 0),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(0, 0, 1)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(0, 0, 1),
+                                         materials.meta_mossycobble)
+                if (self.parent.getblock(x.trans(0, 0, -1)) is
+                        materials.Lava):
+                    self.parent.setblock(x.trans(0, 0, -1),
+                                         materials.meta_mossycobble)
+
             r = random.randint(1, 1000)
             for x in self.floor_func(self.c1.trans(0, 1, 0),
                                      self.c3.trans(0, 1, 0)):
@@ -3210,6 +3331,7 @@ class PitBottom(Blank):
                                              materials.meta_mossycobble)
                 if (n < 0.2):
                     self.parent.setblock(x, materials.Air)
+
         # Cactus (spike trap)
         elif (self.floor == 'cactus'):
             for x in self.floor_func(self.c1.trans(0, 0, 0),
