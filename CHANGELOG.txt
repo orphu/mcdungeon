@@ -10,6 +10,9 @@ v0.15.1 -
   * Possible fix for dungeon maps and multiple worlds when using --dir.
     (JiFish)
 
+  * Avoid placing dungeons and treasure hunts on chunks that are not
+    completely generated. (orphu)
+
   * Exit portals now use 1.9 gateways. (JiFish)
 
   * Removed dependency on legacy Overviewer code (orphu)

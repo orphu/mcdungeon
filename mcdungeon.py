@@ -1507,7 +1507,7 @@ if (cfg.offset is None or cfg.offset is ''):
     chunk_stats = [
         ['          Far Chunks', 0],
         ['         Near Chunks', 0],
-        ['         Unpopulated', 0],
+        ['          Incomplete', 0],
         ['              Oceans', 0],
         ['          Structures', 0],
         ['         High Chunks', 0],
@@ -1563,6 +1563,13 @@ if (cfg.offset is None or cfg.offset is ''):
             # Load the chunk
             chunk = world.getChunk(cx, cz)
             while chunk_cache[key][0] is None:
+                # Incomplete chunk
+                if (
+                    chunk.root_tag['Level']['LightPopulated'].value == 0 or
+                    chunk.root_tag['Level']['TerrainPopulated'].value == 0
+                ):
+                    chunk_cache[key][0] = 'I'
+                    continue
                 # Biomes
                 biomes = chunk.Biomes.flatten()
                 # Exclude chunks that are 20% river.
@@ -1616,7 +1623,7 @@ if (cfg.offset is None or cfg.offset is ''):
                 chunk_cache[key][2] = min_depth
                 chunk_cache[key][0] = 'G'
         # Classify chunks
-        if chunk_cache[key][0] == 'U':
+        if chunk_cache[key][0] == 'I':
             chunk_stats[2][1] += 1
         elif chunk_cache[key][0] == 'O':
             chunk_stats[3][1] += 1
@@ -1677,7 +1684,7 @@ if (cfg.offset is None or cfg.offset is ''):
             for cx in xrange(chunk_min[0], chunk_max[0] + 1):
                 key = '%s,%s' % (cx, cz)
                 if key in chunk_cache:
-                    if chunk_cache[key][0] == 'U':
+                    if chunk_cache[key][0] == 'I':
                         sys.stdout.write(materials.RED)
                     if chunk_cache[key][0] == 'O':
                         sys.stdout.write(materials.BLUE)
