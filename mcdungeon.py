@@ -1684,29 +1684,30 @@ if (cfg.offset is None or cfg.offset is ''):
         for future in cf.as_completed(chunk_scans):
             (hit, cx, cz, result, biome, depth) = future.result()
 
+            # Chunk map stuff
+            if args.debug:
+                if chunk_min is None:
+                    chunk_min = (cx, cz)
+                else:
+                    chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
+                if chunk_max is None:
+                    chunk_max = (cx, cz)
+                else:
+                    chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
+
+            # Log the hit.
             if hit:
                 cached += 1
             else:
                 notcached += 1
 
-            # Chunk map stuff
-            if chunk_min is None:
-                chunk_min = (cx, cz)
-            else:
-                chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
-            if chunk_max is None:
-                chunk_max = (cx, cz)
-            else:
-                chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
-
-            key = '%s,%s' % (cx, cz)
-
             # Classify chunks
+            key = '%s,%s' % (cx, cz)
             if result == 'F':
                 chunk_stats[0][1] += 1
-            if result == 'N':
+            elif result == 'N':
                 chunk_stats[1][1] += 1
-            if result == 'I':
+            elif result == 'I':
                 chunk_stats[2][1] += 1
                 chunk_cache[key] = [result, biome, depth]
             elif result == 'O':
@@ -1729,11 +1730,14 @@ if (cfg.offset is None or cfg.offset is ''):
                 chunk_cache[key] = [result, biome, depth]
                 good_chunks[(cx, cz)] = chunk_cache[key][2]
 
+            # Update progress.
             cc += 1
-
             if notcached % 200 == 0:
-                utils.saveChunkCache(cache_path, chunk_cache)
                 pm.update(cc)
+
+            # Save progress occasionally. 
+            if notcached % 10000 == 0:
+                utils.saveChunkCache(cache_path, chunk_cache)
 
     utils.saveChunkCache(cache_path, chunk_cache)
     pm.set_complete()
