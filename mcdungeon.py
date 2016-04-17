@@ -1732,7 +1732,7 @@ if (cfg.offset is None or cfg.offset is ''):
 
             # Update progress.
             cc += 1
-            if notcached % 200 == 0:
+            if cc % 200 == 0:
                 pm.update(cc)
 
             # Save progress occasionally. 
