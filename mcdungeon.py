@@ -588,44 +588,42 @@ def classifyChunk(c):
     return False, cx, cz, 'G', biome_type, min_depth
 
 
-def checkDInfo(c, mtime, dungeonCacheOld, tHuntCacheOld):
+def checkDInfo(c):
     cx = c[0]
     cz = c[1]
     key = '%s,%s' % (cx * 16, cz * 16)
-    cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
-    if (cmtime >= mtime or key in dungeonCacheOld or key in tHuntCacheOld):
-        for tileEntity in world.getChunk(cx, cz).TileEntities:
-            if (
-                tileEntity['id'].value == 'Sign' and
-                '[MCD]' in tileEntity['Text1'].value
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'dungeon', tileEntity
-            if (
-                tileEntity['id'].value == 'Chest' and
-                'CustomName' in tileEntity and
-                tileEntity['CustomName'].value == 'MCDungeon Data Library'
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'dungeon', tileEntity
-            if (
-                tileEntity['id'].value == 'Chest' and
-                'CustomName' in tileEntity and
-                tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'thunt', tileEntity
+    for tileEntity in world.getChunk(cx, cz).TileEntities:
+        if (
+            tileEntity['id'].value == 'Sign' and
+            '[MCD]' in tileEntity['Text1'].value
+        ):
+            key = '%s,%s' % (
+                tileEntity["x"].value,
+                tileEntity["z"].value
+            )
+            return key, 'dungeon', tileEntity
+        if (
+            tileEntity['id'].value == 'Chest' and
+            'CustomName' in tileEntity and
+            tileEntity['CustomName'].value == 'MCDungeon Data Library'
+        ):
+            key = '%s,%s' % (
+                tileEntity["x"].value,
+                tileEntity["z"].value
+            )
+            return key, 'dungeon', tileEntity
+        if (
+            tileEntity['id'].value == 'Chest' and
+            'CustomName' in tileEntity and
+            tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
+        ):
+            key = '%s,%s' % (
+                tileEntity["x"].value,
+                tileEntity["z"].value
+            )
+            return key, 'thunt', tileEntity
 
-    return True, key, None, None
+    return key, None, None
 
 
 def loadCaches(world, expand_fill_caves=False, genpoi=False):
@@ -645,23 +643,34 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
     tHuntCache = {}
 
     count = world.chunkCount
-    cached = 0
-    notcached = 0
 
     if genpoi is False:
         print 'Scanning world for existing dungeons and treasure hunts:'
-        print 'cache mtime: %d' % (mtime)
-        pm.init(count, label='')
+        pm.init(count, label='Pass 1')
+
+    chunks = set()
+    for c in world.allChunks:
+        cx = c[0]
+        cz = c[1]
+        key = '%s,%s' % (cx * 16, cz * 16)
+        cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
+        if (cmtime > mtime or key in dungeonCacheOld or key in tHuntCacheOld):
+            chunks.add(c)
+        count -= 1
+        if genpoi is False and count%200 == 0:
+            pm.update_left(count)
+
+    count = world.chunkCount
+    if genpoi is False:
+        pm.set_complete()
+        pm.init(count, label='Pass 2')
 
     with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
-        chunk_scans = {executor.submit(checkDInfo, c, mtime, dungeonCacheOld, tHuntCacheOld): c for c in world.allChunks}
+        chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
         for future in cf.as_completed(chunk_scans):
-            (hit, key, d_type, entity) = future.result()
+            (key, d_type, entity) = future.result()
 
-            if hit:
-                cached += 1
-            else:
-                notcached += 1
+            if entity:
                 if d_type == 'dungeon':
                     dungeonCache[key] = entity
                 else:
@@ -673,8 +682,6 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
 
     if genpoi is False:
         pm.set_complete()
-        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
-                                             100 * cached / world.chunkCount)
 
     # Save the caches
     utils.saveDungeonCache(cache_path, dungeonCache)
