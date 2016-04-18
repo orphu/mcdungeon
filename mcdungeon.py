@@ -119,7 +119,7 @@ parser_inter.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # AddTH subcommand parser
@@ -187,7 +187,7 @@ parser_addth.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # Add subcommand parser
@@ -288,7 +288,7 @@ parser_add.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # List subcommand parser
@@ -303,7 +303,7 @@ parser_list.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # GenPOI subcommand parser
@@ -322,7 +322,7 @@ parser_genpoi.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # GenRegions subcommand parser
@@ -343,7 +343,7 @@ parser_genreg.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # Delete subcommand parser
@@ -376,7 +376,7 @@ parser_del.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 # Regnerate subcommand parser
@@ -440,7 +440,7 @@ parser_regen.add_argument('--procs',
                           type=int,
                           metavar='PROCESSES',
                           help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
+                          worker pool. Defaults to the number of reported \
                           cores on your machine.')
 
 
