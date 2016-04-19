@@ -3,7 +3,6 @@
 import sys
 import os
 import argparse
-import concurrent.futures as cf
 import logging
 import re
 import time
@@ -449,129 +448,6 @@ def loadWorld(world_name):
     return world
 
 
-def classifyChunk(c):
-    cx = c[0]
-    cz = c[1]
-    key = '%s,%s' % (cx, cz)
-    if args.spawn is not None:
-        sx = args.spawn[0] >> 4
-        sz = args.spawn[1] >> 4
-    else:
-        sx = world.playerSpawnPosition()[0] >> 4
-        sz = world.playerSpawnPosition()[2] >> 4
-    # Far chunk
-    if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) > cfg.max_dist):
-        return False, cx, cz, 'F', None, 0
-    # Near chunk
-    if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) < cfg.min_dist):
-        return False, cx, cz, 'N', None, 0
-
-    if (
-        world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz) < chunk_mtime and
-        key in chunk_cache
-    ):
-        return True, cx, cz, chunk_cache[key][0], chunk_cache[key][1], chunk_cache[key][2]
-
-    # Load the chunk
-    chunk = world.getChunk(cx, cz)
-
-    # Incomplete chunk
-    if (
-        chunk.root_tag['Level']['LightPopulated'].value == 0 or
-        chunk.root_tag['Level']['TerrainPopulated'].value == 0
-    ):
-        return False, cx, cz, 'I', None, 0
-
-    # Biomes
-    biomes = chunk.Biomes.flatten()
-    biome_type = numpy.argmax(numpy.bincount(biomes))
-
-    # Exclude chunks that are 20% river.
-    for river_biome in cfg.river_biomes:
-        if (biomes == river_biome).sum() > 50:
-            return False, cx, cz, 'R', river_biome, 0
-
-    # Exclude Oceans
-    if biome_type in cfg.ocean_biomes:
-        return False, cx, cz, 'O', biome_type, 0
-
-    # Structures
-    if (len(cfg.structure_values) > 0):
-        mats = cfg.structure_values
-        t = False
-        i = 0
-        while (t == False and i < len(mats)):
-            x = (chunk.Blocks[:] == mats[i])
-            t = x.any()
-            i += 1
-        if t:
-            return False, cx, cz, 'S', biome_type, 0
-
-    # Depths
-    min_depth = world.Height
-    max_depth = 0
-    for x in xrange(16):
-        for z in xrange(16):
-            y = chunk.HeightMap[x, z] - 1
-            while (y > 0 and
-                   chunk.Blocks[x, z, y] not in
-                   materials.heightmap_solids):
-                y = y - 1
-            min_depth = min(y, min_depth)
-            max_depth = max(y, max_depth)
-
-    # Surface too close to the max height
-    if max_depth > world.Height - 27:
-        return False, cx, cz, 'H', biome_type, min_depth
-
-    # Surface too close to the bottom of the world
-    if min_depth < 12:
-        return False, cx, cz, 'L', biome_type, min_depth
-
-    # Chunk is good
-    return False, cx, cz, 'G', biome_type, min_depth
-
-
-def checkDInfo(c, mtime, dungeonCacheOld, tHuntCacheOld):
-    cx = c[0]
-    cz = c[1]
-    key = '%s,%s' % (cx * 16, cz * 16)
-    cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
-    if (cmtime >= mtime or key in dungeonCacheOld or key in tHuntCacheOld):
-        for tileEntity in world.getChunk(cx, cz).TileEntities:
-            if (
-                tileEntity['id'].value == 'Sign' and
-                '[MCD]' in tileEntity['Text1'].value
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'dungeon', tileEntity
-            if (
-                tileEntity['id'].value == 'Chest' and
-                'CustomName' in tileEntity and
-                tileEntity['CustomName'].value == 'MCDungeon Data Library'
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'dungeon', tileEntity
-            if (
-                tileEntity['id'].value == 'Chest' and
-                'CustomName' in tileEntity and
-                tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
-            ):
-                key = '%s,%s' % (
-                    tileEntity["x"].value,
-                    tileEntity["z"].value
-                )
-                return False, key, 'thunt', tileEntity
-
-    return True, key, None, None
-
-
 def loadCaches(world, expand_fill_caves=False, genpoi=False):
     '''Scan a world for dungeons and treasure hunts. Try to cache
     the results and only look at chunks that have changed since the
@@ -596,25 +472,47 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
         print 'Scanning world for existing dungeons and treasure hunts:'
         print 'cache mtime: %d' % (mtime)
         pm.init(count, label='')
-
-    with cf.ProcessPoolExecutor() as executor:
-        chunk_scans = {executor.submit(checkDInfo, c, mtime, dungeonCacheOld, tHuntCacheOld): c for c in world.allChunks}
-        for future in cf.as_completed(chunk_scans):
-            (hit, key, d_type, entity) = future.result()
-
-            if hit:
-                cached += 1
-            else:
-                notcached += 1
-                if d_type == 'dungeon':
-                    dungeonCache[key] = entity
-                else:
-                    tHuntCache[key] = entity
-
-            count -= 1
-            if genpoi is False and count%200 == 0:
-                pm.update_left(count)
-
+    for cx, cz, in world.allChunks:
+        cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
+        count -= 1
+        if genpoi is False:
+            pm.update_left(count)
+        key = '%s,%s' % (cx * 16, cz * 16)
+        if (cmtime > mtime or key in dungeonCacheOld or key in tHuntCacheOld):
+            notcached += 1
+            for tileEntity in world.getChunk(cx, cz).TileEntities:
+                if (
+                    tileEntity['id'].value == 'Sign' and
+                    '[MCD]' in tileEntity['Text1'].value
+                ):
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
+                    dungeonCache[key] = tileEntity
+                if (
+                    tileEntity['id'].value == 'Chest' and
+                    'CustomName' in tileEntity and
+                    tileEntity['CustomName'].value == 'MCDungeon Data Library'
+                ):
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
+                    dungeonCache[key] = tileEntity
+                if (
+                    tileEntity['id'].value == 'Chest' and
+                    'CustomName' in tileEntity and
+                    tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
+                ):
+                    key = '%s,%s' % (
+                        tileEntity["x"].value,
+                        tileEntity["z"].value
+                    )
+                    tHuntCache[key] = tileEntity
+        else:
+            cached += 1
+            continue
     if genpoi is False:
         pm.set_complete()
         print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
@@ -1622,64 +1520,124 @@ if (cfg.offset is None or cfg.offset is ''):
     cc = 0
     chunk_min = None
     chunk_max = None
+    for cx, cz in world.allChunks:
+        cc += 1
+        pm.update(cc)
+        # Flush the cache periodically.
+        if notcached % 200 == 0:
+            utils.saveChunkCache(cache_path, chunk_cache)
 
-    with cf.ProcessPoolExecutor() as executor:
-        chunk_scans = {executor.submit(classifyChunk, c): c for c in world.allChunks}
-        for future in cf.as_completed(chunk_scans):
-            (hit, cx, cz, result, biome, depth) = future.result()
+        if args.spawn is not None:
+            sx = args.spawn[0] >> 4
+            sz = args.spawn[1] >> 4
+        else:
+            sx = world.playerSpawnPosition()[0] >> 4
+            sz = world.playerSpawnPosition()[2] >> 4
+        # Far chunk
+        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) > cfg.max_dist):
+            chunk_stats[0][1] += 1
+            continue
+        # Near chunk
+        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) < cfg.min_dist):
+            chunk_stats[1][1] += 1
+            continue
+        # Chunk map stuff
+        if chunk_min is None:
+            chunk_min = (cx, cz)
+        else:
+            chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
+        if chunk_max is None:
+            chunk_max = (cx, cz)
+        else:
+            chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
+        # Check mtime on the chunk to avoid loading the whole thing
+        key = '%s,%s' % (cx, cz)
+        if (
+            world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz) < chunk_mtime and
+            key in chunk_cache
+        ):
+            cached += 1
+        else:
+            notcached += 1
+            chunk_cache[key] = [None, -1, 0]
+            # Load the chunk
+            chunk = world.getChunk(cx, cz)
+            while chunk_cache[key][0] is None:
+                # Incomplete chunk
+                if (
+                    chunk.root_tag['Level']['LightPopulated'].value == 0 or
+                    chunk.root_tag['Level']['TerrainPopulated'].value == 0
+                ):
+                    chunk_cache[key][0] = 'I'
+                    continue
+                # Biomes
+                biomes = chunk.Biomes.flatten()
+                # Exclude chunks that are 20% river.
+                river = -1
+                for river_biome in cfg.river_biomes:
+                    if (biomes == river_biome).sum() > 50:
+                        river = river_biome
+                if river > -1:
+                    chunk_cache[key][0] = 'R'
+                    chunk_cache[key][1] = river
+                    continue
+                chunk_cache[key][1] = numpy.argmax(numpy.bincount(biomes))
+                # Exclude Oceans
+                if chunk_cache[key][1] in cfg.ocean_biomes:
+                    chunk_cache[key][0] = 'O'
+                    continue
 
-            if hit:
-                cached += 1
-            else:
-                notcached += 1
+                # Structures
+                if (len(cfg.structure_values) > 0):
+                    mats = cfg.structure_values
+                    t = False
+                    i = 0
+                    while (t == False and i < len(mats)):
+                        x = (chunk.Blocks[:] == mats[i])
+                        t = x.any()
+                        i += 1
+                    if t:
+                        chunk_cache[key][0] = 'S'
+                        continue
 
-            # Chunk map stuff
-            if chunk_min is None:
-                chunk_min = (cx, cz)
-            else:
-                chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
-            if chunk_max is None:
-                chunk_max = (cx, cz)
-            else:
-                chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
-
-            key = '%s,%s' % (cx, cz)
-
-            # Classify chunks
-            if result == 'F':
-                chunk_stats[0][1] += 1
-            if result == 'N':
-                chunk_stats[1][1] += 1
-            if result == 'I':
-                chunk_stats[2][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            elif result == 'O':
-                chunk_stats[3][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            elif result == 'S':
-                chunk_stats[4][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            elif result == 'H':
-                chunk_stats[5][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            elif result == 'L':
-                chunk_stats[6][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            elif result == 'R':
-                chunk_stats[7][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-            else:
-                chunk_stats[8][1] += 1
-                chunk_cache[key] = [result, biome, depth]
-                good_chunks[(cx, cz)] = chunk_cache[key][2]
-
-            cc += 1
-
-            if notcached % 200 == 0:
-                utils.saveChunkCache(cache_path, chunk_cache)
-                pm.update(cc)
-
-    utils.saveChunkCache(cache_path, chunk_cache)
+                # Depths
+                min_depth = world.Height
+                max_depth = 0
+                for x in xrange(16):
+                    for z in xrange(16):
+                        y = chunk.HeightMap[x, z] - 1
+                        while (y > 0 and
+                               chunk.Blocks[x, z, y] not in
+                               materials.heightmap_solids):
+                            y = y - 1
+                        min_depth = min(y, min_depth)
+                        max_depth = max(y, max_depth)
+                # Surface too close to the max height
+                if max_depth > world.Height - 27:
+                    chunk_cache[key][0] = 'H'
+                    continue
+                # Surface too close to the bottom of the world
+                if min_depth < 12:
+                    chunk_cache[key][0] = 'L'
+                    continue
+                chunk_cache[key][2] = min_depth
+                chunk_cache[key][0] = 'G'
+        # Classify chunks
+        if chunk_cache[key][0] == 'I':
+            chunk_stats[2][1] += 1
+        elif chunk_cache[key][0] == 'O':
+            chunk_stats[3][1] += 1
+        elif chunk_cache[key][0] == 'S':
+            chunk_stats[4][1] += 1
+        elif chunk_cache[key][0] == 'H':
+            chunk_stats[5][1] += 1
+        elif chunk_cache[key][0] == 'L':
+            chunk_stats[6][1] += 1
+        elif chunk_cache[key][0] == 'R':
+            chunk_stats[7][1] += 1
+        else:
+            chunk_stats[8][1] += 1
+            good_chunks[(cx, cz)] = chunk_cache[key][2]
     pm.set_complete()
 
     # Load caches
@@ -1754,6 +1712,7 @@ if (cfg.offset is None or cfg.offset is ''):
         print '   %s: %d' % (stat[0], stat[1])
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached + cached,
                                              100 * cached / (notcached + cached))
+
 
 # Load the dungeon cache for updates later.
 dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
