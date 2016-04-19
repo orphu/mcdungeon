@@ -114,13 +114,6 @@ parser_inter.add_argument('--regionfile',
                         help='Give the location for the regions.yml output path.\
                         This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
                         Make sure you take a backup of this file first!')
-parser_inter.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # AddTH subcommand parser
 parser_addth = subparsers.add_parser('addth', help='Add new treasure hunts.')
@@ -182,13 +175,6 @@ parser_addth.add_argument('--mapstore',
                         dest='mapstore',
                         metavar='PATH',
                         help='Provide an alternate world to store maps.')
-parser_addth.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # Add subcommand parser
 parser_add = subparsers.add_parser('add', help='Add new dungeons.')
@@ -283,13 +269,6 @@ parser_add.add_argument('--mapstore',
                         dest='mapstore',
                         metavar='PATH',
                         help='Provide an alternate world to store maps.')
-parser_add.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # List subcommand parser
 parser_list = subparsers.add_parser('list',
@@ -298,13 +277,6 @@ parser_list.set_defaults(command='list')
 parser_list.add_argument('world',
                         metavar='SAVEDIR',
                         help='Target world (path to save directory)')
-parser_list.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # GenPOI subcommand parser
 parser_genpoi = subparsers.add_parser('genpoi',
@@ -317,13 +289,6 @@ parser_genpoi.add_argument('--outputdir',
                         dest='outputdir',
                         metavar='PATH',
                         help='Give the location for the OverViewer output path.')
-parser_genpoi.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # GenRegions subcommand parser
 parser_genreg = subparsers.add_parser('genregions',
@@ -338,13 +303,6 @@ parser_genreg.add_argument('--regionfile',
                         help='Give the location for the regions.yml output path.\
                         This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
                         Make sure you take a backup of this file first!')
-parser_genreg.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # Delete subcommand parser
 parser_del = subparsers.add_parser('delete',
@@ -371,13 +329,6 @@ parser_del.add_argument('--mapstore',
                         dest='mapstore',
                         metavar='PATH',
                         help='Provide an alternate world to store maps.')
-parser_del.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 # Regnerate subcommand parser
 parser_regen = subparsers.add_parser('regenerate',
@@ -435,13 +386,6 @@ parser_regen.add_argument('-a', '--all',
                           dest='all',
                           action='store_true',
                           help='Regenerate all known dungeons. Overrides -d.')
-parser_regen.add_argument('--procs',
-                          dest='procs',
-                          type=int,
-                          metavar='PROCESSES',
-                          help='Number of child processes to use for the \
-                          worker pool. Defaults to the number of availble \
-                          cores on your machine.')
 
 
 # Parse the args
@@ -653,7 +597,7 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
         print 'cache mtime: %d' % (mtime)
         pm.init(count, label='')
 
-    with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
+    with cf.ProcessPoolExecutor() as executor:
         chunk_scans = {executor.submit(checkDInfo, c, mtime, dungeonCacheOld, tHuntCacheOld): c for c in world.allChunks}
         for future in cf.as_completed(chunk_scans):
             (hit, key, d_type, entity) = future.result()
@@ -1679,7 +1623,7 @@ if (cfg.offset is None or cfg.offset is ''):
     chunk_min = None
     chunk_max = None
 
-    with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
+    with cf.ProcessPoolExecutor() as executor:
         chunk_scans = {executor.submit(classifyChunk, c): c for c in world.allChunks}
         for future in cf.as_completed(chunk_scans):
             (hit, cx, cz, result, biome, depth) = future.result()
