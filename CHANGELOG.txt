@@ -31,10 +31,6 @@ v0.15.1 -
   * Added YAML exports of dungeon and thunt info. Look in the
     mcdungeon_cache directory. (orphu)
 
-  * Chunk scanning now takes advantage of multi-core processors.
-    The defaults to the number of processors reported by your OS.
-    See --procs for info on tuning this down. (orphu)
-
 v0.15.0 - 03/28/2016
 
   !! NOTE: This version requires Minecraft 1.9.2 release or higher!
