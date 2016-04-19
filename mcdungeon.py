@@ -508,6 +508,25 @@ def loadWorld(world_name):
 def classifyChunk(c):
     cx = c[0]
     cz = c[1]
+    key = '%s,%s' % (cx, cz)
+    if args.spawn is not None:
+        sx = args.spawn[0] >> 4
+        sz = args.spawn[1] >> 4
+    else:
+        sx = world.playerSpawnPosition()[0] >> 4
+        sz = world.playerSpawnPosition()[2] >> 4
+    # Far chunk
+    if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) > cfg.max_dist):
+        return False, cx, cz, 'F', None, 0
+    # Near chunk
+    if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) < cfg.min_dist):
+        return False, cx, cz, 'N', None, 0
+
+    if (
+        world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz) < chunk_mtime and
+        key in chunk_cache
+    ):
+        return True, cx, cz, chunk_cache[key][0], chunk_cache[key][1], chunk_cache[key][2]
 
     # Load the chunk
     chunk = world.getChunk(cx, cz)
@@ -517,7 +536,7 @@ def classifyChunk(c):
         chunk.root_tag['Level']['LightPopulated'].value == 0 or
         chunk.root_tag['Level']['TerrainPopulated'].value == 0
     ):
-        return cx, cz, 'I', None, 0
+        return False, cx, cz, 'I', None, 0
 
     # Biomes
     biomes = chunk.Biomes.flatten()
@@ -526,11 +545,11 @@ def classifyChunk(c):
     # Exclude chunks that are 20% river.
     for river_biome in cfg.river_biomes:
         if (biomes == river_biome).sum() > 50:
-            return cx, cz, 'R', river_biome, 0
+            return False, cx, cz, 'R', river_biome, 0
 
     # Exclude Oceans
     if biome_type in cfg.ocean_biomes:
-        return cx, cz, 'O', biome_type, 0
+        return False, cx, cz, 'O', biome_type, 0
 
     # Structures
     if (len(cfg.structure_values) > 0):
@@ -542,7 +561,7 @@ def classifyChunk(c):
             t = x.any()
             i += 1
         if t:
-            return cx, cz, 'S', biome_type, 0
+            return False, cx, cz, 'S', biome_type, 0
 
     # Depths
     min_depth = world.Height
@@ -559,14 +578,14 @@ def classifyChunk(c):
 
     # Surface too close to the max height
     if max_depth > world.Height - 27:
-        return cx, cz, 'H', biome_type, min_depth
+        return False, cx, cz, 'H', biome_type, min_depth
 
     # Surface too close to the bottom of the world
     if min_depth < 12:
-        return cx, cz, 'L', biome_type, min_depth
+        return False, cx, cz, 'L', biome_type, min_depth
 
     # Chunk is good
-    return cx, cz, 'G', biome_type, min_depth
+    return False, cx, cz, 'G', biome_type, min_depth
 
 
 def checkDInfo(c):
@@ -627,7 +646,7 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
 
     if genpoi is False:
         print 'Scanning world for existing dungeons and treasure hunts:'
-        pm.init(count, label='Pass 1:')
+        pm.init(count, label='Pass 1')
 
     chunks = set()
     for c in world.allChunks:
@@ -644,7 +663,7 @@ def loadCaches(world, expand_fill_caves=False, genpoi=False):
     count = world.chunkCount
     if genpoi is False:
         pm.set_complete()
-        pm.init(count, label='Pass 2:')
+        pm.init(count, label='Pass 2')
 
     with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
         chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
@@ -1650,98 +1669,27 @@ if (cfg.offset is None or cfg.offset is ''):
     notcached = 1
 
     # Store some stats
-    chunk_stats = {
-        'F': {
-            'name': '          Far Chunks',
-            'count': 0,
-            'order': 1,
-        },
-        'N': {
-            'name': '         Near Chunks',
-            'count': 0,
-            'order': 2,
-        },
-        'I': {
-            'name': '          Incomplete',
-            'count': 0,
-            'order': 3,
-        },
-        'O': {
-            'name': '              Oceans',
-            'count': 0,
-            'order': 4,
-        },
-        'S': {
-            'name': '          Structures',
-            'count': 0,
-            'order': 5,
-        },
-        'H': {
-            'name': '         High Chunks',
-            'count': 0,
-            'order': 6,
-        },
-        'L': {
-            'name': '          Low Chunks',
-            'count': 0,
-            'order': 7,
-        },
-        'R': {
-            'name': '              Rivers',
-            'count': 0,
-            'order': 8,
-        },
-        'G': {
-            'name': '         Good Chunks',
-            'count': 0,
-            'order': 9,
-        },
-    }
-
-    # Preprocess chunks
-    print 'Finding good chunks:'
+    chunk_stats = [
+        ['          Far Chunks', 0],
+        ['         Near Chunks', 0],
+        ['          Incomplete', 0],
+        ['              Oceans', 0],
+        ['          Structures', 0],
+        ['         High Chunks', 0],
+        ['          Low Chunks', 0],
+        ['              Rivers', 0],
+        ['         Good Chunks', 0]
+    ]
     pm = pmeter.ProgressMeter()
-    pm.init(world.chunkCount, label='Pass 1:')
-    cc = 0
-    chunks = set()
-    if args.spawn is not None:
-        sx = args.spawn[0] >> 4
-        sz = args.spawn[1] >> 4
-    else:
-        sx = world.playerSpawnPosition()[0] >> 4
-        sz = world.playerSpawnPosition()[2] >> 4
-    for c in world.allChunks:
-        cx = c[0]
-        cz = c[1]
-        key = '%s,%s' % (cx, cz)
-        # Far chunk
-        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) > cfg.max_dist):
-            chunk_stats['F']['count'] += 1
-            continue
-        # Near chunk
-        if (numpy.sqrt((cx - sx) * (cx - sx) + (cz - sz) * (cz - sz)) < cfg.min_dist):
-            chunk_stats['N']['count'] += 1
-            continue
-        if (
-            world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz) < chunk_mtime and
-            key in chunk_cache
-        ):
-            chunk_stats[chunk_cache[key][0]]['count'] += 1
-            cached += 1
-            continue
-        chunks.add(c)
-    pm.set_complete()
-
-    pm = pmeter.ProgressMeter()
-    pm.init(world.chunkCount, label='Pass 2:')
+    pm.init(world.chunkCount, label='Finding good chunks:')
     cc = 0
     chunk_min = None
     chunk_max = None
 
     with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
-        chunk_scans = {executor.submit(classifyChunk, c): c for c in chunks}
+        chunk_scans = {executor.submit(classifyChunk, c): c for c in world.allChunks}
         for future in cf.as_completed(chunk_scans):
-            (cx, cz, result, biome, depth) = future.result()
+            (hit, cx, cz, result, biome, depth) = future.result()
 
             # Chunk map stuff
             if args.debug:
@@ -1754,13 +1702,39 @@ if (cfg.offset is None or cfg.offset is ''):
                 else:
                     chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
 
-            # Classify chunks
-            notcached += 1
-            key = '%s,%s' % (cx, cz)
-            chunk_stats[result]['count'] += 1
-            chunk_cache[key] = [result, biome, depth]
+            # Log the hit.
+            if hit:
+                cached += 1
+            else:
+                notcached += 1
 
-            if result == 'G':
+            # Classify chunks
+            key = '%s,%s' % (cx, cz)
+            if result == 'F':
+                chunk_stats[0][1] += 1
+            elif result == 'N':
+                chunk_stats[1][1] += 1
+            elif result == 'I':
+                chunk_stats[2][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            elif result == 'O':
+                chunk_stats[3][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            elif result == 'S':
+                chunk_stats[4][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            elif result == 'H':
+                chunk_stats[5][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            elif result == 'L':
+                chunk_stats[6][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            elif result == 'R':
+                chunk_stats[7][1] += 1
+                chunk_cache[key] = [result, biome, depth]
+            else:
+                chunk_stats[8][1] += 1
+                chunk_cache[key] = [result, biome, depth]
                 good_chunks[(cx, cz)] = chunk_cache[key][2]
 
             # Update progress.
@@ -1789,8 +1763,8 @@ if (cfg.offset is None or cfg.offset is ''):
                     del(good_chunks[(p[0] + x, p[1] + z)])
                     key = '%s,%s' % (p[0] + x, p[1] + z)
                     chunk_cache[key] = ['S', -1, 0]
-                    chunk_stats['S']['count'] += 1
-                    chunk_stats['G']['count'] -= 1
+                    chunk_stats[4][1] += 1
+                    chunk_stats[8][1] -= 1
 
     # Find old hunts
     for t in old_thunts:
@@ -1801,8 +1775,8 @@ if (cfg.offset is None or cfg.offset is ''):
             del(good_chunks[(p[0], p[1])])
             key = '%s,%s' % (p[0], p[1])
             chunk_cache[key] = ['S', -1, 0]
-            chunk_stats['S']['count'] += 1
-            chunk_stats['G']['count'] -= 1
+            chunk_stats[4][1] += 1
+            chunk_stats[8][1] -= 1
         for l in t[4]['landmarks']:
             cx = l.x >> 4
             cz = l.z >> 4
@@ -1810,8 +1784,8 @@ if (cfg.offset is None or cfg.offset is ''):
                 del(good_chunks[(cx, cz)])
                 key = '%s,%s' % (cx, cz)
                 chunk_cache[key] = ['S', -1, 0]
-                chunk_stats['S']['count'] += 1
-                chunk_stats['G']['count'] -= 1
+                chunk_stats[4][1] += 1
+                chunk_stats[8][1] -= 1
 
     # Funky little chunk map
     if args.debug:
@@ -1843,9 +1817,8 @@ if (cfg.offset is None or cfg.offset is ''):
     # Re-cache the chunks and update mtime
     utils.saveChunkCache(cache_path, chunk_cache)
 
-    order = sorted(chunk_stats.items(), key=lambda x: x[1]['order'])
-    for stat in order:
-        print '   %s: %d' % (stat[1]['name'], stat[1]['count'])
+    for stat in chunk_stats:
+        print '   %s: %d' % (stat[0], stat[1])
     print ' Cache hit rate: %d/%d (%d%%)' % (cached, notcached + cached,
                                              100 * cached / (notcached + cached))
 
