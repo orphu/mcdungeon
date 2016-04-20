@@ -114,10 +114,10 @@ def parseArgs():
                             help='Give the location for the regions.yml output path.\
                             This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
                             Make sure you take a backup of this file first!')
-    parser_inter.add_argument('--procs',
-                              dest='procs',
+    parser_inter.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -182,10 +182,10 @@ def parseArgs():
                             dest='mapstore',
                             metavar='PATH',
                             help='Provide an alternate world to store maps.')
-    parser_addth.add_argument('--procs',
-                              dest='procs',
+    parser_addth.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -283,10 +283,10 @@ def parseArgs():
                             dest='mapstore',
                             metavar='PATH',
                             help='Provide an alternate world to store maps.')
-    parser_add.add_argument('--procs',
-                              dest='procs',
+    parser_add.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -298,10 +298,10 @@ def parseArgs():
     parser_list.add_argument('world',
                             metavar='SAVEDIR',
                             help='Target world (path to save directory)')
-    parser_list.add_argument('--procs',
-                              dest='procs',
+    parser_list.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -317,10 +317,10 @@ def parseArgs():
                             dest='outputdir',
                             metavar='PATH',
                             help='Give the location for the OverViewer output path.')
-    parser_genpoi.add_argument('--procs',
-                              dest='procs',
+    parser_genpoi.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -338,10 +338,10 @@ def parseArgs():
                             help='Give the location for the regions.yml output path.\
                             This is usually located in plugins/WorldGuard/worlds/<name>/regions.yml \
                             Make sure you take a backup of this file first!')
-    parser_genreg.add_argument('--procs',
-                              dest='procs',
+    parser_genreg.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -371,10 +371,10 @@ def parseArgs():
                             dest='mapstore',
                             metavar='PATH',
                             help='Provide an alternate world to store maps.')
-    parser_del.add_argument('--procs',
-                              dest='procs',
+    parser_del.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -435,10 +435,10 @@ def parseArgs():
                               dest='all',
                               action='store_true',
                               help='Regenerate all known dungeons. Overrides -d.')
-    parser_regen.add_argument('--procs',
-                              dest='procs',
+    parser_regen.add_argument('--workers',
+                              dest='workers',
                               type=int,
-                              metavar='PROCESSES',
+                              metavar='WORKERS',
                               help='Number of child processes to use for the \
                               worker pool. Defaults to the number of reported \
                               cores on your machine.')
@@ -637,7 +637,7 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
         pm.set_complete()
         pm.init(count, label='Pass 2:')
 
-    with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
+    with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
         chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
         for future in cf.as_completed(chunk_scans):
             (key, d_type, entity) = future.result()
@@ -1732,7 +1732,7 @@ def main():
         chunk_min = None
         chunk_max = None
 
-        with cf.ProcessPoolExecutor(max_workers = args.procs) as executor:
+        with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
             chunk_scans = {executor.submit(classifyChunk, c): c for c in chunks}
             for future in cf.as_completed(chunk_scans):
                 (cx, cz, result, biome, depth) = future.result()
