@@ -11,7 +11,7 @@ import sys
 import time
 import traceback
 
-if platform.system != 'Windows':
+if platform.system() != 'Windows':
     import concurrent.futures as cf
 
 # Version info
@@ -650,6 +650,8 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
 
     # Handle this in the main thread if we aren't multiprocessing.
     if args.workers and args.workers < 2:
+        if args.debug:
+            print 'Working with a single process.'
         for c in chunks:
             (key, d_type, entity) = checkDInfo(c)
             if entity:
@@ -663,6 +665,8 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
                 pm.update_left(count)
     # Process chunks in parallel.
     else:
+        if args.debug:
+            print 'Working with multiple processes. workers =', args.workers
         with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
             chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
             for future in cf.as_completed(chunk_scans):
@@ -1762,6 +1766,8 @@ def main():
 
         # Handle this in the main thread if we aren't multiprocessing.
         if args.workers and args.workers < 2:
+            if args.debug:
+                print 'Working with a single process.'
             for c in chunks:
                 (cx, cz, result, biome, depth) = classifyChunk(c)
 
@@ -1795,6 +1801,8 @@ def main():
                     utils.saveChunkCache(cache_path, chunk_cache)
         # Process chunks in parallel. 
         else:
+            if args.debug:
+                print 'Working with multiple processes. workers =', args.workers
             with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
                 chunk_scans = {executor.submit(classifyChunk, c): c for c in chunks}
                 for future in cf.as_completed(chunk_scans):
