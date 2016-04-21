@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 
 import argparse
-import concurrent.futures as cf
 import copy
 import logging
 import numpy
 import os
+import platform
 import re
 import sys
 import time
 import traceback
+
+if platform.system != 'Windows':
+    import concurrent.futures as cf
 
 # Version info
 __version__ = '0.15.1'
@@ -445,7 +448,13 @@ def parseArgs():
 
 
     # Parse the args
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    # On Windows, we can't yet use multiprocessing.
+    if platform.system() == 'Windows':
+        args.workers = 0
+
+    return args
 
 
 def loadWorld(world_name):
@@ -616,6 +625,7 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
 
     count = world.chunkCount
 
+    # Pass 1 will prefilter the chunks for ones that might be interesting.
     if genpoi is False:
         print 'Scanning world for existing dungeons and treasure hunts:'
         pm.init(count, label='Pass 1:')
@@ -632,16 +642,16 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
         if genpoi is False and count%200 == 0:
             pm.update_left(count)
 
+    # Pass 2 will evaluate the interesting chunks.
     count = world.chunkCount
     if genpoi is False:
         pm.set_complete()
         pm.init(count, label='Pass 2:')
 
-    with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
-        chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
-        for future in cf.as_completed(chunk_scans):
-            (key, d_type, entity) = future.result()
-
+    # Handle this in the main thread if we aren't multiprocessing.
+    if args.workers and args.workers < 2:
+        for c in chunks:
+            (key, d_type, entity) = checkDInfo(c)
             if entity:
                 if d_type == 'dungeon':
                     dungeonCache[key] = entity
@@ -651,6 +661,21 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
             count -= 1
             if genpoi is False and count%200 == 0:
                 pm.update_left(count)
+    # Process chunks in parallel.
+    else:
+        with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
+            chunk_scans = {executor.submit(checkDInfo, c): c for c in chunks}
+            for future in cf.as_completed(chunk_scans):
+                (key, d_type, entity) = future.result()
+                if entity:
+                    if d_type == 'dungeon':
+                        dungeonCache[key] = entity
+                    else:
+                        tHuntCache[key] = entity
+
+                count -= 1
+                if genpoi is False and count%200 == 0:
+                    pm.update_left(count)
 
     if genpoi is False:
         pm.set_complete()
@@ -1690,6 +1715,8 @@ def main():
         }
 
         # Preprocess chunks
+        # Pass 1 will prefilter the chunks, weeding out the trivial cases. This
+        # saves setup time when multiprocessing in pass 2.
         print 'Finding good chunks:'
         pm = pmeter.ProgressMeter()
         pm.init(world.chunkCount, label='Pass 1:')
@@ -1726,16 +1753,17 @@ def main():
             chunks.add(c)
         pm.set_complete()
 
+        # Pass 2 will do the heavy lifting on the interesting chunks.
         pm = pmeter.ProgressMeter()
         pm.init(world.chunkCount, label='Pass 2:')
         cc = 0
         chunk_min = None
         chunk_max = None
 
-        with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
-            chunk_scans = {executor.submit(classifyChunk, c): c for c in chunks}
-            for future in cf.as_completed(chunk_scans):
-                (cx, cz, result, biome, depth) = future.result()
+        # Handle this in the main thread if we aren't multiprocessing.
+        if args.workers and args.workers < 2:
+            for c in chunks:
+                (cx, cz, result, biome, depth) = classifyChunk(c)
 
                 # Chunk map stuff
                 if args.debug:
@@ -1765,6 +1793,41 @@ def main():
                 # Save progress occasionally. 
                 if notcached % 10000 == 0:
                     utils.saveChunkCache(cache_path, chunk_cache)
+        # Process chunks in parallel. 
+        else:
+            with cf.ProcessPoolExecutor(max_workers = args.workers) as executor:
+                chunk_scans = {executor.submit(classifyChunk, c): c for c in chunks}
+                for future in cf.as_completed(chunk_scans):
+                    (cx, cz, result, biome, depth) = future.result()
+
+                    # Chunk map stuff
+                    if args.debug:
+                        if chunk_min is None:
+                            chunk_min = (cx, cz)
+                        else:
+                            chunk_min = (min(cx, chunk_min[0]), min(cz, chunk_min[1]))
+                        if chunk_max is None:
+                            chunk_max = (cx, cz)
+                        else:
+                            chunk_max = (max(cx, chunk_max[0]), max(cz, chunk_max[1]))
+
+                    # Classify chunks
+                    notcached += 1
+                    key = '%s,%s' % (cx, cz)
+                    chunk_stats[result]['count'] += 1
+                    chunk_cache[key] = [result, biome, depth]
+
+                    if result == 'G':
+                        good_chunks[(cx, cz)] = chunk_cache[key][2]
+
+                    # Update progress.
+                    cc += 1
+                    if cc % 200 == 0:
+                        pm.update(cc)
+
+                    # Save progress occasionally. 
+                    if notcached % 10000 == 0:
+                        utils.saveChunkCache(cache_path, chunk_cache)
 
         utils.saveChunkCache(cache_path, chunk_cache)
         pm.set_complete()
