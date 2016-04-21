@@ -649,7 +649,7 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
         pm.init(count, label='Pass 2:')
 
     # Handle this in the main thread if we aren't multiprocessing.
-    if args.workers and args.workers < 2:
+    if args.workers is not None and args.workers < 2:
         if args.debug:
             print 'Working with a single process.'
         for c in chunks:
@@ -1765,7 +1765,7 @@ def main():
         chunk_max = None
 
         # Handle this in the main thread if we aren't multiprocessing.
-        if args.workers and args.workers < 2:
+        if args.workers is not None and args.workers < 2:
             if args.debug:
                 print 'Working with a single process.'
             for c in chunks:
