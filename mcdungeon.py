@@ -640,18 +640,22 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
     tHuntCache = {}
 
     count = world.chunkCount
-    cached = 0
-    notcached = 0
 
     # Pass 1 will prefilter the chunks for ones that might be interesting.
     if genpoi is False:
         print 'Scanning world for existing dungeons and treasure hunts:'
-        print 'cache mtime: %d' % (mtime)
-        pm.init(count, label='')
-    for cx, cz, in world.allChunks:
+        pm.init(count, label='Pass 1:')
+
+    chunks = set()
+    for c in world.allChunks:
+        cx = c[0]
+        cz = c[1]
+        key = '%s,%s' % (cx * 16, cz * 16)
         cmtime = world.worldFolder.getRegionForChunk(cx, cz).getTimestamp(cx, cz)
+        if (cmtime > mtime or key in dungeonCacheOld or key in tHuntCacheOld):
+            chunks.add(c)
         count -= 1
-        if genpoi is False:
+        if genpoi is False and count%200 == 0:
             pm.update_left(count)
 
     # Pass 2 will evaluate the interesting chunks.
@@ -695,8 +699,6 @@ def loadCaches(expand_fill_caves=False, genpoi=False):
 
     if genpoi is False:
         pm.set_complete()
-        print ' Cache hit rate: %d/%d (%d%%)' % (cached, world.chunkCount,
-                                             100 * cached / world.chunkCount)
 
     # Save the caches
     utils.saveDungeonCache(cache_path, dungeonCache)
@@ -1889,8 +1891,8 @@ def main():
                     del(good_chunks[(cx, cz)])
                     key = '%s,%s' % (cx, cz)
                     chunk_cache[key] = ['S', -1, 0]
-                    chunk_stats[4][1] += 1
-                    chunk_stats[8][1] -= 1
+                    chunk_stats['S']['count'] += 1
+                    chunk_stats['G']['count'] -= 1
 
         # Funky little chunk map
         if args.debug:
