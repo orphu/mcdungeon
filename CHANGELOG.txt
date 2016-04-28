@@ -2,27 +2,11 @@ v0.15.1 -
 
   !! NOTE: This version requires Minecraft 1.9.2 release or higher!
 
-  * Fixed several issues with maps and dungeons generated prior to
-    Minecraft 1.9. (orphu)
+  * Improved chunk scanning speed on a single core by 70% !!! (orphu)
 
-  * Fixed tipped arrow stacking. (JiFish)
-
-  * Possible fix for dungeon maps and multiple worlds when using --dir.
-    (JiFish)
-
-  * Avoid placing dungeons and treasure hunts on chunks that are not
-    completely generated. (orphu)
-
-  * Exit portals now use 1.9 gateways. (JiFish)
-
-  * Removed dependency on legacy Overviewer code (orphu)
-
-  * Removed handrail from TripleStairs (orphu)
-
-  * Projectile potion traps are now lingering. (JiFish)
-
-  * Lava floors are more likely to be traversable without needed to
-    build. (orphu)
+  * Chunk scanning can now take advantage of multi-core processors. (orphu)
+    - OS X and Linux only at the moment I'm afraid.
+    - See new --workers option.
 
   * Added books for the new 1.9 enchantments. (JiFish)
 
@@ -30,6 +14,28 @@ v0.15.1 -
 
   * Added YAML exports of dungeon and thunt info. Look in the
     mcdungeon_cache directory. (orphu)
+
+  * Exit portals now use 1.9 gateways. (JiFish)
+
+  * Projectile potion traps are now lingering. (JiFish)
+
+  * Lava floors are more likely to be traversable without needed to
+    build. (orphu)
+
+  * Possible fix for dungeon maps and multiple worlds when using --dir.
+    (JiFish)
+
+  * Avoid placing dungeons and treasure hunts on chunks that are not
+    completely generated. (orphu)
+
+  * Removed dependency on legacy Overviewer code (orphu)
+
+  * Removed handrail from TripleStairs (orphu)
+
+  * Fixed several issues with maps and dungeons generated prior to
+    Minecraft 1.9. (orphu)
+
+  * Fixed tipped arrow stacking. (JiFish)
 
 v0.15.0 - 03/28/2016
 
