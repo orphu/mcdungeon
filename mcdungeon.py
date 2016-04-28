@@ -301,6 +301,10 @@ def parseArgs():
     parser_list.add_argument('world',
                             metavar='SAVEDIR',
                             help='Target world (path to save directory)')
+    parser_list.add_argument('--debug',
+                              action='store_true',
+                              dest='debug',
+                              help='Provide additional debug info')
     parser_list.add_argument('--workers',
                               dest='workers',
                               type=int,
@@ -313,6 +317,10 @@ def parseArgs():
     parser_genpoi = subparsers.add_parser('genpoi',
                             help='Create OverViewer POI configuration for known dungeons in a map.')
     parser_genpoi.set_defaults(command='genpoi')
+    parser_genpoi.add_argument('--debug',
+                              action='store_true',
+                              dest='debug',
+                              help='Provide additional debug info')
     parser_genpoi.add_argument('world',
                             metavar='SAVEDIR',
                             help='Target world (path to save directory)')
@@ -332,6 +340,10 @@ def parseArgs():
     parser_genreg = subparsers.add_parser('genregions',
                             help='Create WorldGuard regions.yml definitions for known dungeons in a map.')
     parser_genreg.set_defaults(command='genreg')
+    parser_genreg.add_argument('--debug',
+                              action='store_true',
+                              dest='debug',
+                              help='Provide additional debug info')
     parser_genreg.add_argument('world',
                             metavar='SAVEDIR',
                             help='Target world (path to world directory)')
@@ -353,6 +365,10 @@ def parseArgs():
     parser_del = subparsers.add_parser('delete',
                                        help='Delete dungeons from a map.')
     parser_del.set_defaults(command='delete')
+    parser_del.add_argument('--debug',
+                              action='store_true',
+                              dest='debug',
+                              help='Provide additional debug info')
     parser_del.add_argument('world',
                             metavar='SAVEDIR',
                             help='Target world (path to save directory)')
