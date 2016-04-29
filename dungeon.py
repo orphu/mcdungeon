@@ -2336,6 +2336,10 @@ class Dungeon (object):
             chunk.TileEntities.value[:] = []
             # Empty the entities from this chunk
             chunk.Entities.value[:] = []
+            if 'DataVersion' not in chunk.root_tag:
+                chunk.root_tag['DataVersion'] = nbt.TAG_Int(dv_version)
+                if self.args.debug:
+                    print 'Added DavaVersion tag to', chunk.chunkPosition
             if chunk.root_tag['DataVersion'].value < dv_version:
                 chunk.root_tag['DataVersion'].value = dv_version
                 if self.args.debug:
