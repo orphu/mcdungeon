@@ -1895,7 +1895,7 @@ def main():
                     chunk_stats['G']['count'] -= 1
 
         # Funky little chunk map
-        if args.debug:
+        if args.debug and chunk_min and chunk_max:
             for cz in xrange(chunk_min[1], chunk_max[1] + 1):
                 for cx in xrange(chunk_min[0], chunk_max[0] + 1):
                     key = '%s,%s' % (cx, cz)
