@@ -35,6 +35,10 @@ v0.15.1 -
   * Fixed several issues with maps and dungeons generated prior to
     Minecraft 1.9. (orphu)
 
+  * Fixed issues with 0.15.x dungeons being generated in pre-1.9 chunks.
+    This was causing some entities (mods with equipment and villagers) to
+    disappear. (orphu) 
+
   * Fixed tipped arrow stacking. (JiFish)
 
 v0.15.0 - 03/28/2016
