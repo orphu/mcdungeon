@@ -2215,10 +2215,6 @@ class Dungeon (object):
                                     p.z = int(tag.value) - self.position.z
                             if p.y < 0:
                                 self.addchest(p, 0)
-                    # Empty the tile entities from this chunk
-                    chunk.TileEntities.value[:] = []
-                    # Empty the entities from this chunk
-                    chunk.Entities.value[:] = []
                     # Fake some ores. First fill with Stone (id=1) and then pick
                     # some random ones based on known ore distributions to fill
                     # in ores.
@@ -2332,6 +2328,19 @@ class Dungeon (object):
                     mat != materials._sandbar):
                 del(self.good_chunks[(chunk_x, chunk_z)])
         pm.set_complete()
+
+        # Reset entities in chunks, and set a minimum DV
+        print 'Upgrading chunks...'
+        for chunk in changed_chunks:
+            # Empty the tile entities from this chunk
+            chunk.TileEntities.value[:] = []
+            # Empty the entities from this chunk
+            chunk.Entities.value[:] = []
+            if chunk.root_tag['DataVersion'].value < dv_version:
+                chunk.root_tag['DataVersion'].value = dv_version
+                if self.args.debug:
+                    print 'Upgraded', chunk.chunkPosition, 'to', dv_version
+
         # Copy over tile entities
         print 'Creating tile entities...'
         num = len(self.tile_ents)
