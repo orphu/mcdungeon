@@ -2336,7 +2336,12 @@ class Dungeon (object):
             chunk.TileEntities.value[:] = []
             # Empty the entities from this chunk
             chunk.Entities.value[:] = []
-            if chunk.root_tag['DataVersion'].value < dv_version:
+            # DataVersion may not be set, so to prevent an error
+            try:
+                chunk_dv_version = chunk.root_tag['DataVersion'].value
+            except:
+                chunk_dv_version = 0
+            if chunk_dv_version < dv_version:
                 chunk.root_tag['DataVersion'].value = dv_version
                 if self.args.debug:
                     print 'Upgraded', chunk.chunkPosition, 'to', dv_version
