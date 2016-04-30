@@ -528,11 +528,16 @@ def classifyChunk(c):
     chunk = world.getChunk(cx, cz)
 
     # Incomplete chunk
+    # These keys may be optional in older MC versions.
     if (
-        chunk.root_tag['Level']['LightPopulated'].value == 0 or
-        chunk.root_tag['Level']['TerrainPopulated'].value == 0
+        'LightPopulated' in chunk.root_tag['Level'] and
+        'TerrainPopulated' in chunk.root_tag['Level']
     ):
-        return cx, cz, 'I', None, 0
+        if (
+            chunk.root_tag['Level']['LightPopulated'].value == 0 or
+            chunk.root_tag['Level']['TerrainPopulated'].value == 0
+        ):
+            return cx, cz, 'I', None, 0
 
     # Biomes
     biomes = chunk.Biomes.flatten()
