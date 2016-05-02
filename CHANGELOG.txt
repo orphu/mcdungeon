@@ -32,6 +32,8 @@ v0.15.1 -
 
   * Removed handrail from TripleStairs (orphu)
 
+  * Landmark frames are no longer invulnerable. (orphu)
+
   * Fixed several issues with maps and dungeons generated prior to
     Minecraft 1.9. (orphu)
 

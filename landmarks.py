@@ -441,7 +441,6 @@ class Memorial(Clearing):
                                          Facing="S", # 0=south
                                          ItemRotation=0,
                                          ItemTags=painting)
-        framed_painting['Invulnerable'] = nbt.TAG_Byte(1)
         # Place the item frame.
         self.parent.addentity(framed_painting)
 
