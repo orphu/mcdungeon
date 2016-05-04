@@ -1,4 +1,6 @@
-v0.15.1 -
+v0.15.2 - 
+
+v0.15.1 - 05/03/2016
 
   !! NOTE: This version requires Minecraft 1.9.2 release or higher!
 
