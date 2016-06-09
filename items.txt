@@ -180,6 +180,7 @@ Spawn Mooshroom,minecraft:spawn_egg,96,64,ENTITYTAG:MushroomCow
 Spawn Ocelot,minecraft:spawn_egg,98,64,ENTITYTAG:Ozelot
 Spawn Pig Zombie,minecraft:spawn_egg,57,64,ENTITYTAG:PigZombie
 Spawn Pig,minecraft:spawn_egg,90,64,ENTITYTAG:Pig
+Spawn Polar Bear,minecraft:spawn_egg,90,64,ENTITYTAG:PolarBear
 Spawn Rabbit,minecraft:spawn_egg,101,64,ENTITYTAG:Rabbit
 Spawn Sheep,minecraft:spawn_egg,91,64,ENTITYTAG:Sheep
 Spawn Skeleton,minecraft:spawn_egg,51,64,ENTITYTAG:Skeleton
