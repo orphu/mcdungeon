@@ -1,2 +1,5 @@
 *.pyc
 *~
+
+# Windows image thumbnail file
+Thumbs.db
