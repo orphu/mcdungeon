@@ -57,6 +57,7 @@ portal_exit = Vec(0, 0, 0)
 dungeon_name = None
 river_biomes = [7, 11]
 ocean_biomes = [0, 10, 24]
+use_incomplete_chunks = 'False'
 
 master_halls = []
 master_hall_traps = []
@@ -186,7 +187,7 @@ def Load(filename='default.cfg'):
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
         file_potions, file_magic_items, file_fortunes, dir_paintings, \
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
-        river_biomes, ocean_biomes, master_hall_traps, \
+        river_biomes, ocean_biomes, use_incomplete_chunks, master_hall_traps, \
         master_landmarks, default_landmarks, master_landmark_mobs, \
         th_locked, th_bonus, th_intermediate, th_spawners
 
@@ -513,3 +514,6 @@ def Load(filename='default.cfg'):
     except:
         print 'WARNING: Unable to parse ocean_biomes from config.'\
               ' Using default.'
+
+    use_incomplete_chunks = str2bool(get('dungeon', 'use_incomplete_chunks',
+                                     use_incomplete_chunks))

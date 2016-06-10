@@ -530,6 +530,7 @@ def classifyChunk(c):
     # Incomplete chunk
     # These keys may be optional in older MC versions.
     if (
+        cfg.use_incomplete_chunks != True and
         'LightPopulated' in chunk.root_tag['Level'] and
         'TerrainPopulated' in chunk.root_tag['Level']
     ):
