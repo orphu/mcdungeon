@@ -30,6 +30,13 @@ Chargedcreeper: Creeper with the lightning strike charge effect.
 CustomKnight: Zombie with full suit of armour and strength.
 Herobrine: You really don't want to meet this guy.
 Husk: Husk zombie mob varient.
+Multi_creeper: Spawns charged creepers 20% of the time. Normal creepers
+               the rest of the time.
+Multi_monster: Equal random chance of Zombie, Skeleton, Creeper or spider.
+Multi_skeleton: Spawns wither skeletons 20% of the time. Normal skeletons
+                the rest of the time.
+Multi_zombie: Spawns zombie with strength and speed skeletons 20% of the time.
+              Normal skeletons the rest of the time.
 Silverfish_Swarm: A swarm of 5 silverfish.
 Skeleton_Armored_Axe_Iron: Skeleton with an iron axe.
 Skeleton_Armored_Sword_Iron: Skeleton with an iron sword.
@@ -45,10 +52,3 @@ Zombie_Pumpkin: A strengthened zombie wearing a pumpkin on his head so
 Zombie_Strong: Zombie with strength potion effect.
 Zombie_Sword_Helmet: A zombie with a sword and helmet.
 Zombie_Villager: Zombie villiager mob varient(like in a siege.)
-multi_creeper: Spawns charged creepers 20% of the time. Normal creepers
-               the rest of the time.
-multi_monster: Equal random chance of Zombie, Skeleton, Creeper or spider.
-multi_skeleton: Spawns wither skeletons 20% of the time. Normal skeletons
-                the rest of the time.
-multi_zombie: Spawns zombie with strength and speed skeletons 20% of the time.
-              Normal skeletons the rest of the time.
