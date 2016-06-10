@@ -24,32 +24,31 @@ crash it. Please use this feature with caution.
 Packaged Spawners:
 ==================
 Angrypig: A zombie pigman that has already been aggroed.
-Chargedcreeper: Creeper with the lightning strike charge effect
-CustomKnight: Zombie with full suit of armour and strength
-multi_creeper: Spawns charged creepers 20% of the time.
-               Normal creepers the rest of the time.
-multi_monster: Equal random chance of Zombie, Skeleton, Creeper or spider.
-multi_skeleton: Spawns wither skeletons 20% of the time.
-                Normal skeletons the rest of the time.
-multi_zombie: Spawns zombie with strength and speed skeletons 20% of
-              the time. Normal skeletons the rest of the time.
-Skeleton_Armored_Axe_Iron: Skeleton with an iron axe.
-Skeleton_Armored_Sword_Iron: Skeleton with an iron sword.
-Skeleton_Armored_Sword_Leather: Skeleton with an iron sword and
-                                leather armour.
-Skeleton_Tipped_Arrow: Skeletons wielding various tipped arrows
 Catling: Skeletons with ocelot masks wielding tipped arrows
          with postive effects.
-Husk: Husk zombie mob varient
-Stray: Stray skeleton mob varient
-WitherSkeleton: Wither skeleton mob varient
-Zombie_Fast: Zombie with speed potion effect.
-Zombie_Strong: Zombie with strength potion effect.
-Zombie_Villager: Zombie villiager mob varient(like in a siege.)
-Silverfish_Swarm: A swarm of 5 silverfish
-Skeleton_Pumpkin: A tough skeleton with a pumpkin on his head so that he 
-                  can be in the sun
-Zombie_Pumpkin: A strengthened zombie wearing a pumpkin on his head so that he
-                can be in the sun
-Zombie_Sword_Helmet: A zombie with a sword and helmet
+Chargedcreeper: Creeper with the lightning strike charge effect.
+CustomKnight: Zombie with full suit of armour and strength.
 Herobrine: You really don't want to meet this guy.
+Husk: Husk zombie mob varient.
+Silverfish_Swarm: A swarm of 5 silverfish.
+Skeleton_Armored_Axe_Iron: Skeleton with an iron axe.
+Skeleton_Armored_Sword_Iron: Skeleton with an iron sword.
+Skeleton_Armored_Sword_Leather: Skeleton with an iron sword and leather armour.
+Skeleton_Pumpkin: A tough skeleton with a pumpkin on his head so
+                  that he can be in the sun.
+Skeleton_Tipped_Arrow: Skeletons wielding various tipped arrows.
+Stray: Stray skeleton mob varient.
+WitherSkeleton: Wither skeleton mob varient.
+Zombie_Fast: Zombie with speed potion effect.
+Zombie_Pumpkin: A strengthened zombie wearing a pumpkin on his head so
+                that he can be in the sun.
+Zombie_Strong: Zombie with strength potion effect.
+Zombie_Sword_Helmet: A zombie with a sword and helmet.
+Zombie_Villager: Zombie villiager mob varient(like in a siege.)
+multi_creeper: Spawns charged creepers 20% of the time. Normal creepers
+               the rest of the time.
+multi_monster: Equal random chance of Zombie, Skeleton, Creeper or spider.
+multi_skeleton: Spawns wither skeletons 20% of the time. Normal skeletons
+                the rest of the time.
+multi_zombie: Spawns zombie with strength and speed skeletons 20% of the time.
+              Normal skeletons the rest of the time.
