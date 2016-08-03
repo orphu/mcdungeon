@@ -1,4 +1,16 @@
-v0.15.2 - 
+v0.16.0 - 
+
+  !! NOTE: This version requires Minecraft 1.10.0 release or higher!
+  
+  * Added 1.10 items and blocks. (JiFish)
+  
+  * Added spawners for: Husk and Stray mob variants, Skeletons that fire
+    tipped arrows, and something unusual that might help you! (JiFish)
+  
+  * Add use_incomplete_chunks config option. This forces chunk scanning
+    to use chunks that would otherwise be marked as incomplete. (JiFish)
+  
+  * Fix for multi_ spawners. (JiFish)
 
 v0.15.1 - 05/03/2016
 
