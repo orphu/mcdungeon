@@ -1,6 +1,6 @@
 v0.16.0 - 
 
-  !! NOTE: This version requires Minecraft 1.10.0 release or higher!
+  !! NOTE: This version requires Minecraft 1.10.2 release or higher!
   
   * Added 1.10 items and blocks. (JiFish)
   
