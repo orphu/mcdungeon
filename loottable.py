@@ -18,6 +18,7 @@ AQUA_AFFINITY = 6
 THORNS = 7
 DEPTH_STRIDER = 8
 FROST_WALKER = 9
+CURSE_OF_BINDING = 10
 
 # Weapon enchantments
 SHARPNESS = 16
@@ -45,6 +46,7 @@ LURE = 62
 
 # Treasure Enchantments
 MENDING = 70
+CURSE_OF_VANISHING = 71
 
 # Enchantment names
 _ench_name = {
@@ -74,7 +76,9 @@ _ench_name = {
     LUCK_OF_THE_SEA: 'Luck of the Sea',
     LURE: 'Lure',
     FROST_WALKER: 'Frost Walker',
-    MENDING: 'Mending'
+    MENDING: 'Mending',
+    CURSE_OF_BINDING: 'Curse of Binding',
+    CURSE_OF_VANISHING: 'Curse of Vanishing'
 }
 
 # Level names
@@ -114,7 +118,9 @@ _ench_prob = {
     LUCK_OF_THE_SEA: 5,
     LURE: 5,
     FROST_WALKER: 2,
-    MENDING: 2
+    MENDING: 2,
+    CURSE_OF_BINDING: 1,
+    CURSE_OF_VANISHING: 1
 }
 
 # Enchantment level table
@@ -146,7 +152,9 @@ _ench_level = {
     LUCK_OF_THE_SEA: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
     LURE: [(15, 65), (24, 74), (33, 83), (0, 0), (0, 0)],
     FROST_WALKER: [(10, 25), (20, 35), (0, 0), (0, 0), (0, 0)],
-    MENDING: [(25, 75), (0, 0), (0, 0), (0, 0), (0, 0)]
+    MENDING: [(25, 75), (0, 0), (0, 0), (0, 0), (0, 0)],
+    CURSE_OF_BINDING: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)],
+    CURSE_OF_VANISHING: [(20, 50), (0, 0), (0, 0), (0, 0), (0, 0)]
 }
 
 # Enchantment valid items tables
@@ -185,6 +193,11 @@ _ench_items_table_book = {
     MENDING: ['book', 'helmet', 'chestplate', 'leggings', 'boots',
                  'sword', 'tool', 'axe', 'bow', 'hoe', 'fishing rod',
                  'shears', 'flint and steel', 'carrot on a stick',
+                 'elytra'],
+    CURSE_OF_BINDING: ['book', 'helmet', 'chestplate', 'leggings', 'boots'],
+    CURSE_OF_VANISHING: ['book', 'helmet', 'chestplate', 'leggings', 'boots',
+                 'sword', 'tool', 'axe', 'bow', 'hoe', 'fishing rod',
+                 'shears', 'flint and steel', 'carrot on a stick',
                  'elytra']
 }
 
@@ -217,7 +230,9 @@ _ench_items_table = {
     LUCK_OF_THE_SEA: ['book', 'fishing rod'],
     LURE: ['book', 'fishing rod'],
     FROST_WALKER: ['book'],
-    MENDING: ['book']
+    MENDING: ['book'],
+    CURSE_OF_BINDING: ['book', 'chestplate'],
+    CURSE_OF_VANISHING: ['book']
 }
 
 # Extended: As normal, but all weapon enchants can appear on axes,
