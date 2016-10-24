@@ -284,7 +284,8 @@ class new:
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
             item_tag['tag']['EntityTag'] = nbt.TAG_Compound()
-            item_tag['tag']['EntityTag']['id'] = nbt.TAG_String(i.flag.split(':')[1])
+            # ENTITYTAG: is ten characters, we want everything afterwards
+            item_tag['tag']['EntityTag']['id'] = nbt.TAG_String(i.flag[10:])
 
         # Set the slot and count
         if i.slot != None:
