@@ -164,35 +164,48 @@ Brewing Stand,minecraft:brewing_stand,0,64
 Cauldron,minecraft:cauldron,0,64
 Eye of Ender,minecraft:ender_eye,0,64
 Glistering Melon,minecraft:speckled_melon,0,64
-Spawn Bat,minecraft:spawn_egg,65,64,ENTITYTAG:Bat
-Spawn Blaze,minecraft:spawn_egg,61,64,ENTITYTAG:Blaze
-Spawn Cave Spider,minecraft:spawn_egg,59,64,ENTITYTAG:CaveSpider
-Spawn Chicken,minecraft:spawn_egg,93,64,ENTITYTAG:Chicken
-Spawn Cow,minecraft:spawn_egg,92,64,ENTITYTAG:Cow
-Spawn Creeper,minecraft:spawn_egg,50,64,ENTITYTAG:Creeper
-Spawn Enderman,minecraft:spawn_egg,58,64,ENTITYTAG:Enderman
-Spawn Endermite,minecraft:spawn_egg,67,64,ENTITYTAG:Endermite
-Spawn Guardian,minecraft:spawn_egg,68,64,ENTITYTAG:Guardian
-Spawn Ghast,minecraft:spawn_egg,56,64,ENTITYTAG:Ghast
-Spawn Horse,minecraft:spawn_egg,100,64,ENTITYTAG:EntityHorse
-Spawn Magma Cube,minecraft:spawn_egg,62,64,ENTITYTAG:LavaSlime
-Spawn Mooshroom,minecraft:spawn_egg,96,64,ENTITYTAG:MushroomCow
-Spawn Ocelot,minecraft:spawn_egg,98,64,ENTITYTAG:Ozelot
-Spawn Pig Zombie,minecraft:spawn_egg,57,64,ENTITYTAG:PigZombie
-Spawn Pig,minecraft:spawn_egg,90,64,ENTITYTAG:Pig
-Spawn Polar Bear,minecraft:spawn_egg,90,64,ENTITYTAG:PolarBear
-Spawn Rabbit,minecraft:spawn_egg,101,64,ENTITYTAG:Rabbit
-Spawn Sheep,minecraft:spawn_egg,91,64,ENTITYTAG:Sheep
-Spawn Skeleton,minecraft:spawn_egg,51,64,ENTITYTAG:Skeleton
-Spawn Shulker,minecraft:spawn_egg,69,64,ENTITYTAG:Shulker
-Spawn Silverfish,minecraft:spawn_egg,60,64,ENTITYTAG:Silverfish
-Spawn Slime,minecraft:spawn_egg,55,64,ENTITYTAG:Slime
-Spawn Spider,minecraft:spawn_egg,52,64,ENTITYTAG:Spider
-Spawn Squid,minecraft:spawn_egg,94,64,ENTITYTAG:Squid
-Spawn Villager,minecraft:spawn_egg,120,64,ENTITYTAG:Villager
-Spawn Witch,minecraft:spawn_egg,66,64,ENTITYTAG:Witch
-Spawn Wolf,minecraft:spawn_egg,95,64,ENTITYTAG:Wolf
-Spawn Zombie,minecraft:spawn_egg,54,64,ENTITYTAG:Zombie
+Spawn Bat,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:bat
+Spawn Blaze,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:blaze
+Spawn Cave Spider,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:cavespider
+Spawn Chicken,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:chicken
+Spawn Cow,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:cow
+Spawn Creeper,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:creeper
+Spawn Donkey,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:donkey
+Spawn Elder Guardian,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:elder_guardian
+Spawn Enderman,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:enderman
+Spawn Endermite,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:endermite
+Spawn Evoker,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:evocation_illager
+Spawn Ghast,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:ghast
+Spawn Guardian,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:guardian
+Spawn Horse,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:horse
+Spawn Husk,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:husk
+Spawn Llama,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:llama
+Spawn Magma Cube,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:magma_cube
+Spawn Mooshroom,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:mooshroom
+Spawn Mule,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:mule
+Spawn Ocelot,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:ocelot
+Spawn Pig Zombie,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_pigman
+Spawn Pig,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:pig
+Spawn Polar Bear,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:polar_bear
+Spawn Rabbit,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:rabbit
+Spawn Sheep,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:sheep
+Spawn Shulker,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:shulker
+Spawn Silverfish,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:silverfish
+Spawn Skeleton Horse,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:skeleton_horse
+Spawn Skeleton,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:skeleton
+Spawn Slime,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:slime
+Spawn Spider,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:spider
+Spawn Squid,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:squid
+Spawn Stray,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:stray
+Spawn Vex,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:vex
+Spawn Villager,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:villager
+Spawn Vindicator,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:vindication_illager
+Spawn Witch,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:witch
+Spawn Wither Skeleton,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:wither_skeleton
+Spawn Wolf,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:wolf
+Spawn Zombie Horse,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_horse
+Spawn Zombie Villager,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_villager
+Spawn Zombie,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:Zombie
 Bottle o' Enchanting,minecraft:experience_bottle,0,64
 Fire Charge,minecraft:fire_charge,0,64
 Book and Quill,minecraft:writable_book,0,1
@@ -256,6 +269,8 @@ Lingering Water Bottle,minecraft:lingering_potion,0,1
 Shield,minecraft:shield,0,1
 Elytra,minecraft:elytra,0,1
 End Crystal,minecraft:end_crystal,0,64
+Shulker Shell,minecraft:shulker_shell,0,64
+Totem of Undying,minecraft:totem,0,1
 
 # Disks
 #
