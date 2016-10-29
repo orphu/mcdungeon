@@ -1376,7 +1376,7 @@ class SecretShop(SecretRoom):
             frame_or = 'W'
 
         # materials by profession id
-        if (s.profession == 0): # Farmer
+        if (s.profession == 0):   # Farmer
             upperslab = materials.UpperOakWoodSlab
             pillers = materials.Wood
             floor = materials.BirchWoodPlanks
@@ -1396,11 +1396,19 @@ class SecretShop(SecretRoom):
             pillers = materials.ChiseledStoneBrick
             floor = materials.PolishedGranite
             banner_cols = [15,2]
-        else: # Butcher (4 and future)
-            upperslab = materials.UpperQuartzSlab
+        elif (s.profession == 4): # Butcher
+            upperslab = materials.UpperQuartzSlabs
             pillers = materials.PillarQuartzBlock
             floor = materials.PolishedDiorite
             banner_cols = [15,0]
+        else:                     # Nitwit (5 and future)
+            upperslab = materials.UpperSandstoneSlab
+            pillers = materials.ChiseledSandstone
+            floor = materials.Clay
+            banner_cols = [11,14]
+            # Special case: Replace the walls, just for this type
+            for q in iterate_four_walls(self.c1, self.c3, self.parent.parent.room_height - 2):
+                sb(q, materials.meta_decoratedsandstone)
 
         # Floor
         for q in iterate_cube(self.c1, self.c3):
@@ -1427,7 +1435,8 @@ class SecretShop(SecretRoom):
                                     eid='Banner',
                                     Pos=b[0],
                                     Base=banner_cols[0],
-                                    Patterns=[[banner_cols[1],'ss']]))
+                                    Patterns=[[banner_cols[1],'ss'],
+                                              [banner_cols[0],'bts']]))
         # Dungeon's Banners
         banner_pos = [[bl.up(3)+(rt*8)+(fw*1),orient['D']],
                       [bl.up(3)+(rt*1)+(fw*8),orient['L']]]
