@@ -199,6 +199,9 @@ class new:
                     if i.flag == 'HIDE_PARTICLES' or i.flag == 'HIDE_ALL':
                         e_tag['ShowParticles'] = nbt.TAG_Byte(0)
                     elist.append(e_tag)
+                # If we have a flagparam, use it for the potion's colour
+                if i.flagparam != '':
+                    item_tag['tag']['CustomPotionColor'] = nbt.TAG_Int(i.flagparam)
             else:
                 item_tag['tag']['Potion'] = nbt.TAG_String(i.p_effect)
                 # For basic potions there is no need for a custom name

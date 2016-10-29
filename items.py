@@ -175,6 +175,7 @@ def LoadPotions(filename='potions.txt'):
     # Try to load items from sys.path[0] if we can,
     # otherwise default to the cd.
     temp = os.path.join(sys.path[0], filename)
+    hexdigits = "abcdefABCDEF0123456789"
     try:
         fh = open(temp)
         fh.close
@@ -206,10 +207,15 @@ def LoadPotions(filename='potions.txt'):
             resetprefix = u"\u00A7r".encode('utf8')
             customname = name
             name = (name.lower())
+            # Look for optional hex color and store in flagparam
+            flagparam = ''
+            if len(s[-1]) == 6 and all(c in hexdigits for c in s[-1]):
+                flagparam = int(s.pop(), 16)
             # Look for optional flag
             flag = ''
             if s[-1] in ('HIDE_EFFECTS','HIDE_PARTICLES','HIDE_ALL'):
                 flag = s.pop()
+
             # Join the rest back in to the effect list
             p_effect = ','.join(s)
             
@@ -217,24 +223,28 @@ def LoadPotions(filename='potions.txt'):
             id = _items['water bottle'].id
             _items[name] = ItemInfo(name, id, data=0, maxstack=1,
                                     p_effect=p_effect, flag=flag,
+                                    flagparam = flagparam,
                                     customname=resetprefix+customname)
                                     
             # Create the arrow version of the potion
             id = _items['tipped arrow'].id
             _items[name+' arrow'] = ItemInfo(name+' arrow', id, data=0, maxstack=64,
                                     p_effect=p_effect, flag=flag,
+                                    flagparam = flagparam,
                                     customname=resetprefix+customname+' Arrow')
 
             # Create the splash version of the potion
             id = _items['splash water bottle'].id
             _items['splash '+name] = ItemInfo('splash '+name, id, data=0, maxstack=1,
                                     p_effect=p_effect, flag=flag,
+                                    flagparam = flagparam,
                                     customname=resetprefix+'Splash '+customname)
 
             # Create the lingering version of the potion
             id = _items['lingering water bottle'].id
             _items['lingering '+name] = ItemInfo('lingering '+name, id, data=0, maxstack=1,
                                     p_effect=p_effect, flag=flag,
+                                    flagparam = flagparam,
                                     customname=resetprefix+'Lingering '+customname)
             items += 1
         except Exception as e:

@@ -5,7 +5,7 @@
 # =======
 #
 # The format for potions with multiple effects is:
-# <name>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...<,flag (optional)>
+# <name>,<effect id>-<level>-<duration>,<effect id>-<level>-<duration>...<,flag (optional)><,color (optional)>
 # 
 # The format for 'basic' potions with only one effect is:
 # <name>,<effect name><,flag (optional)>
@@ -24,6 +24,9 @@
 # in-game, HIDE_PARTICLES to hide the player particles after drinking, or
 # HIDE_ALL to hide both. HIDE_PARTICLES does not work with 'basic' potions.
 #
+# The color can be omitted. Otherwise use a hex color code that will determine
+# the color of the potion/arrow etc.
+#
 # For each entry in this file, FOUR items will be created that can be
 # referenced in loot tables. 1) The potion itself, 2) The splash version of
 # the potion, prefixed by 'splash', 3) The tipped arrow version, with the
@@ -34,7 +37,7 @@
 #  - Lingering Potion of XXX
 #
 # Examples:
-Potion of Wonder,8-0-1200,12-1-2400,3-2-600,HIDE_EFFECTS
+Potion of Wonder,8-0-1200,12-1-2400,3-2-600,HIDE_EFFECTS,28C3CC
 Potion of Raw Chaos,8206,7-22-1
 
 # Basic potions that are normally unobtainable
