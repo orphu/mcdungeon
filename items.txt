@@ -205,7 +205,7 @@ Spawn Wither Skeleton,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:wither_skelet
 Spawn Wolf,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:wolf
 Spawn Zombie Horse,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_horse
 Spawn Zombie Villager,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_villager
-Spawn Zombie,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:Zombie
+Spawn Zombie,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie
 Bottle o' Enchanting,minecraft:experience_bottle,0,64
 Fire Charge,minecraft:fire_charge,0,64
 Book and Quill,minecraft:writable_book,0,1
