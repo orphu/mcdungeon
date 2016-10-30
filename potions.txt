@@ -68,9 +68,17 @@ Potion of Glowing II,24-0-3600
 Potion of Levitation II,25-1-50
 
 # Booze
-Bottle of Ale,9-0-600,HIDE_PARTICLES
-Bottle of Mulled Wine,9-0-300,2-0-300,21-0-1200,3-0-1200,HIDE_ALL
-Bottle of Absinthe,9-0-300,15-0-300,2-1-300,5-2-500,HIDE_ALL
+Bottle of Egg Nog,9-0-150,23-1-1,11-0-300,HIDE_ALL,FFFFFF
+Bottle of Cider,9-0-200,23-1-1,11-0-400,HIDE_ALL,FEC504
+Bottle of Mulled Wine,9-0-250,23-1-1,11-0-500,HIDE_ALL,4B031B
+Bottle of Mead,9-0-300,23-1-1,11-0-600,HIDE_ALL,BC7002
+Bottle of Dwarven Ale,9-0-350,23-1-1,11-0-700,HIDE_ALL,9F7845
+Bottle of Vintage Wine,9-0-400,23-1-1,11-0-800,HIDE_ALL,BE5858
+Bottle of Whisky,9-0-450,23-1-1,11-0-900,HIDE_ALL,FFA320
+Bottle of Grog,9-0-500,23-1-1,11-0-1000,15-0-60,HIDE_ALL,9CB204
+Bottle of Elven Brew,9-0-550,23-1-1,11-0-1100,15-0-80,HIDE_ALL,0000FF
+Bottle of Absinthe,9-0-600,23-1-1,11-0-1200,15-0-100,HIDE_ALL,00CC00
+
 
 # Basic Potions
 Mundane Potion,minecraft:mundane

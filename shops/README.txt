@@ -15,7 +15,7 @@ Name: This is the name of the shop, which will be displayed on signs.
      
 profession_ID: ID number of the villager type. Also changes the colour
                scheme of the room.
-               Farmer 0, Librarian 1, Priest 2, Blacksmith 3, Butcher 4
+            Farmer 0, Librarian 1, Priest 2, Blacksmith 3, Butcher 4, Nitwit 5
               
 free_sample: Item to put in the shop sign. Also acts as a freebie for the
              discovering adventurer. Just use an item name, e.g. Wood Sword
