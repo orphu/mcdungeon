@@ -820,31 +820,28 @@ class Dungeon (object):
         self.pm.set_complete()
 
     def getspawnertags(self, entity):
-        # See if we have a custom spawner match
-        if entity.lower() in cfg.custom_spawners.keys():
-            filepath = cfg.custom_spawners[entity.lower()]
-            root_tag = nbt.load(filename=filepath)
-            return root_tag
-        else:
-            root_tag = nbt.TAG_Compound()
-            root_tag['SpawnData'] = nbt.TAG_Compound()
+        entity = entity.lower()
 
-        SpawnData = root_tag['SpawnData']
+        # See if we have a custom spawner file match and return it if we do.
+        if entity.startswith('file_'):
+            entity = entity[5:] # Strip 'file_'
+            if entity in cfg.custom_spawners.keys():
+                filepath = cfg.custom_spawners[entity]
+                root_tag = nbt.load(filename=filepath)
+                return root_tag
+            else: # File not found
+                entity = 'bat'
 
-        # Cases where the entity id doesn't match the config
-        entity = entity.capitalize()
-        if (entity == 'Pigzombie'):
-            SpawnData['id'] = nbt.TAG_String('PigZombie')
-        elif (entity == 'Cavespider'):
-            SpawnData['id'] = nbt.TAG_String('CaveSpider')
-        elif (entity == 'Lavaslime'):
-            SpawnData['id'] = nbt.TAG_String('LavaSlime')
-        elif (entity == 'Witherboss'):
-            SpawnData['id'] = nbt.TAG_String('WitherBoss')
-        # For everything else the input is the SpawnData id
-        else:
-            SpawnData['id'] = nbt.TAG_String(entity)
+        # To bypass a technical limitation, replace '!' with ':'
+        if '!' in entity:
+            entity = entity.replace('!',':',1)
+        else: # Otherwise, we don't have a namespace prefix, so add the default
+            entity = "minecraft:"+entity
 
+        # Create and return tag
+        root_tag = nbt.TAG_Compound()
+        root_tag['SpawnData'] = nbt.TAG_Compound()
+        root_tag['SpawnData']['id'] = nbt.TAG_String(entity)
         return root_tag
 
     def addsign(self, loc, text1, text2, text3, text4):
@@ -877,7 +874,7 @@ class Dungeon (object):
             # print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
         root_tag = self.getspawnertags(entity)
         # Do generic spawner setup
-        root_tag['id'] = nbt.TAG_String('MobSpawner')
+        root_tag['id'] = nbt.TAG_String('mob_spawner')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
