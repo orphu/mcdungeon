@@ -928,7 +928,7 @@ class Dungeon (object):
 
     def addnoteblock(self, loc, clicks=0):
         root_tag = nbt.TAG_Compound()
-        root_tag['id'] = nbt.TAG_String('Music')
+        root_tag['id'] = nbt.TAG_String('noteblock')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
@@ -1002,7 +1002,7 @@ class Dungeon (object):
             print 'Count:', count
             sys.exit()
         root_tag = nbt.TAG_Compound()
-        root_tag['id'] = nbt.TAG_String('Trap')
+        root_tag['id'] = nbt.TAG_String('dispenser')
         root_tag['x'] = nbt.TAG_Int(loc.x)
         root_tag['y'] = nbt.TAG_Int(loc.y)
         root_tag['z'] = nbt.TAG_Int(loc.z)
@@ -1030,7 +1030,7 @@ class Dungeon (object):
         self.addtileentity(root_tag)
         
     def addendgateway(self, loc, exitloc):
-        root_tag = get_tile_entity_tags(eid="EndGateway",Pos=loc,ExitPos=exitloc,ExactTeleport=1)
+        root_tag = get_tile_entity_tags(eid="end_gateway",Pos=loc,ExitPos=exitloc,ExactTeleport=1)
         self.addtileentity(root_tag)
 
     def addentity(self, root_tag):
@@ -2372,8 +2372,8 @@ class Dungeon (object):
             ent['Pos'][0].value = x
             ent['Pos'][1].value = y
             ent['Pos'][2].value = z
-            # Paintings and ItemFrames need special handling.
-            if ent['id'].value in ('ItemFrame', 'Painting'):
+            # Paintings and Item Frames need special handling.
+            if ent['id'].value in ('item_frame', 'Painting'):
                 ent['TileX'].value += int(self.position.x)
                 ent['TileY'].value = int(self.position.y) - ent['TileY'].value
                 ent['TileZ'].value += int(self.position.z)

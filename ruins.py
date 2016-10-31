@@ -2008,7 +2008,7 @@ class Barrow(Blank):
                ('3', '_', '*', '_', '4', '#'))
 
         def placeCorpse(pos, rot, invisible=0):
-            '''Arrange a couple of ArmorStands to look like a corpse.
+            '''Arrange a couple of Armor Stands to look like a corpse.
             pos = position. About where the chest should be
             rot = rotation of the corpse.
                 s = Head facing South
@@ -2056,7 +2056,7 @@ class Barrow(Blank):
             if random.random() < .85:
                 legs = items.byName("leather leggings")
 
-            # The first ArmorStand covers the head, chest and arms.
+            # The first armor stand covers the head, chest and arms.
             pose = nbt.TAG_Compound()
             pose['Body'] = nbt.TAG_List()
             pose['Body'].append(nbt.TAG_Float(-90))
@@ -2075,7 +2075,7 @@ class Barrow(Blank):
             pose['RightArm'].append(nbt.TAG_Float(0))
             pose['RightArm'].append(nbt.TAG_Float(0))
 
-            tags = get_entity_other_tags("ArmorStand",
+            tags = get_entity_other_tags("armor_stand",
                                          ShowArms=1,
                                          NoGravity=1,
                                          Invisible=invisible,
@@ -2103,7 +2103,7 @@ class Barrow(Blank):
             pose['RightLeg'].append(nbt.TAG_Float(0))
             pose['RightLeg'].append(nbt.TAG_Float(0))
 
-            tags = get_entity_other_tags("ArmorStand",
+            tags = get_entity_other_tags("armor_stand",
                                          NoGravity=1,
                                          Invisible=1,
                                          Pose=pose,

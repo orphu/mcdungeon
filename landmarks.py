@@ -436,7 +436,7 @@ class Memorial(Clearing):
         painting = self.parent.inventory.mapstore.add_painting(random.choice(self.parent.inventory.paintlist))
         picof = painting['tag']['display']['Name'].value
         self.description = 'a memorial to %s' % ( picof )
-        framed_painting = get_entity_other_tags("ItemFrame",
+        framed_painting = get_entity_other_tags("item_frame",
                                          Pos=self.offset + Vec(8.0,-3,8), # block frame is IN
                                          Facing="S", # 0=south
                                          ItemRotation=0,

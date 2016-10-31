@@ -557,7 +557,7 @@ def drange(start, stop, step):
         r += step
 
 
-def dumpEnts(world, EntId="ItemFrame"):
+def dumpEnts(world, EntId="item_frame"):
     for i, cPos in enumerate(world.allChunks):
         try:
             chunk = world.getChunk(*cPos)
@@ -1156,11 +1156,11 @@ def get_tile_entity_tags(
     root_tag['y'] = nbt.TAG_Int(Pos[1])
     root_tag['z'] = nbt.TAG_Int(Pos[2])
 
-    if (eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'Trap', 'Cauldron',
-                'EnchantTable', 'Control') and CustomName is not None):
+    if (eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'dispenser', 'brewing_stand',
+                'enchanting_table', 'command_block') and CustomName is not None):
         root_tag['CustomName'] = nbt.TAG_String(CustomName)
 
-    if eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'Trap', 'Cauldron',
+    if eid in ('Chest', 'Furnace', 'Dropper', 'Hopper', 'dispenser', 'brewing_stand',
                'Beacon'):
         root_tag['Lock'] = nbt.TAG_String(Lock)
 
@@ -1182,21 +1182,21 @@ def get_tile_entity_tags(
         root_tag['Primary'] = nbt.TAG_Int(Primary)
         root_tag['Secondary'] = nbt.TAG_Int(Secondary)
 
-    if eid in ('Cauldron', 'Chest', 'Furnace', 'Hopper', 'Trap'):
+    if eid in ('brewing_stand', 'Chest', 'Furnace', 'Hopper', 'dispenser'):
         root_tag['Items'] = nbt.TAG_List()
 
-    if eid is 'Cauldron':
+    if eid is 'brewing_stand':
         root_tag['BrewTime'] = nbt.TAG_Int(BrewTime)
 
     if eid == 'Comparator':
         root_tag['OutputSignal'] = nbt.TAG_Int(OutputSignal)
 
-    if eid is 'Control':
+    if eid is 'command_block':
         root_tag['Command'] = nbt.TAG_String(Command)
         root_tag['SuccessCount'] = nbt.TAG_Int(SuccessCount)
         root_tag['LastOutput'] = nbt.TAG_String(LastOutput)
 
-    if eid is 'FlowerPot':
+    if eid is 'flower_pot':
         root_tag['Item'] = nbt.TAG_String(Item)
         root_tag['Data'] = nbt.TAG_Int(Data)
 
@@ -1208,10 +1208,10 @@ def get_tile_entity_tags(
     if eid is 'Hopper':
         root_tag['TransferCooldown'] = nbt.TAG_Int(TransferCooldown)
 
-    if eid is 'Music':
+    if eid is 'noteblock':
         root_tag['note'] = nbt.TAG_Byte(note)
 
-    if eid == 'RecordPlayer':
+    if eid == 'jukebox':
         root_tag['Record'] = nbt.TAG_Int(Record)
         # Should be a full nbt.TAG_Compound item
         if RecordItem is not None:
@@ -1228,7 +1228,7 @@ def get_tile_entity_tags(
         root_tag['ExtraType'] = nbt.TAG_String(ExtraType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
         
-    if eid is 'EndGateway':
+    if eid is 'end_gateway':
         root_tag['Age'] = nbt.TAG_Long(201);
         root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
         exit_tag = nbt.TAG_Compound()
@@ -1599,15 +1599,15 @@ def get_entity_item_tags(eid='XPOrb', Value=1, Count=1, ItemInfo=None,
     return root_tag
 
 
-def get_entity_other_tags(eid='EnderCrystal', Facing='S',
+def get_entity_other_tags(eid='ender_crystal', Facing='S',
                           ItemTags=None, ItemDropChance=1.0,
                           ItemRotation=0, Motive='Kebab', Pos=Vec(0, 0, 0),
                           Damage=0, DisabledSlots=0, Invisible=0,
                           NoBasePlate=0, NoGravity=0, ShowArms=0,
                           Small=0, Health=None, Pose=None, **kwargs):
     '''Returns an nbt.TAG_Compound for "other" type entities. These
-    include EnderCrystal, EyeOfEnderSignal, ItemFrame,
-    Painting, LeashKnot, and ArmorStand. Chunk offsets will be
+    include ender_crystal, EyeOfEnderSignal, item_frame,
+    Painting, leash_knot, and armor_stand. Chunk offsets will be
     calculated. ItemTags should contain an item as NBT tags.'''
 
     # Convert Vec types so we can use either
@@ -1616,7 +1616,7 @@ def get_entity_other_tags(eid='EnderCrystal', Facing='S',
 
     root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
 
-    if eid is 'ArmorStand':
+    if eid is 'armor_stand':
         root_tag['DisabledSlots'] = nbt.TAG_Int(DisabledSlots)
         root_tag['HandItems'] = nbt.TAG_List()
         root_tag['HandItems'].append(nbt.TAG_Compound())
@@ -1639,13 +1639,13 @@ def get_entity_other_tags(eid='EnderCrystal', Facing='S',
             root_tag['Pose'] = Pose
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
-    # painting/ItemFrame is contained within, and Pos is the actual position in the
+    # painting/item_frame is contained within, and Pos is the actual position in the
     # world. So we need to move Pos slightly according to size of the
-    # Painting/ItemFrame and direction it is facing or Minecraft will complain
+    # Painting/item_frame and direction it is facing or Minecraft will complain
     # and try to move the entity itself. The entity must be centered on the
     # tile it is attached to on the appropriate face. Paintings and frames
     # are 1-4 blocks tall and wide, and 0.03125 blocks thick.
-    if eid in ('ItemFrame', 'Painting'):
+    if eid in ('item_frame', 'Painting'):
         # Set direction. For convenience we provide letters.
         dirs = {'N': 2,
                 'S': 0,
@@ -1656,7 +1656,7 @@ def get_entity_other_tags(eid='EnderCrystal', Facing='S',
         root_tag['Facing'] = nbt.TAG_Byte(Facing)
 
         # Now, shift Pos appropriately. First we need the size of the entity.
-        # Default is 1x1, and ItemFrames are 1x1.
+        # Default is 1x1, and Item Frames are 1x1.
         sizes = {
             'Kebab': (1, 1),
             'Aztec': (1, 1),
@@ -1719,7 +1719,7 @@ def get_entity_other_tags(eid='EnderCrystal', Facing='S',
         root_tag['TileZ'] = nbt.TAG_Int(int(root_tag['Pos'][2].value))
 
     # Attach an item to the frame (if any)
-    if eid == 'ItemFrame':
+    if eid == 'item_frame':
         root_tag['ItemDropChance'] = nbt.TAG_Float(ItemDropChance)
         root_tag['ItemRotation'] = nbt.TAG_Byte(ItemRotation)
         if ItemTags is not None:

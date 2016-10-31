@@ -963,7 +963,7 @@ class SecretStudy(SecretRoom):
                                 ("custom painting", 1)))
         sb(self.c1 + Vec(2, -3, 1), materials._wall)
         self.parent.parent.addentity(
-            get_entity_other_tags("ItemFrame",
+            get_entity_other_tags("item_frame",
                                   Pos=self.c1 + Vec(2, -3, 1),
                                   Facing="S",
                                   ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot)
@@ -1102,7 +1102,7 @@ class SecretAlchemyLab(SecretRoom):
         #
         sb(self.c1.trans(4, -2, 4), materials.BrewingStand)
         root_tag = nbt.TAG_Compound()
-        root_tag['id'] = nbt.TAG_String('Cauldron')
+        root_tag['id'] = nbt.TAG_String('brewing_stand')
         root_tag['x'] = nbt.TAG_Int(self.c1.trans(4, -2, 4).x)
         root_tag['y'] = nbt.TAG_Int(self.c1.trans(4, -2, 4).y)
         root_tag['z'] = nbt.TAG_Int(self.c1.trans(4, -2, 4).z)
@@ -1315,7 +1315,7 @@ class SecretSepulchure(SecretRoom):
                 d = gems[0]
             else:
                 d = gems[1]
-            tags = get_entity_other_tags("ItemFrame",
+            tags = get_entity_other_tags("item_frame",
                                          ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot),
                                          Pos=q,
                                          Facing=d)
@@ -1453,13 +1453,13 @@ class SecretShop(SecretRoom):
         p = bl.up(2)+rt+(fw*7)
         sb(p, materials.EnderChest, orient['U'])
         dungeon.addtileentity(get_tile_entity_tags(
-                                    eid='EnderChest',
+                                    eid='ender_chest',
                                     Pos=p))
 
         # Free sample!
         p = bl.up(3)+(rt*7)
         dungeon.addentity(
-            get_entity_other_tags("ItemFrame",
+            get_entity_other_tags("item_frame",
                                   Pos=p,
                                   Facing=frame_or,
                                   ItemTags=dungeon.inventory.buildFrameItemTag(s.free_sample.lower())
@@ -1747,7 +1747,7 @@ class SecretArmory(SecretRoom):
             else:
                 displayname = name + "'s " + item_name
             # Build the frame tags
-            tags = get_entity_other_tags("ItemFrame",
+            tags = get_entity_other_tags("item_frame",
                                          Pos=self.c1 + p[2],
                                          Facing=p[3],
                                          ItemRotation=ItemRotation,
@@ -1993,7 +1993,7 @@ class SecretEnchantingLibrary(SecretRoom):
         p = self.c1 + Vec(5, -1, 5)
         sb(p, materials.EnchantmentTable)
         tags = nbt.TAG_Compound()
-        tags['id'] = nbt.TAG_String('EnchantTable')
+        tags['id'] = nbt.TAG_String('enchanting_table')
         tags['x'] = nbt.TAG_Int(p.x)
         tags['y'] = nbt.TAG_Int(p.y)
         tags['z'] = nbt.TAG_Int(p.z)
@@ -2013,7 +2013,7 @@ class SecretEnchantingLibrary(SecretRoom):
         p = (bl + rt * 5 + fw * 1).up(1)
         sb(p, materials.EnderChest, chests[1])
         tags = nbt.TAG_Compound()
-        tags['id'] = nbt.TAG_String('EnderChest')
+        tags['id'] = nbt.TAG_String('ender_chest')
         tags['x'] = nbt.TAG_Int(p.x)
         tags['y'] = nbt.TAG_Int(p.y)
         tags['z'] = nbt.TAG_Int(p.z)

@@ -3582,7 +3582,7 @@ def drawExitPortal(pos, dungeon, NS=False):
     p = pos + x * 3 + y * 4
     sb(p, materials.CommandBlock)
     root_tag = nbt.TAG_Compound()
-    root_tag['id'] = nbt.TAG_String('Control')
+    root_tag['id'] = nbt.TAG_String('command_block')
     root_tag['x'] = nbt.TAG_Int(p.x)
     root_tag['y'] = nbt.TAG_Int(p.y)
     root_tag['z'] = nbt.TAG_Int(p.z)

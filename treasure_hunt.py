@@ -510,7 +510,7 @@ class TreasureHunt (Dungeon):
             self.setblock(loc, materials.Spawner)
             entity = weighted_choice(cfg.master_landmark_mobs)
             root_tag = self.getspawnertags(entity)
-            root_tag['id'] = nbt.TAG_String('MobSpawner')
+            root_tag['id'] = nbt.TAG_String('mob_spawner')
             root_tag['x'] = nbt.TAG_Int(loc.x )
             root_tag['y'] = nbt.TAG_Int(loc.y )
             root_tag['z'] = nbt.TAG_Int(loc.z )

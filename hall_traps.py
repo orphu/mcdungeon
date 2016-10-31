@@ -89,7 +89,7 @@ class Blank(object):
                             if tmpl[d][l][w] in cmds:
                                 self.parent.addtileentity(
                                     get_tile_entity_tags(
-                                        eid='Control',
+                                        eid='command_block',
                                         Pos=q,
                                         Command=cmds[tmpl[d][l][w]]
                                     )
