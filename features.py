@@ -1397,7 +1397,7 @@ class SecretShop(SecretRoom):
             floor = materials.PolishedGranite
             banner_cols = [15,2]
         elif (s.profession == 4): # Butcher
-            upperslab = materials.UpperQuartzSlabs
+            upperslab = materials.UpperQuartzSlab
             pillers = materials.PillarQuartzBlock
             floor = materials.PolishedDiorite
             banner_cols = [15,0]
