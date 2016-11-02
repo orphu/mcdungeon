@@ -53,6 +53,8 @@ secret_rooms = '75'
 silverfish = '0'
 maps = '0'
 mapstore = ''
+mapcolor = 11141120      # Hex: AA0000
+paintingcolor = 14079638 # Hex: D6D696
 portal_exit = Vec(0, 0, 0)
 dungeon_name = None
 river_biomes = [7, 11]
@@ -123,6 +125,20 @@ def getPath(section, var, default):
     return os.path.join('configs', os.path.normpath(temp))
 
 
+def getHexColor(section, var, default):
+    global parser
+    try:
+        temp = parser.get(section, var)
+        print section, var, temp
+        temp = int(temp, 16)
+        print temp
+    except:
+        return default
+    if (temp < 0 or temp > 16777215):
+        return default
+    return temp
+
+
 def str2bool(string):
     if (
         string.lower() is False or
@@ -178,7 +194,8 @@ def Load(filename='default.cfg'):
         maximize_distance, hall_piston_traps, resetting_hall_pistons, \
         structure_values, default_entrances, master_entrances, \
         master_treasure, secret_rooms, secret_door, silverfish, bury, \
-        master_projectile_traps, maps, mapstore, max_mob_tier, custom_spawners, \
+        master_projectile_traps, maps, mapstore, mapcolor, paintingcolor, \
+        max_mob_tier, custom_spawners, \
         master_stairwells, hidden_spawners, master_srooms, SpawnCount, \
         SpawnMaxNearbyEntities, SpawnMinDelay, SpawnMaxDelay, \
         SpawnRequiredPlayerRange, chest_traps, master_chest_traps, \
@@ -449,6 +466,8 @@ def Load(filename='default.cfg'):
     silverfish = int(get('dungeon', 'silverfish', silverfish))
     maps = int(get('dungeon', 'maps', maps))
     mapstore = get('dungeon', 'mapstore', mapstore)
+    mapcolor = getHexColor('dungeon', 'mapcolor', mapcolor)
+    paintingcolor = getHexColor('dungeon', 'paintingcolor', paintingcolor)
 
     th_locked = str2bool(get('treasure hunt', 'locked', th_locked))
     th_bonus = int(get('treasure hunt', 'bonus', th_bonus))

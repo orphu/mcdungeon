@@ -1389,7 +1389,8 @@ def main():
         # We need to update the caches for the chunks we are affecting
         dcache, dmtime = utils.loadDungeonCache(cache_path)
         tcache, tmtime = utils.loadTHuntCache(cache_path)
-        ms = mapstore.new(cfg.mapstore, cfg.dir_paintings)
+        ms = mapstore.new(cfg.mapstore, cfg.dir_paintings, cfg.mapcolor,
+                          cfg.paintingcolor)
         for d in to_delete:
             p = [d[0] / 16, d[1] / 16]
             print 'Deleting dungeon/hunt at %d %d...' % (d[0], d[1])
@@ -1477,7 +1478,8 @@ def main():
         # We'll need caches and map stores
         dungeon_cache, dmtime = utils.loadDungeonCache(cache_path)
         chunk_cache, cmtime = utils.loadChunkCache(cache_path)
-        map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings)
+        map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings, cfg.mapcolor,
+                                 cfg.paintingcolor)
         loottable.Load()
 
         # Set/override some common parameters
@@ -1940,7 +1942,8 @@ def main():
     dungeon_cache, mtime = utils.loadDungeonCache(cache_path)
     thunt_cache, tmtime = utils.loadTHuntCache(cache_path)
     # Create a map store
-    map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings)
+    map_store = mapstore.new(cfg.mapstore, cfg.dir_paintings, cfg.mapcolor,
+                             cfg.paintingcolor)
 
     # Generate dungeons!
     count = 0

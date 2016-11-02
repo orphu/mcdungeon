@@ -28,8 +28,11 @@ import items
 
 class new:
 
-    def __init__(self, mapstore, dir_paintings='paintings'):
+    def __init__(self, mapstore, dir_paintings='paintings', mapcolor=11141120,
+                 paintingcolor=14079638):
         self.mapstore = os.path.join(mapstore, 'data')
+        self.mapcolor = mapcolor
+        self.paintingcolor = paintingcolor
 
         # Load the idcounts.dat NBT if it exists, otherwise make
         # a new one.
@@ -150,7 +153,7 @@ class new:
                 '.txt'))
         loredata = lorefile.read().splitlines()
         lorefile.close()
-        # Create NBT tag
+        # Create display tags
         valid_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~ "
         item['tag'] = nbt.TAG_Compound()
         item['tag']['display'] = nbt.TAG_Compound()
@@ -163,6 +166,7 @@ class new:
         for p in loredata[:5]:
             line = filter(lambda x: x in valid_characters, p)
             item['tag']['display']['Lore'].append(nbt.TAG_String(line[:50]))
+        item['tag']['display']['MapColor'] = nbt.TAG_Int(self.paintingcolor)
 
         return item
 
@@ -326,6 +330,7 @@ class new:
         item['tag']['display'] = nbt.TAG_Compound()
         name = dungeon.dungeon_name + ' Lv {l}'
         item['tag']['display']['Name'] = nbt.TAG_String(name.format(l=level))
+        item['tag']['display']['MapColor'] = nbt.TAG_Int(self.mapcolor)
         print item['tag']['display']['Name'].value
 
         return item
