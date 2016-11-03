@@ -1,4 +1,22 @@
-v0.16.0 - 
+v0.17.0 -
+
+  !! NOTE: This version requires Minecraft 1.11.0 release or higher!
+  
+  * Added 1.11 items, blocks and mobs. (JiFish)
+  
+  * Beware! Loot can now be cursed with the new 1.11 enchantments. (JiFish)
+  
+  * Added support for coloring custom potions in potions.txt (JiFish)
+  
+  * Added configuration options for map item sprite coloring.
+    See mapcolor and paintingcolor in default.cfg (JiFish)
+    
+  * Added two new shops to find and updated some old ones with new
+    inventory. (JiFish)
+  
+  * Various fixes for Minecraft 1.11 (JiFish)
+
+v0.16.0 - 08/07/2016
 
   !! NOTE: This version requires Minecraft 1.10.2 release or higher!
   
