@@ -13,6 +13,8 @@ v0.17.0 -
     
   * Added two new shops to find and updated some old ones with new
     inventory. (JiFish)
+    
+  * Fix flower pot in various locations to have flowers in again. (JiFish)
   
   * Various fixes for Minecraft 1.11 (JiFish)
 

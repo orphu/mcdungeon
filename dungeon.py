@@ -1033,6 +1033,11 @@ class Dungeon (object):
         root_tag = get_tile_entity_tags(eid="end_gateway",Pos=loc,ExitPos=exitloc,ExactTeleport=1)
         self.addtileentity(root_tag)
 
+    def addflowerpot(self, loc, itemname='air'):
+        item = loottable.items.byName(itemname.lower())
+        root_tag = get_tile_entity_tags(eid='flower_pot',Pos=loc,Item=item.id, Data=item.data)
+        self.addtileentity(root_tag)
+
     def addentity(self, root_tag):
         self.ents.append(root_tag)
 

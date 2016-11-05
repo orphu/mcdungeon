@@ -2671,11 +2671,11 @@ class HouseFrame(Blank):
             self.parent.parent.setblock(start.trans(2 + random.randint(0, 3),
                                                     0,
                                                     2),
-                                        materials.FlowerPot, 10, soft=True)
+                                        materials.FlowerPot, 0, soft=True)
             self.parent.parent.setblock(start.trans(2 + random.randint(0, 3),
                                                     0,
                                                     3),
-                                        materials.FlowerPot, 10, soft=True)
+                                        materials.FlowerPot, 0, soft=True)
 
         # ruin it! (maybe)
         if (random.randint(1, 100) < 50):

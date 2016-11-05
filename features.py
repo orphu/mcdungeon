@@ -109,6 +109,7 @@ class TripleStairs(Blank):
     def render(self):
         # create a shortcut to the set block fN
         sb = self.parent.parent.setblock
+        dungeon = self.parent.parent
 
         center = self.parent.canvasCenter()
 
@@ -118,7 +119,7 @@ class TripleStairs(Blank):
         # add a random deco object at the top
         decos = ((materials.Cauldron, 2),
                  (materials.Torch, 5),
-                 (materials.FlowerPot, 10),
+                 (materials.FlowerPot, 0),
                  (materials.StoneDoubleSlab, 0),
                  (materials.Air, 0))
 
@@ -126,6 +127,10 @@ class TripleStairs(Blank):
 
         sb(start.trans(1, -1, 1), deco[0], deco[1])
         sb(start.trans(4, -1, 1), deco[0], deco[1])
+        # Add entity data if flower pot was chosen
+        if deco[0] == materials.FlowerPot:
+            dungeon.addflowerpot(start.trans(1, -1, 1), itemname="dead bush")
+            dungeon.addflowerpot(start.trans(4, -1, 1), itemname="dead bush")
 
         # using the following materials...
         mats = [
@@ -947,7 +952,8 @@ class SecretStudy(SecretRoom):
 
     def renderSecretPost(self):
         sb = self.parent.parent.setblock
-        blocks = self.parent.parent.blocks
+        dungeon = self.parent.parent
+        blocks = dungeon.blocks
 
         # Bookshelves
         for p in iterate_four_walls(Vec(1, -1, 1), Vec(8, -1, 8), 2):
@@ -962,11 +968,11 @@ class SecretStudy(SecretRoom):
                                 ("written book", 1),
                                 ("custom painting", 1)))
         sb(self.c1 + Vec(2, -3, 1), materials._wall)
-        self.parent.parent.addentity(
+        dungeon.addentity(
             get_entity_other_tags("item_frame",
                                   Pos=self.c1 + Vec(2, -3, 1),
                                   Facing="S",
-                                  ItemTags=self.parent.parent.inventory.buildFrameItemTag(loot)
+                                  ItemTags=dungeon.inventory.buildFrameItemTag(loot)
                                   )
         )
 
@@ -997,15 +1003,19 @@ class SecretStudy(SecretRoom):
                 sb(p,
                    mats[template[x][z]][0],
                    mats[template[x][z]][1])
-        self.parent.parent.blocks[self.c1 + Vec(5, -1, 4)].data = 2
-        self.parent.parent.blocks[self.c1 + Vec(5, -1, 5)].data = 0
-        self.parent.parent.blocks[self.c1 + Vec(5, -1, 6)].data = 3
+        dungeon.blocks[self.c1 + Vec(5, -1, 4)].data = 2
+        dungeon.blocks[self.c1 + Vec(5, -1, 5)].data = 0
+        dungeon.blocks[self.c1 + Vec(5, -1, 6)].data = 3
 
         if (random.random() < 0.1):
             sb(self.c1.trans(4, -2, 4), materials.Cake, random.randrange(0, 6))
         elif (random.random() < 0.4):
-            sb(self.c1.trans(4, -2, 4),
-               materials.FlowerPot, random.randrange(1, 12))
+            flowers = ("poppy", "blue orchid", "allium", "azure bluet",
+                       "red tulip", "orange tulip", "white tulip", "pink tulip",
+                       "oxeye daisy", "dandelion", "fern", "cactus")
+            sb(self.c1.trans(4, -2, 4), materials.FlowerPot, 0)
+            dungeon.addflowerpot(self.c1.trans(4, -2, 4),
+                                 itemname=random.choice(flowers))
         else:
             sb(self.c1.trans(4, -2, 4), materials.Torch, 5)
 
@@ -1033,9 +1043,9 @@ class SecretStudy(SecretRoom):
                         s[0].data,
                         '',
                         flag=s[0].flag))
-        self.parent.parent.addchest(self.c1.trans(4, -1, 6), loot=deskloot)
+        dungeon.addchest(self.c1.trans(4, -1, 6), loot=deskloot)
 
-        self.parent.parent.cobwebs(self.c1.up(4), self.c3)
+        dungeon.cobwebs(self.c1.up(4), self.c3)
 
         # Hide the room from maps.
         self.hideRoom()
@@ -1482,7 +1492,12 @@ class SecretShop(SecretRoom):
             sb(q, upperslab)
 
         # Desk plant
-        sb(bl.up(2)+(rt*2)+(fw*5), materials.FlowerPot, random.randrange(1, 12))
+        flowers = ("poppy", "blue orchid", "allium", "azure bluet",
+                       "red tulip", "orange tulip", "white tulip", "pink tulip",
+                       "oxeye daisy", "dandelion", "fern", "cactus")
+        sb(bl.up(2)+(rt*2)+(fw*5), materials.FlowerPot, 0)
+        dungeon.addflowerpot(bl.up(2)+(rt*2)+(fw*5),
+                             itemname=random.choice(flowers))
 
         # lights
         redstonepos = ([1,0],[7,0],[0,7],[9,8],[5,5])

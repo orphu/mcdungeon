@@ -841,16 +841,12 @@ class Graveyard(Clearing):
             self.parent.setblock(self.offset + pos + Vec(2,1,1), materials.OakWoodPlanks, soft=False)
             # flower on grave
             if random.randint(0,100) < 50:
-                _flowers = [
-                    (materials.PottedDandelion, 10),
-                    (materials.PottedPoppy, 10),
-                    (materials.PottedRedMushroom, 1),
-                    (materials.PottedDeadBush, 2),
-                    (materials.FlowerPot, 2),
-                    (materials.PottedCactus, 2),
-                ]
-                flower = weighted_choice(_flowers)
-                self.parent.setblock(self.offset + pos + Vec(2,-1,1), flower)
+                flowers = ("poppy", "blue orchid", "allium", "azure bluet",
+                           "red tulip", "orange tulip", "white tulip", "pink tulip",
+                           "oxeye daisy", "dandelion", "dead bush", "air")
+                self.parent.setblock(self.offset + pos + Vec(2,-1,1), materials.FlowerPot, 0)
+                self.parent.addflowerpot(self.offset + pos + Vec(2,-1,1),
+                                         itemname=random.choice(flowers))
 
         # marker: same graves are unmarked
         if random.randint(0,100)>5:
