@@ -129,9 +129,7 @@ def getHexColor(section, var, default):
     global parser
     try:
         temp = parser.get(section, var)
-        print section, var, temp
         temp = int(temp, 16)
-        print temp
     except:
         return default
     if (temp < 0 or temp > 16777215):
