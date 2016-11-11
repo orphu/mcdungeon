@@ -18,6 +18,10 @@ For more information on the format of the tags see:
     * http://www.minecraftwiki.net/wiki/Chunk_format#Tile_Entity_Format
     * http://www.minecraftwiki.net/wiki/Chunk_format#Mobs
 
+NBT files in this folder can be referenced in mob tables as
+"file_[filename without extension]" For example, "Angrypig.nbt" would be
+referenced as "file_Angrypig". See default.cfg for more details.
+
 IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
 crash it. Please use this feature with caution.
 
