@@ -52,6 +52,7 @@ Durendal:Gold Sword,16-5:Legendary sword of Roland.
 Caladbolg:Iron Sword,16-2,19-1:The sword of Fergus mac Roich.
 Dyrnwyn:Iron Sword,20-3:White-Hilt
 Excalibur:Diamond Sword,16-1,19-1,17-1:Sword of Arthur,:King of the Britons.
+Excalipoor:Wooden Sword,16-1,19-1,71-1:Carved by a madman who:longed for Exalibur.
 Fragarach:Iron Sword,16-3:The Answerer
 Gram:Iron Sword,16-3,19-2:Slayer of Dragons
 Harpe:Iron Sword,18-3,17-2
