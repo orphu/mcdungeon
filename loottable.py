@@ -231,7 +231,7 @@ _ench_items_table = {
     LURE: ['book', 'fishing rod'],
     FROST_WALKER: ['book'],
     MENDING: ['book'],
-    CURSE_OF_BINDING: ['book', 'chestplate'],
+    CURSE_OF_BINDING: ['book'],
     CURSE_OF_VANISHING: ['book']
 }
 
