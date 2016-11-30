@@ -49,7 +49,6 @@ Skeleton_Pumpkin: A tough skeleton with a pumpkin on his head so
                   that he can be in the sun.
 Skeleton_Tipped_Arrow: Skeletons wielding various tipped arrows.
 Stray: Stray skeleton mob varient.
-WitherSkeleton: Wither skeleton mob varient.
 Zombie_Fast: Zombie with speed potion effect.
 Zombie_Pumpkin: A strengthened zombie wearing a pumpkin on his head so
                 that he can be in the sun.
