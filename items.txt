@@ -166,7 +166,7 @@ Eye of Ender,minecraft:ender_eye,0,64
 Glistering Melon,minecraft:speckled_melon,0,64
 Spawn Bat,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:bat
 Spawn Blaze,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:blaze
-Spawn Cave Spider,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:cavespider
+Spawn Cave Spider,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:cave_spider
 Spawn Chicken,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:chicken
 Spawn Cow,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:cow
 Spawn Creeper,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:creeper

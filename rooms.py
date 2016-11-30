@@ -1417,7 +1417,7 @@ class SpiderLair(Basic):
                     self.parent.setblock(p.up(1), materials.Air)
                     self.parent.setblock(p.up(2), materials.Air)
                     self.parent.setblock(p.up(3), materials.Air)
-                    self.parent.addspawner(p, 'CaveSpider')
+                    self.parent.addspawner(p, 'cave_spider')
                     count += 1
 
         # Portal
