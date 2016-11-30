@@ -2249,7 +2249,7 @@ class Crypt(Basic):
             if random.randint(1, 100) >= 33:
                 continue
             self.parent.addspawner(o + p, random.choice(['Skeleton',
-                                                         'WitherSkeleton']))
+                                                         'wither_skeleton']))
             self.parent.setblock(o + p, materials.Spawner)
 
         # Dais
