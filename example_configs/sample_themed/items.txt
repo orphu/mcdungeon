@@ -2,8 +2,8 @@
 # This file is ideal for adding mod items for loot.
 # 
 # Format is:
-# ID,Item Name,Data Value,Maximum Stack Size
+# Item Name,ID,Data Value,Maximum Stack Size,Special Flag (optional)
 
 # This block can't normally be obtained in vanilla.
 # (http://www.minecraftwiki.net/wiki/Double_Slab#Trivia)
-43,smooth full halfslab,8,64
+smooth full halfslab,minecraft:double_stone_slab,8,64
