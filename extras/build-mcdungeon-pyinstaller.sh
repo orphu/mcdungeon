@@ -120,7 +120,7 @@ a.datas += [ \
 ' mcdungeon/mcdungeon.spec
 
 # Build it!
-python pyinstaller.py mcdungeon/mcdungeon.spec || error 'Pyinstaller build failed.' $?
+python pyinstaller.py --clean mcdungeon/mcdungeon.spec || error 'Pyinstaller build failed.' $?
 
 # Copy over support files
 mkdir -p $NAME/bin
