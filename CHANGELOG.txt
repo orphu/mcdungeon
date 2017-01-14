@@ -1,5 +1,10 @@
 v0.17.1 -
 
+  !! NOTE: This version requires Minecraft 1.11.2 release or higher!
+  
+  * Fix for issue where a map's existing dungeon / treasure hunts were
+    sometimes not be detected. (MikeyCarter)
+  
 v0.17.0 - 11/24/2016
 
   !! NOTE: This version requires Minecraft 1.11.0 release or higher!

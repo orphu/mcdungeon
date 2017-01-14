@@ -605,7 +605,7 @@ def checkDInfo(c):
             )
             return key, 'dungeon', tileEntity
         if (
-            tileEntity['id'].value == 'Chest' and
+            (tileEntity['id'].value == 'Chest' or tileEntity['id'].value == 'minecraft:chest') and
             'CustomName' in tileEntity and
             tileEntity['CustomName'].value == 'MCDungeon Data Library'
         ):
@@ -615,7 +615,7 @@ def checkDInfo(c):
             )
             return key, 'dungeon', tileEntity
         if (
-            tileEntity['id'].value == 'Chest' and
+            (tileEntity['id'].value == 'Chest' or tileEntity['id'].value == 'minecraft:chest') and
             'CustomName' in tileEntity and
             tileEntity['CustomName'].value == 'MCDungeon THunt Data Library'
         ):
