@@ -5,6 +5,9 @@ v0.17.1 -
   * Fix for issue where a map's existing dungeon / treasure hunts were
     sometimes not be detected. (MikeyCarter)
   
+  * More fixes for incorrect 1.11 entity and item ids. This will fix some
+    crash during dungeon generation issues and some broken spawners. (JiFish)
+  
 v0.17.0 - 11/24/2016
 
   !! NOTE: This version requires Minecraft 1.11.0 release or higher!
