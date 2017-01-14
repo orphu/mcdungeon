@@ -270,7 +270,7 @@ Shield,minecraft:shield,0,1
 Elytra,minecraft:elytra,0,1
 End Crystal,minecraft:end_crystal,0,64
 Shulker Shell,minecraft:shulker_shell,0,64
-Totem of Undying,minecraft:totem,0,1
+Totem of Undying,minecraft:totem_of_undying,0,1
 
 # Disks
 #
