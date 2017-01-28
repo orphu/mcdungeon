@@ -2,13 +2,22 @@ v0.17.1 -
 
   !! NOTE: This version requires Minecraft 1.11.2 release or higher!
   
+  !! NOTE: We recommend you rengenerate any dungeons generated with 0.17.0 to
+           fix some of the below issues.
+  
   * Fix for issue where a map's existing dungeon / treasure hunts were
     sometimes not be detected. (MikeyCarter)
   
   * More fixes for incorrect 1.11 entity and item ids. This will fix some
     crash during dungeon generation issues and some broken spawners. (JiFish)
-    
+  
+  * Fix for Unknown Item when generating some secret shops. (JiFish)
+  
   * Improved dungeon banner generator to give more variations. (JiFish)
+  
+  * Add Sweeping Edge enchatment to loot. (JiFish)
+  
+  * Add Iron Nuggets to tier 1 loot. (JiFish)
   
 v0.17.0 - 11/24/2016
 
