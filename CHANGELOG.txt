@@ -19,6 +19,8 @@ v0.17.1 -
   
   * Add Iron Nuggets to tier 1 loot. (JiFish)
   
+  * Fixed dungeon banners in loot. (JiFish)
+
 v0.17.0 - 11/24/2016
 
   !! NOTE: This version requires Minecraft 1.11.0 release or higher!

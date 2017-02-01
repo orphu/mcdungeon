@@ -281,6 +281,10 @@ class new:
                 q['Color'] = nbt.TAG_Int(p[0])
                 q['Pattern'] = nbt.TAG_String(p[1])
                 item_tag['tag']['BlockEntityTag']['Patterns'].append(q)
+            # Set the damage to match the base colour. This is a special case for
+            # banner items in chests
+            if i.id == 'minecraft:banner':
+                item_tag['Damage'] = nbt.TAG_Short(self.flag['Base'])
         elif (i.flag.startswith('ENTITYTAG:')):
             try:
                 item_tag['tag']
