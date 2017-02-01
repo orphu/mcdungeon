@@ -20,6 +20,8 @@ v0.17.1 -
   * Add Iron Nuggets to tier 1 loot. (JiFish)
   
   * Fixed dungeon banners in loot. (JiFish)
+  
+  * Fixed sounds for portcullises. (ninmore)
 
 v0.17.0 - 11/24/2016
 

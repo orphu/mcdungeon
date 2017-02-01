@@ -346,8 +346,8 @@ class Portcullis(Blank):
         mat['oo'][0] = gate[0]
 
         cmds = {
-            'C1': '/playsound minecraft:block.piston.contract blocks @p',
-            'C2': '/playsound minecraft:block.piston.extend blocks @p',
+            'C1': '/playsound minecraft:block.piston.contract block @p ~ ~ ~ 10 1',
+            'C2': '/playsound minecraft:block.piston.extend block @p ~ ~ ~ 10 1',
             'C3': '/fill ~-2 ~2 ~2 ~-2 ~2 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
             'C4': '/fill ~-2 ~0 ~2 ~-2 ~0 ~{} minecraft:{} 0 replace'.format(self.size - 1, gate[1]),
             'C5': '/fill ~-2 ~1 ~-2 ~-2 ~1 ~-{} minecraft:air 0 replace'.format(self.size - 1),
