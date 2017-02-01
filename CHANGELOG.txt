@@ -6,7 +6,7 @@ v0.17.1 -
            fix some of the below issues.
   
   * Fix for issue where a map's existing dungeon / treasure hunts were
-    sometimes not be detected. (MikeyCarter)
+    sometimes not being detected. (MikeyCarter)
   
   * More fixes for incorrect 1.11 entity and item ids. This will fix some
     crash during dungeon generation issues and some broken spawners. (JiFish)
