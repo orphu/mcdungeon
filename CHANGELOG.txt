@@ -2,7 +2,7 @@ v0.17.1 -
 
   !! NOTE: This version requires Minecraft 1.11.2 release or higher!
   
-  !! NOTE: We recommend you rengenerate any dungeons generated with 0.17.0 to
+  !! NOTE: We recommend you regenerate any dungeons generated with 0.17.0 to
            fix some of the below issues.
   
   * Fix for issue where a map's existing dungeon / treasure hunts were
@@ -15,7 +15,7 @@ v0.17.1 -
   
   * Improved dungeon banner generator to give more variations. (JiFish)
   
-  * Add Sweeping Edge enchatment to loot. (JiFish)
+  * Add Sweeping Edge enchantment to loot. (JiFish)
   
   * Add Iron Nuggets to tier 1 loot. (JiFish)
   
