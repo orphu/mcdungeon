@@ -17,20 +17,8 @@ class Blank(object):
     def render(self):
         pass
 
-
-class Cobble(Blank):
-    _name = 'cobble'
-    ruin = False
-    mat = materials.meta_mossycobble
-
-    def render(self):
-        if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
-            return
-        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            self.parent.parent.setblock(x + self.parent.loc, self.mat)
-        # Ruined
-        if (self.ruin is False):
-            return
+    # Generic ruining used by multiple floors
+    def ruinrender(self):
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
         r = random.randint(1, 1000)
@@ -43,6 +31,21 @@ class Cobble(Blank):
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
+
+
+class Cobble(Blank):
+    _name = 'cobble'
+    ruin = False
+    mat = materials.meta_mossycobble
+
+    def render(self):
+        if (utils.sum_points_inside_flat_poly(*self.parent.canvas) <= 4):
+            return
+        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
+            self.parent.parent.setblock(x + self.parent.loc, self.mat)
+        # Ruined
+        if (self.ruin):
+            self.ruinrender()
 
 
 class BrokenCobble(Cobble):
@@ -83,20 +86,8 @@ class StoneTile(Blank):
                 else:
                     self.parent.parent.setblock(x + self.parent.loc, mat[1])
         # Ruined
-        if (self.ruin is False):
-            return
-        c = self.parent.canvasCenter()
-        y = self.parent.canvasHeight()
-        r = random.randint(1, 1000)
-        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
-        pn = perlin.SimplexNoise(256)
-        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x + self.parent.loc
-            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n < d):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.blocks[p].data = 0
+        if (self.ruin):
+            self.ruinrender()
 
 
 class BrokenStoneTile(StoneTile):
@@ -235,22 +226,9 @@ class RadialRug(Blank):
                     j_adj = 2 * depth - 1 - j
                 self.parent.parent.blocks[p].data = \
                     color_profile[points[i_adj][j_adj]]
-
-        if not self.ruin:
-            return
-        # this chunk of code is copied from CheckerRug's render() method
-        pn = perlin.SimplexNoise(256)
-        c = self.parent.canvasCenter()
-        y = self.parent.canvasHeight()
-        r = random.randint(1, 1000)
-        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
-        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x + self.parent.loc
-            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n < d):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.blocks[p].data = 0
+        # Ruined
+        if (self.ruin):
+            self.ruinrender()
 
 
 class BrokenRadialRug(RadialRug):
@@ -298,20 +276,8 @@ class CheckerRug(Blank):
             else:
                 self.parent.parent.blocks[x + self.parent.loc].data = color[1]
         # Runined
-        if (self.ruin is False):
-            return
-        pn = perlin.SimplexNoise(256)
-        c = self.parent.canvasCenter()
-        y = self.parent.canvasHeight()
-        r = random.randint(1, 1000)
-        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
-        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x + self.parent.loc
-            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n < d):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.blocks[p].data = 0
+        if (self.ruin):
+            self.ruinrender()
 
 
 class BrokenCheckerRug(CheckerRug):
@@ -341,20 +307,8 @@ class DoubleSlab(Blank):
             self.parent.parent.setblock(x + self.parent.loc,
                                         materials.StoneDoubleSlab)
         # Runined
-        pn = perlin.SimplexNoise(256)
-        if (self.ruin is False):
-            return
-        c = self.parent.canvasCenter()
-        y = self.parent.canvasHeight()
-        r = random.randint(1, 1000)
-        maxd = max(1, self.parent.canvasWidth(), self.parent.canvasLength())
-        for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
-            p = x + self.parent.loc
-            d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
-            if (n < d):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.blocks[p].data = 0
+        if (self.ruin):
+            self.ruinrender()
 
 
 class BrokenDoubleSlab(DoubleSlab):
