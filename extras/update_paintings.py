@@ -7,7 +7,7 @@ print "Quick and dirty tool to update paintings in an existing world."
 
 if (len(sys.argv) != 2):
     print 'Usage: update_paintings.py <path to world folder>'
-    print 'When using a bukkit setup remember to provide the primary world'
+    print 'When using a multiverse setup remember to provide the primary world'
     print "Always make a backup."
     sys.exit()
 

@@ -15,7 +15,7 @@ if platform.system() != 'Windows':
     import concurrent.futures as cf
 
 # Version info
-__version__ = '0.17.1'
+__version__ = '0.18.0'
 __version_info__ = tuple([num for num in __version__.split('.')])
 _vstring = '%%(prog)s %s' % (__version__)
 
@@ -973,11 +973,11 @@ def main():
             # Prompt for a mapstore if we need to
             if (cfg.mapstore == '' and args.mapstore is None):
                 print '\nSome configurations may generate dungeon maps. If you are'
-                print 'using bukkit/multiverse you need supply the name of your'
+                print 'using multiverse you need supply the name of your'
                 print 'primary world for this to work. You can also provide this'
                 print 'in the config file or as a command switch.'
-                print '\n(if you don\'t use bukkit, just hit enter)'
-                cfg.mapstore = raw_input('Name of primary bukkit world: ')
+                print '\n(if you don\'t use multiverse, just hit enter)'
+                cfg.mapstore = raw_input('Name of primary multiverse world: ')
 
             # Prompt for max_dist
             print '\nEnter the maximum distance (in chunks) from spawn to place'
@@ -1050,11 +1050,11 @@ def main():
             # Prompt for a mapstore if we need to
             if (cfg.mapstore == '' and args.mapstore is None):
                 print '\nSome configurations may generate dungeon maps. If you are'
-                print 'using bukkit/multiverse you need supply the name of your'
+                print 'using multiverse you need supply the name of your'
                 print 'primary world for this to work. You can also provide this'
                 print 'in the config file or as a command switch.'
-                print '\n(if you don\'t use bukkit, just hit enter)'
-                cfg.mapstore = raw_input('Name of primary bukkit world: ')
+                print '\n(if you don\'t use multiverse, just hit enter)'
+                cfg.mapstore = raw_input('Name of primary multiverse world: ')
 
             # Prompt for max_dist
             print '\nEnter the maximum distance (in chunks) from spawn to the start'
@@ -1120,11 +1120,11 @@ def main():
             # Prompt for a mapstore if we need to
             if (cfg.maps > 0 and cfg.mapstore == '' and args.mapstore is None):
                 print '\nThis configuration may generate dungeon maps. If you are'
-                print 'using bukkit/multiverse you need supply the name of your'
+                print 'using multiverse you need supply the name of your'
                 print 'primary world for this to work. You can also provide this'
                 print 'in the config file or as a command switch.'
-                print '\n(if you don\'t use bukkit, just hit enter)'
-                cfg.mapstore = raw_input('Name of primary bukkit world: ')
+                print '\n(if you don\'t use multiverse, just hit enter)'
+                cfg.mapstore = raw_input('Name of primary multiverse world: ')
 
             if (cfg.mapstore == ''):
                 cfg.mapstore = args.world
@@ -1170,12 +1170,12 @@ def main():
 
             # Prompt for a mapstore if we need to
             if args.mapstore is None:
-                print '\nIf you are using bukkit/multiverse you need supply the'
+                print '\nIf you are using multiverse you need supply the'
                 print 'name of your primary world so any existing dungeon maps'
                 print 'can be removed. You can also provide this as a command'
                 print 'switch.'
-                print '\n(if you don\'t use bukkit, just hit enter)'
-                cfg.mapstore = raw_input('Name of primary bukkit world: ')
+                print '\n(if you don\'t use multiverse, just hit enter)'
+                cfg.mapstore = raw_input('Name of primary multiverse world: ')
 
             if (cfg.mapstore == ''):
                 cfg.mapstore = args.world
@@ -1342,7 +1342,7 @@ def main():
             stream = open( args.regionfile, 'w' )
             stream.write("# Created by MCDungeon\n")
             stream.write("# Be VERY CAREFUL if updating this file by hand!  Always keep backups!\n")
-            stream.write("# Use /rg reload [-w world] in Bukkit to reload data if server is up\n")
+            stream.write("# Use /rg reload [-w world] to reload data if server is up\n")
             stream.write("# MCDungeon defaults are kept in the global region __mcd_default__\n#\n")
             yaml.dump( regions, stream )
         except:

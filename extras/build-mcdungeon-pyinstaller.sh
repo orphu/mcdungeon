@@ -5,11 +5,10 @@
 #
 # Tested configurations:
 #
-# Pyinstaller 3.1.1 stable
+# Pyinstaller 3.2.1 stable
 #
-# Windows 10 (64 bit) / Python 2.7.11 / numpy-1.11.0 / pywin32 220
-# Windows 7 (32bit) / Python 2.7.11 / numpy-1.11.0 / pywin32 220
-# OS X 10.11.3 (El Capitan) / Python 2.7.11 (pyenv) / numpy-1.11.0 (pip) *
+# Windows 10 (64 bit) / Python 2.7.13 / numpy-1.12.0 (pip) / pipywin32 219 (pip)
+# OS X 10.11.3 (El Capitan) / Python 2.7.13 (pyenv) / numpy-1.13.0 (pip) *
 #
 # * See this note for numpy and pyenv 20150310 on OS X:
 #
