@@ -316,6 +316,71 @@ class BrokenDoubleSlab(DoubleSlab):
     ruin = True
 
 
+class Mosaic(Blank):
+    _name = 'mosaic'
+    ruin = False
+    colours = (
+        materials.WhiteGlazedTerracotta,
+        materials.OrangeGlazedTerracotta,
+        materials.MagentaGlazedTerracotta,
+        materials.LightBlueGlazedTerracotta,
+        materials.YellowGlazedTerracotta,
+        materials.LimeGlazedTerracotta,
+        materials.PinkGlazedTerracotta,
+        materials.GrayGlazedTerracotta,
+        materials.LightGrayGlazedTerracotta,
+        materials.CyanGlazedTerracotta,
+        materials.PurpleGlazedTerracotta,
+        materials.BlueGlazedTerracotta,
+        materials.BrownGlazedTerracotta,
+        materials.GreenGlazedTerracotta,
+        materials.RedGlazedTerracotta,
+        materials.BlackGlazedTerracotta
+    )
+    patterns = (
+        [[0,2]],
+
+        [[0,3],
+         [1,2]],
+
+        [[0,2],
+         [1,3]],
+
+        [[1,3],
+         [2,0]],
+
+        [[2,0,3,1],
+         [0,0,3,3],
+         [1,1,2,2],
+         [3,1,2,0]],
+
+        [[2,0,3,1],
+         [0,2,1,3],
+         [1,3,0,2],
+         [3,1,2,0]]
+    )
+
+    def render(self):
+        if (utils.sum_points_inside_flat_poly(*self.parent.canvas) > 4):
+            block = random.choice(self.colours)
+            pattern = random.choice(self.patterns)
+            hmax = len(pattern)
+            wmax = len(pattern[0])
+            for x in utils.iterate_points_inside_flat_poly(
+                *self.parent.canvas
+            ):
+                data = pattern[x.x%hmax][x.z%wmax]
+                self.parent.parent.setblock(x + self.parent.loc, block, data)
+            # Ruined
+            if (self.ruin):
+                self.ruinrender()
+
+
+class BrokenMosaic(Mosaic):
+    _name = 'brokenmosaic'
+    ruin = True
+
+
 class Mud(Blank):
     _name = 'mud'
 
