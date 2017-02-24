@@ -1135,17 +1135,18 @@ def get_tile_entity_tags(
                          eid='chest', Pos=Vec(0, 0, 0),
                          CustomName=None, Lock='', Base=0,
                          Patterns=(), Levels=0, Primary=0,
-                         Secondary=0, BrewTime=0, OutputSignal=0,
+                         Secondary=0, BrewTime=0, Fuel=0, OutputSignal=0,
                          Command='', SuccessCount=0, LastOutput='',
                          Item='', Data=0, BurnTime=0, CookTime=0,
                          CookTimeTotal=0, TransferCooldown=0,
                          note=0, Record=0, RecordItem=None, Text1='',
                          Text2='', Text3='', Text4='', SkullType=0,
-                         ExtraType='', Rot=0, ExactTeleport=0,
-                         ExitPos=Vec(0,0,0)):
+                         Rot=0, ExactTeleport=0, ExitPos=Vec(0,0,0),
+                         powered=0):
     '''Returns an nbt.TAG_Compound containing tags for tile
     entities'''
 
+    # eids are always lower case.
     eid = eid.lower()
 
     # Convert Vec types into a tuple so we can use either.
@@ -1165,6 +1166,9 @@ def get_tile_entity_tags(
     if eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser', 'brewing_stand',
                'beacon'):
         root_tag['Lock'] = nbt.TAG_String(Lock)
+
+    if eid in ('command_block', 'noteblock'):
+        root_tag['powered'] = nbt.TAG_Byte(powered)
 
     if eid == 'banner':
         root_tag['Base'] = nbt.TAG_Int(Base)
@@ -1189,6 +1193,7 @@ def get_tile_entity_tags(
 
     if eid == 'brewing_stand':
         root_tag['BrewTime'] = nbt.TAG_Int(BrewTime)
+        root_tag['Fuel'] = nbt.TAG_Byte(Fuel)
 
     if eid == 'comparator':
         root_tag['OutputSignal'] = nbt.TAG_Int(OutputSignal)
@@ -1227,9 +1232,8 @@ def get_tile_entity_tags(
 
     if eid == 'skull':
         root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
-        root_tag['ExtraType'] = nbt.TAG_String(ExtraType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
-        
+
     if eid == 'end_gateway':
         root_tag['Age'] = nbt.TAG_Long(201);
         root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
@@ -1251,6 +1255,7 @@ def get_entity_base_tags(eid='chicken', Pos=Vec(0, 0, 0),
                          Passengers=[], Glowing=0, Tags=[]):
     '''Returns an nbt.TAG_Compound containing tags common to all entities'''
 
+    # eids are always lower case.
     eid = eid.lower()
 
     # Convert Vec types into a tuple so we can use either
