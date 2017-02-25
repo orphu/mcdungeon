@@ -15,8 +15,8 @@ import numpy
 from materials import heightmap_solids
 from pymclevel import mclevel, nbt
 
-cache_version = '7'
-dv_version = 176
+cache_version = '8'
+dv_version = 922
 
 def floor(n):
     return int(n)
@@ -1249,11 +1249,15 @@ def get_tile_entity_tags(
 def get_entity_base_tags(eid='chicken', Pos=Vec(0, 0, 0),
                          Motion=Vec(0, 0, 0), Rotation=Vec(0, 0, 0),
                          FallDistance=0.0, Fire=0, Air=300, OnGround=0,
-                         Dimension=0, Invulnerable=0, PortalCooldown=0,
-                         UUIDMost=None, UUIDLeast=None,
+                         NoGravity=0, Dimension=0, Invulnerable=0,
+                         PortalCooldown=0, UUIDMost=None, UUIDLeast=None,
                          CustomName='', CustomNameVisible=0, Silent=0,
                          Passengers=[], Glowing=0, Tags=[]):
-    '''Returns an nbt.TAG_Compound containing tags common to all entities'''
+    '''
+    Returns an nbt.TAG_Compound containing tags common to all entities.
+    In general, you don't want to call this. You want to call
+    get_entity_mob_tags(), get_entity_item() get_entity_other_tags() instead.
+    '''
 
     # eids are always lower case.
     eid = eid.lower()
@@ -1279,6 +1283,7 @@ def get_entity_base_tags(eid='chicken', Pos=Vec(0, 0, 0),
     root_tag['Fire'] = nbt.TAG_Short(Fire)
     root_tag['Air'] = nbt.TAG_Short(Air)
     root_tag['OnGround'] = nbt.TAG_Byte(OnGround)
+    root_tag['NoGravity'] = nbt.TAG_Byte(NoGravity)
     root_tag['Dimension'] = nbt.TAG_Int(Dimension)
     root_tag['Invulnerable'] = nbt.TAG_Byte(Invulnerable)
     root_tag['PortalCooldown'] = nbt.TAG_Int(PortalCooldown)
@@ -1315,24 +1320,26 @@ def get_entity_base_tags(eid='chicken', Pos=Vec(0, 0, 0),
     return root_tag
 
 
-def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
+def get_entity_mob_tags(eid='chicken', Health=None, AbsorptionAmount=0,
+                        FallFlying=0,
                         HurtTime=0, DeathTime=0, CanPickUpLoot=0,
                         NoAI=0, PersistenceRequired=0, InLove=0, Age=0,
                         Owner='', Sitting=0, Size=3, wasOnGround=1,
                         BatFlags=0, powered=0, ExplosionRadius=3,
                         Fuse=30, ignited=0, carried=0, carriedData=0,
-                        EndermiteCount=0, Lifetime=0, Bred=0,
+                        Lifetime=0, PlayerSpawned=0, Bred=0, SpellTicks=0,
                         ChestedHorse=0, EatingHaystack=0, Tame=0,
-                        Temper=0, Type=0, Variant=None, OwnerUUID=None,
-                        ExplosionPower=1, Elder=0, CatType=0, Saddle=0,
+                        Temper=0, Variant=None, OwnerUUID=None,
+                        ExplosionPower=1, Elder=0, CatType=0,
                         RabbitType=None, MoreCarrotTicks=0, Sheared=0,
                         Color=0, SkeletonType=0, Invul=0, Angry=0,
-                        CollarColor=14, Profession=None, Riches=0,
+                        CollarColor=14, Riches=0,
                         Career=None, CareerLevel=1, Willing=0,
-                        PlayerCreated=0, IsVillager=0, IsBaby=0,
+                        PlayerCreated=0, IsBaby=0,
                         ConversionTime=-1, CanBreakDoors=0, Anger=0,
                         Leashed=0, Leash=None, LeftHanded=0,
-                        VillagerProfession=None, SkeletonTrap=0,
+                        Profession=None, SkeletonTrap=0,
+                        EggLayTime=0, Strength=3,
                         SkeletonTrapTime=0, **kwargs):
     '''Returns an nbt.TAG_Compound for a specific mob id'''
 
@@ -1372,21 +1379,35 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
             Health = 10
         elif eid in ('cave_spider'):
             Health = 12
-        elif eid in ('horse'):
+        elif eid in (
+            'donkey',
+            'horse',
+            'llama',
+            'mule',
+            'skeleton_horse',
+            'zombie_horse',
+        ):
             Health = 15
         elif eid in ('spider'):
             Health = 16
         elif eid in (
-            'villager',
-            'zombie_pigman',
             'blaze',
             'creeper',
+            'husk',
             'skeleton'
+            'stray'
+            'villager',
+            'wither_skeleton'
+            'zombie'
+            'zombie_pigman',
+            'zombie_villager'
         ):
             Health = 20
+        elif eid == 'evocation_illager':
+            Health = 26
         elif eid == 'witch':
             Health = 26
-        elif eid == 'guardian':
+        elif eid in ('guardian', 'polar_bear', 'shulker'):
             Health = 30
         elif eid == 'enderman':
             Health = 40
@@ -1395,6 +1416,8 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
             'magma_cube'
         ):
             Health = Size * Size
+        elif eid in ('elder_guardian'):
+            Health = 80
         elif eid in (
             'giant',
             'villager_golem'
@@ -1409,9 +1432,10 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
 
     root_tag = get_entity_base_tags(eid, **kwargs)
     root_tag['Health'] = nbt.TAG_Float(Health)
-    root_tag['AttackTime'] = nbt.TAG_Short(AttackTime)
+    root_tag['AbsorptionAmount'] = nbt.TAG_Float(AbsorptionAmount)
     root_tag['HurtTime'] = nbt.TAG_Short(HurtTime)
     root_tag['DeathTime'] = nbt.TAG_Short(DeathTime)
+    root_tag['FallFlying'] = nbt.TAG_Byte(FallFlying)
 
     root_tag['HandItems'] = nbt.TAG_List()
     root_tag['HandItems'].append(nbt.TAG_Compound())
@@ -1436,6 +1460,7 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
     root_tag['CanPickUpLoot'] = nbt.TAG_Byte(CanPickUpLoot)
     root_tag['NoAI'] = nbt.TAG_Byte(NoAI)
     root_tag['PersistenceRequired'] = nbt.TAG_Byte(PersistenceRequired)
+    root_tag['LeftHanded'] = nbt.TAG_Byte(LeftHanded)
     root_tag['Leashed'] = nbt.TAG_Byte(Leashed)
 
     # If Leashed, figure out what we are leashed to. Leash can be provided as a
@@ -1453,11 +1478,9 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
             root_tag['Leash']['Y'] = Leash[1]
             root_tag['Leash']['Z'] = Leash[2]
 
-    root_tag['LeftHanded'] = nbt.TAG_Byte(LeftHanded)
-
     # Breeders
-    if eid in ('chicken', 'cow', 'mooshroom', 'ocelot', 'pig', 'sheep',
-               'villager', 'wolf', 'horse'):
+    if eid in ('chicken', 'cow', 'donkey', 'horse', 'llama', 'mooshroom',
+               'ocelot', 'pig', 'rabbit', 'sheep', 'villager', 'wolf'):
         root_tag['InLove'] = nbt.TAG_Int(InLove)
         root_tag['Age'] = nbt.TAG_Int(Age)
 
@@ -1470,6 +1493,12 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
     if eid == 'bat':
         root_tag['BatFlags'] = nbt.TAG_Byte(BatFlags)
 
+    if eid == 'chicken':
+        if EggLayTime == 0:
+            root_tag['EggLayTime'] = nbt.TAG_Int(random.randint(6000, 12000))
+        else:
+            root_tag['EggLayTime'] = nbt.TAG_Int(EggLayTime)
+
     if eid == 'creeper':
         root_tag['powered'] = nbt.TAG_Byte(powered)
         root_tag['ExplosionRadius'] = nbt.TAG_Byte(ExplosionRadius)
@@ -1479,30 +1508,43 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
     if eid == 'enderman':
         root_tag['carried'] = nbt.TAG_Short(carried)
         root_tag['carriedData'] = nbt.TAG_Short(carriedData)
-        root_tag['EndermiteCount'] = nbt.TAG_Int(EndermiteCount)
 
     if eid == 'endermite':
         root_tag['Lifetime'] = nbt.TAG_Int(Lifetime)
+        root_tag['PlayerSpawned'] = nbt.TAG_Byte(PlayerSpawned)
 
-    if eid == 'horse':
+    if eid == 'evocation_illager':
+        root_tag['SpellTicks'] = nbt.TAG_Int(SpellTicks)
+
+    if eid in ('donkey', 'llama', 'horse', 'mule'):
         root_tag['Bred'] = nbt.TAG_Byte(Bred)
-        if (Type == 1 or Type == 2):
-            root_tag['ChestedHorse'] = nbt.TAG_Byte(ChestedHorse)
-        else:
-            root_tag['ChestedHorse'] = nbt.TAG_Byte(0)
         root_tag['EatingHaystack'] = nbt.TAG_Byte(EatingHaystack)
         root_tag['Tame'] = nbt.TAG_Byte(Tame)
         root_tag['Temper'] = nbt.TAG_Int(Temper)
-        root_tag['Type'] = nbt.TAG_Int(Type)
+        root_tag['OwnerUUID'] = nbt.TAG_String(OwnerUUID)
+
+    if eid in ('donkey', 'llama', 'mule'):
+        root_tag['ChestedHorse'] = nbt.TAG_Byte(ChestedHorse)
+        root_tag['Items'] = nbt.TAG_List()
+
+    if eid in ('donkey', 'horse', 'mule'):
+        root_tag['ArmorItem'] = nbt.TAG_Compound()
+        root_tag['SaddleItem'] = nbt.TAG_Compound()
+
+    if eid in ('horse'):
         # If Variant is not supplied, pick a random one.
         if Variant is None:
             Variant = random.randint(0, 6) | (random.randint(0, 4)*256) << 8
         root_tag['Variant'] = nbt.TAG_Int(Variant)
-        root_tag['OwnerUUID'] = nbt.TAG_String(OwnerUUID)
-        root_tag['Items'] = nbt.TAG_List()
-        root_tag['ArmorItem'] = nbt.TAG_Compound()
-        root_tag['SaddleItem'] = nbt.TAG_Compound()
-        root_tag['Saddle'] = nbt.TAG_Byte(Saddle)
+
+    if eid in ('llama'):
+        if Variant is None:
+            Variant = random.randint(0, 3)
+        root_tag['Variant'] = nbt.TAG_Int(Variant)
+        root_tag['Strength'] = nbt.TAG_Int(Strength)
+        root_tag['DecorItem'] = nbt.TAG_Compound()
+
+    if eid in ('skeleton_horse'):
         root_tag['SkeletonTrap'] = nbt.TAG_Byte(SkeletonTrap)
         root_tag['SkeletonTrapTime'] = nbt.TAG_Int(SkeletonTrapTime)
 
@@ -1563,15 +1605,15 @@ def get_entity_mob_tags(eid='chicken', Health=None, AttackTime=0,
     if eid == 'villager_golem':
         root_tag['PlayerCreated'] = nbt.TAG_Byte(PlayerCreated)
 
-    if eid == 'zombie':
-        root_tag['IsVillager'] = nbt.TAG_Byte(IsVillager)
-        if IsVillager:
-            if VillagerProfession is None:
-                Career = random.randint(0, 4)
-            root_tag['VillagerProfession'] = nbt.TAG_Int(VillagerProfession)
+    if eid in ('husk', 'zombie', 'zombie_villager'):
         root_tag['IsBaby'] = nbt.TAG_Byte(IsBaby)
-        root_tag['ConversionTime'] = nbt.TAG_Int(ConversionTime)
         root_tag['CanBreakDoors'] = nbt.TAG_Byte(CanBreakDoors)
+
+    if eid in ('zombie_villager'):
+        if Profession is None:
+            Career = random.randint(0, 4)
+        root_tag['Profession'] = nbt.TAG_Int(Profession)
+        root_tag['ConversionTime'] = nbt.TAG_Int(ConversionTime)
 
     if eid == 'zombie_pigman':
         root_tag['Anger'] = nbt.TAG_Short(Anger)
