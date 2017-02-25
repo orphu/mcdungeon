@@ -366,12 +366,66 @@ class meta_class_stonedungeon(MetaMaterial):
             self.c = StoneBrick.c
 
 
+class meta_class_patternedterracotta(MetaMaterial):
+    c = 'G'
+
+    def __init__(self, name, pattern, material):
+        self.name = name
+        self.val = material.val
+        self.pattern = pattern
+        self.pxsize = len(pattern)
+        self.pzsize = len(pattern[0])
+
+    def update(self, x, y, z, maxx, maxy, maxz):
+        self.data = self.pattern[x%self.pxsize][z%self.pzsize]
+
+# Function to create a whole bunch of patterned terracotta materials (96!)
+def _build_terracotta_meta_materials():
+    patterns = {
+        'a': [[0,2]],
+        'b': [[0,3],
+              [1,2]],
+        'c': [[0,2],
+              [1,3]],
+        'd': [[1,3],
+              [2,0]],
+        'e': [[2,0,3,1],
+              [0,0,3,3],
+              [1,1,2,2],
+              [3,1,2,0]],
+        'f': [[2,0,3,1],
+              [0,2,1,3],
+              [1,3,0,2],
+              [3,1,2,0]]
+    }
+    colours = (
+        WhiteGlazedTerracotta, OrangeGlazedTerracotta, MagentaGlazedTerracotta,
+        LightBlueGlazedTerracotta, YellowGlazedTerracotta, LimeGlazedTerracotta,
+        PinkGlazedTerracotta, GrayGlazedTerracotta, LightGrayGlazedTerracotta,
+        CyanGlazedTerracotta, PurpleGlazedTerracotta, BlueGlazedTerracotta,
+        BrownGlazedTerracotta, GreenGlazedTerracotta, RedGlazedTerracotta,
+        BlackGlazedTerracotta
+    )
+    for patternname, pattern in patterns.items():
+        for colour in colours:
+            name = "meta_{0}_{1}".format(colour.name.replace(' ',''), patternname)
+            globals()[name] = meta_class_patternedterracotta(name,pattern,colour)
+            #print name
+
+# A convenience function to get random patterned terracotta material
+def randomMetaTerracotta(materials, patterns = ['a','b','c','d','e','f']):
+    rand_pattern = random.choice(patterns)
+    rand_material = random.choice(materials)
+    name = "meta_{0}_{1}".format(rand_material.name.replace(' ',''), rand_pattern)
+    return materialById(name)
+
 meta_mossycobble = meta_class_mossycobble()
 meta_mossycobblewall = meta_class_mossycobblewall()
 meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
 meta_decoratedsandstone = meta_class_decoratedsandstone()
 meta_decoratedredsandstone = meta_class_decoratedredsandstone()
+_build_terracotta_meta_materials()
 
 _wall = copy(Cobblestone)
 _secret_door = copy(Cobblestone)
