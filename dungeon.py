@@ -22,6 +22,7 @@ import inventory
 from utils import *
 from disjoint_set import DisjointSet
 from pymclevel import nbt
+from nbtyamlbridge import tagsfromfile
 
 
 class Block(object):
@@ -827,7 +828,7 @@ class Dungeon (object):
             entity = entity[5:] # Strip 'file_'
             if entity in cfg.custom_spawners.keys():
                 filepath = cfg.custom_spawners[entity]
-                root_tag = nbt.load(filename=filepath)
+                root_tag = tagsfromfile(filename=filepath)
                 return root_tag
             else: # File not found
                 entity = 'bat'

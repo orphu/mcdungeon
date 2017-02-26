@@ -172,8 +172,8 @@ def LoadSpawners(path='spawners'):
         else:
             spawners_path = path
         for file in os.listdir(spawners_path):
-            if file.endswith(".nbt"):
-                custom_spawners[file[:-4].lower()] = os.path.join(
+            if file.endswith(".yaml"):
+                custom_spawners[file[:-5].lower()] = os.path.join(
                     spawners_path,
                     file
                 )

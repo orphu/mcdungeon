@@ -3,7 +3,7 @@ import sys
 import os
 
 import materials
-from pymclevel import nbt
+from nbtyamlbridge import tagsfromfile
 
 _items = {}
 
@@ -304,7 +304,7 @@ def LoadDyedArmour(filename='dye_colors.txt'):
     print 'Loaded', items, 'dye colors.'
 
 
-def LoadNBTFiles(dirname='items'):
+def LoadYAMLFiles(dirname='items'):
     # Test which path to use. If the path can't be found
     # just don't load any items.
     if os.path.isdir(os.path.join(sys.path[0], dirname)):
@@ -312,21 +312,21 @@ def LoadNBTFiles(dirname='items'):
     elif os.path.isdir(dirname):
         item_path = dirname
     else:
-        print 'Could not find the NBT items folder!'
+        print 'Could not find the items folder!'
         return
-    # Make a list of all the NBT files in the items directory
+    # Make a list of all the .yaml files in the items directory
     itemlist = []
     for file in os.listdir(item_path):
-        if (file.endswith(".nbt")):
+        if (file.endswith(".yaml")):
             itemlist.append(file)
     items_count = 0
     for item in itemlist:
-        # SomeItem.nbt would be referenced in loot as file_some_item
-        name = 'file_' + item[:-4].lower()
+        # SomeItem.yaml would be referenced in loot as file_some_item
+        name = 'file_' + item[:-5].lower()
         full_path = os.path.join(item_path, item)
-        # Load the nbt file and do some basic validation
+        # Load the file and do some basic validation
         try:
-            item_nbt = nbt.load(full_path)
+            item_nbt = tagsfromfile(full_path)
             item_nbt['id']  # Throws an error if not set
         except:
             print item + " is an invalid item! Skipping."
@@ -339,7 +339,7 @@ def LoadNBTFiles(dirname='items'):
         _items[name] = ItemInfo(name, '', maxstack=stack, file=full_path)
         # print _items[name]
         items_count += 1
-    print 'Loaded', items_count, 'items from NBT files.'
+    print 'Loaded', items_count, 'items from yaml files.'
 
 
 def byName(name):
@@ -350,4 +350,4 @@ def byName(name):
         return None
 
 LoadItems()
-LoadNBTFiles()
+LoadYAMLFiles()

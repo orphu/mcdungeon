@@ -9,6 +9,7 @@ import loottable
 import items
 from utils import topheavy_random, converttoordinal, encodeJSONtext
 from pymclevel import nbt
+from nbtyamlbridge import tagsfromfile
 
 class new:
 
@@ -153,7 +154,7 @@ class new:
     def buildItemTag(self,i):
         # If it's a binary NBT file, just load it
         if i.file != '':
-            item_tag = nbt.load(i.file)
+            item_tag = tagsfromfile(i.file)
             # Set the slot and count
             if i.slot != None:
                 item_tag['Slot'] = nbt.TAG_Byte(i.slot)

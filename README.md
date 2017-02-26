@@ -88,6 +88,7 @@ Documentation: http://mcdungeon-docs.bubblemod.org
 
    * Python 2.7
    * Numpy
+   * nbt2yaml
 
 ##PYTHON EXAMPLES##
 
