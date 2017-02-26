@@ -1,0 +1,25 @@
+? ''
+: - SpawnData:
+    - id: minecraft:skeleton
+    - HandItems: !list_compound
+      - - Damage: !short "0"
+        - Count: !byte "1"
+        - id: minecraft:bow
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - []
+      - - id: minecraft:pumpkin
+        - Count: !byte "1"
+        - Damage: !short "0"
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    - CustomName: Jack O'Lantern
+

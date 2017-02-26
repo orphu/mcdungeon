@@ -1,0 +1,279 @@
+? ''
+: - Delay: !short "-1"
+  - SpawnPotentials: !list_compound
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "3"
+                  - Amplifier: !byte "0"
+                  - Duration: 2400
+        - ArmorItems: !list_compound
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_boots
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_leggings
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_chestplate
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "3"
+            - id: minecraft:skull
+            - tag:
+              - SkullOwner: MHF_Ocelot
+              - display:
+                - Name: Catling Head
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.0
+          - 0.0
+        - ArmorDropChances: !list_float
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.05000000074505806
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "0"
+            - Id: !byte "14"
+            - Duration: 10000000
+            - ShowParticles: !byte "0"
+        - CustomName: a catling
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "8"
+                  - Amplifier: !byte "0"
+                  - Duration: 2400
+        - ArmorItems: !list_compound
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_boots
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_leggings
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_chestplate
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "3"
+            - id: minecraft:skull
+            - tag:
+              - SkullOwner: MHF_Ocelot
+              - display:
+                - Name: Catling Head
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.0
+          - 0.0
+        - ArmorDropChances: !list_float
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.05000000074505806
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "0"
+            - Id: !byte "14"
+            - Duration: 10000000
+            - ShowParticles: !byte "0"
+        - CustomName: a catling
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "14"
+                  - Amplifier: !byte "0"
+                  - Duration: 2400
+        - ArmorItems: !list_compound
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_boots
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_leggings
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_chestplate
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "3"
+            - id: minecraft:skull
+            - tag:
+              - SkullOwner: MHF_Ocelot
+              - display:
+                - Name: Catling Head
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.0
+          - 0.0
+        - ArmorDropChances: !list_float
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.05000000074505806
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "0"
+            - Id: !byte "14"
+            - Duration: 10000000
+            - ShowParticles: !byte "0"
+        - CustomName: a catling
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "16"
+                  - Amplifier: !byte "0"
+                  - Duration: 2400
+        - ArmorItems: !list_compound
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_boots
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_leggings
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_chestplate
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "3"
+            - id: minecraft:skull
+            - tag:
+              - SkullOwner: MHF_Ocelot
+              - display:
+                - Name: Catling Head
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.0
+          - 0.0
+        - ArmorDropChances: !list_float
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.05000000074505806
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "0"
+            - Id: !byte "14"
+            - Duration: 10000000
+            - ShowParticles: !byte "0"
+        - CustomName: a catling
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "26"
+                  - Amplifier: !byte "0"
+                  - Duration: 2400
+        - ArmorItems: !list_compound
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_boots
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_leggings
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "0"
+            - id: minecraft:leather_chestplate
+            - tag:
+              - display:
+                - color: 11571024
+          - - Count: !byte "1"
+            - Damage: !short "3"
+            - id: minecraft:skull
+            - tag:
+              - SkullOwner: MHF_Ocelot
+              - display:
+                - Name: Catling Head
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.0
+          - 0.0
+        - ArmorDropChances: !list_float
+          - 0.0
+          - 0.0
+          - 0.0
+          - 0.05000000074505806
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "0"
+            - Id: !byte "14"
+            - Duration: 10000000
+            - ShowParticles: !byte "0"
+        - CustomName: a catling
+

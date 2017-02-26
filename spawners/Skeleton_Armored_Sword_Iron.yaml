@@ -1,0 +1,28 @@
+? ''
+: - SpawnData:
+    - id: minecraft:skeleton
+    - Health: 20.0
+    - HandItems: !list_compound
+      - - id: minecraft:iron_sword
+        - Damage: !short "0"
+        - Count: !byte "1"
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - - id: minecraft:iron_chestplate
+        - Damage: !short "0"
+        - Count: !byte "1"
+      - - id: minecraft:iron_helmet
+        - Damage: !short "0"
+        - Count: !byte "1"
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    - CustomName: Skeleton Sergeant
+

@@ -1,0 +1,26 @@
+? ''
+: - SpawnPotentials: !list_compound
+    - - Weight: 1
+      - Entity:
+        - id: minecraft:zombie
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - []
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+    - - Weight: 1
+      - Entity:
+        - id: minecraft:creeper
+    - - Weight: 1
+      - Entity:
+        - id: minecraft:spider
+  - Delay: !short "-1"
+

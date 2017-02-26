@@ -1,0 +1,5 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie_pigman
+    - Anger: !short "400"
+

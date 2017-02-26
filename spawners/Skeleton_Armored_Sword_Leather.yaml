@@ -1,0 +1,26 @@
+? ''
+: - SpawnData:
+    - id: minecraft:skeleton
+    - Health: 20.0
+    - HandItems: !list_compound
+      - - id: minecraft:stone_sword
+        - Damage: !short "0"
+        - Count: !byte "1"
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - - id: minecraft:leather_chestplate
+        - Damage: !short "0"
+        - Count: !byte "1"
+      - []
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    - CustomName: Skeleton Infantry
+

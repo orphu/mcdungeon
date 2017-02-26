@@ -1,0 +1,8 @@
+root:
+- id: minecraft:skull
+- Damage: !short "3"
+- tag:
+  - SkullOwner: MHF_Herobrine
+  - display:
+    - Name: !!python/str "\xA7rHerobrine's Head"
+

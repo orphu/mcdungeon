@@ -1,0 +1,12 @@
+root:
+- id: minecraft:diamond_sword
+- Damage: !short "0"
+- tag:
+  - ench: !list_compound
+    - - id: !short "16"
+      - lvl: !short "4"
+  - display:
+    - Name: !!python/str "\xA7rSword of Sharpness"
+    - Lore: !list_string
+      - A magically sharp sword
+

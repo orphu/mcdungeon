@@ -1,0 +1,26 @@
+root:
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "2"
+    - Explosions: !list_compound
+      - - Type: !byte "4"
+        - Colors: !int_array
+          - 11743532
+          - 14602026
+          - 15435844
+      - - Type: !byte "0"
+        - Colors: !int_array
+          - 4312372
+      - - Type: !byte "4"
+        - Colors: !int_array
+          - 11743532
+          - 14602026
+          - 15435844
+  - RepairCost: 2
+  - display:
+    - Name: The Pineapple Punch
+  - HideFlags: 63
+- id: minecraft:fireworks
+

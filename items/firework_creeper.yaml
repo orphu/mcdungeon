@@ -1,0 +1,17 @@
+root:
+- id: minecraft:fireworks
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "3"
+    - Explosions: !list_compound
+      - - Type: !byte "3"
+        - Colors: !int_array
+          - 4312372
+          - 3887386
+  - RepairCost: 2
+  - display:
+    - Name: Mr. Creeper's Suprise
+  - HideFlags: 63
+

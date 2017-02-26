@@ -1,0 +1,43 @@
+? ''
+: - SpawnPotentials: !list_compound
+    - - Weight: 4
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - []
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+    - - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:stone_sword
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - []
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:wither_skeleton
+      - Weight: 1
+    - - Weight: 2
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - []
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:stray
+  - Delay: !short "-1"
+

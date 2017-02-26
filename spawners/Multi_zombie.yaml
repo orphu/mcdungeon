@@ -1,0 +1,17 @@
+? ''
+: - SpawnPotentials: !list_compound
+    - - Weight: 4
+      - Entity:
+        - id: minecraft:zombie
+    - - Entity:
+        - ActiveEffects: !list_compound
+          - - Amplifier: !byte "2"
+            - Id: !byte "1"
+            - Duration: 10000000
+          - - Amplifier: !byte "1"
+            - Id: !byte "5"
+            - Duration: 10000000
+        - id: minecraft:zombie
+      - Weight: 1
+  - Delay: !short "-1"
+

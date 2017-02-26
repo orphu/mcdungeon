@@ -1,0 +1,22 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - HandItems: !list_compound
+      - []
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - []
+      - - id: minecraft:pumpkin
+        - Count: !byte "1"
+        - Damage: !short "0"
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+

@@ -1,0 +1,51 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - Health: 16.0
+    - ActiveEffects: !list_compound
+      - - Amplifier: !byte "1"
+        - Id: !byte "1"
+        - Duration: 10000000
+    - HandItems: !list_compound
+      - - id: minecraft:diamond_sword
+        - Damage: !short "0"
+        - tag:
+          - ench: !list_compound
+            - - id: !short "16"
+              - lvl: !short "3"
+        - Count: !byte "1"
+      - []
+    - ArmorItems: !list_compound
+      - - Count: !byte "1"
+        - Damage: !short "0"
+        - id: minecraft:leather_boots
+        - tag:
+          - display:
+            - color: 0
+      - - Count: !byte "1"
+        - Damage: !short "0"
+        - id: minecraft:iron_leggings
+        - tag:
+          - ench: !list_compound
+            - - id: !short "1"
+              - lvl: !short "2"
+      - - Count: !byte "1"
+        - Damage: !short "0"
+        - id: minecraft:diamond_chestplate
+        - tag:
+          - ench: !list_compound
+            - - id: !short "4"
+              - lvl: !short "2"
+      - - Count: !byte "1"
+        - Damage: !short "3"
+        - id: minecraft:skull
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+  - SpawnCount: !short "3"
+

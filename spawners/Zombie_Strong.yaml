@@ -1,0 +1,10 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - Health: 16.0
+    - ActiveEffects: !list_compound
+      - - Amplifier: !byte "1"
+        - Id: !byte "5"
+        - Duration: 10000000
+    - CustomName: Muscular Zombie
+

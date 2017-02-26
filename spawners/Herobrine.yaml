@@ -1,0 +1,55 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - Health: 60.0
+    - ActiveEffects: !list_compound
+      - - Amplifier: !byte "2"
+        - Id: !byte "1"
+        - Duration: 10000000
+      - - Amplifier: !byte "2"
+        - Id: !byte "5"
+        - Duration: 10000000
+      - - Id: !byte "8"
+        - Amplifier: !byte "2"
+        - Duration: 10000000
+      - - Id: !byte "12"
+        - Amplifier: !byte "1"
+        - Duration: 10000000
+    - Equipment: !list_compound
+      - - id: !short "276"
+        - Damage: !short "0"
+        - tag:
+          - ench: !list_compound
+            - - id: !short "16"
+              - lvl: !short "3"
+        - Count: !byte "1"
+    - HandItems: !list_compound
+      - []
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - []
+      - - Count: !byte "1"
+        - Damage: !short "3"
+        - id: minecraft:skull
+        - tag:
+          - SkullOwner: MHF_Herobrine
+          - display:
+            - Name: Herobrine's Head
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.10000000149011612
+    - Attributes: !list_compound
+      - - Name: generic.knockbackResistance
+        - Operation: !byte "0"
+        - Amount: 0.8999999761581421
+  - MaxNearbyEntities: !short "1"
+  - RequiredPlayerRange: !short "16"
+  - SpawnCount: !short "1"
+

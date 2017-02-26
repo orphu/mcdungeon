@@ -1,0 +1,8 @@
+root:
+- id: minecraft:skull
+- Damage: !short "3"
+- tag:
+  - SkullOwner: MHF_Enderman
+  - display:
+    - Name: !!python/str "\xA7rEnderman Head"
+

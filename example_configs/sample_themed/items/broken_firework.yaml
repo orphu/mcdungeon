@@ -1,0 +1,21 @@
+root:
+- id: !short "401"
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "1"
+    - Explosions: !list_compound
+      - - Type: !byte "1"
+        - Colors: !int_array
+          - 1973019
+          - 1973019
+          - 11250603
+          - 1973019
+          - 11250603
+          - 11250603
+        - Trail: !byte "1"
+  - RepairCost: 2
+  - display:
+    - Name: Broken Firework
+

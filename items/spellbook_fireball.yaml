@@ -1,0 +1,23 @@
+root:
+- id: minecraft:written_book
+- Damage: !short "0"
+- tag:
+  - author: Rincewind
+  - display:
+    - Name: !!python/str "\xA7rSpellbook: Fireball"
+    - Lore: !list_string
+      - Contains the Fireball spell
+      - Fires a Fireball North
+  - title: Spells
+  - pages: !list_string
+    - '{text:''This is a book of spells, by me, Rincewind.  Just cick on the spell
+      to activate.'', color:dark_aqua, bold:true}'
+    - '{text:''Fireball '',color:dark_red,bold:true,extra:[{text:''- North -'',color:dark_red,bold:false,clickEvent:{action:run_command,value:''/summon
+      Fireball ~0 ~2 ~-1 {ExplosionPower:5,direction:[0.0,0.0,-4.0]}''}},{text:''-
+      South -'',color:dark_red,bold:false,clickEvent:{action:run_command,value:''/summon
+      Fireball ~0 ~2 ~1 {ExplosionPower:5,direction:[0.0,0.0,4.0]}''}},{text:''- East
+      -'',color:dark_red,bold:false,clickEvent:{action:run_command,value:''/summon
+      Fireball ~1 ~2 ~0 {ExplosionPower:5,direction:[4.0,0.0,0.0]}''}},{text:''- West
+      -'',color:dark_red,bold:false,clickEvent:{action:run_command,value:''/summon
+      Fireball ~-1 ~2 ~0 {ExplosionPower:5,direction:[-4.0,0.0,0.0]}''}}]}'
+

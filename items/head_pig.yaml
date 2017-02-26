@@ -1,0 +1,8 @@
+root:
+- id: minecraft:skull
+- Damage: !short "3"
+- tag:
+  - SkullOwner: MHF_Pig
+  - display:
+    - Name: !!python/str "\xA7rPig Head"
+

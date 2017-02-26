@@ -1,0 +1,22 @@
+root:
+- id: minecraft:fireworks
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "3"
+    - Explosions: !list_compound
+      - - Type: !byte "1"
+        - Flicker: !byte "1"
+        - Colors: !int_array
+          - 15790320
+          - 15790320
+          - 15790320
+          - 2437522
+          - 15790320
+          - 15790320
+  - RepairCost: 2
+  - display:
+    - Name: The Classic Boom
+  - HideFlags: 63
+

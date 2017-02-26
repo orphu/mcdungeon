@@ -1,0 +1,30 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - Health: 16.0
+    - ActiveEffects: !list_compound
+      - - Amplifier: !byte "1"
+        - Id: !byte "5"
+        - Duration: 10000000
+    - CustomName: Zombie Warrior
+    - HandItems: !list_compound
+      - - Count: !byte "1"
+        - Damage: !short "0"
+        - id: minecraft:iron_sword
+      - []
+    - ArmorItems: !list_compound
+      - []
+      - []
+      - []
+      - - id: minecraft:iron_helmet
+        - Count: !byte "1"
+        - Damage: !short "0"
+    - HandDropChances: !list_float
+      - 0.0
+      - 0.0
+    - ArmorDropChances: !list_float
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+

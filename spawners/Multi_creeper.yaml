@@ -1,0 +1,11 @@
+? ''
+: - SpawnPotentials: !list_compound
+    - - Weight: 4
+      - Entity:
+        - id: minecraft:creeper
+    - - Entity:
+        - powered: !byte "1"
+        - id: minecraft:creeper
+      - Weight: 1
+  - Delay: !short "-1"
+

@@ -1,0 +1,8 @@
+root:
+- id: minecraft:skull
+- Damage: !short "3"
+- tag:
+  - SkullOwner: MHF_OakLog
+  - display:
+    - Name: !!python/str "\xA7rOak Log Block Head"
+

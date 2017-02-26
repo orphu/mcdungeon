@@ -1,0 +1,130 @@
+? ''
+: - SpawnPotentials: !list_compound
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - Potion: minecraft:poison
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - Potion: minecraft:harming
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - Potion: minecraft:weakness
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - Potion: minecraft:slowness
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "17"
+                  - Amplifier: !byte "0"
+                  - Duration: 1800
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+    - - Weight: 1
+      - Entity:
+        - HandItems: !list_compound
+          - - id: minecraft:bow
+            - Damage: !short "0"
+            - Count: !byte "1"
+          - - Count: !byte "16"
+            - Damage: !short "0"
+            - id: minecraft:tipped_arrow
+            - tag:
+              - CustomPotionEffects: !list_compound
+                - - Id: !byte "4"
+                  - Amplifier: !byte "0"
+                  - Duration: 3600
+        - ArmorItems: !list_compound
+          - []
+          - []
+          - []
+          - []
+        - id: minecraft:skeleton
+        - HandDropChances: !list_float
+          - 0.05000000074505806
+          - 0.05000000074505806
+  - Delay: !short "-1"
+

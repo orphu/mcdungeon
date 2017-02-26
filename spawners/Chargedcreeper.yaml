@@ -1,0 +1,6 @@
+? ''
+: - SpawnData:
+    - id: minecraft:creeper
+    - powered: !byte "1"
+  - SpawnCount: !short "3"
+

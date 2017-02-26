@@ -1,0 +1,17 @@
+root:
+- id: minecraft:written_book
+- Damage: !short "0"
+- tag:
+  - author: Rincewind
+  - display:
+    - Name: !!python/str "\xA7rSpellbook: Infinite Apples"
+    - Lore: !list_string
+      - Contains the Summon Apple spell
+      - Gives the caster an apple
+  - title: Spells
+  - pages: !list_string
+    - '{text:''This is a book of spells, by me, Rincewind.  Just cick on the spell
+      to activate.'', color:dark_aqua, bold:true}'
+    - '{text:''Summon Apple'',color:green,bold:false,clickEvent:{action:run_command,value:''/give
+      @p minecraft:apple 1''}}'
+

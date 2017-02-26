@@ -1,0 +1,23 @@
+root:
+- id: minecraft:fireworks
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "2"
+    - Explosions: !list_compound
+      - - Type: !byte "0"
+        - Colors: !int_array
+          - 2437522
+        - Trail: !byte "1"
+      - - Type: !byte "2"
+        - Colors: !int_array
+          - 15790320
+      - - Type: !byte "1"
+        - Colors: !int_array
+          - 11743532
+  - RepairCost: 2
+  - display:
+    - Name: 'The Patriot: Blue, White & Red'
+  - HideFlags: 63
+

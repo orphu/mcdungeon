@@ -1,0 +1,10 @@
+? ''
+: - SpawnData:
+    - id: minecraft:zombie
+    - Health: 16.0
+    - ActiveEffects: !list_compound
+      - - Amplifier: !byte "2"
+        - Id: !byte "1"
+        - Duration: 10000000
+    - CustomName: Rage Zombie
+

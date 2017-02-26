@@ -1,0 +1,8 @@
+root:
+- id: minecraft:skull
+- Damage: !short "3"
+- tag:
+  - SkullOwner: MHF_Cake
+  - display:
+    - Name: !!python/str "\xA7rCake Block Head"
+

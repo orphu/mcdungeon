@@ -1,0 +1,7 @@
+? ''
+: - SpawnData:
+    - id: minecraft:silverfish
+  - SpawnCount: !short "5"
+  - MaxNearbyEntities: !short "6"
+  - RequiredPlayerRange: !short "12"
+

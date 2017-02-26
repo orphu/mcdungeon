@@ -1,0 +1,33 @@
+root:
+- id: minecraft:fireworks
+- Damage: !short "0"
+- Count: !byte "64"
+- tag:
+  - Fireworks:
+    - Flight: !byte "3"
+    - Explosions: !list_compound
+      - - Type: !byte "4"
+        - Flicker: !byte "1"
+        - Colors: !int_array
+          - 2437522
+          - 11743532
+          - 14188952
+        - Trail: !byte "1"
+      - - Type: !byte "1"
+        - Flicker: !byte "1"
+        - Colors: !int_array
+          - 12801229
+          - 11743532
+          - 15435844
+        - Trail: !byte "1"
+      - - Type: !byte "1"
+        - Flicker: !byte "1"
+        - Colors: !int_array
+          - 12801229
+          - 8073150
+        - Trail: !byte "1"
+  - RepairCost: 2
+  - display:
+    - Name: The Princess' Sparkler
+  - HideFlags: 63
+
