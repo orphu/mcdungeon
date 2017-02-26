@@ -1,14 +1,12 @@
-This folder contains the data for customised items. NBT files in this
+This folder contains the data for customised items. YAML files in this
 folder can be referenced in loot tables as file_[filename without extension]
-For example, head_notch.nbt would be referenced as file_head_notch.
+For example, head_notch.yaml would be referenced as file_head_notch.
 See default.cfg for more details.
 
-Each custom item is an NBT file containing the tags required to create
+Each custom item is an YAMLK file containing the tags required to create
 the inventory item. You may add your own files by editing the defaults
-using an NBT editor. You can also extract the tags from a player file from
-an existing Minecraft level and use that. NBTExplorer is recommended for
-editing:
-http://www.minecraftforum.net/topic/840677-nbtexplorer-nbt-editor-for-windows-and-mac/
+with a text editor, taking care to match nbt2yaml's format.
+https://pypi.python.org/pypi/nbt2yaml
 
 Items can be very simple, or potentially a very complex tree of values.
 The most simple example would be a single short tag, called id and

@@ -1,13 +1,11 @@
-This folder contains the data for custom spawners. NBT files in this folder
+This folder contains the data for custom spawners. YAML files in this folder
 can be referenced as spawner types in dungeon config files. See default.cfg
 for more details.
 
-Each custom spawner is an NBT file containing the tags required to create
+Each custom spawner is an YAML file containing the tags required to create
 the spawner object. You may add your own files by editing the defaults
-using an NBT editor. It may also be possible to extract the tags from an
-existing spawner in a Minecraft level and use that. (But this has not been
-tested.) NBTExplorer is recommended for editing:
-http://www.minecraftforum.net/topic/840677-nbtexplorer-nbt-editor-for-windows-and-mac/
+using a text editor, taking care to match nbt2yaml's format.
+https://pypi.python.org/pypi/nbt2yaml
 
 Spawners can be very simple, or potentially a very complex tree of values.
 The most simple example would be a single string tag, called EntityId and
@@ -18,8 +16,8 @@ For more information on the format of the tags see:
     * http://www.minecraftwiki.net/wiki/Chunk_format#Tile_Entity_Format
     * http://www.minecraftwiki.net/wiki/Chunk_format#Mobs
 
-NBT files in this folder can be referenced in mob tables as
-"file_[filename without extension]" For example, "Angrypig.nbt" would be
+YAML files in this folder can be referenced in mob tables as
+"file_[filename without extension]" For example, "Angrypig.yaml" would be
 referenced as "file_Angrypig". See default.cfg for more details.
 
 IMPORTANT: If you provide Minecraft with incorrect tags, it can potentially
