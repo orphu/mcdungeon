@@ -18,7 +18,7 @@ class Blank(object):
         pass
 
     # Generic ruining used by multiple floors
-    def ruinrender(self):
+    def ruinrender(self, ruinfactor = 2.0):
         c = self.parent.canvasCenter()
         y = self.parent.canvasHeight()
         r = random.randint(1, 1000)
@@ -27,7 +27,8 @@ class Blank(object):
         for x in utils.iterate_points_inside_flat_poly(*self.parent.canvas):
             p = x + self.parent.loc
             d = ((Vec2f(x.x, x.z) - c).mag()) / maxd
-            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0) / 2.0
+            n = (pn.noise3((p.x + r) / 4.0, y / 4.0, p.z / 4.0) + 1.0)
+            n = n / ruinfactor
             if (n < d):
                 self.parent.parent.setblock(p, materials._floor)
                 self.parent.parent.blocks[p].data = 0
@@ -320,13 +321,8 @@ class Mosaic(Blank):
     _name = 'mosaic'
     ruin = False
     colours = (
-        materials.WhiteGlazedTerracotta,
-        materials.OrangeGlazedTerracotta,
-        materials.MagentaGlazedTerracotta,
         materials.LightBlueGlazedTerracotta,
         materials.YellowGlazedTerracotta,
-        materials.LimeGlazedTerracotta,
-        materials.PinkGlazedTerracotta,
         materials.GrayGlazedTerracotta,
         materials.LightGrayGlazedTerracotta,
         materials.CyanGlazedTerracotta,
@@ -373,7 +369,7 @@ class Mosaic(Blank):
                 self.parent.parent.setblock(x + self.parent.loc, block, data)
             # Ruined
             if (self.ruin):
-                self.ruinrender()
+                self.ruinrender(3.0)
 
 
 class BrokenMosaic(Mosaic):
