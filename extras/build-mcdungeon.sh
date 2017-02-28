@@ -59,7 +59,7 @@ for SUBDIR in $FILES; do
 done
 
 # Copy over the python code
-for SUBDIR in \*.py pymclevel namegen yaml; do
+for SUBDIR in \*.py pymclevel namegen; do
 	echo "Copying $SUBDIR..."
 	cp -r mcdungeon/$SUBDIR $NAME/
 done

@@ -87,8 +87,10 @@ Documentation: http://mcdungeon-docs.bubblemod.org
 ##PYTHON REQUIREMENTS##
 
    * Python 2.7
-   * Numpy
+   * numpy
+   * pyyaml
    * nbt2yaml
+   * futures (Linux and OSX)
 
 ##PYTHON EXAMPLES##
 
