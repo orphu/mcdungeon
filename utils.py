@@ -1571,7 +1571,7 @@ def get_entity_mob_tags(eid='chicken', Health=None, AbsorptionAmount=0,
         root_tag['Color'] = nbt.TAG_Byte(Color)
 
     if eid == 'shulker':
-        root_tag['AttchFace'] = nbt.TAG_Byte(AttchFace)
+        root_tag['AttachFace'] = nbt.TAG_Byte(AttachFace)
         root_tag['Color'] = nbt.TAG_Byte(Color)
         root_tag['Peek'] = nbt.TAG_Byte(Peek)
         root_tag['APX'] = nbt.TAG_Int(APX)
