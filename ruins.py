@@ -1718,7 +1718,7 @@ class RuinedFane(Blank):
         # Random chance of a villager priest running around in here.
         if random.random() < .25:
             self.parent.parent.addentity(
-                get_entity_mob_tags('Villager', Pos=loc.n(1), Profession=2)
+                get_entity_mob_tags('villager', Pos=loc.n(1), Profession=2)
             )
 
         self.parent.parent.addentity(

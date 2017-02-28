@@ -1528,7 +1528,7 @@ class SecretShop(SecretRoom):
 
         # Create the shopkeeper
         pos = bl.up(1) +(rt*3)+(fw*3)
-        tags = get_entity_mob_tags('Villager',
+        tags = get_entity_mob_tags('villager',
                                    Pos=pos,
                                    Profession=s.profession,
                                    CustomName=shopkeeper_name)
@@ -1836,13 +1836,15 @@ class SecretArmory(SecretRoom):
             boots_tags = nbt.TAG_Compound()
             boots_tags['id'] = nbt.TAG_String(items.byName(boots).id)
 
-            tags = get_entity_mob_tags("Skeleton",
-                                       Pos=self.c1 + pos,
-                                       CanPickUpLoot=1,
-                                       SkeletonType=random.randint(0, 1),
-                                       PersistenceRequired=1,
-                                       CustomName=name
-                                       )
+            tags = get_entity_mob_tags(
+                random.choice(
+                    ("skeleton","wither_skeleton")
+                ),
+                Pos=self.c1 + pos,
+                CanPickUpLoot=1,
+                PersistenceRequired=1,
+                CustomName=name
+            )
             tags['ArmorItems'][0] = boots_tags
             tags['ArmorItems'][1] = leggings_tags
             tags['ArmorItems'][2] = chest_tags
@@ -2035,7 +2037,7 @@ class SecretEnchantingLibrary(SecretRoom):
         dungeon.tile_ents[p] = tags
 
         # She's a witch!
-        tags = get_entity_mob_tags("Witch",
+        tags = get_entity_mob_tags("witch",
                                    Pos=self.c1 + Vec(5, -2, 5) + fw * 2,
                                    PersistenceRequired=1,
                                    CustomName=self.parent.parent.namegen.genname(),
@@ -2485,7 +2487,7 @@ class WildGrowth(Farm):
                 (99,60),
             ))
             # Add the rabbit entity to the room.
-            dungeon.addentity(get_entity_mob_tags('Rabbit',
+            dungeon.addentity(get_entity_mob_tags('rabbit',
                                          Pos=pos,
                                          RabbitType=rtype,
                                          PersistenceRequired=1))

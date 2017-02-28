@@ -244,7 +244,7 @@ class SmallCottage(Clearing):
             # add table
             self.parent.setblock(self.offset+Vec(8,-1,8),materials.Fence)
             self.parent.setblock(self.offset+Vec(8,-2,8),materials.WoodenPressurePlate)
-            
+
             if self._abandoned is True:
                 # if abandoned, add cobwebs (parent function) voxels relative
                 self.parent.cobwebs(self.offset + Vec(8,0,8) + Vec(-2,0,2), self.offset + Vec(8,0,8) + Vec(3,-4,-2))
@@ -255,7 +255,7 @@ class SmallCottage(Clearing):
                 # add villager
                 shopkeeper_name = self.parent.namegen.genname()
                 pos = self.offset + Vec(8,-1,8)
-                tags = get_entity_mob_tags('Villager',
+                tags = get_entity_mob_tags('villager',
                                    Pos=pos,
                                    Profession=0, # farmer always
                                    CustomName=shopkeeper_name)
@@ -707,7 +707,7 @@ class Forge(Clearing):
                 # add villager
                 villager_name = self.parent.namegen.genname()
                 pos = self.offset + Vec(9,-1,9)
-                tags = get_entity_mob_tags('Villager',
+                tags = get_entity_mob_tags('villager',
                                    Pos=pos,
                                    Profession=3, # blacksmith always
                                    CustomName=villager_name)
