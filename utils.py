@@ -1131,8 +1131,7 @@ def decodeTHuntInfo(lib):
 
 # Some entity helpers
 
-def get_tile_entity_tags(
-                         eid='chest', Pos=Vec(0, 0, 0),
+def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
                          CustomName=None, Lock='', Base=0,
                          Patterns=(), Levels=0, Primary=0,
                          Secondary=0, BrewTime=0, Fuel=0, OutputSignal=0,
@@ -1142,7 +1141,9 @@ def get_tile_entity_tags(
                          note=0, Record=0, RecordItem=None, Text1='',
                          Text2='', Text3='', Text4='', SkullType=0,
                          Rot=0, ExactTeleport=0, ExitPos=Vec(0,0,0),
-                         powered=0):
+                         powered=0, PotionId=-1, CustomColor=0,
+                         SplashPotion=0, isMovable=1, TrackOutput=1, auto=0,
+                         conditionMet=1):
     '''Returns an nbt.TAG_Compound containing tags for tile
     entities'''
 
@@ -1188,12 +1189,20 @@ def get_tile_entity_tags(
         root_tag['Primary'] = nbt.TAG_Int(Primary)
         root_tag['Secondary'] = nbt.TAG_Int(Secondary)
 
-    if eid in ('brewing_stand', 'chest', 'furnace', 'hopper', 'dispenser'):
+    if eid in ('brewing_stand', 'chest', 'furnace', 'hopper', 'dispenser',
+               'dropper'):
         root_tag['Items'] = nbt.TAG_List()
 
     if eid == 'brewing_stand':
         root_tag['BrewTime'] = nbt.TAG_Int(BrewTime)
         root_tag['Fuel'] = nbt.TAG_Byte(Fuel)
+
+    if eid == 'cauldron':
+        root_tag['PotionId'] = nbt.TAG_Short(PotionId)
+        if PotionId == -1 and CustomColor != 0:
+            root_tag['CustomColor'] = nbt.TAG_Int(CustomColor)
+        root_tag['SplashPotion'] = nbt.TAG_Byte(SplashPotion)
+        root_tag['isMovable'] = nbt.TAG_Byte(isMovable)
 
     if eid == 'comparator':
         root_tag['OutputSignal'] = nbt.TAG_Int(OutputSignal)
@@ -1202,6 +1211,18 @@ def get_tile_entity_tags(
         root_tag['Command'] = nbt.TAG_String(Command)
         root_tag['SuccessCount'] = nbt.TAG_Int(SuccessCount)
         root_tag['LastOutput'] = nbt.TAG_String(LastOutput)
+        root_tag['TrackOutput'] = nbt.TAG_Byte(TrackOutput)
+        root_tag['auto'] = nbt.TAG_Byte(auto)
+        root_tag['conditionMet'] = nbt.TAG_Byte(conditionMet)
+
+    if eid == 'end_gateway':
+        root_tag['Age'] = nbt.TAG_Long(201);
+        root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
+        exit_tag = nbt.TAG_Compound()
+        exit_tag['X'] = nbt.TAG_Int(ExitPos.x)
+        exit_tag['Y'] = nbt.TAG_Int(ExitPos.y)
+        exit_tag['Z'] = nbt.TAG_Int(ExitPos.z)
+        root_tag['ExitPortal'] = exit_tag
 
     if eid == 'flower_pot':
         root_tag['Item'] = nbt.TAG_String(Item)
@@ -1215,14 +1236,14 @@ def get_tile_entity_tags(
     if eid == 'hopper':
         root_tag['TransferCooldown'] = nbt.TAG_Int(TransferCooldown)
 
-    if eid == 'noteblock':
-        root_tag['note'] = nbt.TAG_Byte(note)
-
     if eid == 'jukebox':
         root_tag['Record'] = nbt.TAG_Int(Record)
         # Should be a full nbt.TAG_Compound item
         if RecordItem is not None:
             root_tag['RecordItem'] = RecordItem
+
+    if eid == 'noteblock':
+        root_tag['note'] = nbt.TAG_Byte(note)
 
     if eid == 'sign':
         root_tag['Text1'] = nbt.TAG_String(Text1)
@@ -1233,15 +1254,6 @@ def get_tile_entity_tags(
     if eid == 'skull':
         root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
-
-    if eid == 'end_gateway':
-        root_tag['Age'] = nbt.TAG_Long(201);
-        root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
-        exit_tag = nbt.TAG_Compound()
-        root_tag['X'] = nbt.TAG_Int(ExitPos.x)
-        root_tag['Y'] = nbt.TAG_Int(ExitPos.y)
-        root_tag['Z'] = nbt.TAG_Int(ExitPos.z)
-        root_tag['ExitPortal'] = exit_tag
 
     return root_tag
 
@@ -1681,7 +1693,8 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
                           ItemRotation=0, Motive='Kebab', Pos=Vec(0, 0, 0),
                           Damage=0, DisabledSlots=0, Invisible=0,
                           NoBasePlate=0, NoGravity=0, ShowArms=0,
-                          Small=0, Health=None, Pose=None, **kwargs):
+                          Small=0, Health=None, Pose=None, Marker=0,
+                          **kwargs):
     '''Returns an nbt.TAG_Compound for "other" type entities. These
     include ender_crystal, eye_of_ender_signal, item_frame,
     Painting, leash_knot, and armor_stand. Chunk offsets will be
@@ -1706,6 +1719,7 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
         root_tag['ArmorItems'].append(nbt.TAG_Compound())
         root_tag['ArmorItems'].append(nbt.TAG_Compound())
         root_tag['Invisible'] = nbt.TAG_Byte(Invisible)
+        root_tag['Marker'] = nbt.TAG_Byte(Marker)
         root_tag['NoBasePlate'] = nbt.TAG_Byte(NoBasePlate)
         root_tag['NoGravity'] = nbt.TAG_Byte(NoGravity)
         root_tag['ShowArms'] = nbt.TAG_Byte(ShowArms)

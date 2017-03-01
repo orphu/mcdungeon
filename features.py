@@ -1869,7 +1869,7 @@ class SecretArmory(SecretRoom):
             displayname = name + "'s " + item.split()[-1]
 
         xplevel = (int(self.c1.y / dungeon.room_height) + 1) * 5
-        tags = get_entity_item_tags("Item",
+        tags = get_entity_item_tags("item",
                                     Pos=self.c1 + pos.up(1),
                                     Age=-32768,
                                     ItemInfo=items.byName(item))
