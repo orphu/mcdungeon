@@ -557,7 +557,7 @@ def drange(start, stop, step):
         r += step
 
 
-def dumpEnts(world, EntId="item_frame"):
+def dumpEnts(world, EntId="minecraft:item_frame"):
     for i, cPos in enumerate(world.allChunks):
         try:
             chunk = world.getChunk(*cPos)

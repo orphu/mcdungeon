@@ -2363,7 +2363,10 @@ class Dungeon (object):
             ent['Pos'][1].value = y
             ent['Pos'][2].value = z
             # Paintings and Item Frames need special handling.
-            if ent['id'].value in ('item_frame', 'Painting'):
+            if ent['id'].value in (
+                'minecraft:item_frame',
+                'minecraft:painting'
+            ):
                 ent['TileX'].value += int(self.position.x)
                 ent['TileY'].value = int(self.position.y) - ent['TileY'].value
                 ent['TileZ'].value += int(self.position.z)
