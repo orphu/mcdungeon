@@ -3,8 +3,9 @@ from nbt2yaml import parse_yaml, parse
 from numpy import fromstring
 
 # Get pymclevel tags from YAML file
-def tagsfromfile(filename):
-    return convert(loadyaml(filename))
+def tagsfromfile(filename, defaults=nbt.TAG_Compound()):
+    defaults.update(convert(loadyaml(filename)))
+    return defaults
 
 # Load structure from YAML
 def loadyaml(filename):

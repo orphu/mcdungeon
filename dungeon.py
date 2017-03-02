@@ -820,17 +820,40 @@ class Dungeon (object):
 
         self.pm.set_complete()
 
-    def getspawnertags(self, entity):
+    def getspawnertags(self, entity, tier, loc):
         entity = entity.lower()
+
+        # Use spawner tags from config
+        if tier == cfg.max_mob_tier:
+            SpawnCount = cfg.treasure_SpawnCount
+            SpawnMaxNearbyEntities = cfg.treasure_SpawnMaxNearbyEntities
+            SpawnMinDelay = cfg.treasure_SpawnMinDelay
+            SpawnMaxDelay = cfg.treasure_SpawnMaxDelay
+            SpawnRequiredPlayerRange = cfg.treasure_SpawnRequiredPlayerRange
+        else:
+            SpawnCount = cfg.SpawnCount
+            SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities
+            SpawnMinDelay = cfg.SpawnMinDelay
+            SpawnMaxDelay = cfg.SpawnMaxDelay
+            SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
 
         # See if we have a custom spawner file match and return it if we do.
         if entity.startswith('file_'):
             entity = entity[5:] # Strip 'file_'
             if entity in cfg.custom_spawners.keys():
                 filepath = cfg.custom_spawners[entity]
-                root_tag = tagsfromfile(filename=filepath)
+                root_tag = get_tile_entity_tags(
+                    eid='mob_spawner',
+                    Pos=loc,
+                    SpawnCount=SpawnCount,
+                    MinSpawnDelay=SpawnMinDelay,
+                    MaxSpawnDelay=SpawnMaxDelay,
+                    MaxNearbyEntities=SpawnMaxNearbyEntities,
+                    RequiredPlayerRange=SpawnRequiredPlayerRange,
+                )
+                root_tag = tagsfromfile(filename=filepath, defaults=root_tag)
                 return root_tag
-            else: # File not found
+            else: # Spawner not in our list!
                 entity = 'bat'
 
         # To bypass a technical limitation, replace '!' with ':'
@@ -839,10 +862,19 @@ class Dungeon (object):
         else: # Otherwise, we don't have a namespace prefix, so add the default
             entity = "minecraft:"+entity
 
-        # Create and return tag
-        root_tag = nbt.TAG_Compound()
-        root_tag['SpawnData'] = nbt.TAG_Compound()
-        root_tag['SpawnData']['id'] = nbt.TAG_String(entity)
+        spawndata_tag = nbt.TAG_Compound()
+        spawndata_tag['id'] = nbt.TAG_String(entity)
+
+        root_tag = get_tile_entity_tags(
+            eid='mob_spawner',
+            Pos=loc,
+            SpawnCount=SpawnCount,
+            MinSpawnDelay=SpawnMinDelay,
+            MaxSpawnDelay=SpawnMaxDelay,
+            MaxNearbyEntities=SpawnMaxNearbyEntities,
+            RequiredPlayerRange=SpawnRequiredPlayerRange,
+            SpawnData=spawndata_tag
+        )
         return root_tag
 
     def addsign(self, loc, text1, text2, text3, text4):
@@ -873,58 +905,7 @@ class Dungeon (object):
                     tier = cfg.max_mob_tier - 1
             entity = weighted_choice(cfg.master_mobs[tier])
             # print 'Spawner: lev=%d, tier=%d, ent=%s' % (level, tier, entity)
-        root_tag = self.getspawnertags(entity)
-        # Do generic spawner setup
-        root_tag['id'] = nbt.TAG_String('mob_spawner')
-        root_tag['x'] = nbt.TAG_Int(loc.x)
-        root_tag['y'] = nbt.TAG_Int(loc.y)
-        root_tag['z'] = nbt.TAG_Int(loc.z)
-        try:
-            root_tag['Delay']
-        except:
-            root_tag['Delay'] = nbt.TAG_Short(0)
-        # Calculate spawner tags from config
-        if tier == cfg.max_mob_tier:
-            SpawnCount = cfg.treasure_SpawnCount
-            SpawnMaxNearbyEntities = cfg.treasure_SpawnMaxNearbyEntities
-            SpawnMinDelay = cfg.treasure_SpawnMinDelay
-            SpawnMaxDelay = cfg.treasure_SpawnMaxDelay
-            SpawnRequiredPlayerRange = cfg.treasure_SpawnRequiredPlayerRange
-        else:
-            SpawnCount = cfg.SpawnCount
-            SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities
-            SpawnMinDelay = cfg.SpawnMinDelay
-            SpawnMaxDelay = cfg.SpawnMaxDelay
-            SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
-        # But don't overwrite tags from NBT files
-        if (SpawnCount != 0):
-            try:
-                root_tag['SpawnCount']
-            except:
-                root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
-        if (SpawnMaxNearbyEntities != 0):
-            try:
-                root_tag['MaxNearbyEntities']
-            except:
-                root_tag['MaxNearbyEntities'] = nbt.TAG_Short(
-                    SpawnMaxNearbyEntities)
-        if (SpawnMinDelay != 0):
-            try:
-                root_tag['MinSpawnDelay']
-            except:
-                root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
-        if (SpawnMaxDelay != 0):
-            try:
-                root_tag['MaxSpawnDelay']
-            except:
-                root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
-        if (SpawnRequiredPlayerRange != 0):
-            try:
-                root_tag['RequiredPlayerRange']
-            except:
-                root_tag['RequiredPlayerRange'] = nbt.TAG_Short(
-                    SpawnRequiredPlayerRange)
-        # Finally give the tag to the entity
+        root_tag = self.getspawnertags(entity, tier, loc)
         self.tile_ents[loc] = root_tag
 
     def addnoteblock(self, loc, clicks=0):
@@ -936,7 +917,7 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-    def addchest(self, loc, tier=-1, loot=[], name='', lock=None):
+    def addchest(self, loc, tier=-1, loot=[], name=None, lock=None):
         level = loc.y / self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -951,15 +932,13 @@ class Dungeon (object):
             tier = loottable._maxtier
         if self.args.debug:
             print 'Adding chest: level',level+1,'tier',tier
-        root_tag = nbt.TAG_Compound()
-        root_tag['id'] = nbt.TAG_String('Chest')
-        root_tag['x'] = nbt.TAG_Int(loc.x)
-        root_tag['y'] = nbt.TAG_Int(loc.y)
-        root_tag['z'] = nbt.TAG_Int(loc.z)
-        if (name != ''):
-            root_tag['CustomName'] = nbt.TAG_String(name)
-        if (lock is not None and lock != ''):
-            root_tag['Lock'] = nbt.TAG_String(lock)
+
+        root_tag = get_tile_entity_tags(
+            eid='chest',
+            CustomName=name,
+            Lock=lock,
+            Pos=loc
+        )
         inv_tag = nbt.TAG_List()
         root_tag['Items'] = inv_tag
         if loot is None:
@@ -974,8 +953,10 @@ class Dungeon (object):
     def addchestitem_tag(self, loc, item_tag):
         '''Add an item to an existing chest'''
         # No chest here!
-        if (loc not in self.tile_ents or
-                self.tile_ents[loc]['id'].value != 'Chest'):
+        if (
+            loc not in self.tile_ents or
+            self.tile_ents[loc]['id'].value != 'minecraft:chest'
+        ):
             return False
         root_tag = self.tile_ents[loc]
         slot = len(root_tag['Items'])
@@ -1029,7 +1010,7 @@ class Dungeon (object):
     def adddungeonbanner(self, loc):
         root_tag = get_tile_entity_tags(eid="Banner",Pos=loc,**self.flagdesign)
         self.addtileentity(root_tag)
-        
+
     def addendgateway(self, loc, exitloc):
         root_tag = get_tile_entity_tags(eid="end_gateway",Pos=loc,ExitPos=exitloc,ExactTeleport=1)
         self.addtileentity(root_tag)
@@ -2207,7 +2188,10 @@ class Dungeon (object):
                     chunk = world.getChunk(x, z)
                     # Repopulate any above ground chests
                     for tileEntity in chunk.TileEntities:
-                        if (tileEntity["id"].value == "Chest"):
+                        if (
+                            tileEntity["id"].value == "Chest" or
+                            tileEntity["id"].value == "minecraft:chest"
+                        ):
                             p = Vec(0, 0, 0)
                             for name, tag in tileEntity.items():
                                 if (name == 'x'):

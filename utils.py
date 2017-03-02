@@ -1132,7 +1132,7 @@ def decodeTHuntInfo(lib):
 # Some entity helpers
 
 def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
-                         CustomName=None, Lock='', Base=0,
+                         CustomName=None, Lock=None, Base=0,
                          Patterns=(), Levels=0, Primary=0,
                          Secondary=0, BrewTime=0, Fuel=0, OutputSignal=0,
                          Command='', SuccessCount=0, LastOutput='',
@@ -1143,7 +1143,10 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
                          Rot=0, ExactTeleport=0, ExitPos=Vec(0,0,0),
                          powered=0, PotionId=-1, CustomColor=0,
                          SplashPotion=0, isMovable=1, TrackOutput=1, auto=0,
-                         conditionMet=1):
+                         conditionMet=1, Delay=0, SpawnCount=4, SpawnRange=4,
+                         MinSpawnDelay=200, MaxSpawnDelay=800,
+                         MaxNearbyEntities=6, RequiredPlayerRange=16,
+                         SpawnData=None):
     '''Returns an nbt.TAG_Compound containing tags for tile
     entities'''
 
@@ -1160,12 +1163,18 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     root_tag['y'] = nbt.TAG_Int(Pos[1])
     root_tag['z'] = nbt.TAG_Int(Pos[2])
 
-    if (eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser', 'brewing_stand',
-                'enchanting_table', 'command_block') and CustomName is not None):
+    if (
+        CustomName is not None and 
+        eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser',
+                'brewing_stand', 'enchanting_table', 'command_block')
+    ):
         root_tag['CustomName'] = nbt.TAG_String(CustomName)
 
-    if eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser', 'brewing_stand',
-               'beacon'):
+    if (
+        Lock is not None and
+        eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser',
+                'brewing_stand', 'beacon')
+    ):
         root_tag['Lock'] = nbt.TAG_String(Lock)
 
     if eid in ('command_block', 'noteblock'):
@@ -1241,6 +1250,17 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
         # Should be a full nbt.TAG_Compound item
         if RecordItem is not None:
             root_tag['RecordItem'] = RecordItem
+
+    if eid == 'mob_spawner':
+        if SpawnData is not None:
+            root_tag['SpawnData'] = SpawnData
+        root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
+        root_tag['SpawnRange'] = nbt.TAG_Short(SpawnRange)
+        root_tag['Delay'] = nbt.TAG_Short(Delay)
+        root_tag['MinSpawnDelay'] = nbt.TAG_Short(MinSpawnDelay)
+        root_tag['MaxSpawnDelay'] = nbt.TAG_Short(MaxSpawnDelay)
+        root_tag['MaxNearbyEntities'] = nbt.TAG_Short(MaxNearbyEntities)
+        root_tag['RequiredPlayerRange'] = nbt.TAG_Short(RequiredPlayerRange)
 
     if eid == 'noteblock':
         root_tag['note'] = nbt.TAG_Byte(note)
