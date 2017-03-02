@@ -3,7 +3,7 @@ folder can be referenced in loot tables as file_[filename without extension]
 For example, head_notch.yaml would be referenced as file_head_notch.
 See default.cfg for more details.
 
-Each custom item is an YAMLK file containing the tags required to create
+Each custom item is an YAML file containing the nbt tags required to create
 the inventory item. You may add your own files by editing the defaults
 with a text editor, taking care to match nbt2yaml's format.
 https://pypi.python.org/pypi/nbt2yaml

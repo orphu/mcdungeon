@@ -2,7 +2,7 @@ This folder contains the data for custom spawners. YAML files in this folder
 can be referenced as spawner types in dungeon config files. See default.cfg
 for more details.
 
-Each custom spawner is an YAML file containing the tags required to create
+Each custom spawner is an YAML file containing the nbt tags required to create
 the spawner object. You may add your own files by editing the defaults
 using a text editor, taking care to match nbt2yaml's format.
 https://pypi.python.org/pypi/nbt2yaml
