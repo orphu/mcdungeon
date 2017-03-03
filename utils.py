@@ -1254,6 +1254,9 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     if eid == 'mob_spawner':
         if SpawnData is not None:
             root_tag['SpawnData'] = SpawnData
+        else:
+            root_tag['SpawnData'] = nbt.TAG_Compound()
+            root_tag['SpawnData']['id'] = nbt.TAG_String("minecraft:bat")
         root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
         root_tag['SpawnRange'] = nbt.TAG_Short(SpawnRange)
         root_tag['Delay'] = nbt.TAG_Short(Delay)
