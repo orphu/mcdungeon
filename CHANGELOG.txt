@@ -1,3 +1,23 @@
+v0.18.0 -
+
+  !! NOTE: This version requires Minecraft 1.12 release or higher!
+
+  !! NOTE:  MCDungeon Python now requires pyyaml and nbt2yaml python modules.
+
+  * Added 1.12 blocks. (Concrete, Glazed Terracotta) (JiFish)
+
+  * Added Mosaic floor types based on Glazed Terracotta blocks. (JiFish)
+
+  * Fixes for 1.11 and 1.12 mobs and entites. (orphu, JiFish)
+
+  * Custom items, and spawners are now YAML files instead of NBT. (JiFish)
+
+  * Lucky blocks sample config has been removed. (JiFish)
+
+  * Evoker spawners only appear in the hard mode config. (orphu)
+
+  * Circle of skulls has more variety now. (JiFish)
+
 v0.17.1 - 02/08/2017
 
   !! NOTE: This version requires Minecraft 1.11.2 release or higher!
