@@ -2197,9 +2197,29 @@ class CircleOfSkulls(Blank):
         p1 = p0.trans(size - 1, 0, size - 1)
 
         skulls = (
-            (0, 50),  # Plain Skull
-            (1, 1),  # Wither Skull
+            (0, 50), # Skeleton
+            (2, 10), # Zombie
+            (3, 5),  # Custom
+            (4, 1),  # Creeper
+            (1, 1),  # Wither Skeleton
         )
+        custom_skulls = [
+            "MHF_Alex",
+            "MHF_Blaze",
+            "MHF_CaveSpider",
+            "MHF_Chicken",
+            "MHF_Cow",
+            "MHF_Enderman",
+            "MHF_Golem",
+            "MHF_MushroomCow",
+            "MHF_Ocelot",
+            "MHF_Pig",
+            "MHF_PigZombie",
+            "MHF_Sheep",
+            "MHF_Spider",
+            "MHF_Steve",
+            "MHF_Villager"
+        ]
         counter = 0
         for p in iterate_ellipse(p0, p1):
             if((p.x + p.z) % 2 == 0):
@@ -2209,14 +2229,16 @@ class CircleOfSkulls(Blank):
                 if (random.randint(0, 100) < 33):
                     continue
                 SkullType = weighted_choice(skulls)
+                if SkullType == 3:
+                    SkullOwner = random.choice(custom_skulls)
+                else:
+                    SkullOwner = None
                 self.parent.parent.setblock(p.up(2), materials.MobHead, 1)
-                root_tag = nbt.TAG_Compound()
-                root_tag['id'] = nbt.TAG_String('Skull')
-                root_tag['x'] = nbt.TAG_Int(p.x)
-                root_tag['y'] = nbt.TAG_Int(p.y - 2)
-                root_tag['z'] = nbt.TAG_Int(p.z)
-                root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
-                root_tag['Rot'] = nbt.TAG_Byte(random.randint(0, 15))
+                root_tag = get_tile_entity_tags(eid="skull",
+                                                SkullType=SkullType,
+                                                ExtraType=SkullOwner,
+                                                Rot=random.randint(0, 15),
+                                                Pos=(p.x, p.y - 2, p.z))
                 self.parent.parent.tile_ents[p.up(2)] = root_tag
 
             elif(random.randint(0, 100) < 33):

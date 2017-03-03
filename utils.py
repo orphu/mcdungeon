@@ -1140,6 +1140,7 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
                          CookTimeTotal=0, TransferCooldown=0,
                          note=0, Record=0, RecordItem=None, Text1='',
                          Text2='', Text3='', Text4='', SkullType=0,
+                         ExtraType=None,
                          Rot=0, ExactTeleport=0, ExitPos=Vec(0,0,0),
                          powered=0, PotionId=-1, CustomColor=0,
                          SplashPotion=0, isMovable=1, TrackOutput=1, auto=0,
@@ -1277,6 +1278,8 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     if eid == 'skull':
         root_tag['SkullType'] = nbt.TAG_Byte(SkullType)
         root_tag['Rot'] = nbt.TAG_Byte(Rot)
+        if ExtraType is not None:
+            root_tag['ExtraType'] = nbt.TAG_String(ExtraType)
 
     return root_tag
 
