@@ -23,4 +23,6 @@
       - Entity:
         - id: minecraft:spider
   - Delay: !short "-1"
+  - SpawnData:
+    - id: minecraft:zombie
 
