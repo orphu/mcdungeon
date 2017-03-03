@@ -2,9 +2,18 @@ from pymclevel import nbt
 from nbt2yaml import parse_yaml, parse
 from numpy import fromstring
 
+_tag_cache = {}
+
 # Get pymclevel tags from YAML file
 def tagsfromfile(filename, defaults=nbt.TAG_Compound()):
-    defaults.update(convert(loadyaml(filename)))
+    # Look for file in cache use it
+    if filename in _tag_cache:
+        tags = _tag_cache[filename]
+    else: # Otherwise load from file, convert and store in cache
+        tags = convert(loadyaml(filename))
+        _tag_cache[filename] = tags
+    # Finally apply to provided defaults
+    defaults.update(tags)
     return defaults
 
 # Load structure from YAML
