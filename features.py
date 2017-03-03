@@ -2204,6 +2204,7 @@ class CircleOfSkulls(Blank):
             (1, 1),  # Wither Skeleton
         )
         custom_skulls = [
+            None, # Steve
             "MHF_Alex",
             "MHF_Blaze",
             "MHF_CaveSpider",
@@ -2213,14 +2214,21 @@ class CircleOfSkulls(Blank):
             "MHF_Pig",
             "MHF_PigZombie",
             "MHF_Spider",
-            "MHF_Steve",
             "MHF_Villager"
         ]
-        counter = 0
+        dun = self.parent.parent
+
+        def ensurefloor(p):
+            if (dun.blocks[p].material == materials.Air or
+                dun.blocks[p].material == materials.Water or
+                dun.blocks[p].material ==  materials.Lava or
+                dun.blocks[p].material == materials.StillWater):
+                    dun.setblock(p, materials._floor)
+
         for p in iterate_ellipse(p0, p1):
             if((p.x + p.z) % 2 == 0):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.setblock(p.up(1), materials.Fence)
+                ensurefloor(p)
+                dun.setblock(p.up(1), materials.Fence)
                 # Abort if there is no skull here
                 if (random.randint(0, 100) < 33):
                     continue
@@ -2229,17 +2237,17 @@ class CircleOfSkulls(Blank):
                     SkullOwner = random.choice(custom_skulls)
                 else:
                     SkullOwner = None
-                self.parent.parent.setblock(p.up(2), materials.MobHead, 1)
+                dun.setblock(p.up(2), materials.MobHead, 1)
                 root_tag = get_tile_entity_tags(eid="skull",
                                                 SkullType=SkullType,
                                                 ExtraType=SkullOwner,
                                                 Rot=random.randint(0, 15),
                                                 Pos=(p.x, p.y - 2, p.z))
-                self.parent.parent.tile_ents[p.up(2)] = root_tag
+                dun.tile_ents[p.up(2)] = root_tag
 
             elif(random.randint(0, 100) < 33):
-                self.parent.parent.setblock(p, materials._floor)
-                self.parent.parent.setblock(p.up(1), materials.Torch, 5)
+                ensurefloor(p)
+                dun.setblock(p.up(1), materials.Torch, 5)
 
 
 class Cell(Blank):
