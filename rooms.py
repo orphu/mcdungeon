@@ -2349,6 +2349,225 @@ class Crypt(Basic):
             self.parent.setblock(p, materials.Cobweb)
 
 
+class IllagerLibrary(Basic):
+    _name = 'illagerlibrary'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1, 1, 2)
+    _max_size = Vec(1, 1, 2)
+    size = Vec(1, 1, 2)
+
+    def placed(self):
+        self.canvas = (
+            Vec(0, self.parent.room_height - 2, 0),
+            Vec(0, self.parent.room_height - 2, 0),
+            Vec(0, self.parent.room_height - 2, 0))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        #sy = self.parent.room_height
+        # This room contains no halls, but is connected to the South
+        # North, East, South, West
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [1, 1, 0, 1]
+        self.hallSize = [[6, sx - 6],
+                         [7, sx - 6],
+                         [6, sz - 6],
+                         [7, sz - 6]]
+        self.parent.halls[pos.x][pos.y][pos.z] = [0, 0, 1, 0]
+
+        # Place one room to the South
+        # This room has no halls, and is connected to the North
+        pos = self.pos + Vec(0, 0, 1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0, 0, 0, 0]
+        room.hallSize = [[6, sx - 6],
+                         [6, sx - 6],
+                         [6, sz - 6],
+                         [6, sz - 6]]
+        room.parent.halls[pos.x][pos.y][pos.z] = [1, 1, 1, 1]
+        # This room cannot connect. Make the depth < 0
+        room.parent.maze[pos].depth = -1
+        return rooms
+
+    def render(self):
+        sx = 16
+        sy = 12
+        sz = 32
+        o = self.loc
+        pos = self.pos
+
+        # alias for setblock
+        sb = self.parent.setblock
+
+        # symmetrical setblock. A lot of this room will be symmetrical.
+        def ssb(p, mat, data=0):
+            sb(o + p, mat, data)
+            sb(Vec(o.x + sx - 1 - p.x, o.y + p.y, o.z + p.z), mat, data)
+
+        # Decoration colors
+        # rug color 1 (inner),
+        # rug color 2 (outer),
+        dmat = random.choice([
+            [
+                materials.RedCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.RedCarpet,
+                materials.LightGrayCarpet,
+            ],
+            [
+                materials.BlueCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.DarkGreenCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.DarkGreenCarpet,
+                materials.BlackCarpet,
+            ],
+            [
+                materials.PurpleCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.CyanCarpet,
+                materials.YellowCarpet,
+            ],
+            [
+                materials.LightBlueCarpet,
+                materials.LightGrayCarpet,
+            ]
+        ])
+
+        # Basic room
+        # Air space
+        for p in iterate_cube(o, o + Vec(sx - 1, sy - 1, sz - 1)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o + Vec(sx - 1, 0, sz - 1), -sy + 1):
+            sb(p, materials._wall)
+        # Ceiling and floor
+        for p in iterate_cube(o, o + Vec(sx - 1, 0, sz - 1)):
+            sb(p, materials._ceiling)
+            sb(p.down(sy - 1), materials._floor)
+
+        # Wooden balcony
+        for p in iterate_four_walls(Vec(3, 4, 3), Vec(12, 4, 28), 0):
+            sb(o + p, materials.OakWoodPlanks)
+        for p in iterate_four_walls(Vec(1, 4, 1), Vec(14, 4, 30), 0):
+            sb(o + p, materials.OakWoodSlab)
+        for p in iterate_four_walls(Vec(2, 4, 2), Vec(13, 4, 29), 0):
+            sb(o + p, materials.OakWoodSlab)
+        for p in iterate_four_walls(Vec(3, 3, 3), Vec(12, 3, 28), 0):
+            sb(o + p, materials.Fence)
+
+        # Entry stairs
+        for x in xrange(6):
+            ssb(Vec(7, 5 + x, 1 + x), materials.meta_mossycobble)
+            ssb(Vec(7, 5 + x, 2 + x), materials.meta_mossycobble)
+            ssb(Vec(7, 5 + x, 3 + x), materials.StoneStairs, 3)
+        for p in iterate_four_walls(Vec(7, 4, 1), Vec(8, 4, 4), 3):
+            sb(o + p, materials.Air)
+        # Extra stairs if there is a door to the North
+        if self.parent.halls[pos.x][pos.y][pos.z][0] == 1:
+            for p in iterate_cube(Vec(6, 4, 1), Vec(7, 4, 1)):
+                ssb(p, materials.StoneStairs, 3)
+
+        # Book Cases
+        for i in xrange(8):
+            if random.randint(1, 100) < 50:
+                continue
+            j = i * 4
+            for p in iterate_cube(Vec(1, 8, 2 + j), Vec(5, 10, 2 + j)):
+                sb(o+p, materials.Bookshelf)
+        for i in xrange(8):
+            if random.randint(1, 100) <= 33:
+                continue
+            j = i * 4
+            for p in iterate_cube(Vec(10, 8, 2 + j), Vec(13, 10, 2 + j)):
+                sb(o+p, materials.Bookshelf)
+        for i in xrange(8):
+            j = i * 4
+            for p in iterate_cube(Vec(1, 1, 1 + j), Vec(1, 10, 3 + j)):
+                ssb(p, materials.Bookshelf)
+        for i in xrange(1, 8, 2):
+            j = i * 4
+            for p in iterate_cube(Vec(1, 1, j), Vec(1, 10, j)):
+                sb(o + p, materials.Ladder, 5)
+                sb(o + p.e(13), materials.Ladder, 4)
+
+        # Rugs
+        for p in iterate_cube(Vec(6, 10, 10), Vec(9, 10, 17)):
+            sb(o + p, dmat[0])
+            sb(o + p.s(9), dmat[0])
+        for p in iterate_cube(Vec(7, 10, 11), Vec(8, 10, 16)):
+            sb(o + p, dmat[1])
+            sb(o + p.s(9), dmat[1])
+        for x in xrange(20):
+            p = Vec(random.randint(6, 9), 10, random.randint(9, 29))
+            sb(o + p, materials.Air)
+            sb(o + p.down(1), materials._floor)
+
+        # Spawners
+        for p in [Vec(6, 10, 30), Vec(9, 10, 30)]:
+            self.parent.addspawner(o + p, 'vindication_illager')
+            self.parent.setblock(o + p, materials.Spawner)
+
+        # Evoker
+        tags = get_entity_mob_tags(
+            'evocation_illager',
+            Pos=o+Vec(7, 10, 20),
+            PersistenceRequired=1,
+            CanPickUpLoot=1
+        )
+        self.parent.addentity(tags)
+
+        # Chest. Maxtier plus a level zero.
+        sb(o + Vec(7, 10, 30), materials.Chest)
+        self.parent.addchest(o + Vec(7, 10, 30), loottable._maxtier)
+        sb(o + Vec(8, 10, 30), materials.Chest)
+        if cfg.double_treasure:
+            self.parent.addchest(o + Vec(8, 10, 30), loottable._maxtier)
+        else:
+            self.parent.addchest(o + Vec(8, 10, 30), 0)
+
+        # Portal
+        drawExitPortal(o + Vec(6, 7, 1), self.parent)
+
+        # Cobwebs
+        webs = {}
+        for p in iterate_cube(o.down(1), o.trans(15, 4, 31)):
+            count = 0
+            perc = 90 - (p.y - self.loc.down(1).y) * (70 / 3)
+            if (p not in self.parent.blocks or
+                    self.parent.blocks[p].material != materials.Air):
+                continue
+            for q in (Vec(1, 0, 0), Vec(-1, 0, 0),
+                      Vec(0, 1, 0), Vec(0, -1, 0),
+                      Vec(0, 0, 1), Vec(0, 0, -1)):
+                if (p + q in self.parent.blocks and
+                        self.parent.blocks[p + q].material != materials.Air and
+                        random.randint(1, 100) <= perc):
+                    count += 1
+            if count >= 3:
+                webs[p] = True
+        for p, q in webs.items():
+            self.parent.setblock(p, materials.Cobweb)
+
+        # A little light
+        sb(o+Vec(1, 5, 6), materials.RedstoneLampOn)
+        sb(o+Vec(1, 5, 14), materials.RedstoneLampOn)
+        sb(o+Vec(14, 5, 6), materials.RedstoneLampOn)
+        sb(o+Vec(14, 5, 14), materials.RedstoneLampOn)
+
+
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
     _walls = materials.Sandstone
