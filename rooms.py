@@ -2481,22 +2481,24 @@ class IllagerLibrary(Basic):
                 ssb(p, materials.StoneStairs, 3)
 
         # Book Cases
-        for i in xrange(8):
-            if random.randint(1, 100) < 50:
-                continue
-            j = i * 4
-            for p in iterate_cube(Vec(1, 8, 2 + j), Vec(5, 10, 2 + j)):
-                sb(o+p, materials.Bookshelf)
-        for i in xrange(8):
-            if random.randint(1, 100) <= 33:
-                continue
-            j = i * 4
-            for p in iterate_cube(Vec(10, 8, 2 + j), Vec(13, 10, 2 + j)):
-                sb(o+p, materials.Bookshelf)
+        # Cases along walls
         for i in xrange(8):
             j = i * 4
             for p in iterate_cube(Vec(1, 1, 1 + j), Vec(1, 10, 3 + j)):
                 ssb(p, materials.Bookshelf)
+        # 50% of the cases along the walls have extensions
+        locations = set(
+        )
+        for i in xrange(8):
+            for j in xrange(2):
+                locations.add(Vec(2+j*8, 8, 2+i*4))
+        for i in xrange(len(locations)/2):
+            j = random.choice(list(locations))
+            locations.remove(j)
+            for p in iterate_cube(j, j+Vec(3, 2, 0)):
+                sb(o+p, materials.Bookshelf)
+
+        # Ladders
         for i in xrange(1, 8, 2):
             j = i * 4
             for p in iterate_cube(Vec(1, 1, j), Vec(1, 10, j)):
