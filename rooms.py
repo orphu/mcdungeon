@@ -2564,10 +2564,10 @@ class IllagerLibrary(Basic):
             self.parent.setblock(p, materials.Cobweb)
 
         # A little light
-        sb(o+Vec(1, 5, 6), materials.RedstoneLampOn)
-        sb(o+Vec(1, 5, 14), materials.RedstoneLampOn)
-        sb(o+Vec(14, 5, 6), materials.RedstoneLampOn)
-        sb(o+Vec(14, 5, 14), materials.RedstoneLampOn)
+        sb(o+Vec(1, 5, 6), materials.SeaLantern)
+        sb(o+Vec(1, 5, 14), materials.SeaLantern)
+        sb(o+Vec(14, 5, 6), materials.SeaLantern)
+        sb(o+Vec(14, 5, 14), materials.SeaLantern)
 
 
 class DiamondCavern(Blank):
