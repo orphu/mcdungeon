@@ -927,7 +927,7 @@ def main():
                 os.path.isdir(file_path) and
                 os.path.isfile(file_path + '/level.dat')
             ):
-                print '\t[{:>2}] {}'.format(count+1, file.encode('utf-8').strip())
+                print '\t[{}] {}'.format(count+1, file.encode('utf-8').strip())
                 count += 1
                 args.world = file_path
                 worlds.append(file)
@@ -970,16 +970,28 @@ def main():
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
             print '\nConfigurations in your configs directory:\n'
+            count = 1
+            choices = []
+            config = None
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
-                if (os.path.isfile(file_path) and
-                        file_path.endswith('.cfg')):
-                    print '   ', file
-            print '\nEnter the name of the configuration you wish to use.'
-            config = raw_input('(leave blank for default): ')
-            if (config == ''):
-                config = 'default'
+                if (
+                        os.path.isfile(file_path) and
+                        file_path.endswith('.cfg') and
+                        file != 'default'):
+                    print '\t[{}] {}'.format(count, file)
+                    count += 1
+                    choices.append(file)
+            while config is None:
+                config = raw_input('\nChoose a config (enter for default): ')
+                if config == '':
+                    config = 'default'
+                else:
+                    if config in [str(x+1) for x in xrange(len(choices))]:
+                        config = choices[int(config)-1]
+                    else:
+                        config = None
             args.config = str(config) + '.cfg'
             cfg.Load(args.config)
 
@@ -997,47 +1009,98 @@ def main():
             print 'dungeons. Take care to pick a value that matches your needs.'
             print 'If this value is too high and you add few dungeons, they'
             print 'may be hard to find. If this value is too low and you'
-            print 'add many dungeons, they will not cover much of the map.\n'
-            input_max_dist = raw_input(
-                'Max Distance (leave blank for config value, ' +
-                str(cfg.max_dist) + '): '
-            )
-            if (input_max_dist != ''):
-                try:
-                    cfg.max_dist = int(input_max_dist)
-                except ValueError:
-                    sys.exit('You must enter an integer.')
-
-            m = cfg.max_dist - cfg.min_dist
+            print 'add many dungeons, they will not cover much of the map.'
+            input_max_dist = None
+            while input_max_dist is None:
+                input_max_dist = raw_input(
+                    '\nMax Distance (leave blank for config value, ' +
+                    str(cfg.max_dist) + '): '
+                )
+                if input_max_dist == '':
+                    input_max_dist = cfg.max_dist
+                else:
+                    if input_max_dist.isdigit() and int(input_max_dist) >= 0:
+                        input_max_dist = int(input_max_dist)
+                    else:
+                        input_max_dist = None
+            cfg.max_dist = int(input_max_dist)
 
             print '\nEnter the size of the dungeon(s) in chunks from West to' \
                   ' East. (X size)'
             print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-            args.x = raw_input('X size: ')
+            choice = None
+            while choice is None:
+                choice = raw_input('\nX size: ')
+                if choice.isdigit():
+                    if int(choice) < 4:
+                        choice = None
+                elif re.match(r'\d+-\d+', choice):
+                    (a, b) = choice.split('-')
+                    a = int(a)
+                    b = int(b)
+                    if a < 4 or b <= a:
+                        choice = None
+                else:
+                    choice = None
+            args.x = choice
 
             print '\nEnter the size of the dungeon(s) in chunks from North to' \
                   ' South. (Z size)'
             print 'You can enter a fixed value >= 4, or a range (ie: 4-7)'
-            args.z = raw_input('Z size: ')
+            choice = None
+            while choice is None:
+                choice = raw_input('\nZ size: ')
+                if choice.isdigit():
+                    if int(choice) < 4:
+                        choice = None
+                elif re.match(r'\d+-\d+', choice):
+                    (a, b) = choice.split('-')
+                    a = int(a)
+                    b = int(b)
+                    if a < 4 or b <= a:
+                        choice = None
+                else:
+                    choice = None
+            args.z = choice
 
             print '\nEnter a number of levels.'
-            print 'You can enter a fixed value >= 1, or a range (ie: 3-5)'
-            args.levels = raw_input('Levels: ')
+            print 'You can enter a fixed value between 1 and 42, or a range (ie: 3-5)'
+            choice = None
+            while choice is None:
+                choice = raw_input('\nLevels: ')
+                if choice.isdigit():
+                    if int(choice) < 1:
+                        choice = None
+                elif re.match(r'\d+-\d+', choice):
+                    (a, b) = choice.split('-')
+                    a = int(a)
+                    b = int(b)
+                    if a < 1 or a > 42 or b <= a:
+                        choice = None
+                else:
+                    choice = None
+            args.levels = choice
 
             print '\nEnter the maximum number of dungeons to add.'
             print 'Depending on the characteristics of your world, and size ' \
                   ' of your'
             print 'dungeons, the actual number placed may be less.'
             print 'Enter -1 to add as many dungeons as possible.'
-            args.number = raw_input('Number of dungeons (leave blank for 1): ')
-            if (args.number == ''):
-                args.number = 1
-            try:
-                args.number = int(args.number)
-            except ValueError:
-                sys.exit('You must enter an integer.')
-
+            choice = None
+            while choice is None:
+                choice = raw_input('\nNumber of dungeons (enter for 1): ')
+                if choice == '':
+                    choice = 1
+                elif choice == '-1':
+                    choice = -1
+                else:
+                    if choice.isdigit() and int(choice) >= 1:
+                        choice = int(choice)
+                    else:
+                        choice = None
+            args.number = int(choice)
             args.write = True
+
         elif command == 't':
             args.command = 'addth'
             # Pick a config
@@ -1047,16 +1110,28 @@ def main():
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
             print '\nConfigurations in your configs directory:\n'
+            count = 1
+            choices = []
+            config = None
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
-                if (os.path.isfile(file_path) and
-                        file_path.endswith('.cfg')):
-                    print '   ', file
-            print '\nEnter the name of the configuration you wish to use.'
-            config = raw_input('(leave blank for default): ')
-            if (config == ''):
-                config = 'default'
+                if (
+                        os.path.isfile(file_path) and
+                        file_path.endswith('.cfg') and
+                        file != 'default'):
+                    print '\t[{}] {}'.format(count, file)
+                    count += 1
+                    choices.append(file)
+            while config is None:
+                config = raw_input('\nChoose a config (enter for default): ')
+                if config == '':
+                    config = 'default'
+                else:
+                    if config in [str(x+1) for x in xrange(len(choices))]:
+                        config = choices[int(config)-1]
+                    else:
+                        config = None
             args.config = str(config) + '.cfg'
             cfg.Load(args.config)
 
@@ -1075,39 +1150,76 @@ def main():
             print 'your needs.  If this value is too high and you add few hunts,'
             print 'they may be hard to find. If this value is too low and you'
             print 'add many hunts, they will overlap too much.\n'
-            input_max_dist = raw_input(
-                'Max Distance (leave blank for config value, ' +
-                str(cfg.max_dist) + '): '
-            )
-            if (input_max_dist != ''):
-                try:
-                    cfg.max_dist = int(input_max_dist)
-                except ValueError:
-                    sys.exit('You must enter an integer.')
-
-            m = cfg.max_dist - cfg.min_dist
+            input_max_dist = None
+            while input_max_dist is None:
+                input_max_dist = raw_input(
+                    '\nMax Distance (leave blank for config value, ' +
+                    str(cfg.max_dist) + '): '
+                )
+                if input_max_dist == '':
+                    input_max_dist = cfg.max_dist
+                else:
+                    if input_max_dist.isdigit() and int(input_max_dist) >= 0:
+                        input_max_dist = int(input_max_dist)
+                    else:
+                        input_max_dist = None
+            cfg.max_dist = int(input_max_dist)
 
             print '\nEnter the distance between waypoints in a hunt in chunks'
             print 'You can enter a fixed value >= 1 and <=16, or a range (eg: 5-10)'
-            args.distance = raw_input('Step distance: ')
+            choice = None
+            while choice is None:
+                choice = raw_input('\nStep distance: ')
+                if choice.isdigit():
+                    if int(choice) < 1 or int(choice) > 16:
+                        choice = None
+                elif re.match(r'\d+-\d+', choice):
+                    (a, b) = choice.split('-')
+                    a = int(a)
+                    b = int(b)
+                    if a < 1 or b > 16 or b <= a:
+                        choice = None
+                else:
+                    choice = None
+            args.distance = choice
 
             print '\nEnter a number of steps (including the start).'
             print 'You can enter a fixed value > 1, or a range (ie: 3-5)'
-            args.steps = raw_input('Steps: ')
+            choice = None
+            while choice is None:
+                choice = raw_input('\nSteps: ')
+                if choice.isdigit():
+                    if int(choice) < 1:
+                        choice = None
+                elif re.match(r'\d+-\d+', choice):
+                    (a, b) = choice.split('-')
+                    a = int(a)
+                    b = int(b)
+                    if a < 1 or b <= a:
+                        choice = None
+                else:
+                    choice = None
+            args.steps = choice
 
             print '\nEnter the maximum number of treasure hunts to add.'
             print 'Depending on the characteristics of your world, and'
             print 'the number of steps, the actual number placed may be less.'
             print 'Enter -1 to add as many hunts as possible.'
-            args.number = raw_input('Number of treasure hunts (leave blank for 1): ')
-            if (args.number == ''):
-                args.number = 1
-            try:
-                args.number = int(args.number)
-            except ValueError:
-                sys.exit('You must enter an integer.')
-
+            choice = None
+            while choice is None:
+                choice = raw_input('\nNumber of treasure hunts (enter for 1): ')
+                if choice == '':
+                    choice = 1
+                elif choice == '-1':
+                    choice = -1
+                else:
+                    if choice.isdigit() and int(choice) >= 1:
+                        choice = int(choice)
+                    else:
+                        choice = None
+            args.number = int(choice)
             args.write = True
+
         elif command == 'r':
             args.command = 'regenerate'
             # Pick a config
@@ -1117,16 +1229,28 @@ def main():
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
             print '\nConfigurations in your configs directory:\n'
+            count = 1
+            choices = []
+            config = None
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
-                if (os.path.isfile(file_path) and
-                        file_path.endswith('.cfg')):
-                    print '   ', file
-            print '\nEnter the name of the configuration you wish to use.'
-            config = raw_input('(leave blank for default): ')
-            if (config == ''):
-                config = 'default'
+                if (
+                        os.path.isfile(file_path) and
+                        file_path.endswith('.cfg') and
+                        file != 'default'):
+                    print '\t[{}] {}'.format(count, file)
+                    count += 1
+                    choices.append(file)
+            while config is None:
+                config = raw_input('\nChoose a config (enter for default): ')
+                if config == '':
+                    config = 'default'
+                else:
+                    if config in [str(x+1) for x in xrange(len(choices))]:
+                        config = choices[int(config)-1]
+                    else:
+                        config = None
             args.config = str(config) + '.cfg'
             cfg.Load(args.config)
 
