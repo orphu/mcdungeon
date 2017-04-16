@@ -18,7 +18,9 @@ v0.18.0 -
 
   * Circle of skulls has more variety now. (JiFish)
 
-  * Stairwells no longer contain subfloor blocks (orphu)
+  * Stairwells no longer contain subfloor blocks. (orphu)
+
+  * Parrots appear in Oasis entrances. (orphu)
 
 v0.17.1 - 02/08/2017
 

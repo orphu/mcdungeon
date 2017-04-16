@@ -14,7 +14,6 @@ from utils import (
     findChunkDepths,
     get_entity_mob_tags,
     get_entity_other_tags,
-    get_entity_item_tags,
     iterate_cube,
     iterate_cylinder,
     iterate_disc,
@@ -463,8 +462,10 @@ class StepPyramid(Blank):
         self.parent.parent.entrance.height = abs(-c1.y - 2) + 2
         for p in iterate_cube(start, start.trans(5, -c1.y - 1, 5)):
             self.parent.parent.setblock(p, materials.Air)
-        for p in iterate_four_walls(Vec(start.x, -1, start.z),
-                                    Vec(start.x + 5, -1, start.z + 5), -c1.y - 2):
+        for p in iterate_four_walls(
+                Vec(start.x, -1, start.z),
+                Vec(start.x + 5, -1, start.z + 5), -c1.y - 2
+                ):
             self.parent.parent.setblock(p, materials._wall)
         for p in iterate_four_walls(start, start.trans(5, 0, 5), 0):
             self.parent.parent.setblock(p, materials.StoneSlab)
@@ -475,7 +476,10 @@ class StepPyramid(Blank):
                                 Vec(start.x + 5, 7, start.z + 5),
                                 (abs(c1.y) + 3) * 2):
             self.parent.parent.setblock(
-                Vec(p.x, 0 + int(p.y / 2), p.z), mat, mat.data + ((p.y & 1) ^ 1) * 8)
+                Vec(p.x, 0 + int(p.y / 2), p.z),
+                mat,
+                mat.data + ((p.y & 1) ^ 1) * 8
+                )
         # Entrances.
         # Draw stairs up the sides.
         for y in xrange(29):
@@ -1437,8 +1441,10 @@ class RuinedFane(Blank):
         for p in iterate_cube(start.trans(8, -9, 1),
                               start.trans(15, -15, 38)):
             self.parent.parent.setblock(p, materials.Air)
-        for p in iterate_cube(start.trans(0, 1, 0),
-                              start.trans(23, self.parent.loc.y - start.y, 39)):
+        for p in iterate_cube(
+                start.trans(0, 1, 0),
+                start.trans(23, self.parent.loc.y - start.y, 39)
+                ):
             self.parent.parent.setblock(p, soil)
         for p in iterate_cube(start.trans(0, 0, 0),
                               start.trans(23, 0, 39)):
@@ -1766,9 +1772,11 @@ class RuinedFane(Blank):
         for p in iterate_cube(estart.trans(6, 0, 6), estart.trans(9, -6, 9)):
             self.parent.parent.setblock(p, materials.Air)
         mat = materials.StoneSlab
-        for p in iterate_spiral(Vec(estart.x + 6, estart.y, estart.z + 6),
-                                Vec(estart.x + 6 + 4, estart.y, estart.z + 6 + 4),
-                                10):
+        for p in iterate_spiral(
+                Vec(estart.x + 6, estart.y, estart.z + 6),
+                Vec(estart.x + 6 + 4, estart.y, estart.z + 6 + 4),
+                10
+                ):
             self.parent.parent.setblock(
                 Vec(p.x, p.y / 2, p.z), mat, mat.data + ((p.y & 1) ^ 1) * 8)
         for p in iterate_four_walls(estart.trans(5, 0, 5),
@@ -2016,7 +2024,7 @@ class Barrow(Blank):
                 n = head facign North
                 e = head facing East'''
 
-            # Some offsets 
+            # Some offsets
             # South
             if rot is 's':
                 off1 = (0.5, 0.0, 1.0)
@@ -2082,10 +2090,10 @@ class Barrow(Blank):
                                          Pose=pose,
                                          DisabledSlots=2039583,
                                          NoBasePlate=1,
-                                         Rotation=Vec(0,r,0),
-                                         Pos = (pos.x+off1[0],
-                                                pos.y+off1[1],
-                                                pos.z+off1[2]))
+                                         Rotation=Vec(0, r, 0),
+                                         Pos=(pos.x+off1[0],
+                                              pos.y+off1[1],
+                                              pos.z+off1[2]))
             if chest is not None:
                 tags['ArmorItems'][2]['id'] = nbt.TAG_String(chest.id)
             if head is not None:
@@ -2109,10 +2117,10 @@ class Barrow(Blank):
                                          Pose=pose,
                                          DisabledSlots=2039583,
                                          NoBasePlate=1,
-                                         Rotation=Vec(0,r+180,0),
-                                         Pos = (pos.x+off2[0],
-                                                pos.y+off2[1],
-                                                pos.z+off2[2]))
+                                         Rotation=Vec(0, r+180, 0),
+                                         Pos=(pos.x+off2[0],
+                                              pos.y+off2[1],
+                                              pos.z+off2[2]))
             if legs is not None:
                 tags['ArmorItems'][1]['id'] = nbt.TAG_String(legs.id)
             self.parent.parent.addentity(tags)
@@ -2363,8 +2371,10 @@ class Oasis(Blank):
 
         # Palms
         for p in palms:
+            # Reeds override
             if p in stairwell or p in reeds:
                 continue
+            # 10% change of a palm tree
             if random.randint(1, 100) <= 10:
                 notchest.append(p)
                 h = random.randint(4, 8)
@@ -2374,6 +2384,7 @@ class Oasis(Blank):
                 sb(p.up(h).s(1), materials.JungleLeaves)
                 sb(p.up(h).e(1), materials.JungleLeaves)
                 sb(p.up(h).w(1), materials.JungleLeaves)
+                # 50% of trees have long leaves
                 if random.randint(1, 100) <= 50:
                     sb(p.up(h).n(2), materials.JungleLeaves)
                     sb(p.up(h).s(2), materials.JungleLeaves)
@@ -2382,6 +2393,11 @@ class Oasis(Blank):
                 # Trunk
                 for q in iterate_cube(p.up(1), p.up(h)):
                     sb(q, materials.Jungle)
+                # 50% chance of a parrot in this tree (random color)
+                if random.randint(1, 100) <= 50:
+                    parrot = get_entity_mob_tags(eid='parrot', Pos=p.up(h+1))
+                    self.parent.parent.addentity(parrot)
+            # No tree or reed has a 60% chance of being grass/fern/shrub
             elif random.randint(1, 100) <= 60:
                 sb(p.up(1), materials.TallGrass, random.randint(0, 2))
 
@@ -2884,11 +2900,11 @@ class MazeEntrance(Blank):
                     # than the edges
                     height = (
                         (
-                            pn.noise2(i / 32.0, j / 32.0) + 1.0
-                        ) / 2.0 * self.parent.parent.room_height
-                    ) * (
-                        (16 * self._size) / (abs(j - (sc + 8)) + abs(i - (sc + 8)))
-                    ) + 7
+                            pn.noise2(i/32.0, j/32.0)+1.0
+                        )/2.0*self.parent.parent.room_height
+                    )*(
+                        (16*self._size)/(abs(j-(sc+8))+abs(i-(sc+8)))
+                    )+7
                     for y in xrange(int(height)):
                         if blocks[i][j] == 0:  # wall
                             self.parent.parent.setblock(
