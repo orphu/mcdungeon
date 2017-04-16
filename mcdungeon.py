@@ -483,24 +483,27 @@ def loadWorld(world_name):
     global cache_path
 
     world = None
+    clean_name = world_name.encode('utf-8').strip()
     try:
         if args.quiet is False:
-            print "Trying to open:", world_name
+            print "Trying to open:", clean_name
         world = mclevel.fromFile(world_name)
     except:
         saveFileDir = mclevel.saveFileDir
         world_name = os.path.join(saveFileDir, world_name)
         if args.quiet is False:
-            print "Trying to open:", world_name
+            print "Trying to open:", clean_name
         try:
             world = mclevel.fromFile(world_name)
         except:
-            print "Failed to open world:", world_name
+            print "Failed to open world:", clean_name
             sys.exit(1)
     if args.quiet is False:
-        print 'Loaded world: %s (%d chunks, %d blocks high)' % (world_name,
-                                                            world.chunkCount,
-                                                            world.Height)
+        print 'Loaded world: %s (%d chunks, %d blocks high)' % (
+            clean_name,
+            world.chunkCount,
+            world.Height
+            )
     # Create the mcdungeon cache dir if needed.
     cache_path = os.path.join(world_name, cfg.cache_dir)
     if os.path.exists(cache_path) is False:
@@ -508,11 +511,11 @@ def loadWorld(world_name):
 
     # Find the mapstore path
     if args.quiet is False:
-        print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+        print 'Looking for data directory...'
     if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
         cfg.mapstore = os.path.join(mclevel.saveFileDir, cfg.mapstore)
         if args.quiet is False:
-            print 'Looking for data directory:', os.path.join(cfg.mapstore, 'data')
+            print 'Looking for data directory...'
         if not os.path.exists(os.path.join(cfg.mapstore, 'data')):
             print "Cannot find world data directory!"
             sys.exit(1)
@@ -917,23 +920,33 @@ def main():
             sys.exit('\nI cannot find your save directory! Aborting!')
         print '\nWorlds in your save directory:\n'
         count = 0
+        worlds = []
         for file in os.listdir(saveFileDir):
             file_path = os.path.join(saveFileDir, file)
             if (
                 os.path.isdir(file_path) and
                 os.path.isfile(file_path + '/level.dat')
             ):
-                print '   ', file
+                print '\t[{:>2}] {}'.format(count+1, file.encode('utf-8').strip())
                 count += 1
                 args.world = file_path
+                worlds.append(file)
         if count == 0:
             sys.exit('There do not appear to be any worlds in your save direcory. \
                      Aborting!')
         if count > 1:
-            w = raw_input('\nEnter the name of the world you wish to modify: ')
-            args.world = os.path.join(saveFileDir, w)
+            w = -1
+            while (w < 0 or w > len(worlds)-1):
+                w = raw_input(
+                    '\nEnter the name of the world you wish to modify: '
+                    )
+                try:
+                    w = int(w)-1
+                except:
+                    w = -1
+            args.world = os.path.join(saveFileDir, worlds[w])
         else:
-            print '\nOnly one world available.  Using this one.'
+            print '\nOnly one world available.'
 
         # Pick a mode
         print '\nChoose an action:\n-----------------\n'
@@ -1083,7 +1096,7 @@ def main():
             args.steps = raw_input('Steps: ')
 
             print '\nEnter the maximum number of treasure hunts to add.'
-            print 'Depending on the characteristics of your world, and' 
+            print 'Depending on the characteristics of your world, and'
             print 'the number of steps, the actual number placed may be less.'
             print 'Enter -1 to add as many hunts as possible.'
             args.number = raw_input('Number of treasure hunts (leave blank for 1): ')
@@ -1820,10 +1833,10 @@ def main():
                 if cc % 200 == 0:
                     pm.update(cc)
 
-                # Save progress occasionally. 
+                # Save progress occasionally.
                 if notcached % 10000 == 0:
                     utils.saveChunkCache(cache_path, chunk_cache)
-        # Process chunks in parallel. 
+        # Process chunks in parallel.
         else:
             if args.debug:
                 print 'Working with multiple processes. workers =', args.workers
@@ -1857,7 +1870,7 @@ def main():
                     if cc % 200 == 0:
                         pm.update(cc)
 
-                    # Save progress occasionally. 
+                    # Save progress occasionally.
                     if notcached % 10000 == 0:
                         utils.saveChunkCache(cache_path, chunk_cache)
 
