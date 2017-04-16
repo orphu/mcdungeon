@@ -18,6 +18,7 @@ from pymclevel import mclevel, nbt
 cache_version = '8'
 dv_version = 922
 
+
 def floor(n):
     return int(n)
 
@@ -1141,7 +1142,7 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
                          note=0, Record=0, RecordItem=None, Text1='',
                          Text2='', Text3='', Text4='', SkullType=0,
                          ExtraType=None,
-                         Rot=0, ExactTeleport=0, ExitPos=Vec(0,0,0),
+                         Rot=0, ExactTeleport=0, ExitPos=Vec(0, 0, 0),
                          powered=0, PotionId=-1, CustomColor=0,
                          SplashPotion=0, isMovable=1, TrackOutput=1, auto=0,
                          conditionMet=1, Delay=0, SpawnCount=4, SpawnRange=4,
@@ -1165,7 +1166,7 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     root_tag['z'] = nbt.TAG_Int(Pos[2])
 
     if (
-        CustomName is not None and 
+        CustomName is not None and
         eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser',
                 'brewing_stand', 'enchanting_table', 'command_block')
     ):
@@ -1226,7 +1227,7 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
         root_tag['conditionMet'] = nbt.TAG_Byte(conditionMet)
 
     if eid == 'end_gateway':
-        root_tag['Age'] = nbt.TAG_Long(201);
+        root_tag['Age'] = nbt.TAG_Long(201)
         root_tag['ExactTeleport'] = nbt.TAG_Byte(ExactTeleport)
         exit_tag = nbt.TAG_Compound()
         exit_tag['X'] = nbt.TAG_Int(ExitPos.x)
@@ -1395,6 +1396,7 @@ def get_entity_mob_tags(eid='chicken', Health=None, AbsorptionAmount=0,
             Health = 6
         elif eid in (
             'endermite',
+            'parrot',
             'sheep',
             'silverfish'
         ):
@@ -1525,7 +1527,7 @@ def get_entity_mob_tags(eid='chicken', Health=None, AbsorptionAmount=0,
         root_tag['Age'] = nbt.TAG_Int(Age)
 
     # Can be tamed
-    if eid in ('ocelot', 'wolf', 'horse'):
+    if eid in ('ocelot', 'wolf', 'horse', 'parrot'):
         root_tag['Owner'] = nbt.TAG_String(Owner)
         root_tag['Sitting'] = nbt.TAG_Byte(Sitting)
 
@@ -1594,6 +1596,11 @@ def get_entity_mob_tags(eid='chicken', Health=None, AbsorptionAmount=0,
 
     if eid == 'ocelot':
         root_tag['CatType'] = nbt.TAG_Int(CatType)
+
+    if eid == 'parrot':
+        if Variant is None:
+            Variant = random.randint(0, 4)
+        root_tag['Variant'] = nbt.TAG_Byte(Variant)
 
     if eid == 'pig':
         root_tag['Saddle'] = nbt.TAG_Byte(Saddle)
