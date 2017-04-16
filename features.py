@@ -77,7 +77,17 @@ class Stairwell(Blank):
     _name = 'stairwell'
     _is_stairwell = True
 
+    def clearSubfloor(self):
+        sb = self.parent.parent.setblock
+        gb = self.parent.parent.getblock
+        for x in iterate_cube(
+            self.parent.loc.trans(0, -1, 0),
+            self.parent.loc+Vec(15, -1, 15)
+        ):
+            sb(x, materials._floor)
+
     def render(self):
+        self.clearSubfloor()
         if (sum_points_inside_flat_poly(*self.parent.canvas) > 0):
             start = self.parent.loc.trans(
                 5,
@@ -102,11 +112,12 @@ class Stairwell(Blank):
                                                 mat[1])
 
 
-class TripleStairs(Blank):
+class TripleStairs(Stairwell):
     _name = 'triplestairs'
     _is_stairwell = True
 
     def render(self):
+        self.clearSubfloor()
         # create a shortcut to the set block fN
         sb = self.parent.parent.setblock
         dungeon = self.parent.parent
@@ -203,11 +214,12 @@ class TripleStairs(Blank):
                         mats[template[y][z][x]][1])
 
 
-class TowerWithLadder(Blank):
+class TowerWithLadder(Stairwell):
     _name = 'towerwithladder'
     _is_stairwell = True
 
     def render(self):
+        self.clearSubfloor()
         # create a shortcut to the set block fN
         sb = self.parent.parent.setblock
 
@@ -261,11 +273,12 @@ class TowerWithLadder(Blank):
             sb(x, materials.Ladder, 3)
 
 
-class Scaffolding(Blank):
+class Scaffolding(Stairwell):
     _name = 'scaffolding'
     _is_stairwell = True
 
     def render(self):
+        self.clearSubfloor()
         # create a shortcut to the set block fN
         sb = self.parent.parent.setblock
 

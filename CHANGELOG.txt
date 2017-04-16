@@ -18,63 +18,65 @@ v0.18.0 -
 
   * Circle of skulls has more variety now. (JiFish)
 
+  * Stairwells no longer contain subfloor blocks (orphu)
+
 v0.17.1 - 02/08/2017
 
   !! NOTE: This version requires Minecraft 1.11.2 release or higher!
-  
+
   !! NOTE: We recommend you regenerate any dungeons generated with 0.17.0 to
            fix some of the below issues.
-  
+
   * Fix for issue where a map's existing dungeon / treasure hunts were
     sometimes not being detected. (MikeyCarter)
-  
+
   * More fixes for incorrect 1.11 entity and item ids. This will fix some
     crash during dungeon generation issues and some broken spawners. (JiFish)
-  
+
   * Fix for Unknown Item when generating some secret shops. (JiFish)
-  
+
   * Improved dungeon banner generator to give more variations. (JiFish)
-  
+
   * Add Sweeping Edge enchantment to loot. (JiFish)
-  
+
   * Add Iron Nuggets to tier 1 loot. (JiFish)
-  
+
   * Fixed dungeon banners in loot. (JiFish)
-  
+
   * Fixed sounds for portcullises. (ninmore)
 
 v0.17.0 - 11/24/2016
 
   !! NOTE: This version requires Minecraft 1.11.0 release or higher!
-  
+
   * Added 1.11 items, blocks and mobs. (JiFish)
-  
+
   * Beware! Loot can now be cursed with the new 1.11 enchantments. (JiFish)
-  
+
   * Added support for coloring custom potions in potions.txt (JiFish)
-  
+
   * Added configuration options for map item sprite coloring.
     See mapcolor and paintingcolor in default.cfg (JiFish)
-    
+
   * Added two new shops to find and updated some old ones with new
     inventory. (JiFish)
-    
+
   * Fix flower pots in various locations to have flowers in again. (JiFish)
-  
+
   * Various fixes for Minecraft 1.11 (JiFish)
 
 v0.16.0 - 08/07/2016
 
   !! NOTE: This version requires Minecraft 1.10.2 release or higher!
-  
+
   * Added 1.10 items and blocks. (JiFish)
-  
+
   * Added spawners for: Husk and Stray mob variants, Skeletons that fire
     tipped arrows, and something unusual that might help you! (JiFish)
-  
+
   * Add use_incomplete_chunks config option. This forces chunk scanning
     to use chunks that would otherwise be marked as incomplete. (JiFish)
-  
+
   * Fix for multi_ spawners. (JiFish)
 
 v0.15.1 - 05/03/2016
@@ -118,7 +120,7 @@ v0.15.1 - 05/03/2016
 
   * Fixed issues with 0.15.x dungeons being generated in pre-1.9 chunks.
     This was causing some entities (mods with equipment and villagers) to
-    disappear. (orphu) 
+    disappear. (orphu)
 
   * Fixed tipped arrow stacking. (JiFish)
 
@@ -132,7 +134,7 @@ v0.15.0 - 03/28/2016
   * 1.9 Support! Lots of fixes for 1.9. (various)
 
   * Added 1.9 items, blocks and enchants. (JiFish)
-  
+
   * Added genregions command for Worldguard. (sshipway)
 
   * Dynmap marker plugin now available. (sshipway)
@@ -140,18 +142,18 @@ v0.15.0 - 03/28/2016
   * Added Jack O'Lanterns and Farmland to default structures list. (JiFish)
 
   * Added special shield loot item with dungeon's banner. (JiFish)
-  
+
   * Door materials are now chosen per dungeon. (orphu)
 
   * Throne rooms now use real carpets. (orphu)
 
   * Updated potions for 1.9, including allowing lingering potions and
     tipped arrows in loot tables. (JiFish)
-    
+
   * Moved example configs to example_configs folder. (JiFish)
 
   * Corrected Depth Strider enchantment data. (JiFish)
-  
+
   * Items are now created with string IDs. (JiFish)
 
 v0.14.2 - 04/15/2015
@@ -177,13 +179,13 @@ v0.14.2 - 04/15/2015
    * Adds __DUNGEON__ keyword  for html map file names (orphu)
 
    * Dungeon maps can now appear on the same level they represent. (orphu)
-  
+
 v0.14.1 - 11/23/2014
 
   !! NOTE: This version requires Minecraft 1.8.0 release or higher!
-  
+
    * Fixed error where treasure room loot wouldn't generate. (JiFish)
-   
+
    * Treasure hunt chest tier now automatically scales. (sshipway)
 
    * New rooms: Diamond, Alcove. (orphu)
@@ -194,15 +196,15 @@ v0.14.1 - 11/23/2014
 
    * Fixed bad book titles causing "Invalid book tag" errors.
      (JiFish and orphu)
-     
+
    * Fixed pyramid exit teleport location. (JiFish)
 
    * Hall traps and secret rooms no longer show up on maps. (orphu)
-   
+
    * Added some new paintings and removed some dull paintings. (JiFish)
-   
+
    * Shops now advertise with 1-3 flyers each. (JiFish)
-   
+
    * A unique flag design is generated for each dungeon. (JiFish)
 
 v0.14.0 - 09/03/2014
@@ -235,7 +237,7 @@ v0.14.0 - 09/03/2014
      instead. (orphu)
 
    * Removed arrow trap, portcullis, piston trap, and dispenser trap
-     settings from configs. All of this is now controlled with new 
+     settings from configs. All of this is now controlled with new
      [hall traps] section. (orphu)
 
    * Projectile traps are now more compact, cannot be looted, and
@@ -249,9 +251,9 @@ v0.14.0 - 09/03/2014
 
    * Added editions to books. Most books will be late editions and cannot
      be copied. (JiFish)
-     
+
    * Potion effects and particles can now be hidden in potions.txt. (JiFish)
-   
+
    * Text formatting is now possible in books and lore text. (JiFish)
 
    * Forges now have a loot table and can contain global items. (orphu)
@@ -271,7 +273,7 @@ v0.14.0 - 09/03/2014
 v0.13.0 - 10/26/2013
 
   !! NOTE: This version requires Minecraft 1.7.2 release or higher!
-	
+
    * New Feature: WildGrowth (JiFish)
 
    * New entrance variations for Mesa and Ice Spike biomes. (orphu)
@@ -354,14 +356,14 @@ v0.12.0 - 07/02/2013
      skinny. (orphu)
 
    * Removed skulls from chapels (JiFish)
-  
+
    * Fixed a potential bug in fortune loading. (JiFish)
 
    * Removed unreliable treasure item in armories. (orphu)
 
    * Fixed a bug when trying to regenerate dungeons created with older
      versions. (orphu)
-	
+
    * Fixed dungeons being a little too shallow, especially on flat
      worlds. (orphu)
 
@@ -577,9 +579,9 @@ v0.9.1 - 09/20/2012
      maps: Chance to generate a map for a given level
      mapstore: Where to place maps (if you use bukkit/multiworld)
 
-   * The default easy_mode config will always generate maps. 
+   * The default easy_mode config will always generate maps.
      hard_mode will never generate maps. And all other example
-     configs will generate level maps 80% of the time. 
+     configs will generate level maps 80% of the time.
 
    * New wood floor type. (JiFish)
 
@@ -610,15 +612,15 @@ v0.9.0 - 08/02/2012
 
    * Sand traps now use tripwire and appear more commonly.
 
-   * Removed tower_ruin config option. 
+   * Removed tower_ruin config option.
 
    * Custom enchanted items. Cookies of fortune, efficient fishes, swords
      of smite X, feathers of feather falling, etc.
-     See magic_items.txt for details. 
+     See magic_items.txt for details.
 
    * Added a new chandelier type in great halls.
 
-   * More use of upside down stairs and slabs. 
+   * More use of upside down stairs and slabs.
 
    * New room feature: Mess Hall
 
@@ -636,12 +638,12 @@ v0.8.2 - 07/16/2012
 
    * Fixed vines making towers too tall.
 
-   * Additional Fixes for pymclevel. 
+   * Additional Fixes for pymclevel.
 
    * renamed --skip-bury to --force-bury and added a force_bury config
      file option.
 
-   * Many performance improvements. 
+   * Many performance improvements.
 
    * Initial dungeon scanning is 3-4X faster.
 
@@ -650,7 +652,7 @@ v0.8.2 - 07/16/2012
    * Dungeon and chunk scanning is now cached between runs, and only
      chunks that have changed are re-scanned. This results in huge
      speed increases when running MCDungeon more than once, even on
-     large maps. 
+     large maps.
 
    * MCDungeon now uses much less memory. Scanning a 5000x5000 map
      (111,222 chunks) uses less than 200MB of RAM.
@@ -659,14 +661,14 @@ v0.8.2 - 07/16/2012
 
 v0.8.1 - 03/03/2012
 
-   * Added 1.2 blocks: Circle Stone, Redstone Lamps, Fire Charge, 
+   * Added 1.2 blocks: Circle Stone, Redstone Lamps, Fire Charge,
      Jungle wood, and Bottle of Enchanting.
 
    * Added circle brick to dungeon and mossy brick meta materials.
 
-   * Spiral stairs now use upside down slabs for a cleaner look. 
+   * Spiral stairs now use upside down slabs for a cleaner look.
 
-   * Arrow traps sometimes shoot fire charges. 
+   * Arrow traps sometimes shoot fire charges.
 
    * Added Spawn Ocelot, Spawn Iron Golem, and Bottle o' Enchanting
      as treasure.
@@ -688,12 +690,12 @@ v0.8.0 - 03/02/2012
 
    * Fixed doors to work in 1.2.
 
-   * Replaced End Stone with Sandstone in crypts and sepulchres. 
+   * Replaced End Stone with Sandstone in crypts and sepulchres.
 
    * Improved the look of arch ruins and tower entrances with upside
-     down stairs. 
+     down stairs.
 
-   * Silverfish are a lot more common in the default configs. 
+   * Silverfish are a lot more common in the default configs.
 
 v0.7.1 - 01/22/2012
 
@@ -703,12 +705,12 @@ v0.7.1 - 01/22/2012
 
    * Fixed whitespace parsing bug for enchant level.
 
-   * Added bow enchantments. 
+   * Added bow enchantments.
 
    * Added spawn eggs.
 
    * Added --spawn option to override spawn location. This allows you to
-     specify an origin instead of the default spawn location. 
+     specify an origin instead of the default spawn location.
 
 v0.7.0 - 11/20/2011
 
@@ -716,12 +718,12 @@ v0.7.0 - 11/20/2011
 
   !! NOTE 2: This version also breaks backward compatibility with dungeons
      generated with older versions of MCDungeon. To reuse old maps, use 0.6.0
-     to delete the maps before running 0.7.0. 
+     to delete the maps before running 0.7.0.
 
   !! NOTE 3: This version also breaks backward compatibility with old configs.
      The loot table format has changed. If you want to use old configs, you can
      but you'll have to replace all the loot tables with a list from one of the
-     standard configs. 
+     standard configs.
 
    * New treasure room: Crypt
 
@@ -734,7 +736,7 @@ v0.7.0 - 11/20/2011
    * New room: GreatHall (two versions with multiple variations each)
 
    * Removed --bury option and replaced it with --skip-bury. The default when
-     using --offset now is to bury the dungeon. 
+     using --offset now is to bury the dungeon.
 
    * Revamped the cardinal directions to match beta 1.9 and 1.0.0 release.
 
@@ -753,7 +755,7 @@ v0.7.0 - 11/20/2011
 
    * Spider Lairs now host cave spiders.
 
-   * Added additional materials for Stairwell, Columns, Pool, and Dais. 
+   * Added additional materials for Stairwell, Columns, Pool, and Dais.
 
    * Loot tables now handle multiple items per line (ie: add one of a list) and
      will enchant armor, weapons, and tools. See default.cfg for details.
@@ -768,18 +770,18 @@ v0.6.0 - 09/22/2011
 
      * Moved apples around (hey maybe they are magical!)
 
-     * Added more wheat and mushrooms for craftable food. 
+     * Added more wheat and mushrooms for craftable food.
 
      * Less bread.
 
-     * Tier 0 can contain a bowl to help crafting stew.      
+     * Tier 0 can contain a bowl to help crafting stew.
 
      * Added pumpkin and melon seeds, and ender pearls to top level chests.
 
    * New cfg option: silverfish replaces stone, cobblestone, and stone brick
-     blocks with silverfish look-alikes. 
+     blocks with silverfish look-alikes.
 
-   * Reworked many things to incorporate new 1.8 blocks. 
+   * Reworked many things to incorporate new 1.8 blocks.
 
    * Updates to pymclevel fix lighting errors for 1.8 blocks. (vines, chests,
      etc)
@@ -801,19 +803,19 @@ v0.6.0 - 09/22/2011
    * MultiVerse signs work differently and are (hopefully) compatible with MV 2.
 
    * SpiderLair, ThroneRoom, and Arena now generate portals when mvportal is
-     configured. 
+     configured.
 
 v0.5.2 - 08/30/2011
 
    * New cfg option: secret_door sets the material to use for the moving parts
      of secret doors. Handy if you want to set walls to be something immovable,
-     like bedrock. 
+     like bedrock.
 
    * Two new murals for ThroneRoom.
 
    * New treasure room: Arena
 
-   * Fixed arrow traps sometimes breaking secret room halls. 
+   * Fixed arrow traps sometimes breaking secret room halls.
 
 v0.5.1 - 08/24/2011
 
@@ -842,13 +844,13 @@ v0.5.0 - 08/22/2011
 
 v0.4.0 - 08/13/2011
 
-   * Optimizations to the location search algorithm. Major performance 
-     improvements when placing multiple dungeons. 
+   * Optimizations to the location search algorithm. Major performance
+     improvements when placing multiple dungeons.
 
    * Configurable structure detection. Chunks marked with player structures
      will no longer be eligible for dungeon placement.
 
-   * Chunks that are too high will be excluded from searches. 
+   * Chunks that are too high will be excluded from searches.
 
    * New entrance types: Square tower (and ruined), round tower (and ruined),
      step pyramid, and evil runestones.
@@ -864,17 +866,17 @@ v0.4.0 - 08/13/2011
    * New subcommand: list - lists dungeons in the world.
 
    * New subcommand: delete - Deletes old dungeons from the world. Chunks
-     containing dungeons are deleted and allowed to regenerate back to 
+     containing dungeons are deleted and allowed to regenerate back to
      their natural state. (you need to load the map into Minecraft for the
      chunks to be regenerated)
 
    * New subcommand: regenerate - Regenerates dungeons in place. (with a few
      caveats) Dungeons will have a new maze layout, new rooms, restocked
-     chests and spawners, and can even use a different config file. 
+     chests and spawners, and can even use a different config file.
 
      - Surface structures will never be regenerated. This includes ruins and
        entrances. Any damage done to these structures by players or mobs will
-       not be repaired. 
+       not be repaired.
 
      - Any chests at the surface within the area of the dungeon (even ones
        not placed by MCDungeon! Be careful!) will be refreshed with tier
@@ -882,9 +884,9 @@ v0.4.0 - 08/13/2011
 
      - Regenerated dungeons will never link up with any natural caverns.
        this is because the area underground is refilled with stone and ores,
-       blocking off any natural caves that may have connected. 
+       blocking off any natural caves that may have connected.
 
-     - You cannot use hard mode on regenerated dungeons. 
+     - You cannot use hard mode on regenerated dungeons.
 
    * Interactive mode supports add, list, delete, and regenerate.
 
@@ -893,7 +895,7 @@ v0.4.0 - 08/13/2011
 
 v0.3.1 - 07/24/2011
 
-   * New cfg option: resetting_hall_pistons. Defaults to true. 
+   * New cfg option: resetting_hall_pistons. Defaults to true.
 
 v0.3.0 - 07/20/2011
 
@@ -907,15 +909,15 @@ v0.3.0 - 07/20/2011
      for world files. You no longer have to type out the full path if the
      world is in the standard Minecraft save directory. (All OSes)
 
-   * Rooms can be larger than one chunk. They can also be irregularly shaped. 
+   * Rooms can be larger than one chunk. They can also be irregularly shaped.
 
    * Massive changes to the maze generation algorithm to accommodate multi-tile
-     rooms and treasure rooms. 
+     rooms and treasure rooms.
 
    * The minimum dungeon size is now 4x4x1. This is to accommodate large tile
-     types and treasure rooms. 
+     types and treasure rooms.
 
-   * New room type Basicx2x2: Large 2x2 tile version of Basic. 
+   * New room type Basicx2x2: Large 2x2 tile version of Basic.
 
    * New room types: Cavern and CavernLarge. Creates randomly sized cavern
      shaped rooms. These are large, and will be a random shape and size.
@@ -933,23 +935,23 @@ v0.3.0 - 07/20/2011
    * New room type: CellBlock
 
    * Added new piston-based traps. (See hall_piston_traps in the config)
- 
+
    * New standard config: caverns
 
-   * More updates to pymclevel handle lighting on tall grass and additional 
+   * More updates to pymclevel handle lighting on tall grass and additional
      oddball compression of chunks.
 
    * Chunks that are too high will be excluded from the placement algorithm.
-     This keeps towers from being cut off at the height limit. 
+     This keeps towers from being cut off at the height limit.
 
    * External noise module is no longer required. (perlin.py is now bundled)
 
-   * Tweaks, tweaks, and more tweaks. 
+   * Tweaks, tweaks, and more tweaks.
 
    * Bugfix: Fixed a problem parsing ranges when Z was fixed and X
      was a range.
 
-   * Bugfix: Fixed bug with multi-dungeon not properly disabling -e 
+   * Bugfix: Fixed bug with multi-dungeon not properly disabling -e
 
 v0.2.3 - 05/30/2011
 
@@ -960,10 +962,10 @@ v0.2.3 - 05/30/2011
 v0.2.2 - 05/26/2011
 
     * Fixed an issue where multi-dungeon would bail out early when
-      maximize_distance was true and the map had a very irregular shape. 
+      maximize_distance was true and the map had a very irregular shape.
 
 v0.2.1 - 05/26/2011
-  
+
     * Added a bounds to prevent crashing when placing dungeons on very high
       plateaus.
 
@@ -971,41 +973,41 @@ v0.2.0 - 05/26/2011
 
     * Multiple dungeons can now be drawn in one pass. Use the --number option
       to specify the number of non-overlapping dungeons that the tool should
-      attempt to generate. -1 will fill in as many dungeons as possible given 
+      attempt to generate. -1 will fill in as many dungeons as possible given
       the min/max chunk settings in your config file. This is also supported in
-      interactive mode. 
+      interactive mode.
 
     * Surface level ruins. Ruins are chosen from a customizable weighted list
-      like other dungeon features. 
+      like other dungeon features.
 
-    * X, Z, and LEVELS options will now take ranges for random sizes. 
+    * X, Z, and LEVELS options will now take ranges for random sizes.
       example: ./mcdungeon.py MAP 3-5 2-5 5-8 -n 2
       Will generate two random dungeons between 3x2x5 and 5x5x8 in size.
       This also works in interactive mode.
 
     * Sandbars now merge with the existing world better. Sand will only be
-      drawn on water or ice blocks. 
+      drawn on water or ice blocks.
 
-    * Lava pits can sometimes have lava streaming from the ceiling. 
+    * Lava pits can sometimes have lava streaming from the ceiling.
 
     * Skeleton balconies.
 
-    * Defective arrow traps can sometimes explode. 
+    * Defective arrow traps can sometimes explode.
 
     * Pit rooms can contain falling sand traps.
 
     * Added --bury option to calculate Y coordinate when using --offset.
 
     * Added --entrance option to specify the location of the tower when using
-      --offset. 
+      --offset.
 
     * New cfg option: torches_position will specify the height of torches on
       walls.
 
-    * New cfg option: tower_ruin will make the entrance towers crumble. 
+    * New cfg option: tower_ruin will make the entrance towers crumble.
 
     * New cfg option: ruin_ruins. Setting this to False will skip any attempt
-      to "ruin" surface structures. 
+      to "ruin" surface structures.
 
     * New cfg option: maximize_distance will attempt to place dungeons as far
       apart as possible when rendering multi-dungeons.
@@ -1019,14 +1021,14 @@ v0.2.0 - 05/26/2011
     * Bugfix: Chests hovering above subfloor and half blocks in lava pits and
       treasure rooms.
 
-    * Several other bugs and unhandled exceptions fixed. 
+    * Several other bugs and unhandled exceptions fixed.
 
 v0.1.0 - 04/27/2011
 
     * More interesting lava floors.
 
     * Revamped chest and spawner placement. These can now appear in lava and
-      other rooms with very little floor space. 
+      other rooms with very little floor space.
 
     * Pit rooms can now be circular. (and possibly more shapes in the future)
 
@@ -1035,42 +1037,42 @@ v0.1.0 - 04/27/2011
     * All new maze generation algorithm. How convoluted mazes are can now be
       controlled in the config file. Entry and exit stairs are now guaranteed
       to be as far away from each other as possible on a given level.
-  
+
     * New config option: loops - Controls how many loops the maze will have.
       0 = no loops, just a few branches. 100 = A grid. Values around 20-30
-      will produce mazes similar to the old algorithm. 
+      will produce mazes similar to the old algorithm.
 
     * Bridges in pit rooms now always connect all hallways. Pit floors now
-      never have bridges since there are other ways to cross them. 
+      never have bridges since there are other ways to cross them.
 
     * New config option: portcullises_closed - Percentage of portcullises that
       will be rendered closed. 0 = none, 100 = all.
 
     * The final bounds of the dungeon are printed on the last line. Handy for
-      folks running WorldGuard or similar. 
+      folks running WorldGuard or similar.
 
     * Single hall corridor dead ends are now special cave in rooms that can
       contain ores in similar proportions to the world. (coal is common,
       diamond and lapis are rare, etc)
 
     * The default tower entrance has a few improvements, and will now build a
-      sand bar around itself if placed in water. 
+      sand bar around itself if placed in water.
 
     * More verbose output in certain situations.
 
-    * Configuration files are now kept in a directory named "configs" in the 
-      MCDungeon directory. Several example configs have been added. 
+    * Configuration files are now kept in a directory named "configs" in the
+      MCDungeon directory. Several example configs have been added.
 
     * New config option: hard_mode - Hard mode will fill in caves under and
       around the dungeon in an attempt to concentrate monster spawns inside the
-      walls of the dungeon. This works best on larger maps that already have 
-      chunks within the start area generated. Medium to large sized 
-      dungeons with 5-8 levels will work best as well. 
+      walls of the dungeon. This works best on larger maps that already have
+      chunks within the start area generated. Medium to large sized
+      dungeons with 5-8 levels will work best as well.
 
-    * Interactive mode will now prompt for which configuration file you want 
-      to use. 
- 
-    * Fixed a crash bug if the tower option was set too high. 
+    * Interactive mode will now prompt for which configuration file you want
+      to use.
+
+    * Fixed a crash bug if the tower option was set too high.
 
     * Spider webs.
 
@@ -1084,7 +1086,7 @@ v0.0.3 - 04/1/2011
 
     * Removed --world option and replaced it with a positional argument.
 
-    * Added --interactive option. This will prompt for SAVEDIR, Z, X, 
+    * Added --interactive option. This will prompt for SAVEDIR, Z, X,
           and LEVEL
 
     * Added batch file for windows to start in interactive mode.
@@ -1098,13 +1100,13 @@ v0.0.2 - 03/31/2011
     * Added Cookie to default loot tables.
 
     * Reworked the --offset option. It now takes three args instead
-      if just one. 
+      if just one.
 
-    * Z, X, and LEVELS args now accept -1 as a value. This will 
+    * Z, X, and LEVELS args now accept -1 as a value. This will
       cause the tool to pick random values for these. Z and X will
       between 2 and the maximum distance between dist_min and dist_max
-      in the .cfg file. Levels will be between 2 and 8. This should 
-      maximize the chance that the dungeon will fit into the map, 
+      in the .cfg file. Levels will be between 2 and 8. This should
+      maximize the chance that the dungeon will fit into the map,
       unless the map has a ton of very shallow chunks around spawn.
 
 v0.0.1 - 03/30/2011
