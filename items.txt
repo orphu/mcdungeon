@@ -1,7 +1,7 @@
 # Items file. See potions.txt for potions.
-# 
+#
 # Item Name,ID,Data Value,Maximum Stack Size,Special Flag (optional)
-# 
+#
 # Do not remove items from this list unless you really know what you are doing.
 
 # Items
@@ -184,6 +184,7 @@ Spawn Magma Cube,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:magma_cube
 Spawn Mooshroom,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:mooshroom
 Spawn Mule,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:mule
 Spawn Ocelot,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:ocelot
+Spawn Parrot,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:parrot
 Spawn Pig Zombie,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:zombie_pigman
 Spawn Pig,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:pig
 Spawn Polar Bear,minecraft:spawn_egg,0,64,ENTITYTAG:minecraft:polar_bear
