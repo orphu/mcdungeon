@@ -509,47 +509,9 @@ class TreasureHunt (Dungeon):
             loc = lm.offset + loc
             self.setblock(loc, materials.Spawner)
             entity = weighted_choice(cfg.master_landmark_mobs)
-            root_tag = self.getspawnertags(entity)
-            root_tag['id'] = nbt.TAG_String('mob_spawner')
-            root_tag['x'] = nbt.TAG_Int(loc.x )
-            root_tag['y'] = nbt.TAG_Int(loc.y )
-            root_tag['z'] = nbt.TAG_Int(loc.z )
-            root_tag['Delay'] = nbt.TAG_Short(0)
-            SpawnCount = cfg.SpawnCount
-            SpawnMaxNearbyEntities = cfg.SpawnMaxNearbyEntities
-            SpawnMinDelay = cfg.SpawnMinDelay
-            SpawnMaxDelay = cfg.SpawnMaxDelay
-            SpawnRequiredPlayerRange = cfg.SpawnRequiredPlayerRange
-            # But don't overwrite tags from NBT files
-            if (SpawnCount != 0):
-                try:
-                    root_tag['SpawnCount']
-                except:
-                    root_tag['SpawnCount'] = nbt.TAG_Short(SpawnCount)
-            if (SpawnMaxNearbyEntities != 0):
-                try:
-                    root_tag['MaxNearbyEntities']
-                except:
-                    root_tag['MaxNearbyEntities'] = nbt.TAG_Short(
-                        SpawnMaxNearbyEntities)
-            if (SpawnMinDelay != 0):
-                try:
-                    root_tag['MinSpawnDelay']
-                except:
-                    root_tag['MinSpawnDelay'] = nbt.TAG_Short(SpawnMinDelay)
-            if (SpawnMaxDelay != 0):
-                try:
-                    root_tag['MaxSpawnDelay']
-                except:
-                    root_tag['MaxSpawnDelay'] = nbt.TAG_Short(SpawnMaxDelay)
-            if (SpawnRequiredPlayerRange != 0):
-                try:
-                    root_tag['RequiredPlayerRange']
-                except:
-                    root_tag['RequiredPlayerRange'] = nbt.TAG_Short(
-                        SpawnRequiredPlayerRange)
-            # Finally give the tag to the entity
+            root_tag = self.getspawnertags(entity, tier=1, loc=loc)
             self.tile_ents[loc] = root_tag
+            print root_tag
         self.pm.set_complete()
 
     def renderlandmarks(self):
