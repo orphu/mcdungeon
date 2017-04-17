@@ -2096,8 +2096,12 @@ class Barrow(Blank):
                                               pos.z+off1[2]))
             if chest is not None:
                 tags['ArmorItems'][2]['id'] = nbt.TAG_String(chest.id)
+                tags['ArmorItems'][2]['Count'] = nbt.TAG_Byte(1)
+                tags['ArmorItems'][2]['Damage'] = nbt.TAG_Short(0)
             if head is not None:
                 tags['ArmorItems'][3]['id'] = nbt.TAG_String(head.id)
+                tags['ArmorItems'][3]['Count'] = nbt.TAG_Byte(1)
+                tags['ArmorItems'][3]['Damage'] = nbt.TAG_Short(0)
             self.parent.parent.addentity(tags)
 
             # The second covers the legs
@@ -2123,6 +2127,8 @@ class Barrow(Blank):
                                               pos.z+off2[2]))
             if legs is not None:
                 tags['ArmorItems'][1]['id'] = nbt.TAG_String(legs.id)
+                tags['ArmorItems'][1]['Count'] = nbt.TAG_Byte(1)
+                tags['ArmorItems'][1]['Damage'] = nbt.TAG_Short(0)
             self.parent.parent.addentity(tags)
 
         # Build the tombs.
