@@ -2954,6 +2954,115 @@ class DiamondCavern(Blank):
         self.parent.addchestitem_tag(self.loc + p, note)
 
 
+class DeepOnes(Basic):
+    _name = 'deepones'
+    _is_entrance = False
+    _is_stairwell = False
+    _is_treasureroom = True
+    _min_size = Vec(1, 1, 2)
+    _max_size = Vec(1, 1, 2)
+    size = Vec(1, 1, 2)
+
+    def placed(self):
+        self.canvas = (
+            Vec(0, self.parent.room_height - 2, 0),
+            Vec(0, self.parent.room_height - 2, 0),
+            Vec(0, self.parent.room_height - 2, 0))
+        rooms = []
+        sx = self.parent.room_size
+        sz = self.parent.room_size
+        #sy = self.parent.room_height
+        # This room contains no halls, but is connected to the South
+        # North, East, South, West
+        pos = self.pos
+        rooms.append(pos)
+        self.hallLength = [1, 1, 0, 1]
+        self.hallSize = [[6, sx - 6],
+                         [7, sx - 6],
+                         [6, sz - 6],
+                         [7, sz - 6]]
+        self.parent.halls[pos.x][pos.y][pos.z] = [0, 0, 1, 0]
+
+        # Place one room to the South
+        # This room has no halls, and is connected to the North
+        pos = self.pos + Vec(0, 0, 1)
+        room = new('blank', self.parent, pos)
+        rooms.extend(self.parent.setroom(pos, room))
+        room.hallLength = [0, 0, 0, 0]
+        room.hallSize = [[6, sx - 6],
+                         [6, sx - 6],
+                         [6, sz - 6],
+                         [6, sz - 6]]
+        room.parent.halls[pos.x][pos.y][pos.z] = [1, 1, 1, 1]
+        # This room cannot connect. Make the depth < 0
+        room.parent.maze[pos].depth = -1
+        return rooms
+
+    def render(self):
+        sx = 16
+        sy = 12
+        sz = 32
+        o = self.loc
+        pos = self.pos
+
+        # alias for setblock
+        sb = self.parent.setblock
+
+        # symmetrical setblock. A lot of this room will be symmetrical.
+        def ssb(p, mat, data=0):
+            sb(o + p, mat, data)
+            sb(Vec(o.x + sx - 1 - p.x, o.y + p.y, o.z + p.z), mat, data)
+
+        # Basic room
+        # Water space
+        for p in iterate_cube(o, o + Vec(sx - 1, sy - 1, sz - 1)):
+            sb(p, materials.StillWater)
+        # Air space
+        for p in iterate_cube(o, o + Vec(sx - 1, sy - 8, sz - 22)):
+            sb(p, materials.Air)
+        # Walls
+        for p in iterate_four_walls(o, o + Vec(sx - 1, 0, sz - 1), -sy + 1):
+            sb(p, materials.meta_decoratedprismarine)
+        # Ceiling and floor
+        for p in iterate_cube(o, o + Vec(sx - 1, 0, sz - 1)):
+            sb(p, materials.meta_decoratedprismarine)
+            sb(p.down(sy - 1), materials.meta_decoratedprismarine)
+            if random.randint(1, 100) <= 3:
+                sb(p.down(sy - 1), materials.SeaLantern)
+
+        # Platform
+        for x in iterate_cube(Vec(0, 4, 0), Vec(16, 4, 10)):
+            sb(o+x, materials.PrismarineBricks)
+
+        # Columns
+        for x in iterate_cube(Vec(1, 1, 1), Vec(1, 3, 1)):
+            for z in (0, 2, 4, 6, 8):
+                sb(o+x+Vec( 0, 0, z), materials.MossStoneWall)
+                sb(o+x+Vec(13, 0, z), materials.MossStoneWall)
+
+        # Pool
+        for x in iterate_disc(Vec(5, 4, 3), Vec(10, 4, 7)):
+            sb(o+x.n(1), materials.DarkPrismarine)
+            sb(o+x.s(1), materials.DarkPrismarine)
+            sb(o+x.e(1), materials.DarkPrismarine)
+            sb(o+x.w(1), materials.DarkPrismarine)
+        for x in iterate_disc(Vec(5, 4, 3), Vec(10, 4, 7)):
+            sb(o+x, materials.StillWater)
+
+        # Glass
+        for x in iterate_cube(Vec(1, 1, 10), Vec(14, 3, 10)):
+            sb(o+x, materials.Glass)
+
+        # Portal
+        drawExitPortal(o + Vec(6, 7, 1), self.parent)
+
+        # A little light
+        sb(o+Vec(1, 4, 1), materials.SeaLantern)
+        sb(o+Vec(14, 4, 1), materials.SeaLantern)
+        sb(o+Vec(1, 4, 9), materials.SeaLantern)
+        sb(o+Vec(14, 4, 9), materials.SeaLantern)
+
+
 class SandstoneCavern(Blank):
     _name = 'sandstonecavern'
     _walls = materials.Sandstone
@@ -3547,7 +3656,7 @@ class Pit(Blank):
                 self.parent.setblock(x, materials.Lava)
 
             # For lava floors, make little ledges at entrances to help ensure
-            # these can be traversed without building. 
+            # these can be traversed without building.
             b = set()
             y = self.canvasHeight() + 1
             for h in xrange(4):
@@ -3854,7 +3963,7 @@ class PitBottom(Blank):
                 self.parent.setblock(x, materials.Lava)
 
             # For lava floors, make little ledges at entrances to help ensure
-            # these can be traversed without building. 
+            # these can be traversed without building.
             b = set()
             y = self.canvasHeight() + 1
             for h in xrange(4):

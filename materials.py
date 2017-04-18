@@ -277,6 +277,27 @@ class meta_class_decoratedsandstone(MetaMaterial):
             self.c = Sandstone.c
 
 
+class meta_class_decoratedprismarine(MetaMaterial):
+    name = 'meta_decoratedsandstone'
+    val = Prismarine.val
+    data = Prismarine.data
+    c = Prismarine.c
+
+    def update(self, x, y, z, maxx, maxy, maxz):
+        offset_x = x + -1
+        offset_y = y + 1
+        offset_z = z + 1
+
+        if offset_x % 5 == 0 or offset_y % 5 == 0 or offset_z % 5 == 0:
+            self.val = PrismarineBricks.val
+            self.data = PrismarineBricks.data
+            self.c = PrismarineBricks.c
+        else:
+            self.val = Prismarine.val
+            self.data = Prismarine.data
+            self.c = Prismarine.c
+
+
 class meta_class_decoratedredsandstone(MetaMaterial):
     name = 'meta_decoratedredsandstone'
     val = RedSandstone.val
@@ -372,6 +393,7 @@ meta_mossystonebrick = meta_class_mossystonebrick()
 meta_stonedungeon = meta_class_stonedungeon()
 meta_decoratedsandstone = meta_class_decoratedsandstone()
 meta_decoratedredsandstone = meta_class_decoratedredsandstone()
+meta_decoratedprismarine = meta_class_decoratedprismarine()
 
 _wall = copy(Cobblestone)
 _secret_door = copy(Cobblestone)
