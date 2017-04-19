@@ -3,8 +3,7 @@
 # Supplied fortune cookie list is from: http://joshmadison.com/2008/04/20/fortune-cookie-fortunes/
 # By Joshua F. Madison under http://creativecommons.org/licenses/by/3.0/us/
 #
-# Generate a fortune cookie using "magic_Fortune Cookie" in the loot tables.
-# (See magic_items.txt for more information.)
+# Generate a fortune cookie using "Fortune Cookie" in the loot tables.
 #
 "Welcome" is a powerful word.
 A dubious friend may be an enemy in camouflage.
