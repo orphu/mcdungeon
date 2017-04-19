@@ -969,20 +969,21 @@ def main():
                 configDir = 'configs'
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
-            print '\nConfigurations in your configs directory:\n'
-            count = 1
-            choices = []
-            config = None
+            choices = ['default']
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
                 if (
-                        os.path.isfile(file_path) and
-                        file_path.endswith('.cfg') and
-                        file != 'default'):
+                    os.path.isfile(file_path) and
+                    file_path.endswith('.cfg') and
+                    file != 'default'):
+                    choices.append(file)
+            print '\nConfigurations in your configs directory:\n'
+            count = 1
+            config = None
+            for file in choices:
                     print '\t[{}] {}'.format(count, file)
                     count += 1
-                    choices.append(file)
             while config is None:
                 config = raw_input('\nChoose a config (enter for default): ')
                 if config == '':
@@ -1109,20 +1110,21 @@ def main():
                 configDir = 'configs'
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
-            print '\nConfigurations in your configs directory:\n'
-            count = 1
-            choices = []
-            config = None
+            choices = ['default']
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
                 if (
-                        os.path.isfile(file_path) and
-                        file_path.endswith('.cfg') and
-                        file != 'default'):
+                    os.path.isfile(file_path) and
+                    file_path.endswith('.cfg') and
+                    file != 'default'):
+                    choices.append(file)
+            print '\nConfigurations in your configs directory:\n'
+            count = 1
+            config = None
+            for file in choices:
                     print '\t[{}] {}'.format(count, file)
                     count += 1
-                    choices.append(file)
             while config is None:
                 config = raw_input('\nChoose a config (enter for default): ')
                 if config == '':
@@ -1228,20 +1230,21 @@ def main():
                 configDir = 'configs'
             if (os.path.isdir(configDir) is False):
                 sys.exit('\nI cannot find your configs directory! Aborting!')
-            print '\nConfigurations in your configs directory:\n'
-            count = 1
-            choices = []
-            config = None
+            choices = ['default']
             for file in os.listdir(configDir):
                 file_path = os.path.join(configDir, file)
                 file = file.replace('.cfg', '')
                 if (
-                        os.path.isfile(file_path) and
-                        file_path.endswith('.cfg') and
-                        file != 'default'):
+                    os.path.isfile(file_path) and
+                    file_path.endswith('.cfg') and
+                    file != 'default'):
+                    choices.append(file)
+            print '\nConfigurations in your configs directory:\n'
+            count = 1
+            config = None
+            for file in choices:
                     print '\t[{}] {}'.format(count, file)
                     count += 1
-                    choices.append(file)
             while config is None:
                 config = raw_input('\nChoose a config (enter for default): ')
                 if config == '':
