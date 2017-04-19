@@ -7,7 +7,7 @@ import cfg
 import mapstore
 import loottable
 import items
-from utils import topheavy_random, converttoordinal, encodeJSONtext
+from utils import topheavy_random, converttoordinal, encodeJSONtext, random_line_from_file
 from pymclevel import nbt
 from nbtyamlbridge import tagsfromfile
 
@@ -102,32 +102,6 @@ class new:
             return item
 
         return self.mapstore.add_painting(random.choice(self.paintlist))
-
-
-    def loadrandfortune(self):
-        if os.path.isfile(os.path.join(sys.path[0], cfg.file_fortunes)):
-            forune_path = os.path.join(sys.path[0], cfg.file_fortunes)
-        elif os.path.isfile(cfg.file_fortunes):
-            forune_path = cfg.file_fortunes
-        else:
-            return '...in bed.'  # Fortune file not found
-
-        # Retrieve a random line from a file, reading through the file once
-        # Prevents us from having to load the whole file in to memory
-        forune_file = open(forune_path)
-        lineNum = 0
-        while True:
-            aLine = forune_file.readline()
-            if not aLine:
-                break
-            if aLine[0] == '#' or aLine == '':
-                continue
-            lineNum = lineNum + 1
-            # How likely is it that this is the last line of the file?
-            if random.uniform(0, lineNum) < 1:
-                fortune = aLine.rstrip()
-        forune_file.close()
-        return fortune
 
 
     # Takes item name string (and optional enchants), outputs NBT compound
@@ -236,7 +210,7 @@ class new:
             if i.flag == 'FORTUNE':
                 item_tag['tag']['display'][
                     'Name'] = nbt.TAG_String('Fortune Cookie')
-                i.lore = self.loadrandfortune()
+                i.lore = random_line_from_file(cfg.file_fortunes, "...in bed")
                 loredata = textwrap.wrap(self.ConvertEscapeChars(i.lore), 30)
                 for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(

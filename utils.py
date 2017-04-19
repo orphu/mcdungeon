@@ -452,6 +452,35 @@ def weighted_shuffle(master_list):
     return results
 
 
+def random_line_from_file(filepath, default=''):
+    """ Looks for text file at filepath and returns a random
+    line from it."""
+    if os.path.isfile(os.path.join(sys.path[0], filepath)):
+        path = os.path.join(sys.path[0], filepath)
+    elif os.path.isfile(filepath):
+        path = filepath
+    else:
+        return default  # File not found
+
+    # Retrieve a random line from a file, reading through the file once
+    # Prevents us from having to load the whole file in to memory
+    file_handle = open(path)
+    lineNum = 0
+    output = default
+    while True:
+        aLine = file_handle.readline()
+        if not aLine:
+            break
+        if aLine[0] == '#' or aLine == '':
+            continue
+        lineNum = lineNum + 1
+        # How likely is it that this is the last line of the file?
+        if random.uniform(0, lineNum) < 1:
+            output = aLine.rstrip()
+    file_handle.close()
+    return output
+
+
 # Generate a number between min and max. Weighted towards higher numbers.
 # (Beta distribution.)
 def topheavy_random(min, max):
