@@ -220,7 +220,7 @@ class new:
                 for loretext in loredata[:10]:
                     item_tag['tag']['display']['Lore'].append(
                         nbt.TAG_String(self.ConvertEscapeChars(loretext[:50])))
-        # Dyed
+        # Flag: Dyed item
         if (i.flag == 'DYED'):
             try:
                 item_tag['tag']
@@ -237,12 +237,12 @@ class new:
                         16777215))
             else:
                 item_tag['tag']['display']['color'] = nbt.TAG_Int(i.flagparam)
-        # special cases for written books and paintings
+        # Flags: Random Book or Painting
         elif (i.flag == 'WRITTEN'):
             item_tag = self.loadrandbooktext()
         elif (i.flag == 'PAINT'):
             item_tag = self.loadrandpainting()
-        # Tags for this dungeon's flag
+        # Flag: Paint banner or shield with dungeon flag design
         elif (i.flag == 'DUNGEON_FLAG'):
             try:
                 item_tag['tag']
@@ -260,13 +260,14 @@ class new:
             # banner items in chests
             if i.id == 'minecraft:banner':
                 item_tag['Damage'] = nbt.TAG_Short(self.flag['Base'])
+        # Flag: Give item mob entity tag (spawn eggs)
         elif (i.flag.startswith('ENTITYTAG:')):
             try:
                 item_tag['tag']
             except:
                 item_tag['tag'] = nbt.TAG_Compound()
             item_tag['tag']['EntityTag'] = nbt.TAG_Compound()
-            # ENTITYTAG: is ten characters, we want everything afterwards
+            # ENTITYTAG: is 10 characters, we want everything afterwards
             item_tag['tag']['EntityTag']['id'] = nbt.TAG_String(i.flag[10:])
 
         # Set the slot and count
