@@ -269,6 +269,15 @@ class new:
             item_tag['tag']['EntityTag'] = nbt.TAG_Compound()
             # ENTITYTAG: is 10 characters, we want everything afterwards
             item_tag['tag']['EntityTag']['id'] = nbt.TAG_String(i.flag[10:])
+        # Flag: Give random recipie from recipies.txt
+        elif (i.flag == 'RECIPIE'):
+            try:
+                item_tag['tag']
+            except:
+                item_tag['tag'] = nbt.TAG_Compound()
+            item_tag['tag']['Recipes'] = nbt.TAG_List()
+            r = random_line_from_file(cfg.file_recipies, "minecraft:crafting_table")
+            item_tag['tag']['Recipes'].append(nbt.TAG_String(r))
 
         # Set the slot and count
         if i.slot != None:
