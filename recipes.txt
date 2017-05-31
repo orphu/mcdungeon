@@ -1,4 +1,4 @@
-# List of recipies for knowledge books. One per line.
+# List of recipes for knowledge books. One per line.
 #
 # When using "Knowlege Book" in the loot tables, one recipie is picked from
 # this list.

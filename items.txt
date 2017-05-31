@@ -321,5 +321,5 @@ Enchanted Book,minecraft:enchanted_book,0,1,ENCH_BOOK
 Dungeon Banner,minecraft:banner,0,16,DUNGEON_FLAG
 Dungeon Shield,minecraft:shield,0,1,DUNGEON_FLAG
 
-# Knowledge Book with a random recipie. (See recipies.txt)
-Knowledge Book,minecraft:knowledge_book,0,1,RECIPIE
+# Knowledge Book with a random recipe. (See recipes.txt)
+Knowledge Book,minecraft:knowledge_book,0,1,RECIPE

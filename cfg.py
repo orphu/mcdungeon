@@ -88,7 +88,7 @@ file_dyes = 'dye_colors.txt'
 file_potions = 'potions.txt'
 file_magic_items = 'magic_items.txt'
 file_fortunes = 'fortunes.txt'
-file_recipies = 'recipies.txt'
+file_recipes = 'recipes.txt'
 dir_paintings = 'paintings'
 dir_books = 'books'
 dir_shops = 'shops'
@@ -201,7 +201,7 @@ def Load(filename='default.cfg'):
         treasure_SpawnCount, treasure_SpawnMaxNearbyEntities, \
         treasure_SpawnMinDelay, treasure_SpawnMaxDelay, \
         treasure_SpawnRequiredPlayerRange, file_extra_items, file_dyes, \
-        file_potions, file_magic_items, file_fortunes, file_recipies, \
+        file_potions, file_magic_items, file_fortunes, file_recipes, \
         dir_paintings, \
         dir_books, dir_shops, dir_extra_spawners, dir_extra_items, \
         river_biomes, ocean_biomes, use_incomplete_chunks, master_hall_traps, \
@@ -233,7 +233,7 @@ def Load(filename='default.cfg'):
                                'file_magic_items',
                                file_magic_items)
     file_fortunes = getPath('locations', 'file_fortunes', file_fortunes)
-    file_recipies = getPath('locations', 'file_recipies', file_recipies)
+    file_recipes = getPath('locations', 'file_recipes', file_recipes)
     dir_paintings = getPath('locations', 'dir_paintings', dir_paintings)
     dir_books = getPath('locations', 'dir_books', dir_books)
     dir_shops = getPath('locations', 'dir_shops', dir_shops)
@@ -246,8 +246,8 @@ def Load(filename='default.cfg'):
     # good now.
     if isFile(file_fortunes) is False:
         print "Warning: fortune file '" + file_fortunes + "' not found."
-    if isFile(file_recipies) is False:
-        print "Warning: recipies file '" + file_recipies + "' not found."
+    if isFile(file_recipes) is False:
+        print "Warning: recipes file '" + file_recipes + "' not found."
     if isDir(dir_paintings) is False:
         print "Warning: paintings directory '" + dir_paintings + "' not found."
     if isDir(dir_books) is False:
