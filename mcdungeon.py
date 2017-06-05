@@ -938,7 +938,7 @@ def main():
             w = -1
             while (w < 0 or w > len(worlds)-1):
                 w = raw_input(
-                    '\nEnter the name of the world you wish to modify: '
+                    '\nEnter the number for the world you wish to modify: '
                     )
                 try:
                     w = int(w)-1
