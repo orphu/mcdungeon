@@ -12,8 +12,6 @@ v0.18.0 -
 
   * Custom items, and spawners are now YAML files instead of NBT. (JiFish)
 
-  * Lucky blocks sample config has been removed. (JiFish)
-
   * Evoker spawners only appear in the hard mode config. (orphu)
 
   * Circle of skulls has more variety now. (JiFish)
@@ -23,6 +21,12 @@ v0.18.0 -
   * Parrots appear in Oasis entrances. (orphu)
 
   * Interactive mode does a better job validating inputs. (orphu)
+
+  * Knowlege books with a random recipe added as loot. You can customise the
+    recipes using recipes.txt. (JiFish)
+
+  * Lucky blocks sample config has been removed due to being very out of date.
+    If you have a replacement or configs for other mods, please let us know!
 
 v0.17.1 - 02/08/2017
 
