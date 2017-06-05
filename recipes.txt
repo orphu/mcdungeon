@@ -366,8 +366,7 @@ minecraft:red_stained_glass_pane
 minecraft:red_stained_hardened_clay
 minecraft:red_wool
 minecraft:repeater
-minecraft:rlist.txt
-sandstone
+minecraft:sandstone
 minecraft:sandstone_slab
 minecraft:sandstone_stairs
 minecraft:sea_lantern
