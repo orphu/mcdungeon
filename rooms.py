@@ -2164,6 +2164,7 @@ class Crypt(Basic):
         # Random stuff to be buried with.
         lootc = [(items.byName('bone'), 10),
                  (items.byName('written book'), 10),
+                 (items.byName('knowledge book'), 10),
                  (items.byName('bow'), 10),
                  (items.byName('diamond'), 5),
                  (items.byName('gold ingot'), 5),

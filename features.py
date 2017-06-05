@@ -1035,8 +1035,8 @@ class SecretStudy(SecretRoom):
         # A chest in a study should have writing supplies :)
         # item, probability, max stack amount
         writing_items = [(items.byName('written book'), 1, 1),
-                         (items.byName('written book'), 0.3, 1),
-                         (items.byName('written book'), 0.2, 1),
+                         (items.byName('knowledge book'), 0.66, 1),
+                         (items.byName('written book'), 0.33, 1),
                          (items.byName('book'), 0.7, 5),
                          (items.byName('paper'), 0.8, 10),
                          (items.byName('ink sac'), 0.9, 5),
@@ -1231,6 +1231,7 @@ class SecretSepulchure(SecretRoom):
         # Random stuff to be buried with. Like Crypt, but not as good.
         lootc = [(items.byName('iron ingot'), 5),
                  (items.byName('written book'), 10),
+                 (items.byName('knowledge book'), 10),
                  (items.byName('bow'), 10),
                  (items.byName('diamond'), 5),
                  (items.byName('gold ingot'), 5),
