@@ -9,6 +9,7 @@ import sys
 import time
 import uuid
 import yaml
+import copy
 
 import numpy
 
@@ -1187,6 +1188,8 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     # Convert Vec types into a tuple so we can use either.
     if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
+    else:
+        Pos = copy.deepcopy(Pos)
 
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String("minecraft:"+eid)
@@ -1197,14 +1200,15 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
     if (
         CustomName is not None and
         eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser',
-                'brewing_stand', 'enchanting_table', 'command_block')
+                'brewing_stand', 'enchanting_table', 'command_block',
+                'shulker_box')
     ):
         root_tag['CustomName'] = nbt.TAG_String(CustomName)
 
     if (
         Lock is not None and
         eid in ('chest', 'furnace', 'dropper', 'hopper', 'dispenser',
-                'brewing_stand', 'beacon')
+                'brewing_stand', 'beacon', 'shulker_box')
     ):
         root_tag['Lock'] = nbt.TAG_String(Lock)
 
@@ -1230,7 +1234,7 @@ def get_tile_entity_tags(eid='chest', Pos=Vec(0, 0, 0),
         root_tag['Secondary'] = nbt.TAG_Int(Secondary)
 
     if eid in ('brewing_stand', 'chest', 'furnace', 'hopper', 'dispenser',
-               'dropper'):
+               'dropper', 'shulker_box'):
         root_tag['Items'] = nbt.TAG_List()
 
     if eid == 'brewing_stand':
@@ -1333,6 +1337,8 @@ def get_entity_base_tags(eid='chicken', Pos=Vec(0, 0, 0),
     # Convert Vec types into a tuple so we can use either
     if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
+    else:
+        Pos = copy.deepcopy(Pos)
 
     root_tag = nbt.TAG_Compound()
     root_tag['id'] = nbt.TAG_String("minecraft:"+eid)
@@ -1767,6 +1773,8 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
     # Convert Vec types so we can use either
     if isinstance(Pos, Vec):
         Pos = (Pos.x, Pos.y, Pos.z)
+    else:
+        Pos = copy.deepcopy(Pos)
 
     root_tag = get_entity_base_tags(eid=eid, Pos=Pos, **kwargs)
 
@@ -1791,7 +1799,7 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
         else:
             root_tag['Health'] = nbt.TAG_Float(20)
         if Pose is not None:
-            root_tag['Pose'] = Pose
+            root_tag['Pose'] = copy.deepcopy(Pose)
 
     # Positioning on these gets tricky. TileX/Y/Z is the block the
     # painting/item_frame is contained within, and Pos is the actual position in the
@@ -1809,6 +1817,8 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
         if Facing in dirs:
             Facing = dirs[Facing]
         root_tag['Facing'] = nbt.TAG_Byte(Facing)
+
+	print "\nPX,PZ=%f, %f (initial)" % ( root_tag['Pos'][0].value, root_tag['Pos'][2].value )
 
         # Now, shift Pos appropriately. First we need the size of the entity.
         # Default is 1x1, and Item Frames are 1x1.
@@ -1869,16 +1879,19 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
             root_tag['Pos'][2].value += float(width) / 2.0
 
         # Copy the Pos location to Tile entries.
-        root_tag['TileX'] = nbt.TAG_Int(int(root_tag['Pos'][0].value))
-        root_tag['TileY'] = nbt.TAG_Int(int(root_tag['Pos'][1].value + 0.5))
-        root_tag['TileZ'] = nbt.TAG_Int(int(root_tag['Pos'][2].value))
+        root_tag['TileX'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][0].value)))
+        root_tag['TileY'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][1].value + 0.5)))
+        root_tag['TileZ'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][2].value)))
+
+	print "PX,PZ=%f, %f" % ( root_tag['Pos'][0].value, root_tag['Pos'][2].value )
+	print "X,Z=%d,%d (%d)" % ( root_tag['TileX'].value, root_tag['TileZ'].value, Facing )
 
     # Attach an item to the frame (if any)
     if eid == 'item_frame':
         root_tag['ItemDropChance'] = nbt.TAG_Float(ItemDropChance)
         root_tag['ItemRotation'] = nbt.TAG_Byte(ItemRotation)
         if ItemTags is not None:
-            root_tag['Item'] = ItemTags
+            root_tag['Item'] = copy.deepcopy(ItemTags)
 
     # Set the painting.
     if eid == 'painting':

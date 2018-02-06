@@ -917,7 +917,7 @@ class Dungeon (object):
         root_tag['note'] = nbt.TAG_Byte(clicks)
         self.tile_ents[loc] = root_tag
 
-    def addchest(self, loc, tier=-1, loot=[], name=None, lock=None):
+    def addchest(self, loc, tier=-1, loot=[], name=None, lock=None, eid='chest'):
         level = loc.y / self.room_height
         if (tier < 0):
             if (self.levels > 1):
@@ -934,7 +934,7 @@ class Dungeon (object):
             print 'Adding chest: level',level+1,'tier',tier
 
         root_tag = get_tile_entity_tags(
-            eid='chest',
+            eid=eid,
             CustomName=name,
             Lock=lock,
             Pos=loc
