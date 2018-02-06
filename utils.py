@@ -1818,8 +1818,6 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
             Facing = dirs[Facing]
         root_tag['Facing'] = nbt.TAG_Byte(Facing)
 
-	print "\nPX,PZ=%f, %f (initial)" % ( root_tag['Pos'][0].value, root_tag['Pos'][2].value )
-
         # Now, shift Pos appropriately. First we need the size of the entity.
         # Default is 1x1, and Item Frames are 1x1.
         sizes = {
@@ -1882,9 +1880,6 @@ def get_entity_other_tags(eid='ender_crystal', Facing='S',
         root_tag['TileX'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][0].value)))
         root_tag['TileY'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][1].value + 0.5)))
         root_tag['TileZ'] = nbt.TAG_Int(int(math.floor(root_tag['Pos'][2].value)))
-
-	print "PX,PZ=%f, %f" % ( root_tag['Pos'][0].value, root_tag['Pos'][2].value )
-	print "X,Z=%d,%d (%d)" % ( root_tag['TileX'].value, root_tag['TileZ'].value, Facing )
 
     # Attach an item to the frame (if any)
     if eid == 'item_frame':
