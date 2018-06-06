@@ -511,7 +511,7 @@ class TreasureHunt (Dungeon):
             entity = weighted_choice(cfg.master_landmark_mobs)
             root_tag = self.getspawnertags(entity, tier=1, loc=loc)
             self.tile_ents[loc] = root_tag
-            print root_tag
+            # print root_tag
         self.pm.set_complete()
 
     def renderlandmarks(self):

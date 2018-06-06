@@ -4,6 +4,7 @@
 
 import sys
 import inspect
+import copy
 
 import materials
 import loottable
@@ -53,6 +54,21 @@ class Clearing(object):
     def describe (self):
         return "a clearing"
 
+    # utility function for the chest creation
+    def newchest ( self, pos, tier=0, name='Treasure Chest', lock=None ):
+        if lock is None or lock is False:
+            chest = materials.Chest
+            d = 0
+            lock = None
+            eid = 'chest'
+        else:
+            chest = materials.BrownShulkerBox
+            d = 1 # facing upwards
+            eid = 'shulker_box'
+
+        self.parent.setblock( pos, chest, data=d, lock=True, soft=False, hide=True, blank=False )
+        self.parent.addchest( pos, tier=tier, name=name, lock=lock, eid=eid )
+
     # Add a chest to this location, with specified loot
     # this should only be called after render()
     def addchest (self, tier=0, name='', locked=None):
@@ -61,8 +77,7 @@ class Clearing(object):
         # position is y-reversed voxels relative to pos
         self.chest = Vec( 8, random.randint(1,3) , 8 ) + self.offset
         self.chestdesc = "in the middle"
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
 
     # add an item to the chest, if one exists
     def addchestitem_tag ( self, item_tag ):
@@ -120,8 +135,7 @@ class Clearing(object):
         # only one possible location (at varying depth) in this feature
         # position is y-reversed voxels relative to pos
         self.cluechest = Vec( 8, -1 , 8 ) + self.offset
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
 
     def addcluechestitem_tag ( self, item_tag ):
         if self.cluechest is None:
@@ -279,13 +293,15 @@ class SmallCottage(Clearing):
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
 
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(10,-1,9)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
      
     def spawnerloc ( self ):
         return Vec( 9, -1, 5 )
@@ -348,13 +364,15 @@ class SignPost(Clearing):
                 zoff = -zoff
             self.chest = self.offset + Vec( 8 + xoff, random.randint(1,2), 8 + zoff )
             self.chestdesc = "%d steps to the %s, then %d steps to the %s" % ( abs(xoff), ew, abs(zoff), ns )
-        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(9,-1,9)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
 class Monolith(Clearing):
     _name = 'monolith'
@@ -397,13 +415,15 @@ class Monolith(Clearing):
         p = random.choice(_position)
         self.chest = self.offset + Vec( 8, 0 , 8 ) + p[1]
         self.chestdesc = p[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(8,-1,6)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
         
     def spawnerloc ( self ):
         return Vec( 8, -1, 6 )
@@ -433,16 +453,18 @@ class Memorial(Clearing):
         self.parent.setblock(self.offset + Vec(10,-1,9), self.stonesteps,3)
 
         picof = 'a picture'
-        painting = self.parent.inventory.mapstore.add_painting(random.choice(self.parent.inventory.paintlist))
+        painting = self.parent.inventory.loadrandpainting()
         picof = painting['tag']['display']['Name'].value
         self.description = 'a memorial to %s' % ( picof )
+	print "Placing landmark: %s" % ( self.description )
         framed_painting = get_entity_other_tags("item_frame",
-                                         Pos=self.offset + Vec(8.0,-3,8), # block frame is IN
-                                         Facing="S", # 0=south
-                                         ItemRotation=0,
-                                         ItemTags=painting)
+                Pos=(self.offset + Vec(8,-3,8)), # block frame is attached to
+                Facing="S", 
+                ItemRotation=0,
+                ItemDropChance=0,
+                ItemTags=painting)
         # Place the item frame.
-        self.parent.addentity(framed_painting)
+        self.parent.addentity(copy.deepcopy(framed_painting))
 
         self.parent.setblock(self.offset + Vec(8,-2,9), materials.WallSign, 3) # 3=south
         self.parent.addsign(self.offset + Vec(8,-2,9), 
@@ -466,13 +488,15 @@ class Memorial(Clearing):
         p = random.choice(_position)
         self.chest = self.offset + Vec( 8, 0 , 8 ) + p[1]
         self.chestdesc = p[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(8,-1,7)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
     def spawnerloc ( self ):
         return Vec( 7, -1, 7 )
@@ -623,13 +647,15 @@ class Well(Clearing):
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1] + Vec(8,0,8)
         self.chestdesc = c[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
 
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(6,-1,8)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
     def spawnerloc ( self ):
         return Vec( 6, -1, 6 )
@@ -734,13 +760,15 @@ class Forge(Clearing):
         c = random.choice(_chestpos)
         self.chest = self.offset + c[1]
         self.chestdesc = c[0]
-        self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True, soft=False)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
 
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(10,-1,7)
-        self.parent.setblock( self.cluechest, materials.Chest, 1, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, 1, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
     def spawnerloc ( self ):
         return Vec( 9, -1, 5 )
@@ -884,13 +912,15 @@ class Graveyard(Clearing):
             p = random.choice(self._graves)
             self.chest = self.offset + p[1]
             self.chestdesc = "sleeping with the body of %s" % ( p[0] )
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
     
     def addcluechest ( self, tier=0, name='', items=[], locked=None ):
         self.cluechest = self.offset + Vec(12,-1,8)
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
 
     def spawnerloc ( self ):
         return Vec( 8, -1, 8 )
@@ -938,8 +968,9 @@ class BigTree(Clearing):
         # position is y-reversed voxels relative to pos
         self.chest = Vec(random.randint(7,10),random.randint(1,3),random.randint(7,10)) + self.offset
         self.chestdesc = "in the roots"
-        self.parent.setblock( self.chest, materials.Chest, lock=True)
-        self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
+        self.newchest( self.chest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.chest, materials.Chest, lock=True)
+        #self.parent.addchest( self.chest, tier=tier, name=name, lock=locked )
 
     def addcluechest (self, tier=0, name='', items=[], locked=None):
         # Add a chest to the map: this is called after rendering
@@ -947,8 +978,9 @@ class BigTree(Clearing):
         # position is y-reversed voxels relative to pos
         # Not too close to the tree or it will not grow
         self.cluechest = Vec( 6, -1 , 7 ) + self.offset
-        self.parent.setblock( self.cluechest, materials.Chest, lock=True)
-        self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
+        self.newchest ( self.cluechest, tier=tier, name=name, lock=locked )
+        #self.parent.setblock( self.cluechest, materials.Chest, lock=True)
+        #self.parent.addchest( self.cluechest, tier=tier, loot=items , name=name, lock=locked )
                 
     def describe (self):
         return "a large "+self._treetype+"tree"
