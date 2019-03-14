@@ -1,3 +1,5 @@
+# Please note: This project is not under active development and the last supported version is Minecraft 1.12. See the issue queue for more information.
+
 #MCDungeon#
 
 MCDungeon will create a procedurally generated dungeon in a preexisting
